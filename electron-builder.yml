@@ -1,0 +1,25 @@
+appId: org.celldl.editor
+productName: CellDLEditor
+publish:
+  provider: github
+  channel: latest-${arch}
+  releaseType: release
+win:
+  artifactName: ${productName}-${version}-Windows-${arch}.${ext}
+  target:
+    - nsis
+    - zip
+nsis:
+  uninstallDisplayName: ${productName}
+linux:
+  artifactName: ${productName}-${version}-Linux-${arch}.${ext}
+  category: Utility
+  executableName: CellDLEditor
+  target:
+    - AppImage
+    - tar.gz
+mac:
+  artifactName: ${productName}-${version}-macOS-${arch}.${ext}
+  target:
+    - dmg
+    - zip
