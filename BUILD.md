@@ -17,7 +17,13 @@ npm install -g bun
 
 # Getting Started
 
-1. **Start the development version of the CellDL Editor:**
+1. **Install the CellDL Editor's dependencies:**
+
+   ```bash
+   bun install
+   ```
+
+2. **Start the development version of the CellDL Editor:**
    - **Desktop version:**
 
      ```bash
@@ -30,7 +36,7 @@ npm install -g bun
      bun dev:web
      ```
 
-4. **Test the CellDL Editor:**
+3. **Test the CellDL Editor:**
    - **Desktop version:** the application will open automatically; and
    - **Web app version:** open your browser and navigate to the local development URL (typically http://localhost:5173).
 
