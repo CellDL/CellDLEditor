@@ -1,0 +1,59 @@
+/*
+ * Note: our splash screen is not part of our app per se, which means that we don't have access to PrimeVue and must
+ *       therefore hard-code colours.
+ */
+
+@import "../../renderer/src/assets/base.css";
+
+body {
+    background-color: #ffffff; /* Light version of --p-content-background. */
+    display: flex;
+    place-items: center;
+    place-content: center;
+    overflow: hidden;
+    line-height: 1.6;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #18181b; /* Dark version of --p-content-background. */
+    }
+}
+
+.contents {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.copyright,
+.version {
+    border-top: 1px solid #33415522; /* Light variant version of --p-content-color. */
+    padding: 0 0.5rem;
+    background-color: #33415511; /* Light variant version of --p-content-color. */
+    color: #334155; /* Light version of --p-content-color. */
+}
+
+@media (prefers-color-scheme: dark) {
+    .copyright,
+    .version {
+        border-top: 1px solid #ffffff22; /* Dark variant version of --p-content-color. */
+        background-color: #ffffff11; /* Dark variant version of --p-content-color. */
+        color: #ffffff; /* Dark version of --p-content-color. */
+    }
+}
+
+img.logo {
+    width: 413px;
+    height: 351px;
+    margin: 0.5rem;
+}
+
+td.logo {
+    padding: 0;
+    line-height: 0;
+    text-align: center;
+}
+
+.version {
+    text-align: right;
+}
