@@ -1,18 +1,18 @@
 {
-  "compilerOptions": {
-    "module": "nodenext",
-    "strictNullChecks": true
-  },
-  "include": ["*.ts"],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
+    "compilerOptions": {
+        "module": "nodenext",
+        "strictNullChecks": true
     },
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.web.json"
-    }
-  ]
+    "include": ["*.ts"],
+    "references": [
+        {
+            "path": "./tsconfig.app.json"
+        },
+        {
+            "path": "./tsconfig.node.json"
+        },
+        {
+            "path": "./tsconfig.web.json"
+        }
+    ]
 }

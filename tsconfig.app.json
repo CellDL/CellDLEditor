@@ -1,10 +1,10 @@
 {
-  "compilerOptions": {
-    "allowImportingTsExtensions": false,
-    "baseUrl": ".",
-    "composite": true,
-    "noEmit": false
-  },
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["src/**/*.ts"]
+    "compilerOptions": {
+        "allowImportingTsExtensions": false,
+        "baseUrl": ".",
+        "composite": true,
+        "noEmit": false
+    },
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "include": ["src/**/*.ts"]
 }
