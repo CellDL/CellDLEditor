@@ -20,7 +20,7 @@ limitations under the License.
 
 import * as $rdf from '../metadata/index.ts'
 
-import { type CellDLObject, rdfTypeToCellDLObject } from '#renderer/celldlObjects/index.ts'
+import { type CellDLObject, rdfTypeToCellDLObject } from '#editor/celldlObjects'
 import { type MetadataPropertiesMap, type PredicateValue, RdfStore, TurtleContentType } from '../metadata/index.ts'
 import { CELLDL_NAMESPACE } from '../metadata/index.ts'
 
