@@ -18,8 +18,6 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { css, html } from '@xel/utils/template'
-
 import type XPopoverElement from '@xel/elements/x-popover'
 import type XTooltipElement from '@xel/elements/x-tooltip'
 
@@ -29,7 +27,6 @@ import '../config'
 
 import type CellDLEditorApp from '../../CellDL/main.ts'  // ?????????????
 
-import { BaseElement } from '../uiElements/index.ts'
 
 import type { CellDLObject } from '../../CellDL/celldlObjects/index.ts'
 import type { CellDLDiagram } from '../../CellDL/diagram/index.ts'
@@ -115,80 +112,7 @@ export function getElementId(element: SVGGraphicsElement): string {
 
 const SVG_PANEL_ID = 'svg-panel'
 
-export class CellDLEditor extends BaseElement {
-    static _shadowTemplate = html`
-    <div id="cd-editor-window">
-        <main id="editor-pane">
-            <cd-tool-bar id="tool-bar"></cd-tool-bar>
-            <div id="${SVG_PANEL_ID}">
-                <context-menu id="context-menu"></context-menu>
-            </div>
-            <div id="panel-content"><!--Where an open panel is displayed--></div>
-            <cd-panel-bar id="panel-bar"></cd-panel-bar>
-        </main>
-        <footer>
-            <div id="status-bar">
-                <span id="status-msg"></span>
-                <span id="status-pos"></span>
-            </div>
-        </footer>
-    </div>
-    `
-
-    static #editorStylesheet = css`
-        #cd-editor-window {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            max-height: 100vh;
-        }
-        #editor-pane {
-            display: flex;
-            flex: 1;
-            min-height: 0;
-            position: relative;
-        }
-
-        #tool-bar, #panel-bar {
-            overflow: auto;
-        }
-        #${SVG_PANEL_ID} {
-            margin:  0;
-            border: 2px solid grey;
-            flex: 1;
-            overflow: hidden;
-        }
-        #panel-content {
-            padding:  6px;
-            width: 250px;
-            border: 2px solid grey;
-            display: none;
-            right: 38px; /* This depends on panel bar width... */
-            top: 0px;
-            bottom: 0px;
-            position: absolute;
-            background-color: #ECECEC;
-        }
-        #status-bar {
-            min-height: 1.6em;
-            border-top: 1px solid gray;
-            padding-left: 16px;
-            padding-right: 16px;
-            background-color: #ECECEC;
-        }
-        #status-msg.error {
-            color: red;
-        }
-        #status-msg.warn {
-           color: blue;
-        }
-        #status-pos {
-            float: right;
-        }
-        x-tooltip[type="error"] {
-            background: #F88;
-        }
-    `
+export class CellDLEditor {
 
     static _shadowStyleSheets = [CellDLEditor.#editorStylesheet, css`${EditorStylesheet}`]
 
