@@ -1,78 +1,22 @@
+
 <template>
-  <BlockUI
-    ref="blockUi"
-    :blocked="compUiBlocked"
-    :class="['overflow-hidden', blockUiClass]"
-    @click="activateInstance"
-    @focus="activateInstance"
-    @focusin="activateInstance"
-    @keydown="activateInstance"
-    @mousedown="activateInstance"
-  >
-    <Toast
-      :id="toastId"
-      :group="toastId"
-      :pt:root:style="{ position: 'absolute' }"
-      :class="compIsActive ? 'visible' : 'invisible'"
-    />
-    <BackgroundComponent v-show="(loadingEditorMessageVisible)" />
-    <BlockingMessageComponent message="Loading Editor..." v-show="loadingEditorMessageVisible" />
-    <div
-      @dragenter="onDragEnter"
-      class="h-full"
-      @dragover.prevent
-      @drop.prevent="onDrop"
-      @dragleave="onDragLeave"
+    <BlockUI
+        ref="blockUi"
+        :blocked="compUiBlocked"
+        :class="['overflow-hidden', 'editor-window', blockUiClass]"
+        @click="activateInstance"
+        @focus="activateInstance"
+        @focusin="activateInstance"
+        @keydown="activateInstance"
+        @mousedown="activateInstance"
     >
-      <input ref="files" type="file" multiple style="display: none" @change="onChange" />
-      <DragNDropComponent v-show="dragAndDropCounter > 0" />
-      <MainMenu
-        :id="mainMenuId"
-        v-if="electronApi === undefined"
-        :isActive="compIsActive"
-        :uiEnabled="compUiEnabled"
-        :hasFiles="hasFiles"
-        @about="onAboutMenu"
-        @open="onOpenMenu"
-        @openRemote="onOpenRemoteMenu"
-        @close="onCloseMenu"
-        @closeAll="onCloseAllMenu"
-        @settings="onSettingsMenu"
-      />
-      <ContentsComponent
-        ref="contents"
-        :isActive="compIsActive"
-        :uiEnabled="compUiEnabled"
-        :width="width"
-        :height="heightMinusMainMenu"
-      />
-      <OpenRemoteDialog
-        v-model:visible="openRemoteVisible"
-        @openRemote="onOpenRemote"
-        @close="openRemoteVisible = false"
-      />
-      <SettingsDialog v-model:visible="settingsVisible" @close="settingsVisible = false" />
-      <ResetAllDialog v-model:visible="resetAllVisible" @resetAll="onResetAll" @close="resetAllVisible = false" />
-      <AboutDialog v-model:visible="aboutVisible" @close="aboutVisible = false" />
-    </div>
-    <UpdateErrorDialog
-      v-model:visible="updateErrorVisible"
-      :title="updateErrorTitle"
-      :issue="updateErrorIssue"
-      @close="onUpdateErrorDialogClose"
-    />
-    <UpdateAvailableDialog
-      v-model:visible="updateAvailableVisible"
-      :version="updateVersion"
-      @downloadAndInstall="onDownloadAndInstall"
-      @close="updateAvailableVisible = false"
-    />
-    <UpdateDownloadProgressDialog v-model:visible="updateDownloadProgressVisible" :percent="updateDownloadPercent" />
-    <UpdateNotAvailableDialog v-model:visible="updateNotAvailableVisible" @close="updateNotAvailableVisible = false" />
-  </BlockUI>
+        <CellDLEditor/>
+    </BlockUI>
 </template>
 
 <script setup lang="ts">
+import CellDLEditor from './CellDLEditor.vue'
+
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import * as vueusecore from '@vueuse/core'
 
@@ -90,7 +34,6 @@ import * as common from '../common/common'
 import { SHORT_DELAY, TOAST_LIFE } from '../common/constants'
 import { electronApi } from '../common/electronApi'
 import * as vueCommon from '../common/vueCommon'
-import type IContentsComponent from '../components/ContentsComponent.vue'
 
 const props = defineProps<IEditorProps>()
 
@@ -98,7 +41,6 @@ const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)
 const toastId = vue.ref('editorToast')
 const mainMenuId = vue.ref('editorMainMenu')
 const files = vue.ref<HTMLElement | null>(null)
-const contents = vue.ref<InstanceType<typeof IContentsComponent> | null>(null)
 const activeInstanceUid = vueCommon.activeInstanceUid()
 
 // Keep track of which instance of the CellDL Editor is currently active.
@@ -181,11 +123,13 @@ const toast = useToast()
 //
 //  cf. oxigraph...
 
+/**
 const locApiInitialised = vue.ref(false)
 
 void locApi.initialiseLocApi().then(() => {
     locApiInitialised.value = true
 })
+**/
 
 // Handle an action.
 
@@ -236,16 +180,6 @@ electronApi?.onEnableDisableUi((enable: boolean) => {
     uiEnabled.value = enable
 })
 
-// Enable/disable some menu items.
-
-const hasFiles = vue.computed(() => {
-    return contents.value?.hasFiles() ?? false
-})
-
-vue.watch(hasFiles, (newHasFiles: boolean) => {
-    electronApi?.enableDisableFileCloseAndCloseAllMenuItems(newHasFiles)
-})
-
 // Loading the editor.
 //
 // locApi --> oxigraph??
@@ -254,6 +188,7 @@ vue.watch(hasFiles, (newHasFiles: boolean) => {
 
 const loadingEditorMessageVisible = vue.ref<boolean>(false)
 
+/**
 // @ts-expect-error (window.locApi may or may not be defined which is why we test it)
 if (window.locApi === undefined) {
     loadingEditorMessageVisible.value = true
@@ -264,6 +199,7 @@ if (window.locApi === undefined) {
         }
     })
 }
+**/
 
 // Auto update.
 
@@ -445,19 +381,11 @@ electronApi?.onClose(() => {
     onCloseMenu()
 })
 
-function onCloseMenu(): void {
-    contents.value?.closeCurrentFile()
-}
-
 // Close all.
 
 electronApi?.onCloseAll(() => {
     onCloseAllMenu()
 })
-
-function onCloseAllMenu(): void {
-    contents.value?.closeAllFiles()
-}
 
 // Reset all.
 
@@ -470,12 +398,6 @@ electronApi?.onResetAll(() => {
 function onResetAll(): void {
     electronApi?.resetAll()
 }
-
-// Select.
-
-electronApi?.onSelect((filePath: string) => {
-    contents.value?.selectFile(filePath)
-})
 
 // A few things that can only be done when the component is mounted.
 
@@ -595,7 +517,7 @@ vue.onMounted(() => {
         } else {
             // Handle the action passed to our Web app, if any.
             // Note: to use vue.nextTick() doesn't do the trick, so we have no choice but to use setTimeout().
-
+            /**
             vue.watch(locApiInitialised, (newLocApiInitialised: boolean) => {
                 if (newLocApiInitialised) {
                     const action = vueusecore.useStorage('action', '')
@@ -607,6 +529,7 @@ vue.onMounted(() => {
                     }
                 }
             })
+**/
         }
     }, SHORT_DELAY)
 })
@@ -630,11 +553,14 @@ vue.watch(compUiBlocked, (newCompUiBlocked: boolean) => {
 
 <style scoped>
 .editor-application {
-  height: 100vh;
-  height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
 }
-
 .editor-component {
-  height: 100%;
+    height: 100%;
+}
+.editor-window {
+    display: flex;
+    flex-direction: column;
 }
 </style>
