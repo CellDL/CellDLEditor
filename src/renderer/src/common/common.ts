@@ -1,7 +1,5 @@
 import { UAParser } from 'ua-parser-js'
 
-import { electronApi } from './electronApi.js'
-
 // Some interfaces.
 
 export interface ISettingsGeneral {
@@ -36,12 +34,6 @@ export function isDesktop(): boolean {
 
 export function isCtrlOrCmd(event: KeyboardEvent): boolean {
     return isMacOs() ? event.metaKey : event.ctrlKey
-}
-
-// A method to enable/disable the main menu.
-
-export function enableDisableMainMenu(enable: boolean): void {
-    electronApi?.enableDisableMainMenu(enable)
 }
 
 // A method to format a given number of milliseconds into a string.
