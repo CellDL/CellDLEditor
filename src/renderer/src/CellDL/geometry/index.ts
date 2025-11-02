@@ -40,16 +40,32 @@ export type Extent = [number, number, number, number]
 
 //==============================================================================
 
-export class Bounds extends Array<number> {
+export class Bounds {
+    #left: number
+    #right: number
+    #top: number
+    #bottom: number
+
     constructor(left: number, top: number, right: number, bottom: number) {
-        super(left, top, right, bottom)
         // Ensure bounds are in ``normal`` order
-        if (this[0] > this[2]) {
-            ;[this[0], this[2]] = [this[2], this[0]]
-        }
-        if (this[1] > this[3]) {
-            ;[this[1], this[3]] = [this[3], this[1]]
-        }
+        [this.#left, this.#right] = (left <= right) ? [left, right] : [right, left];
+        [this.#top, this.#bottom] = (top <= bottom) ? [top, bottom] : [bottom, top]
+    }
+
+    get left() {
+        return this.#left
+    }
+
+    get right() {
+        return this.#right
+    }
+
+    get top() {
+        return this.#top
+    }
+
+    get bottom() {
+        return this.#bottom
     }
 
     static fromPoints(pt0: PointLike, pt1: PointLike): Bounds {
@@ -69,41 +85,43 @@ export class Bounds extends Array<number> {
     }
 
     get height(): number {
-        return this[3] - this[1]
+        return this.#bottom - this.#top
     }
 
     get topLeft(): Point {
-        return new Point(this[0], this[1])
+        return new Point(this.#left, this.#top)
     }
 
     get width(): number {
-        return this[2] - this[0]
+        return this.#right - this.#left
     }
 
     asArray(): [number, number, number, number] {
-        return [this[0], this[1], this[2], this[3]]
+        return [this.#left, this.#top, this.#right, this.#bottom]
     }
 
     asPoints(): [Point, Point] {
-        return [new Point(this[0], this[1]), new Point(this[2], this[3])]
+        return [new Point(this.#left, this.#top), new Point(this.#right, this.#bottom)]
     }
 
     equal(bounds: Bounds, epsilon = 0.0001): boolean {
         // Assume bounds are normalised
         return (
-            Math.abs(this[0] - bounds[0]) < epsilon &&
-            Math.abs(this[1] - bounds[1]) < epsilon &&
-            Math.abs(this[2] - bounds[2]) < epsilon &&
-            Math.abs(this[2] - bounds[3]) < epsilon
+            Math.abs(this.#left - bounds.#left) < epsilon &&
+            Math.abs(this.#top - bounds.#top) < epsilon &&
+            Math.abs(this.#right - bounds.#right) < epsilon &&
+            Math.abs(this.#bottom - bounds.#bottom) < epsilon
         )
     }
 
     expand(margin: number): Bounds {
-        return new Bounds(this[0] - margin, this[1] - margin, this[2] + margin, this[3] + margin)
+        return new Bounds(this.#left - margin, this.#top - margin,
+                          this.#right + margin, this.#bottom + margin)
     }
 
     inContainer(container: Bounds): boolean {
-        return this[0] >= container[0] && this[2] <= container[2] && this[1] >= container[1] && this[3] <= container[3]
+        return this.#left >= container.#left && this.#top <= container.#top
+            && this.#top >= container.#top && this.#bottom <= container.#bottom
     }
 }
 
