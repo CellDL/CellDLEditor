@@ -239,8 +239,6 @@ export class CellDLEditor extends BaseElement {
     #pointerDownTime: number = 0
 
     constructor() {
-        //===========
-        super()
         this.#app = document.querySelector('cd-editor-app') as CellDLEditorApp
         this.#container = this.getElementById(SVG_PANEL_ID)!
         this.#toolBar = this.getElementById('tool-bar') as CellDLToolBar
@@ -253,7 +251,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     async connectedCallback() {
-        //=======================
         // Create a panzoom handler
         this.#panzoom = new PanZoom(this.#container)
 
@@ -320,50 +317,41 @@ export class CellDLEditor extends BaseElement {
     }
 
     get celldlDiagram() {
-        //=================
         return this.#celldlDiagram
     }
 
     get dirty() {
-        //=========
         return this.#dirty
     }
 
     get editorFrame() {
-        //===============
         return this.#editorFrame
     }
 
     get status(): string {
-        //==================
         return this.#statusMsg.innerText || ''
     }
     set status(text: string) {
-        //======================
         this.showMessage(text)
     }
 
     get windowSize(): [number, number] {
-        //================================
         return [this.#container.clientWidth, this.#container.clientHeight]
     }
 
     setDirty() {
-        //========
         if (!this.#dirty) {
             this.#dirty = true
         }
     }
 
     markClean() {
-        //=========
         if (this.#dirty) {
             this.#dirty = false
         }
     }
 
     editDiagram(celldlDiagram: CellDLDiagram) {
-        //=======================================
         if (this.#celldlDiagram !== null) {
             this.closeDiagram()
         }
@@ -425,7 +413,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #setDefaultCursor() {
-        //=================
         if (this.#editorState === EDITORSTATE.DrawPath) {
             this.#svgDiagram?.style.setProperty('cursor', 'crosshair')
         } else {
@@ -475,7 +462,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #changePanel(panelTag: string | null) {
-        //=================================
         if (panelTag !== null) {
             this.#panelContent.innerHTML = `<${panelTag}/>`
             this.#currentPanel = this.#panelContent.firstChild as PropertiesPanel
@@ -489,7 +475,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #panelEventListener(event: Event) {
-        //===============================
         const button = event.currentTarget as HTMLElement
         if (button.hasAttribute('toggled')) {
             if (button.id === 'panel-properties') {
@@ -506,7 +491,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     showMessage(msg: string, style: string = '') {
-        //========================================
         this.#statusMsg.innerText = msg
         if (this.#statusStyle !== '') {
             this.#statusMsg.classList.remove(this.#statusStyle)
@@ -518,19 +502,16 @@ export class CellDLEditor extends BaseElement {
     }
 
     showTooltip(msg: string, style: string = '') {
-        //========================================
         if (this.#pointerPosition) {
             this.#showTooltip(this.#pointerPosition, msg, ['warn', 'error'].includes(style) ? 'error' : 'hint')
         }
     }
 
     #showPos(pos: PointLike) {
-        //======================
         this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
     }
 
     #showTooltip(context: DOMPoint | DOMRect | Element, content: string, type: string = 'hint') {
-        //===================================================================================
         if (this.#currentTooltip && content.trim() !== '') {
             this.#currentTooltip.innerHTML = `<x-message>${content}</x-message>`
             this.#currentTooltip.type = type
@@ -541,26 +522,22 @@ export class CellDLEditor extends BaseElement {
     }
 
     #closeTooltip() {
-        //=============
         if (this.#currentTooltip) {
             this.#currentTooltip.close(false)
         }
     }
 
     #domToSvgCoords(domCoords: PointLike): DOMPoint {
-        //=============================================
         return this.#celldlDiagram!.domToSvgCoords(domCoords)
     }
 
     #highlightAssociatedObjects(object: CellDLObject, highlight) {
-        //=========================================================
         for (const obj of this.#celldlDiagram!.associatedObjects(object)) {
             obj.highlight(highlight)
         }
     }
 
     #activateObject(object: CellDLObject, active: boolean) {
-        //====================================================
         object.activate(active)
         if (object.isConnection) {
             this.#highlightAssociatedObjects(object, active)
@@ -571,7 +548,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #setActiveObject(activeObject: CellDLObject | null) {
-        //===============================================
         if (activeObject && this.#activeObject !== activeObject) {
             activeObject.drawControlHandles()
             this.#activateObject(activeObject, true)
@@ -580,7 +556,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #unsetActiveObject() {
-        //==================
         if (this.#activeObject) {
             this.#activeObject.clearControlHandles()
             this.#activateObject(this.#activeObject, false)
@@ -589,7 +564,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #setSelectedObject(selectedObject: CellDLObject) {
-        //==============================================
         this.#unsetSelectedObject() // This will depend upon multi-selection
         if (selectedObject !== null) {
             selectedObject.select(true)
@@ -603,7 +577,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #unsetSelectedObject() {
-        //====================
         if (this.#selectedObject) {
             this.#selectedObject.select(false)
             this.#selectedObject = null
@@ -616,7 +589,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #closePopover() {
-        //=============
         if (this.#currentPopover) {
             this.#currentPopover.close()
             this.#currentPopover = null
@@ -624,17 +596,14 @@ export class CellDLEditor extends BaseElement {
     }
 
     #componentTemplateDragEvent(_event) {
-        //================================
         this.#dragging = true
     }
 
     #componentTemplateSelectedEvent(event) {
-        //===================================
         this.#currentComponentTemplate = event.detail
     }
 
     #appDragOverEvent(event) {
-        //======================
         if (this.#dragging) {
             event.preventDefault() // Needed to allow drop
             event.dataTransfer.dropEffect = 'copy'
@@ -642,7 +611,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #addComponentTemplate(eventPosition: PointLike, event: TemplateEvent) {
-        //===================================================================
         const zoomScale = this.#panzoom?.scale || 1
         const topLeft = PointMath.subtract(eventPosition, PointMath.scalarScale(event.centre, zoomScale))
         // Copy so we don't modify passed parameter
@@ -658,22 +626,18 @@ export class CellDLEditor extends BaseElement {
         }
     }
 
-    #appDropEvent(event) {
-        //==================
-        event.preventDefault()
+    #appDropEvent(event: Event) {
         this.#dragging = false
-        this.#addComponentTemplate(event, JSON.parse(event.dataTransfer.getData('component-detail')))
+        this.#addComponentTemplate(event, JSON.parse((<CustomEvent>event).dataTransfer.getData('component-detail')))
     }
 
-    #drawConnectionUpdateSettings(event) {
-        //==================================
-        this.#drawConnectionSettings = event.detail
+    #drawConnectionUpdateSettings(event: Event) {
+        this.#drawConnectionSettings = (<CustomEvent>event).detail
     }
 
     // Should we be calling event.preventDefault() ????
 
     #pointerClickEvent(event: MouseEvent) {
-        //===================================
         const element = event.target as SVGGraphicsElement
         if (
             this.#celldlDiagram === null ||
@@ -717,7 +681,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #pointerDoubleClickEvent(event: MouseEvent) {
-        //=========================================
         if (this.#editorState === EDITORSTATE.DrawPath) {
             if (this.#pathMaker) {
                 if (this.#activeObject === null) {
@@ -735,7 +698,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #notDiagramElement(element: SVGGraphicsElement) {
-        //=============================================
         return (
             element === this.#svgDiagram ||
             element.id === SVG_PANEL_ID ||
@@ -745,7 +707,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #pointerOverEvent(event: PointerEvent) {
-        //====================================
         if (this.#celldlDiagram === null) {
             return
         }
@@ -801,7 +762,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #pointerOutEvent(event: PointerEvent) {
-        //====================================
         const element = event.target as SVGGraphicsElement
         if (
             element === this.#svgDiagram ||
@@ -820,7 +780,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #pointerDownEvent(event: PointerEvent) {
-        //====================================
         this.#pointerMoved = false
         this.#pointerDownTime = Date.now()
         const element = event.target as SVGGraphicsElement
@@ -862,7 +821,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #pointerMoveEvent(event: PointerEvent) {
-        //====================================
         if (this.#panning) {
             this.#pointerMoved = this.#panzoom!.pointerMove(event) || this.#pointerMoved
             return
@@ -890,7 +848,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #pointerUpEvent(event: PointerEvent) {
-        //==================================
         if (this.#celldlDiagram === null) {
             return
         }
@@ -934,7 +891,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #closeSelectionBox() {
-        //==================
         if (this.#selectionBox) {
             this.#selectionBox.close()
             this.#selectionBox = null
@@ -942,7 +898,6 @@ export class CellDLEditor extends BaseElement {
     }
 
     #deleteSelectedObjects() {
-        //======================
         if (this.#selectedObject) {
             // Delete the object
             this.#unsetActiveObject()
@@ -958,13 +913,11 @@ export class CellDLEditor extends BaseElement {
     }
 
     #focusEvent(event: FocusEvent) {
-        //============================
         // Detect when no input fields have focus
         this.#haveFocus = event.type === 'focusout'
     }
 
     #keyDownEvent(event: KeyboardEvent) {
-        //=================================
         if (this.#haveFocus && event.key === 'Backspace') {
             this.#deleteSelectedObjects()
         } else if (this.#editorState === EDITORSTATE.DrawPath && event.key === 'Escape') {
@@ -977,14 +930,12 @@ export class CellDLEditor extends BaseElement {
     }
 
     #keyUpEvent(event: KeyboardEvent) {
-        //===============================
         if (event.key === 'Shift') {
             this.#setDefaultCursor()
         }
     }
 
     #showSelectedObjectInfo() {
-        //=======================
         if (this.#selectedObject) {
             //console.log('INFO:', this.#selectedObject.asString())
         }
@@ -992,7 +943,4 @@ export class CellDLEditor extends BaseElement {
 }
 
 //==============================================================================
-
-customElements.define('cd-editor', CellDLEditor)
-
 //==============================================================================

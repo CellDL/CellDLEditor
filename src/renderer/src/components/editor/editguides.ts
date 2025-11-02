@@ -90,7 +90,6 @@ class AlignmentGrid {
     }
 
     #lineElement(lineDescription: string): SVGPathElement {
-        //===================================================
         const pathElement = document.createElementNS(SVG_NAMESPACE_URI, 'path')
         pathElement.classList.add(EDITOR_GRID_CLASS)
         pathElement.setAttribute('d', lineDescription)
@@ -98,12 +97,10 @@ class AlignmentGrid {
     }
 
     #gridMultiple(x: number): number {
-        //==============================
         return this.#gridSpacing * Math.round(x / this.#gridSpacing)
     }
 
     #gridLines(viewbox: Extent) {
-        //=========================
         const left = this.#gridMultiple(viewbox[0] - this.#gridSpacing)
         const top = this.#gridMultiple(viewbox[1] - this.#gridSpacing)
         const right = this.#gridMultiple(viewbox[0] + viewbox[2] + this.#gridSpacing)
@@ -115,12 +112,10 @@ class AlignmentGrid {
     }
 
     #fullAlign(x: number): number {
-        //===========================
         return this.#options.gridSpacing * Math.round(x / this.#options.gridSpacing)
     }
 
     #partAlign(x: number, resolution: number): number {
-        //===============================================
         // We make the grid 2x finer and so only snap
         // if within +/-25% of original grid.
         const sp = resolution * this.#options.gridSpacing
@@ -129,7 +124,6 @@ class AlignmentGrid {
     }
 
     align(point: PointLike, options: GridAlignOptions = {}): Point {
-        //==========================================================
         if (this.#options.snapGrid && this.#options.gridSpacing !== 0) {
             const alignMethod = options.fullSnap ? this.#fullAlign.bind(this) : this.#partAlign.bind(this)
             const resolution = options.resolution || GRID_SNAP_RESOLUTION
@@ -147,7 +141,6 @@ class AlignmentGrid {
     }
 
     show(visible: boolean = true) {
-        //=========================
         if (this.#gridLinesElement) {
             if (visible) {
                 this.#gridLinesElement.removeAttribute('visibility')
@@ -158,7 +151,6 @@ class AlignmentGrid {
     }
 
     redraw(viewbox: Extent) {
-        //=====================
         if (this.#gridLinesElement) {
             this.#gridLinesElement.setAttribute('d', this.#gridLines(viewbox))
         }
@@ -237,22 +229,22 @@ class ComponentGuideGroup {
     }
 
     add(position: number): IntervalGuide {
-        //==================================
         const n = this.match(position)
         let guide
         if (n >= 0) {
             guide = this.#intervalGuides[n]
+            // @ts-expect-error: `n` is a valid index
             guide.addUser()
         } else {
             guide = new IntervalGuide(position, this.#type, this.#extent)
             this.#intervalGuides.splice(-(n + 1), 0, guide)
             this.#svgGroup.appendChild(guide.svgElement)
         }
+        // @ts-expect-error: `guide` is assigned
         return guide
     }
 
     match(position: number): number {
-        //=============================
         if (this.#lastMatched !== null) {
             this.#lastMatched.show(false)
             this.#lastMatched = null
@@ -261,6 +253,7 @@ class ComponentGuideGroup {
         let R = this.#intervalGuides.length - 1
         while (L <= R) {
             const m = Math.floor((L + R) / 2)
+            // @ts-expect-error: `m` is a valid index
             const delta = position - this.#intervalGuides[m].centre
             if (Math.abs(delta) < EPSILON) {
                 return m
@@ -275,10 +268,11 @@ class ComponentGuideGroup {
     }
 
     remove(position: number) {
-        //======================
         const n = this.match(position)
         if (n >= 0) {
+            // @ts-expect-error: `n` is a valid index
             this.#intervalGuides[n].removeUser()
+            // @ts-expect-error: `n` is a valid index
             if (this.#intervalGuides[n].useCount <= 0) {
                 this.#intervalGuides.splice(n, 1)
             }
@@ -286,11 +280,13 @@ class ComponentGuideGroup {
     }
 
     show(position: number): number | null {
-        //=================================
         const guideIndex = this.match(position)
         if (guideIndex >= 0) {
+            // @ts-expect-error: `guideIndex` is a valid index
             this.#lastMatched = this.#intervalGuides[guideIndex]
+            // @ts-expect-error: `guideIndex` is a valid index
             this.#lastMatched.show()
+            // @ts-expect-error: `guideIndex` is a valid index
             return this.#lastMatched.centre
         } else {
             return 0
@@ -298,7 +294,6 @@ class ComponentGuideGroup {
     }
 
     setTransform(viewbox: Extent) {
-        //===========================
         if (this.#type === 'H') {
             const scale = viewbox[2] / this.#extent[1]
             this.#svgGroup.setAttribute(
@@ -331,7 +326,6 @@ class ComponentGuides {
     }
 
     addComponent(component: CellDLMoveableObject) {
-        //===========================================
         if (!this.#knownComponents.has(component)) {
             const centroid = component.celldlSvgElement!.centroid
             this.#horizontalGuideGroup.add(centroid.y)
@@ -341,14 +335,12 @@ class ComponentGuides {
     }
 
     matchGuide(component: CellDLMoveableObject): Array<number | null> {
-        //=============================================================
         this.removeComponent(component)
         const centroid = component.celldlSvgElement!.centroid
         return [this.#horizontalGuideGroup.show(centroid.y), this.#verticalGuideGroup.show(centroid.x)]
     }
 
     removeComponent(component: CellDLMoveableObject) {
-        //==============================================
         if (this.#knownComponents.has(component)) {
             const centroid = component.celldlSvgElement!.centroid
             this.#horizontalGuideGroup.remove(centroid.y)
@@ -358,7 +350,6 @@ class ComponentGuides {
     }
 
     setTransform(viewbox: Extent) {
-        //==========================
         this.#horizontalGuideGroup.setTransform(viewbox)
         this.#verticalGuideGroup.setTransform(viewbox)
     }
@@ -384,24 +375,20 @@ class EditGuides {
     }
 
     gridAlign(point: PointLike, options: GridAlignOptions = {}): Point {
-        //==============================================================
         return this.#alignmentGrid ? this.#alignmentGrid.align(point, options) : Point.fromPoint(point)
     }
 
     addGuide(component: CellDLMoveableObject) {
-        //=======================================
         if (this.#componentGuides) {
             this.#componentGuides.addComponent(component)
         }
     }
 
     matchGuide(component: CellDLMoveableObject): Array<number | null> {
-        //==============================================================
         return this.#componentGuides ? this.#componentGuides.matchGuide(component) : [null, null]
     }
 
     newDiagram(celldlDiagram: CellDLDiagram, showGrid: boolean) {
-        //=========================================================
         if (showGrid) {
             this.#alignmentGrid = new AlignmentGrid(celldlDiagram)
             window.electronAPI.sendEditorAction('SHOWGRID', true)
@@ -412,14 +399,12 @@ class EditGuides {
     }
 
     showGrid(visible: boolean = true) {
-        //=============================
         if (this.#alignmentGrid) {
             this.#alignmentGrid.show(visible)
         }
     }
 
     viewboxUpdated(viewbox: Extent) {
-        //=============================
         if (this.#alignmentGrid) {
             this.#alignmentGrid.redraw(viewbox)
         }
@@ -429,7 +414,6 @@ class EditGuides {
     }
 
     removeGuide(component: CellDLMoveableObject) {
-        //==========================================
         if (this.#componentGuides) {
             this.#componentGuides.removeComponent(component)
         }
