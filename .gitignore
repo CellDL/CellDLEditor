@@ -29,3 +29,6 @@ out
 
 # unplugin-vue-components
 src/renderer/components.d.ts
+
+# oxigraph
+src/renderer/public/oxigraph
