@@ -1,93 +1,82 @@
 {
-  "fill" : {
-    "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
-  },
-  "groups" : [
-    {
-      "hidden" : false,
-      "layers" : [
+    "fill": {
+        "automatic-gradient": "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+    },
+    "groups": [
         {
-          "image-name" : "logo2.svg",
-          "name" : "logo2",
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              0,
-              0
-            ]
-          }
+            "hidden": false,
+            "layers": [
+                {
+                    "image-name": "logo2.svg",
+                    "name": "logo2",
+                    "position": {
+                        "scale": 1,
+                        "translation-in-points": [0, 0]
+                    }
+                },
+                {
+                    "image-name": "Screenshot 2025-11-01 at 2.07.59 PM.png",
+                    "name": "Screenshot 2025-11-01 at 2.07.59 PM",
+                    "position": {
+                        "scale": 0.72,
+                        "translation-in-points": [12, 26]
+                    }
+                }
+            ],
+            "shadow": {
+                "kind": "neutral",
+                "opacity": 0.5
+            },
+            "translucency": {
+                "enabled": true,
+                "value": 0.5
+            }
         },
         {
-          "image-name" : "Screenshot 2025-11-01 at 2.07.59 PM.png",
-          "name" : "Screenshot 2025-11-01 at 2.07.59 PM",
-          "position" : {
-            "scale" : 0.72,
-            "translation-in-points" : [
-              12,
-              26
-            ]
-          }
-        }
-      ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
-      }
-    },
-    {
-      "layers" : [
-        {
-          "blend-mode" : "normal",
-          "fill" : "automatic",
-          "glass" : false,
-          "image-name" : "no-text.svg",
-          "name" : "no-text",
-          "opacity-specializations" : [
-            {
-              "value" : 0.15
+            "layers": [
+                {
+                    "blend-mode": "normal",
+                    "fill": "automatic",
+                    "glass": false,
+                    "image-name": "no-text.svg",
+                    "name": "no-text",
+                    "opacity-specializations": [
+                        {
+                            "value": 0.15
+                        },
+                        {
+                            "appearance": "dark",
+                            "value": 0.6
+                        },
+                        {
+                            "appearance": "tinted",
+                            "value": 0.5
+                        }
+                    ],
+                    "position": {
+                        "scale": 0.9,
+                        "translation-in-points": [-16, -4]
+                    }
+                }
+            ],
+            "opacity-specializations": [
+                {
+                    "appearance": "dark",
+                    "value": 0.4
+                }
+            ],
+            "shadow": {
+                "kind": "neutral",
+                "opacity": 0.5
             },
-            {
-              "appearance" : "dark",
-              "value" : 0.6
-            },
-            {
-              "appearance" : "tinted",
-              "value" : 0.5
+            "translucency": {
+                "enabled": true,
+                "value": 0.5
             }
-          ],
-          "position" : {
-            "scale" : 0.9,
-            "translation-in-points" : [
-              -16,
-              -4
-            ]
-          }
         }
-      ],
-      "opacity-specializations" : [
-        {
-          "appearance" : "dark",
-          "value" : 0.4
-        }
-      ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
-      }
-    }
-  ],
-  "supported-platforms" : {
-    "circles" : [
-      "watchOS"
     ],
-    "squares" : "shared"
-  }
+    "supported-platforms": {
+        "circles": ["watchOS"],
+        "squares": "shared"
+    }
 }
