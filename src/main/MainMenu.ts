@@ -250,9 +250,11 @@ export function enableDisableMainMenu(enable: boolean): void {
         helpSubMenu.push({
             label: 'Report Issue',
             click: () => {
-                electron.shell.openExternal('https://github.com/CellDL/CellDLEditor/issues/new').catch((error: unknown) => {
-                    console.error('Failed to report an issue:', error)
-                })
+                electron.shell
+                    .openExternal('https://github.com/CellDL/CellDLEditor/issues/new')
+                    .catch((error: unknown) => {
+                        console.error('Failed to report an issue:', error)
+                    })
             }
         })
 
