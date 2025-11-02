@@ -1,0 +1,997 @@
+/******************************************************************************
+
+CellDL Editor
+
+Copyright (c) 2022 - 2025 David Brooks
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+******************************************************************************/
+
+import { css, html } from '@xel/utils/template'
+
+import type XPopoverElement from '@xel/elements/x-popover'
+import type XTooltipElement from '@xel/elements/x-tooltip'
+
+//==============================================================================
+
+import '../config'
+
+import type CellDLEditorApp from '../main.ts'
+import type { CellDLObject } from '../celldlObjects/index.ts'
+import type { CellDLDiagram } from '../diagram/index.ts'
+
+import { BaseElement } from '../uiElements/index.ts'
+
+import '../panels'
+import type { PanelInterface } from '../panels/index.ts'
+import type CellDLPanelBar from '../panels/index.ts'
+import type PropertiesPanel from '../panels/properties.ts'
+
+import '../tools'
+import type CellDLToolBar from '../tools/index.ts'
+
+import { PathMaker, type PathNode } from '../connections/pathmaker.ts'
+
+import { EditorStylesheet } from '../styles/stylesheet.ts'
+
+import { type PointLike, PointMath } from '../geometry/index.ts'
+import { libraryManager, type TemplateEvent } from '../libraries/index.ts'
+import { round } from '../utils.ts'
+
+import type { StringProperties } from '../types/index.ts'
+
+//==============================================================================
+
+import { EditorFrame } from './editorframe.ts'
+import { editGuides, EDITOR_GRID_CLASS } from './editguides.ts'
+import PanZoom from './panzoom.ts'
+import { SelectionBox } from './selectionbox.ts'
+import { undoRedo } from './undoredo.ts'
+
+import './contextmenu.ts'
+import { CONTEXT_MENU, type ContextMenu } from './contextmenu.ts'
+
+//==============================================================================
+
+/****  WIP
+const SVG_CLOSE_DISTANCE = 2   // Pointer is close to object in SVG coords
+                               // c.f. stroke-width (for connections)??
+WIP ****/
+
+//==============================================================================
+
+// Lookup tables for tracking tool bar state
+
+enum EDITORSTATE {
+    Selecting = 'SELECTING',
+    DrawPath = 'DRAW-PATH',
+    AddComponent = 'ADD-COMPOMENT'
+}
+
+const TOOL_TO_EDITORSTATE = {
+    'select-tool': EDITORSTATE.Selecting,
+    'draw-connection-tool': EDITORSTATE.DrawPath,
+    'add-component-tool': EDITORSTATE.AddComponent
+}
+
+const POPOVER_TO_TOOL = {
+    'draw-connection-popover': 'draw-connection-tool',
+    'add-component-popover': 'add-component-tool'
+}
+
+//==============================================================================
+
+const MAX_POINTER_CLICK_TIME = 200 // milliseconds
+
+//==============================================================================
+
+export function notifyChanges() {
+    window.electronAPI.sendEditorAction('DIRTY')
+}
+
+//==============================================================================
+
+export function getElementId(element: SVGGraphicsElement): string {
+    return element.dataset.parentId
+        ? element.dataset.parentId
+        : element.classList.contains('parent-id')
+          ? element.parentElement?.id || ''
+          : element.id
+}
+
+//==============================================================================
+
+const SVG_PANEL_ID = 'svg-panel'
+
+export class CellDLEditor extends BaseElement {
+    static _shadowTemplate = html`
+    <div id="cd-editor-window">
+        <main id="editor-pane">
+            <cd-tool-bar id="tool-bar"></cd-tool-bar>
+            <div id="${SVG_PANEL_ID}">
+                <context-menu id="context-menu"></context-menu>
+            </div>
+            <div id="panel-content"><!--Where an open panel is displayed--></div>
+            <cd-panel-bar id="panel-bar"></cd-panel-bar>
+        </main>
+        <footer>
+            <div id="status-bar">
+                <span id="status-msg"></span>
+                <span id="status-pos"></span>
+            </div>
+        </footer>
+    </div>
+    `
+
+    static #editorStylesheet = css`
+        #cd-editor-window {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-height: 100vh;
+        }
+        #editor-pane {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+
+        #tool-bar, #panel-bar {
+            overflow: auto;
+        }
+        #${SVG_PANEL_ID} {
+            margin:  0;
+            border: 2px solid grey;
+            flex: 1;
+            overflow: hidden;
+        }
+        #panel-content {
+            padding:  6px;
+            width: 250px;
+            border: 2px solid grey;
+            display: none;
+            right: 38px; /* This depends on panel bar width... */
+            top: 0px;
+            bottom: 0px;
+            position: absolute;
+            background-color: #ECECEC;
+        }
+        #status-bar {
+            min-height: 1.6em;
+            border-top: 1px solid gray;
+            padding-left: 16px;
+            padding-right: 16px;
+            background-color: #ECECEC;
+        }
+        #status-msg.error {
+            color: red;
+        }
+        #status-msg.warn {
+           color: blue;
+        }
+        #status-pos {
+            float: right;
+        }
+        x-tooltip[type="error"] {
+            background: #F88;
+        }
+    `
+
+    static _shadowStyleSheets = [CellDLEditor.#editorStylesheet, css`${EditorStylesheet}`]
+
+    #app: CellDLEditorApp
+    #container: HTMLElement
+    #toolBar: CellDLToolBar
+    #panelBar: CellDLPanelBar
+    #statusMsg: HTMLElement
+    #statusPos: HTMLElement
+    #statusStyle: string = ''
+
+    #currentPanel: PanelInterface | null = null
+    #panelContent: HTMLElement
+
+    #celldlDiagram: CellDLDiagram | null = null
+    #svgDiagram: SVGSVGElement | null = null
+    #editorFrame: EditorFrame | null = null
+
+    #panning: boolean = false
+    #panzoom: PanZoom | null = null
+    #pointerMoved: boolean = false
+    #pointerPosition: DOMPoint | null = null
+    #moving: boolean = false
+
+    #editorState: EDITORSTATE = EDITORSTATE.Selecting
+    #activeObject: CellDLObject | null = null
+    #dirty: boolean = false
+
+    #dragging: boolean = false
+    #haveFocus: boolean = true
+
+    #pathMaker: PathMaker | null = null
+    #nextPathNode: PathNode | null = null
+
+    #currentPopover: XPopoverElement | null = null
+    #currentTooltip: XTooltipElement | null = null
+    #lastClickedTool: HTMLElement | null = null
+
+    #contextMenu: ContextMenu
+
+    #currentComponentTemplate: TemplateEvent | null = null
+    #drawConnectionSettings: StringProperties = {}
+
+    #selectedObject: CellDLObject | null = null
+    #selectionBox: SelectionBox | null = null
+    #newSelectionBox: boolean = false
+
+    #pointerDownTime: number = 0
+
+    constructor() {
+        //===========
+        super()
+        this.#app = document.querySelector('cd-editor-app') as CellDLEditorApp
+        this.#container = this.getElementById(SVG_PANEL_ID)!
+        this.#toolBar = this.getElementById('tool-bar') as CellDLToolBar
+        this.#panelBar = this.getElementById('panel-bar') as CellDLPanelBar
+        this.#statusMsg = this.getElementById('status-msg')!
+        this.#statusPos = this.getElementById('status-pos')!
+        this.#panelContent = this.getElementById('panel-content')!
+        this.#contextMenu = this.getElementById('context-menu') as ContextMenu
+        this.status = 'new editor'
+    }
+
+    async connectedCallback() {
+        //=======================
+        // Create a panzoom handler
+        this.#panzoom = new PanZoom(this.#container)
+
+        // Set up event handlers
+        this.#container.addEventListener('click', this.#pointerClickEvent.bind(this))
+        this.#container.addEventListener('dblclick', this.#pointerDoubleClickEvent.bind(this))
+
+        this.#container.addEventListener('pointerover', this.#pointerOverEvent.bind(this))
+        this.#container.addEventListener('pointerout', this.#pointerOutEvent.bind(this))
+
+        this.#container.addEventListener('pointerdown', this.#pointerDownEvent.bind(this))
+        this.#container.addEventListener('pointermove', this.#pointerMoveEvent.bind(this))
+        this.#container.addEventListener('pointerup', this.#pointerUpEvent.bind(this))
+
+        // Editor content focus handlers
+        document.addEventListener('focusin', this.#focusEvent.bind(this))
+        document.addEventListener('focusout', this.#focusEvent.bind(this))
+
+        // Keyboard handlers
+        window.addEventListener('keydown', this.#keyDownEvent.bind(this))
+        window.addEventListener('keyup', this.#keyUpEvent.bind(this))
+
+        // Add handler for draw connection tool
+        document.addEventListener('update-connection-tool', this.#drawConnectionUpdateSettings.bind(this))
+
+        // Add handlers for add component tool
+        document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
+        document.addEventListener('component-selected', this.#componentTemplateSelectedEvent.bind(this))
+        this.#app.addEventListener('dragover', this.#appDragOverEvent.bind(this))
+        this.#app.addEventListener('drop', this.#appDropEvent.bind(this))
+
+        // Handle context menu events
+        this.#container.addEventListener('contextmenu', (event) => {
+            const element = event.target as SVGGraphicsElement
+            const clickedObject = this.#celldlDiagram!.objectById(getElementId(element))
+            if (clickedObject && clickedObject === this.#activeObject) {
+                this.#setSelectedObject(clickedObject)
+            }
+            this.#contextMenu.open(event.clientX, event.clientY)
+        })
+        this.#contextMenu.setListener((event: Event) => {
+            const targetId = 'target' in event && event.target && 'id' in event.target ? event.target.id : null
+            if (targetId === CONTEXT_MENU.DELETE) {
+                this.#deleteSelectedObjects()
+            } else if (targetId === CONTEXT_MENU.INFO) {
+                this.#showSelectedObjectInfo()
+            } else if (targetId === CONTEXT_MENU.GROUP_OBJECTS) {
+                if (this.#selectionBox) {
+                    this.#selectionBox.makeCompartment()
+                    this.#closeSelectionBox()
+                }
+            }
+            this.#contextMenu.close()
+        })
+
+        // Toolbar handlers
+        this.#panelBar.setListener(this.#panelEventListener.bind(this))
+        this.#toolBar.setListener(this.#toolEventListener.bind(this))
+        this.#toolBar.enable(false)
+
+        // Create a tooltip
+        this.#currentTooltip = document.createElement('x-tooltip') as XTooltipElement
+        this.#container.append(this.#currentTooltip)
+    }
+
+    get celldlDiagram() {
+        //=================
+        return this.#celldlDiagram
+    }
+
+    get dirty() {
+        //=========
+        return this.#dirty
+    }
+
+    get editorFrame() {
+        //===============
+        return this.#editorFrame
+    }
+
+    get status(): string {
+        //==================
+        return this.#statusMsg.innerText || ''
+    }
+    set status(text: string) {
+        //======================
+        this.showMessage(text)
+    }
+
+    get windowSize(): [number, number] {
+        //================================
+        return [this.#container.clientWidth, this.#container.clientHeight]
+    }
+
+    setDirty() {
+        //========
+        if (!this.#dirty) {
+            this.#dirty = true
+        }
+    }
+
+    markClean() {
+        //=========
+        if (this.#dirty) {
+            this.#dirty = false
+        }
+    }
+
+    editDiagram(celldlDiagram: CellDLDiagram) {
+        //=======================================
+        if (this.#celldlDiagram !== null) {
+            this.closeDiagram()
+        }
+        this.#celldlDiagram = celldlDiagram
+        this.#svgDiagram = celldlDiagram.svgDiagram
+
+        // Make sure we have a group in which to put selection related objects
+        // This MUST remain as the last group in the diagram when new layer groups are added...
+        this.#editorFrame = new EditorFrame(this.#svgDiagram!)
+
+        // Note the selection group's element so that it's not saved
+        celldlDiagram.addEditorElement(this.#editorFrame.svgGroup!)
+        // Initialise alignment guides and grid
+        editGuides.newDiagram(celldlDiagram, true)
+
+        // Show the diagram in the editor's window
+        this.#container.appendChild(this.#svgDiagram!)
+
+        // Rewriting metadata during diagram finishSetup might dirty
+        this.markClean()
+        undoRedo.clean()
+
+        // Finish setting up the diagram as we now have SVG elements
+        celldlDiagram.finishSetup()
+
+        // Enable pan/zoom and toolBars
+        this.#panzoom!.enable(this.#svgDiagram!)
+        this.#toolBar.enable()
+        this.#toolBar.enableButton('select-tool', true)
+
+        // Set initial state
+        this.#editorState = EDITORSTATE.Selecting
+        this.#activeObject = null
+        this.#pointerMoved = false
+        this.#selectedObject = null
+
+        // We are good to go
+        this.status = 'Editor ready...'
+    }
+
+    closeDiagram() {
+        //============
+        if (this.#celldlDiagram !== null) {
+            this.#closePopover()
+            this.#editorFrame!.clear()
+            this.#editorFrame = null
+            this.#toolBar.enable(false)
+            this.#panzoom!.disable()
+            this.#container.removeChild(this.#svgDiagram as Node)
+            this.#svgDiagram = null
+            this.#celldlDiagram = null
+        }
+    }
+
+    resetObjectStates() {
+        //=================
+        this.#unsetSelectedObject()
+        this.#unsetActiveObject()
+    }
+
+    #setDefaultCursor() {
+        //=================
+        if (this.#editorState === EDITORSTATE.DrawPath) {
+            this.#svgDiagram?.style.setProperty('cursor', 'crosshair')
+        } else {
+            this.#svgDiagram?.style.removeProperty('cursor')
+        }
+        this.#container.style.setProperty('cursor', 'default')
+    }
+
+    enableContextMenuItem(itemId: string, enable: boolean = true) {
+        //=========================================================
+        this.#contextMenu.enableItem(itemId, enable)
+    }
+
+    #toolEventListener(event: Event) {
+        //==============================
+        const tool = event.currentTarget as HTMLElement
+        if (tool.tagName === 'X-POPOVER') {
+            if (event.type === 'open') {
+                this.#closePopover() // Close any open popover
+                this.#currentPopover = tool as XPopoverElement
+            } else if (event.type === 'close') {
+                this.#currentPopover = null
+            }
+        } else if (tool.tagName === 'X-BUTTON') {
+            if (event.type === 'click') {
+                this.#lastClickedTool = tool
+                if (this.#currentPopover && POPOVER_TO_TOOL[this.#currentPopover.id] != this.#lastClickedTool.id) {
+                    this.#closePopover()
+                }
+                if (tool.id in TOOL_TO_EDITORSTATE) {
+                    this.#editorState = TOOL_TO_EDITORSTATE[tool.id]
+                    this.#setDefaultCursor()
+                    if (this.#editorState !== EDITORSTATE.Selecting) {
+                        this.#unsetSelectedObject()
+                        this.#closeSelectionBox()
+                    }
+                    if (this.#editorState !== EDITORSTATE.DrawPath) {
+                        // Remove any partial path from editor frame...
+                        if (this.#pathMaker) {
+                            this.#pathMaker.close()
+                            this.#pathMaker = null
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #changePanel(panelTag: string | null) {
+        //=================================
+        if (panelTag !== null) {
+            this.#panelContent.innerHTML = `<${panelTag}/>`
+            this.#currentPanel = this.#panelContent.firstChild as PropertiesPanel
+            this.#currentPanel.setDiagram(this.#celldlDiagram!)
+            this.#currentPanel.setCurrentObject(this.#selectedObject)
+            this.#panelContent.style.setProperty('display', 'block')
+        } else {
+            this.#panelContent.style.setProperty('display', 'none')
+            this.#currentPanel = null
+        }
+    }
+
+    #panelEventListener(event: Event) {
+        //===============================
+        const button = event.currentTarget as HTMLElement
+        if (button.hasAttribute('toggled')) {
+            if (button.id === 'panel-properties') {
+                // const...
+                this.#changePanel('cd-properties-panel')
+            } else if (button.id === 'panel-objects') {
+                this.#changePanel('cd-objects-panel')
+            } else if (button.id === 'panel-metadata') {
+                this.#changePanel('cd-metadata-panel')
+            }
+        } else {
+            this.#changePanel(null)
+        }
+    }
+
+    showMessage(msg: string, style: string = '') {
+        //========================================
+        this.#statusMsg.innerText = msg
+        if (this.#statusStyle !== '') {
+            this.#statusMsg.classList.remove(this.#statusStyle)
+        }
+        if (style !== '') {
+            this.#statusMsg.classList.add(style)
+            this.#statusStyle = style
+        }
+    }
+
+    showTooltip(msg: string, style: string = '') {
+        //========================================
+        if (this.#pointerPosition) {
+            this.#showTooltip(this.#pointerPosition, msg, ['warn', 'error'].includes(style) ? 'error' : 'hint')
+        }
+    }
+
+    #showPos(pos: PointLike) {
+        //======================
+        this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+    }
+
+    #showTooltip(context: DOMPoint | DOMRect | Element, content: string, type: string = 'hint') {
+        //===================================================================================
+        if (this.#currentTooltip && content.trim() !== '') {
+            this.#currentTooltip.innerHTML = `<x-message>${content}</x-message>`
+            this.#currentTooltip.type = type
+            setTimeout(() => {
+                this.#currentTooltip!.open(context, false)
+            }, 1)
+        }
+    }
+
+    #closeTooltip() {
+        //=============
+        if (this.#currentTooltip) {
+            this.#currentTooltip.close(false)
+        }
+    }
+
+    #domToSvgCoords(domCoords: PointLike): DOMPoint {
+        //=============================================
+        return this.#celldlDiagram!.domToSvgCoords(domCoords)
+    }
+
+    #highlightAssociatedObjects(object: CellDLObject, highlight) {
+        //=========================================================
+        for (const obj of this.#celldlDiagram!.associatedObjects(object)) {
+            obj.highlight(highlight)
+        }
+    }
+
+    #activateObject(object: CellDLObject, active: boolean) {
+        //====================================================
+        object.activate(active)
+        if (object.isConnection) {
+            this.#highlightAssociatedObjects(object, active)
+        }
+        if (object.selected) {
+            this.#editorFrame!.highlight(active)
+        }
+    }
+
+    #setActiveObject(activeObject: CellDLObject | null) {
+        //===============================================
+        if (activeObject && this.#activeObject !== activeObject) {
+            activeObject.drawControlHandles()
+            this.#activateObject(activeObject, true)
+            this.#activeObject = activeObject
+        }
+    }
+
+    #unsetActiveObject() {
+        //==================
+        if (this.#activeObject) {
+            this.#activeObject.clearControlHandles()
+            this.#activateObject(this.#activeObject, false)
+            this.#activeObject = null
+        }
+    }
+
+    #setSelectedObject(selectedObject: CellDLObject) {
+        //==============================================
+        this.#unsetSelectedObject() // This will depend upon multi-selection
+        if (selectedObject !== null) {
+            selectedObject.select(true)
+            this.#selectedObject = selectedObject
+            if (this.#currentPanel) {
+                this.#currentPanel.setCurrentObject(selectedObject)
+            }
+            this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
+            this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
+        }
+    }
+
+    #unsetSelectedObject() {
+        //====================
+        if (this.#selectedObject) {
+            this.#selectedObject.select(false)
+            this.#selectedObject = null
+            if (this.#currentPanel) {
+                this.#currentPanel.setCurrentObject(null)
+            }
+            this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
+            this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
+        }
+    }
+
+    #closePopover() {
+        //=============
+        if (this.#currentPopover) {
+            this.#currentPopover.close()
+            this.#currentPopover = null
+        }
+    }
+
+    #componentTemplateDragEvent(_event) {
+        //================================
+        this.#dragging = true
+    }
+
+    #componentTemplateSelectedEvent(event) {
+        //===================================
+        this.#currentComponentTemplate = event.detail
+    }
+
+    #appDragOverEvent(event) {
+        //======================
+        if (this.#dragging) {
+            event.preventDefault() // Needed to allow drop
+            event.dataTransfer.dropEffect = 'copy'
+        }
+    }
+
+    #addComponentTemplate(eventPosition: PointLike, event: TemplateEvent) {
+        //===================================================================
+        const zoomScale = this.#panzoom?.scale || 1
+        const topLeft = PointMath.subtract(eventPosition, PointMath.scalarScale(event.centre, zoomScale))
+        // Copy so we don't modify passed parameter
+        const template = libraryManager.copyTemplate(event.uri)
+        if (template === null) {
+            console.error(`Drop of unknown component template '${event.uri}'`)
+            return
+        }
+        const componentGroup = this.#editorFrame!.addSvgElement(template, this.#domToSvgCoords(topLeft))
+        const celldlObject = this.#celldlDiagram!.addConnectedObject(componentGroup, template)
+        if (celldlObject) {
+            this.#setSelectedObject(celldlObject)
+        }
+    }
+
+    #appDropEvent(event) {
+        //==================
+        event.preventDefault()
+        this.#dragging = false
+        this.#addComponentTemplate(event, JSON.parse(event.dataTransfer.getData('component-detail')))
+    }
+
+    #drawConnectionUpdateSettings(event) {
+        //==================================
+        this.#drawConnectionSettings = event.detail
+    }
+
+    // Should we be calling event.preventDefault() ????
+
+    #pointerClickEvent(event: MouseEvent) {
+        //===================================
+        const element = event.target as SVGGraphicsElement
+        if (
+            this.#celldlDiagram === null ||
+            !this.#svgDiagram?.contains(element) ||
+            // clickTolerance = 1px ? to set pointerMoved?
+            (this.#pointerMoved && Date.now() - this.#pointerDownTime > MAX_POINTER_CLICK_TIME)
+        ) {
+            return
+        }
+        const clickedObject = this.#celldlDiagram.objectById(getElementId(element))
+        if (this.#editorState === EDITORSTATE.AddComponent && clickedObject === null) {
+            if (this.#currentComponentTemplate) {
+                this.#addComponentTemplate(event, this.#currentComponentTemplate)
+            }
+            return
+        }
+        let deselected = false
+        if (this.#selectedObject !== null) {
+            if (this.#editorFrame!.contains(element)) {
+                // Send click on a selected object's frame to the object
+                return
+            } else {
+                // Deselect
+                deselected = clickedObject === this.#selectedObject
+                this.#unsetSelectedObject()
+            }
+        }
+        if (this.#editorState === EDITORSTATE.DrawPath) {
+            if (this.#pathMaker) {
+                if (this.#activeObject === null) {
+                    const svgPoint = this.#domToSvgCoords(event)
+                    this.#pathMaker.addPoint(svgPoint, event.shiftKey)
+                }
+            }
+        } else {
+            if (!deselected && clickedObject && clickedObject === this.#activeObject) {
+                // Select when active object is clicked
+                this.#setSelectedObject(clickedObject)
+            }
+        }
+    }
+
+    #pointerDoubleClickEvent(event: MouseEvent) {
+        //=========================================
+        if (this.#editorState === EDITORSTATE.DrawPath) {
+            if (this.#pathMaker) {
+                if (this.#activeObject === null) {
+                    this.#pathMaker.finishPartialPath(this.#celldlDiagram!, event.shiftKey)
+                    this.#pathMaker = null
+                }
+            } else {
+                this.#nextPathNode = PathMaker.startPartialPath(this.#domToSvgCoords(event), this.#celldlDiagram!)
+                if (this.#nextPathNode != null) {
+                    const settings = this.#drawConnectionSettings // settings.type is to come from object's domain...
+                    this.#pathMaker = new PathMaker(this.#editorFrame!, this.#nextPathNode, settings.style)
+                }
+            }
+        }
+    }
+
+    #notDiagramElement(element: SVGGraphicsElement) {
+        //=============================================
+        return (
+            element === this.#svgDiagram ||
+            element.id === SVG_PANEL_ID ||
+            element.classList.contains(EDITOR_GRID_CLASS) ||
+            !this.#svgDiagram?.contains(element)
+        )
+    }
+
+    #pointerOverEvent(event: PointerEvent) {
+        //====================================
+        if (this.#celldlDiagram === null) {
+            return
+        }
+        const element = event.target as SVGGraphicsElement
+        const currentObject = this.#celldlDiagram.objectById(getElementId(element))
+
+        if (this.#moving) {
+            // A move finishes with pointer up
+            return
+        } else if (this.#notDiagramElement(element)) {
+            this.status = ''
+            this.#closeTooltip()
+            if (this.#activeObject && currentObject !== this.#activeObject) {
+                this.#unsetActiveObject()
+            }
+            return
+        } else if (this.#selectionBox && this.#selectionBox.pointerEvent(event, this.#domToSvgCoords(event))) {
+            return
+        }
+
+        if (currentObject) {
+            this.status = `${currentObject.template.name} ${currentObject.id}`
+        }
+
+        if (this.#editorState === EDITORSTATE.DrawPath) {
+            if (
+                this.#activeObject &&
+                currentObject !== this.#activeObject &&
+                (currentObject !== null || (this.#pathMaker && element !== this.#pathMaker.currentSvgPath))
+            ) {
+                this.#unsetActiveObject()
+            }
+            if (currentObject) {
+                element.style.removeProperty('cursor')
+                if (this.#pathMaker === null) {
+                    this.#nextPathNode = PathMaker.validStartObject(currentObject)
+                } else {
+                    this.#nextPathNode = this.#pathMaker.validPathNode(currentObject)
+                }
+                if (this.#nextPathNode) {
+                    this.#setActiveObject(currentObject)
+                }
+            }
+        } else {
+            if (this.#activeObject && currentObject !== this.#activeObject) {
+                this.#unsetActiveObject()
+            }
+            if (currentObject) {
+                this.#setActiveObject(currentObject)
+                currentObject.initialiseMove(element)
+            }
+        }
+    }
+
+    #pointerOutEvent(event: PointerEvent) {
+        //====================================
+        const element = event.target as SVGGraphicsElement
+        if (
+            element === this.#svgDiagram ||
+            element.classList.contains(EDITOR_GRID_CLASS) ||
+            !this.#svgDiagram?.contains(element)
+        ) {
+            if (this.#activeObject && !this.#moving) {
+                this.#activeObject.finaliseMove()
+                this.#unsetActiveObject()
+            }
+        } else if (this.#editorState === EDITORSTATE.DrawPath) {
+            if (this.#pathMaker === null) {
+                this.#unsetActiveObject()
+            }
+        }
+    }
+
+    #pointerDownEvent(event: PointerEvent) {
+        //====================================
+        this.#pointerMoved = false
+        this.#pointerDownTime = Date.now()
+        const element = event.target as SVGGraphicsElement
+        if (event.button === 2 || (!event.shiftKey && this.#notDiagramElement(element))) {
+            this.#svgDiagram?.style.removeProperty('cursor')
+            this.#container.style.setProperty('cursor', 'grab')
+            this.#panzoom!.pointerDown(event)
+            this.#panning = true
+            return
+        }
+        const svgPoint = this.#domToSvgCoords(event)
+        if (this.#editorState === EDITORSTATE.DrawPath) {
+            if (this.#activeObject && this.#nextPathNode) {
+                if (this.#pathMaker === null) {
+                    const settings = this.#drawConnectionSettings // settings.type is to come from object's domain...
+                    this.#pathMaker = new PathMaker(this.#editorFrame!, this.#nextPathNode, settings.style)
+                } else if (!this.#pathMaker.empty) {
+                    if (this.#activeObject.isConduit) {
+                        this.#pathMaker.addIntermediate(this.#nextPathNode, event.shiftKey)
+                    } else {
+                        this.#pathMaker.finishPath(this.#nextPathNode, this.#celldlDiagram!, event.shiftKey)
+                        this.#pathMaker = null
+                    }
+                }
+            }
+        } else if (this.#activeObject !== null && this.#activeObject.moveable) {
+            // EDITORSTATE.Selecting or EDITORSTATE.AddComponent
+            this.#activeObject.startMove(svgPoint)
+            this.#moving = true
+        } else if (this.#editorState === EDITORSTATE.Selecting) {
+            if (this.#selectionBox) {
+                this.#selectionBox.pointerEvent(event, svgPoint)
+            } else if (event.shiftKey) {
+                this.#unsetSelectedObject()
+                this.#selectionBox = new SelectionBox(this, svgPoint)
+                this.#newSelectionBox = true
+            }
+        }
+    }
+
+    #pointerMoveEvent(event: PointerEvent) {
+        //====================================
+        if (this.#panning) {
+            this.#pointerMoved = this.#panzoom!.pointerMove(event) || this.#pointerMoved
+            return
+        }
+        this.#pointerMoved = true
+        this.#pointerPosition = new DOMPoint(event.x, event.y)
+        const svgPoint = this.#domToSvgCoords(event)
+        this.#showPos(svgPoint)
+        if (this.#editorState === EDITORSTATE.DrawPath) {
+            if (this.#pathMaker) {
+                this.#pathMaker.drawTo(svgPoint, event.shiftKey)
+            }
+        } else if (this.#activeObject && this.#moving) {
+            // EDITORSTATE.Selecting or EDITORSTATE.AddComponent
+            this.#activeObject!.move(svgPoint)
+            this.#celldlDiagram!.objectMoved(this.#activeObject!)
+            if (this.#selectionBox) {
+                this.#selectionBox.updateSelectedObjects()
+            }
+        } else if (this.#editorState === EDITORSTATE.Selecting) {
+            if (this.#selectionBox) {
+                this.#selectionBox.pointerEvent(event, svgPoint)
+            }
+        }
+    }
+
+    #pointerUpEvent(event: PointerEvent) {
+        //==================================
+        if (this.#celldlDiagram === null) {
+            return
+        }
+        const domPoint = this.#domToSvgCoords(event)
+        if (this.#panning) {
+            this.#panzoom!.pointerUp(event)
+            this.#panning = false
+            this.#setDefaultCursor()
+            if (
+                !this.#pointerMoved &&
+                !this.#newSelectionBox &&
+                !this.#contextMenu.isOpen &&
+                this.#selectionBox &&
+                !this.#selectionBox.pointInside(domPoint)
+            ) {
+                this.#closeSelectionBox()
+            }
+            return
+        }
+        const element = event.target as SVGGraphicsElement
+        const currentObject = this.#celldlDiagram.objectById(getElementId(element))
+
+        if (this.#editorState !== EDITORSTATE.DrawPath) {
+            if (this.#activeObject && this.#moving) {
+                this.#activeObject!.endMove()
+                this.#moving = false
+                if (currentObject !== this.#activeObject) {
+                    this.#activeObject!.finaliseMove()
+                    if (this.#activeObject === this.#selectedObject) {
+                        this.#unsetSelectedObject()
+                    }
+                    this.#unsetActiveObject()
+                }
+            } else if (this.#editorState === EDITORSTATE.Selecting) {
+                if (this.#selectionBox && !this.#selectionBox.pointerEvent(event, domPoint)) {
+                    this.#closeSelectionBox()
+                }
+                this.#newSelectionBox = false
+            }
+        }
+    }
+
+    #closeSelectionBox() {
+        //==================
+        if (this.#selectionBox) {
+            this.#selectionBox.close()
+            this.#selectionBox = null
+        }
+    }
+
+    #deleteSelectedObjects() {
+        //======================
+        if (this.#selectedObject) {
+            // Delete the object
+            this.#unsetActiveObject()
+            this.#celldlDiagram!.removeObject(this.#selectedObject)
+            this.#unsetSelectedObject()
+        } else if (this.#selectionBox) {
+            for (const object of this.#selectionBox.selectedObjects) {
+                this.#celldlDiagram!.removeObject(object)
+            }
+            this.#selectionBox.close()
+            this.#selectionBox = null
+        }
+    }
+
+    #focusEvent(event: FocusEvent) {
+        //============================
+        // Detect when no input fields have focus
+        this.#haveFocus = event.type === 'focusout'
+    }
+
+    #keyDownEvent(event: KeyboardEvent) {
+        //=================================
+        if (this.#haveFocus && event.key === 'Backspace') {
+            this.#deleteSelectedObjects()
+        } else if (this.#editorState === EDITORSTATE.DrawPath && event.key === 'Escape') {
+            if (this.#pathMaker) {
+                // Remove any partial path
+                this.#pathMaker.close()
+                this.#pathMaker = null
+            }
+        }
+    }
+
+    #keyUpEvent(event: KeyboardEvent) {
+        //===============================
+        if (event.key === 'Shift') {
+            this.#setDefaultCursor()
+        }
+    }
+
+    #showSelectedObjectInfo() {
+        //=======================
+        if (this.#selectedObject) {
+            //console.log('INFO:', this.#selectedObject.asString())
+        }
+    }
+}
+
+//==============================================================================
+
+customElements.define('cd-editor', CellDLEditor)
+
+//==============================================================================
