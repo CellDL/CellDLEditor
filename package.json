@@ -66,6 +66,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.2",
+        "@electron-toolkit/preload": "^3.0.2",
         "@electron-toolkit/tsconfig": "^2.0.0",
         "@electron-toolkit/utils": "^4.0.0",
         "@tailwindcss/postcss": "^4.1.16",
