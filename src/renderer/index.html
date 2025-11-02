@@ -17,6 +17,11 @@
             }
         }
         </style>
+        <script type="module">
+            // Load oxigraph's WASM module
+            import initOxigraph from '@oxigraph/web.js'
+            await initOxigraph()
+        </script>
     </head>
     <body>
         <div id="app" />
