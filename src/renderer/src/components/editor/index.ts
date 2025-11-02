@@ -27,11 +27,12 @@ import type XTooltipElement from '@xel/elements/x-tooltip'
 
 import '../config'
 
-import type CellDLEditorApp from '../main.ts'
-import type { CellDLObject } from '../celldlObjects/index.ts'
-import type { CellDLDiagram } from '../diagram/index.ts'
+import type CellDLEditorApp from '../../CellDL/main.ts'  // ?????????????
 
 import { BaseElement } from '../uiElements/index.ts'
+
+import type { CellDLObject } from '../../CellDL/celldlObjects/index.ts'
+import type { CellDLDiagram } from '../../CellDL/diagram/index.ts'
 
 import '../panels'
 import type { PanelInterface } from '../panels/index.ts'
@@ -39,17 +40,17 @@ import type CellDLPanelBar from '../panels/index.ts'
 import type PropertiesPanel from '../panels/properties.ts'
 
 import '../tools'
-import type CellDLToolBar from '../tools/index.ts'
+import type CellDLToolBar from '../toolbar/index.ts'
 
-import { PathMaker, type PathNode } from '../connections/pathmaker.ts'
+import { PathMaker, type PathNode } from '../../CellDL/connections/pathmaker.ts'
 
-import { EditorStylesheet } from '../styles/stylesheet.ts'
+import { EditorStylesheet } from '../../CellDL/styles/stylesheet.ts'
 
-import { type PointLike, PointMath } from '../geometry/index.ts'
-import { libraryManager, type TemplateEvent } from '../libraries/index.ts'
-import { round } from '../utils.ts'
+import { type PointLike, PointMath } from '../../CellDL/geometry/index.ts'
+import { libraryManager, type TemplateEvent } from '../../CellDL/libraries/index.ts'
+import { round } from '../../CellDL/utils.ts'
 
-import type { StringProperties } from '../types/index.ts'
+import type { StringProperties } from '../../CellDL/types/index.ts'
 
 //==============================================================================
 

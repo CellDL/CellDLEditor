@@ -25,12 +25,13 @@ import { DOMParser } from '@xmldom/xmldom'
 import * as $rdf from '../metadata/index.ts'
 import { TurtleContentType } from '../metadata/index.ts'
 import type { ContentType, SubjectType } from '../metadata/index.ts'
+import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
 
 //==============================================================================
 
 import { MetadataPropertiesMap, type MetadataPropertyValue, type NamedNode, RdfStore, type Statement } from '../metadata/index.ts'
 import { CELLDL_NAMESPACE, CELLDL_NAMESPACE_DECLARATIONS } from '../metadata/index.ts'
-import { DCT_NAMESPACE, OWL_NAMESPACE, RDF_TYPE, SVG_NAMESPACE_URI } from '../metadata/index.ts'
+import { DCT_NAMESPACE, OWL_NAMESPACE, RDF_TYPE } from '../metadata/index.ts'
 
 import { type Bounds, type Extent, type PointLike, svgCircleElement, svgRectElement } from '../geometry/index.ts'
 import { ShapeIntersections } from '../geometry/intersections.ts'
@@ -51,13 +52,13 @@ import { setInternalIds } from '../SVGElements/index.ts'
 import type { BoundedElement } from '../SVGElements/boundedelement.ts'
 import type { SvgConnection } from '../SVGElements/svgconnection.ts'
 
-import { type CellDLEditor, notifyChanges } from '../editor/index.ts'
-import { editGuides } from '../editor/editguides.ts'
-import { type EditorUndoAction, undoRedo } from '../editor/undoredo.ts'
+import { type CellDLEditor, notifyChanges } from '../../components/editor/index.ts'
+import { editGuides } from '../../components/editor/editguides.ts'
+import { type EditorUndoAction, undoRedo } from '../../components/editor/undoredo.ts'
 
 import { libraryManager } from '../libraries/index.ts'
 import type { NewObjectClass, ObjectTemplate } from '../components/index.ts'
-import { LatexStyleRules } from '../libraries/mathjax.ts'
+import { LatexStyleRules } from '../mathjax/index.ts'
 import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '../styles/stylesheet.ts'
 
 import type { Constructor, StringProperties } from '../types/index.ts'

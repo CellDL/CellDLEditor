@@ -57,7 +57,7 @@ import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 
 //import { getViewbox } from '../geometry/index.ts'
 
-const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg'
+import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
 
 export type Extent = [number, number, number, number]
 

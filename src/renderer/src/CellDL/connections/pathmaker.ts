@@ -18,12 +18,13 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { CELLDL_NAMESPACE, RDF_TYPE, SVG_NAMESPACE_URI } from '../metadata/index.ts'
+import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
+import { CELLDL_NAMESPACE, RDF_TYPE } from '../metadata/index.ts'
 import { MetadataPropertiesMap } from '../metadata/index.ts'
 import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '../celldlObjects/index.ts'
 import type { CellDLSVGElement } from '../SVGElements/index.ts'
 import type { CellDLDiagram } from '../diagram/index.ts'
-import type { EditorFrame } from '../editor/editorframe.ts'
+import type { EditorFrame } from '../../components/editor/editorframe.ts'
 import { libraryManager } from '../libraries/index.ts'
 import { alert } from '../main.ts'
 import { Point, type PointLike, PointMath, svgPath, svgPathDescription } from '../geometry/index.ts'

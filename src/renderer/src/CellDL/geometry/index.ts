@@ -18,26 +18,12 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { editGuides } from '../editor/editguides.ts'
-import type { GridAlignOptions } from '../editor/editguides.ts'
+import { editGuides } from '../../components/editor/editguides.ts'
+import type { GridAlignOptions } from '../../components/editor/editguides.ts'
 import type { Transform } from '../geometry/transforms.ts'
-import { SVG_NAMESPACE_URI } from '../metadata/uris.ts'
-import { lengthToPixels } from './units.ts'
 import { round } from '../utils.ts'
 
-import type { StringProperties } from '../types/index.ts'
-
-//==============================================================================
-
-export interface PointLike {
-    x: number
-    y: number
-}
-
-export type PointArray = [number, number]
-
-import { Point, PointMath } from './points.ts'
-export { Point, PointMath } from './points.ts'
+import { Point, type PointLike, PointMath } from '../../common/points.ts'
 
 //==============================================================================
 
@@ -119,106 +105,6 @@ export class Bounds extends Array<number> {
     inContainer(container: Bounds): boolean {
         return this[0] >= container[0] && this[2] <= container[2] && this[1] >= container[1] && this[3] <= container[3]
     }
-}
-
-//==============================================================================
-
-export function svgSize(svgDocument: Document): PointLike | null {
-    const svgElement = svgDocument.documentElement
-    const width = lengthToPixels(svgElement.getAttribute('width'))
-    const height = lengthToPixels(svgElement.getAttribute('height'))
-    if (width && height) {
-        return {
-            x: width,
-            y: height
-        }
-    }
-    return null
-}
-
-export function getViewbox(svgElement: SVGGraphicsElement): Extent {
-    return svgElement
-        .getAttribute('viewBox')
-        ?.split(' ')
-        .map((n) => +n) as Extent
-}
-
-//==============================================================================
-
-type Attributes = StringProperties
-
-export function createSVGElement(tagName: string, attributes: Attributes): SVGElement {
-    const element = document.createElementNS(SVG_NAMESPACE_URI, tagName)
-    for (const [key, value] of Object.entries(attributes)) {
-        element.setAttribute(key, value)
-    }
-    return element
-}
-
-function attributePairs(attributes: Attributes): string {
-    const attributePairs: string[] = []
-    for (const [key, value] of Object.entries(attributes)) {
-        attributePairs.push(` ${key}="${value}"`)
-    }
-    return attributePairs.join('')
-}
-
-//==============================================================================
-
-function svgCircleAttributes(c: PointLike, r: number, attributes: Attributes): Attributes {
-    return Object.assign({}, attributes, {
-        cx: `${c.x}`,
-        cy: `${c.y}`,
-        r: `${r}`
-    })
-}
-
-export function svgCircle(centre: PointLike, radius: number, attributes: Attributes = {}): string {
-    return `<circle${attributePairs(svgCircleAttributes(centre, radius, attributes))}/>`
-}
-
-export function svgCircleElement(centre: PointLike, radius: number, attributes: Attributes = {}): SVGCircleElement {
-    return createSVGElement('circle', svgCircleAttributes(centre, radius, attributes)) as SVGCircleElement
-}
-
-//==============================================================================
-
-export function svgPath(points: PointLike[], attributes: Attributes = {}): string {
-    const description = svgPathDescription(points)
-    return description ? `<path${attributePairs(attributes)} d="${description}"/>` : ''
-}
-
-export function svgPathDescription(points: PointLike[]): string {
-    const pts = points.map((pt) => `${pt.x},${pt.y}`)
-    return pts.length > 1 ? `M${pts.join(' L')}` : ''
-}
-
-export function svgPathElement(points: PointLike[], attributes: Attributes = {}): SVGPathElement {
-    const description = svgPathDescription(points)
-    return createSVGElement('path', Object.assign({}, attributes, { d: description })) as SVGPathElement
-}
-
-//==============================================================================
-
-function svgRectAttributes(tl: PointLike, br: PointLike, attributes: Attributes): Attributes {
-    return Object.assign({}, attributes, {
-        x: `${Math.min(tl.x, br.x)}`,
-        y: `${Math.min(tl.y, br.y)}`,
-        width: `${Math.abs(br.x - tl.x)}`,
-        height: `${Math.abs(br.y - tl.y)}`
-    })
-}
-
-export function svgRect(topLeft: PointLike, bottomRight: PointLike, attributes: Attributes = {}): string {
-    return `<rect${attributePairs(svgRectAttributes(topLeft, bottomRight, attributes))}/>`
-}
-
-export function svgRectElement(
-    topLeft: PointLike,
-    bottomRight: PointLike,
-    attributes: StringProperties = {}
-): SVGRectElement {
-    return createSVGElement('rect', svgRectAttributes(topLeft, bottomRight, attributes)) as SVGRectElement
 }
 
 //==============================================================================

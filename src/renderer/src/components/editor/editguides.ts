@@ -18,11 +18,12 @@ limitations under the License.
 
 ******************************************************************************/
 
-import type { CellDLDiagram } from '../diagram//index.ts'
-import type { CellDLMoveableObject } from '../celldlObjects/index.ts'
-import { type Extent, getViewbox, Point, type PointLike } from '../geometry/index.ts'
-import { SVG_NAMESPACE_URI } from '../metadata/index.ts'
-import { range } from '../utils.ts'
+import { Point, type PointLike } from '../../common/points.ts'
+import { getViewbox, SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
+import type { CellDLDiagram } from '../../CellDL/diagram/index.ts'
+import type { CellDLMoveableObject } from '../../CellDL/celldlObjects/index.ts'
+import { type Extent } from '../../CellDL/geometry/index.ts'
+import { range } from '../../CellDL/utils.ts'
 
 //==============================================================================
 

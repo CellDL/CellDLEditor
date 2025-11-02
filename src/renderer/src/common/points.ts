@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { GRID_SNAP_RESOLUTION, GRID_SPACING } from '../editor/editguides.ts'
+import { GRID_SNAP_RESOLUTION, GRID_SPACING } from '../components/editor/editguides.ts'
 
 //==============================================================================
 
@@ -81,7 +81,7 @@ export class Point implements PointLike {
         return PointMath.isZero(this)
     }
 
-    apply(fn: (number) => number): Point {
+    apply(fn: (n: number) => number): Point {
         return Point.fromPoint(PointMath.apply(this, fn))
     }
 

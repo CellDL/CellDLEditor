@@ -18,8 +18,8 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { type PointLike, PointMath } from '../geometry/index.ts'
-import type { ObjectTemplate } from '../components/index.ts'
+import { type PointLike, PointMath } from '../../CellDL/geometry/index.ts'
+import type { ObjectTemplate } from '../../CellDL/components/index.ts'
 
 //==============================================================================
 
