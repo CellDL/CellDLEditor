@@ -18,10 +18,10 @@ limitations under the License.
 
 ******************************************************************************/
 
+import { type Extent } from '../../CellDL/geometry/index.ts'
+
 import { getViewbox } from '../../common/svgUtils.ts'
 import { Point } from '../../common/points.ts'
-
-import { type Extent } from '../../CellDL/geometry/index.ts'
 
 import { editGuides } from './editguides.ts'
 
@@ -56,28 +56,23 @@ export default class PanZoom {
     }
 
     get panning() {
-        //===========
         return this.#panning
     }
 
     get scale() {
-        //=========
         return this.#scale
     }
 
     #currentViewbox(): Extent {
-        //=======================
         return getViewbox(this.#svgDiagram!)
     }
 
     #setViewbox(viewbox: Extent) {
-        //==========================
         editGuides.viewboxUpdated(viewbox)
         this.#svgDiagram!.setAttribute('viewBox', viewbox.map((n) => String(n)).join(' '))
     }
 
     enable(svgDiagram: SVGSVGElement) {
-        //===============================
         // Scale large diagrams down to fit container
         let viewbox = getViewbox(svgDiagram)
         if (viewbox[2] * this.#containerSize.y >= viewbox[3] * this.#containerSize.x) {
@@ -112,20 +107,17 @@ export default class PanZoom {
     }
 
     disable() {
-        //=======
         this.#svgDiagram = null
         this.#panning = false
         this.#scale = 1.0
     }
 
     pointerDown(event: PointerEvent) {
-        //==============================
         this.#panning = true
         this.#pointerDownPosition = Point.fromPoint(event)
     }
 
     pointerMove(event: PointerEvent): boolean {
-        //============================================================
         if (this.#svgDiagram && this.#panning) {
             const delta = this.#pointerDownPosition.subtract(event).scalarScale(1.0 / this.#scale)
             if (!delta.isZero()) {
@@ -141,12 +133,10 @@ export default class PanZoom {
     }
 
     pointerUp(_event: PointerEvent) {
-        //=============================
         this.#panning = false
     }
 
     #resizeObservation(entries: ResizeObserverEntry[]) {
-        //================================================
         if (this.#svgDiagram) {
             for (const entry of entries) {
                 if (entry.target.id === this.#containerId) {
@@ -170,7 +160,6 @@ export default class PanZoom {
     }
 
     #wheelEvent(event: WheelEvent) {
-        //============================
         if (this.#svgDiagram) {
             // Normalise in case shift modifier is used on macOS
             const delta = event.deltaY === 0 && event.deltaX ? event.deltaX : event.deltaY
