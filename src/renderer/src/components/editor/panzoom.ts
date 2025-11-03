@@ -18,7 +18,10 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { type Extent, getViewbox, Point } from '../geometry/index.ts'
+import { getViewbox } from '../../common/svgUtils.ts'
+import { Point } from '../../common/points.ts'
+
+import { type Extent } from '../../CellDL/geometry/index.ts'
 
 import { editGuides } from './editguides.ts'
 

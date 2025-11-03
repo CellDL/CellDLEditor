@@ -18,19 +18,23 @@ limitations under the License.
 
 ******************************************************************************/
 
-import type XPopoverElement from '@xel/elements/x-popover'
-import type XTooltipElement from '@xel/elements/x-tooltip'
+import { electronApi } from '../../common/electronApi.ts'
 
 //==============================================================================
 
-import '../config'
+import '../../assets/svgContent.css'
+
+//import '../config'
 
 import type CellDLEditorApp from '../../CellDL/main.ts'  // ?????????????
 
 
-import type { CellDLObject } from '../../CellDL/celldlObjects/index.ts'
-import type { CellDLDiagram } from '../../CellDL/diagram/index.ts'
+import { CellDLObject } from '../../CellDL/celldlObjects/index.ts'
+import { CellDLDiagram } from '../../CellDL/diagram/index.ts'
+import { libraryManager, type TemplateEvent } from '../../CellDL/libraries/index.ts'
+import { round } from '../../CellDL/utils.ts'
 
+/**
 import '../panels'
 import type { PanelInterface } from '../panels/index.ts'
 import type CellDLPanelBar from '../panels/index.ts'
@@ -38,16 +42,14 @@ import type PropertiesPanel from '../panels/properties.ts'
 
 import '../tools'
 import type CellDLToolBar from '../toolbar/index.ts'
+**/
 
-import { PathMaker, type PathNode } from '../../CellDL/connections/pathmaker.ts'
 
-import { EditorStylesheet } from '../../CellDL/styles/stylesheet.ts'
+import { type PointLike, PointMath } from '../../common/points.ts'
+import type { StringProperties } from '../../common/types.ts'
 
-import { type PointLike, PointMath } from '../../CellDL/geometry/index.ts'
-import { libraryManager, type TemplateEvent } from '../../CellDL/libraries/index.ts'
-import { round } from '../../CellDL/utils.ts'
 
-import type { StringProperties } from '../../CellDL/types/index.ts'
+import { PathMaker, type PathNode } from '../connections/pathmaker.ts'
 
 //==============================================================================
 
@@ -57,8 +59,8 @@ import PanZoom from './panzoom.ts'
 import { SelectionBox } from './selectionbox.ts'
 import { undoRedo } from './undoredo.ts'
 
-import './contextmenu.ts'
-import { CONTEXT_MENU, type ContextMenu } from './contextmenu.ts'
+//import './contextmenu.ts'
+//import { CONTEXT_MENU, type ContextMenu } from './contextmenu.ts'
 
 //==============================================================================
 
@@ -95,7 +97,7 @@ const MAX_POINTER_CLICK_TIME = 200 // milliseconds
 //==============================================================================
 
 export function notifyChanges() {
-    window.electronAPI.sendEditorAction('DIRTY')
+    electronApi?.sendEditorAction('DIRTY')
 }
 
 //==============================================================================
@@ -114,10 +116,9 @@ const SVG_PANEL_ID = 'svg-panel'
 
 export class CellDLEditor {
 
-    static _shadowStyleSheets = [CellDLEditor.#editorStylesheet, css`${EditorStylesheet}`]
-
     #app: CellDLEditorApp
-    #container: HTMLElement
+    #container: HTMLElement | null = null
+/**
     #toolBar: CellDLToolBar
     #panelBar: CellDLPanelBar
     #statusMsg: HTMLElement
@@ -126,6 +127,7 @@ export class CellDLEditor {
 
     #currentPanel: PanelInterface | null = null
     #panelContent: HTMLElement
+**/
 
     #celldlDiagram: CellDLDiagram | null = null
     #svgDiagram: SVGSVGElement | null = null
@@ -147,11 +149,11 @@ export class CellDLEditor {
     #pathMaker: PathMaker | null = null
     #nextPathNode: PathNode | null = null
 
-    #currentPopover: XPopoverElement | null = null
-    #currentTooltip: XTooltipElement | null = null
+//    #currentPopover: XPopoverElement | null = null
+//    #currentTooltip: XTooltipElement | null = null
     #lastClickedTool: HTMLElement | null = null
 
-    #contextMenu: ContextMenu
+//    #contextMenu: ContextMenu
 
     #currentComponentTemplate: TemplateEvent | null = null
     #drawConnectionSettings: StringProperties = {}
@@ -164,7 +166,8 @@ export class CellDLEditor {
 
     constructor() {
         this.#app = document.querySelector('cd-editor-app') as CellDLEditorApp
-        this.#container = this.getElementById(SVG_PANEL_ID)!
+
+/**
         this.#toolBar = this.getElementById('tool-bar') as CellDLToolBar
         this.#panelBar = this.getElementById('panel-bar') as CellDLPanelBar
         this.#statusMsg = this.getElementById('status-msg')!
@@ -172,9 +175,12 @@ export class CellDLEditor {
         this.#panelContent = this.getElementById('panel-content')!
         this.#contextMenu = this.getElementById('context-menu') as ContextMenu
         this.status = 'new editor'
+**/
     }
 
-    async connectedCallback() {
+    mount(svgContainer: HTMLElement) {
+        this.#container = svgContainer
+
         // Create a panzoom handler
         this.#panzoom = new PanZoom(this.#container)
 
@@ -203,6 +209,9 @@ export class CellDLEditor {
         // Add handlers for add component tool
         document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
         document.addEventListener('component-selected', this.#componentTemplateSelectedEvent.bind(this))
+
+/**
+
         this.#app.addEventListener('dragover', this.#appDragOverEvent.bind(this))
         this.#app.addEventListener('drop', this.#appDropEvent.bind(this))
 
@@ -215,6 +224,7 @@ export class CellDLEditor {
             }
             this.#contextMenu.open(event.clientX, event.clientY)
         })
+
         this.#contextMenu.setListener((event: Event) => {
             const targetId = 'target' in event && event.target && 'id' in event.target ? event.target.id : null
             if (targetId === CONTEXT_MENU.DELETE) {
@@ -238,6 +248,7 @@ export class CellDLEditor {
         // Create a tooltip
         this.#currentTooltip = document.createElement('x-tooltip') as XTooltipElement
         this.#container.append(this.#currentTooltip)
+**/
     }
 
     get celldlDiagram() {
@@ -252,15 +263,20 @@ export class CellDLEditor {
         return this.#editorFrame
     }
 
+/**
     get status(): string {
         return this.#statusMsg.innerText || ''
     }
     set status(text: string) {
         this.showMessage(text)
     }
+**/
 
     get windowSize(): [number, number] {
-        return [this.#container.clientWidth, this.#container.clientHeight]
+        if (this.#container) {
+            return [this.#container.clientWidth, this.#container.clientHeight]
+        }
+        return [0, 0]
     }
 
     setDirty() {
@@ -292,7 +308,9 @@ export class CellDLEditor {
         editGuides.newDiagram(celldlDiagram, true)
 
         // Show the diagram in the editor's window
-        this.#container.appendChild(this.#svgDiagram!)
+        if (this.#container) {
+            this.#container.appendChild(this.#svgDiagram!)
+        }
 
         // Rewriting metadata during diagram finishSetup might dirty
         this.markClean()
@@ -303,8 +321,8 @@ export class CellDLEditor {
 
         // Enable pan/zoom and toolBars
         this.#panzoom!.enable(this.#svgDiagram!)
-        this.#toolBar.enable()
-        this.#toolBar.enableButton('select-tool', true)
+//        this.#toolBar.enable()
+//        this.#toolBar.enableButton('select-tool', true)
 
         // Set initial state
         this.#editorState = EDITORSTATE.Selecting
@@ -313,25 +331,25 @@ export class CellDLEditor {
         this.#selectedObject = null
 
         // We are good to go
-        this.status = 'Editor ready...'
+//        this.status = 'Editor ready...'
     }
 
     closeDiagram() {
-        //============
         if (this.#celldlDiagram !== null) {
             this.#closePopover()
             this.#editorFrame!.clear()
             this.#editorFrame = null
-            this.#toolBar.enable(false)
+//            this.#toolBar.enable(false)
             this.#panzoom!.disable()
-            this.#container.removeChild(this.#svgDiagram as Node)
+            if (this.#container) {
+                this.#container.removeChild(this.#svgDiagram as Node)
+            }
             this.#svgDiagram = null
             this.#celldlDiagram = null
         }
     }
 
     resetObjectStates() {
-        //=================
         this.#unsetSelectedObject()
         this.#unsetActiveObject()
     }
@@ -342,32 +360,32 @@ export class CellDLEditor {
         } else {
             this.#svgDiagram?.style.removeProperty('cursor')
         }
-        this.#container.style.setProperty('cursor', 'default')
+        if (this.#container) {
+            this.#container.style.setProperty('cursor', 'default')
+        }
     }
 
     enableContextMenuItem(itemId: string, enable: boolean = true) {
-        //=========================================================
-        this.#contextMenu.enableItem(itemId, enable)
+//        this.#contextMenu.enableItem(itemId, enable)
     }
 
     #toolEventListener(event: Event) {
-        //==============================
         const tool = event.currentTarget as HTMLElement
         if (tool.tagName === 'X-POPOVER') {
             if (event.type === 'open') {
                 this.#closePopover() // Close any open popover
-                this.#currentPopover = tool as XPopoverElement
+//                this.#currentPopover = tool as XPopoverElement
             } else if (event.type === 'close') {
-                this.#currentPopover = null
+//                this.#currentPopover = null
             }
         } else if (tool.tagName === 'X-BUTTON') {
             if (event.type === 'click') {
                 this.#lastClickedTool = tool
-                if (this.#currentPopover && POPOVER_TO_TOOL[this.#currentPopover.id] != this.#lastClickedTool.id) {
-                    this.#closePopover()
-                }
+//                if (this.#currentPopover && POPOVER_TO_TOOL[this.#currentPopover.id] != this.#lastClickedTool.id) {
+//                    this.#closePopover()
+//                }
                 if (tool.id in TOOL_TO_EDITORSTATE) {
-                    this.#editorState = TOOL_TO_EDITORSTATE[tool.id]
+//                    this.#editorState = TOOL_TO_EDITORSTATE[tool.id]
                     this.#setDefaultCursor()
                     if (this.#editorState !== EDITORSTATE.Selecting) {
                         this.#unsetSelectedObject()
@@ -386,6 +404,7 @@ export class CellDLEditor {
     }
 
     #changePanel(panelTag: string | null) {
+/**
         if (panelTag !== null) {
             this.#panelContent.innerHTML = `<${panelTag}/>`
             this.#currentPanel = this.#panelContent.firstChild as PropertiesPanel
@@ -396,6 +415,7 @@ export class CellDLEditor {
             this.#panelContent.style.setProperty('display', 'none')
             this.#currentPanel = null
         }
+**/
     }
 
     #panelEventListener(event: Event) {
@@ -415,6 +435,7 @@ export class CellDLEditor {
     }
 
     showMessage(msg: string, style: string = '') {
+/**
         this.#statusMsg.innerText = msg
         if (this.#statusStyle !== '') {
             this.#statusMsg.classList.remove(this.#statusStyle)
@@ -423,6 +444,7 @@ export class CellDLEditor {
             this.#statusMsg.classList.add(style)
             this.#statusStyle = style
         }
+**/
     }
 
     showTooltip(msg: string, style: string = '') {
@@ -432,10 +454,11 @@ export class CellDLEditor {
     }
 
     #showPos(pos: PointLike) {
-        this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+//        this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
     }
 
     #showTooltip(context: DOMPoint | DOMRect | Element, content: string, type: string = 'hint') {
+/**
         if (this.#currentTooltip && content.trim() !== '') {
             this.#currentTooltip.innerHTML = `<x-message>${content}</x-message>`
             this.#currentTooltip.type = type
@@ -443,19 +466,20 @@ export class CellDLEditor {
                 this.#currentTooltip!.open(context, false)
             }, 1)
         }
+**/
     }
 
     #closeTooltip() {
-        if (this.#currentTooltip) {
-            this.#currentTooltip.close(false)
-        }
+//        if (this.#currentTooltip) {
+//            this.#currentTooltip.close(false)
+//        }
     }
 
     #domToSvgCoords(domCoords: PointLike): DOMPoint {
         return this.#celldlDiagram!.domToSvgCoords(domCoords)
     }
 
-    #highlightAssociatedObjects(object: CellDLObject, highlight) {
+    #highlightAssociatedObjects(object: CellDLObject, highlight: boolean) {
         for (const obj of this.#celldlDiagram!.associatedObjects(object)) {
             obj.highlight(highlight)
         }
@@ -492,11 +516,11 @@ export class CellDLEditor {
         if (selectedObject !== null) {
             selectedObject.select(true)
             this.#selectedObject = selectedObject
-            if (this.#currentPanel) {
-                this.#currentPanel.setCurrentObject(selectedObject)
-            }
-            this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
-            this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
+//            if (this.#currentPanel) {
+//                this.#currentPanel.setCurrentObject(selectedObject)
+//            }
+//            this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
+//            this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
         }
     }
 
@@ -504,32 +528,34 @@ export class CellDLEditor {
         if (this.#selectedObject) {
             this.#selectedObject.select(false)
             this.#selectedObject = null
-            if (this.#currentPanel) {
-                this.#currentPanel.setCurrentObject(null)
-            }
-            this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
-            this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
+//            if (this.#currentPanel) {
+//                this.#currentPanel.setCurrentObject(null)
+//            }
+//            this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
+//            this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
         }
     }
 
     #closePopover() {
+/**
         if (this.#currentPopover) {
             this.#currentPopover.close()
             this.#currentPopover = null
         }
+**/
     }
 
-    #componentTemplateDragEvent(_event) {
+    #componentTemplateDragEvent(_event: Event) {
         this.#dragging = true
     }
 
-    #componentTemplateSelectedEvent(event) {
-        this.#currentComponentTemplate = event.detail
+    #componentTemplateSelectedEvent(event: Event) {
+        this.#currentComponentTemplate = (<CustomEvent>event).detail
     }
 
-    #appDragOverEvent(event) {
-        if (this.#dragging) {
-            event.preventDefault() // Needed to allow drop
+    #appDragOverEvent(event: DragEvent) {
+        if (this.#dragging && event.dataTransfer) {
+            event.preventDefault(); // Needed to allow drop
             event.dataTransfer.dropEffect = 'copy'
         }
     }
@@ -550,9 +576,11 @@ export class CellDLEditor {
         }
     }
 
-    #appDropEvent(event: Event) {
+    #appDropEvent(event: DragEvent) {
         this.#dragging = false
-        this.#addComponentTemplate(event, JSON.parse((<CustomEvent>event).dataTransfer.getData('component-detail')))
+        if (event.dataTransfer) {
+            this.#addComponentTemplate(event, JSON.parse(event.dataTransfer.getData('component-detail')))
+        }
     }
 
     #drawConnectionUpdateSettings(event: Event) {
@@ -641,7 +669,7 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-            this.status = ''
+//            this.status = ''
             this.#closeTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()
@@ -652,7 +680,7 @@ export class CellDLEditor {
         }
 
         if (currentObject) {
-            this.status = `${currentObject.template.name} ${currentObject.id}`
+//            this.status = `${currentObject.template.name} ${currentObject.id}`
         }
 
         if (this.#editorState === EDITORSTATE.DrawPath) {
@@ -709,7 +737,7 @@ export class CellDLEditor {
         const element = event.target as SVGGraphicsElement
         if (event.button === 2 || (!event.shiftKey && this.#notDiagramElement(element))) {
             this.#svgDiagram?.style.removeProperty('cursor')
-            this.#container.style.setProperty('cursor', 'grab')
+            this.#container?.style.setProperty('cursor', 'grab')
             this.#panzoom!.pointerDown(event)
             this.#panning = true
             return
@@ -783,7 +811,7 @@ export class CellDLEditor {
             if (
                 !this.#pointerMoved &&
                 !this.#newSelectionBox &&
-                !this.#contextMenu.isOpen &&
+//                !this.#contextMenu.isOpen &&
                 this.#selectionBox &&
                 !this.#selectionBox.pointInside(domPoint)
             ) {

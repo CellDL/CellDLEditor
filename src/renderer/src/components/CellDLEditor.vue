@@ -1,14 +1,14 @@
 <template>
     <main class="editor-pane">
-        <editor-toolbar id="tool-bar"></editor-toolbar>
+        <editor-toolbar class="editor-bar" id="tool-bar"></editor-toolbar>
 
-        <div id="svg-content">
             <context-menu id="context-menu"></context-menu>
+        <div ref="svg-content" id="svg-content">
         </div>
 
 
         <div id="panel-content"><!--Where an open panel is displayed--></div>
-        <cd-panel-bar id="panel-bar"></cd-panel-bar>
+        <cd-panel-bar class="editor-bar" id="panel-bar"></cd-panel-bar>
     </main>
     <footer class="status-bar">
         <span id="status-msg"></span>
@@ -17,10 +17,26 @@
 </template>
 
 <script setup lang="ts">
+import * as vue from 'vue'
+
+import { CellDLDiagram } from '../CellDL/diagram/index.ts'
+import { CellDLEditor } from './editor/index.ts'
 import editorToolbar from './EditorToolbar.vue'
+
+const editor = new CellDLEditor()
+const svgContainer = vue.useTemplateRef('svg-content')
+
+let celldlDiagram = null
+
+vue.onMounted(() => {
+    if (svgContainer.value) {
+        // @ts-expect-error: `svgContainer.value` is a HTMLElement
+        editor.mount(svgContainer.value)
+        celldlDiagram = new CellDLDiagram('', '', editor)
+        celldlDiagram.edit()
+    }
+})
 </script>
-
-
 
 <style scoped>
 .editor-pane {
@@ -30,7 +46,8 @@ import editorToolbar from './EditorToolbar.vue'
     position: relative;
 }
 
-#tool-bar, #panel-bar {
+.editor-bar {
+    width: 40px;
     overflow: auto;
 }
 #svg-content {

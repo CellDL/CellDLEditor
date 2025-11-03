@@ -1,0 +1,129 @@
+svg {
+    background-color: #EEE;
+    user-select: none;
+    /* Element states while editing */
+    --active: #0F8;
+    --highlighted: #05F;
+    --selected: #0DF;
+    --active-selected: #0FF;
+    --connection-selected: #F00;
+    --connection-highlighted: #0F8;
+}
+.celldl-background {
+    pointer-events: none;
+}
+.selection-element {
+    fill: none;
+    pointer-events: all;
+    stroke-opacity: 0.8;
+    stroke-width: 3;
+    rx: 8px;
+}
+.control-rectangle.selected {
+    fill: #f00;
+    opacity: 0.4;
+    stroke: #F0F;
+    stroke-width: 3;
+    pointer-events: all;
+}
+
+/* Alignment guides */
+.alignment-grid {
+    stroke: #08F;
+    stroke-width: 0.4;
+    stroke-opacity: 0.3;
+}
+.alignment-guide {
+    stroke: none;
+}
+.alignment-guide.visible {
+    stroke: #08F;
+    stroke-width: 1;
+    stroke-opacity: 0.8;
+}
+
+/* Control points */
+.control-point {
+    fill: #00C;
+    opacity: 0.8;
+    stroke: #00C;
+    stroke-width: 2;
+}
+.control-point.fixed {
+    fill: white;
+}
+#celldl-editor-selection-frame.highlight .control-point {
+    stroke: #00F;
+}
+#celldl-editor-selection-frame.highlight .control-point.active {
+    fill: #88F;
+    opacity: 1.0;
+}
+
+/* Active, highlighted, and selected objects */
+.active:not(.celldl-Connection) {
+    stroke: var(--active) !important;
+}
+.highlight:not(.celldl-Connection) {
+    stroke: var(--highlighted) !important;
+}
+.selected:not(.celldl-Connection) {
+    stroke: var(--selected) !important;
+}
+.active.selected:not(.celldl-Connection) {
+    stroke: var(--active-selected) !important;
+}
+.selection-rect {
+    fill: #ccc;
+    fill-opacity: 0.2;
+    stroke: black;
+    stroke-width: 0.3;
+    stroke-opacity: 0.4;
+}
+
+/* Components */
+.celldl-Component.editor {
+    pointer-events: all;
+}
+
+/* Conduits */
+.selection-element.conduit {
+    opacity: 0.5;
+}
+.active + .conduit {
+    fill: var(--active);
+}
+.highlight + .conduit {
+    fill: var(--highlighted);
+}
+.active.selected + .conduit {
+    fill:  var(--active-selected) !important;
+}
+
+/* Interfaces */
+.celldl-InterfacePort .selection-element.selected {
+    stroke: var(--connection-selected);
+}
+.celldl-InterfacePort.highlight {
+    fill: var(--highlighted) !important;
+}
+
+/* Connections */
+.celldl-Connection .selection-element.highlight {
+    stroke: var(--connection-highlighted) !important;
+}
+.celldl-Connection.active,
+.celldl-Connection.highlight,
+.celldl-Connection.selected {
+    stroke-width: 4;
+}
+.celldl-Connection.active.selected {
+    stroke-width: 5;
+}
+
+.error {
+    color: yellow;
+    opacity: 1;
+    stroke: yellow;
+    stroke-opacity: 1;
+}
