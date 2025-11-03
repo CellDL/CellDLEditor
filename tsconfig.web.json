@@ -2,9 +2,12 @@
     "compilerOptions": {
         "baseUrl": ".",
         "composite": true,
-        "lib": ["dom", "esnext"],
+//        "module": "esnext",
+        "target": "es2024",
         "paths": {
-            "@renderer/*": ["src/renderer/src/*"]
+            "@editor/*": ["./src/renderer/src/CellDLEditor/*"],
+            "@oxigraph/*": ["./src/renderer/public/oxigraph/*"],
+            "@renderer/*": ["./src/renderer/src/*"]
         }
     },
     "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",

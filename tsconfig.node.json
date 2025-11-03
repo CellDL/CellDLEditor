@@ -1,7 +1,15 @@
 {
     "compilerOptions": {
+        "allowImportingTsExtensions": true,
         "composite": true,
-        "types": ["electron-vite/node"]
+//        "module": "nodenext",
+        "moduleResolution": "bundler",
+        "types": ["electron-vite/node"],
+        "paths": {
+            "@editor/*": ["./src/renderer/src/CellDLEditor/*"],
+            "@oxigraph/*": ["./src/renderer/public/oxigraph/*"],
+            "@renderer/*": ["./src/renderer/src/*"]
+        }
     },
     "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
     "include": ["src/main/**/*", "src/preload/**/*"]

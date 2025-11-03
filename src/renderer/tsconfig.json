@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "allowImportingTsExtensions": false,
+        "allowImportingTsExtensions": true,
         "baseUrl": ".",
         "composite": true,
         "module": "nodenext",

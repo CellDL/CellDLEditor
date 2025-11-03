@@ -4,7 +4,10 @@ import vuePlugin from '@vitejs/plugin-vue'
 
 import * as electronVite from 'electron-vite'
 import path from 'node:path'
+import url from 'node:url'
 import vitePlugin from 'unplugin-vue-components/vite'
+
+const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default electronVite.defineConfig({
     main: {
@@ -38,6 +41,14 @@ export default electronVite.defineConfig({
                 resolvers: [primeVueAutoImportResolver.PrimeVueResolver()]
             })
         ],
+        resolve: {
+            alias: {
+                'node-fetch': 'isomorphic-fetch',
+                '@editor': path.resolve(_dirname, 'src/renderer/src/CellDLEditor'),
+                '@oxigraph': path.resolve(_dirname, 'src/renderer/public/oxigraph'),
+                '@renderer': path.resolve(_dirname, 'src/renderer/src')
+            }
+        },
         server: {
             fs: {
                 allow: [path.join(import.meta.dirname, '..')]
