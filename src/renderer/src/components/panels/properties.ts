@@ -19,24 +19,24 @@ limitations under the License.
 ******************************************************************************/
 
 import { css, html } from '@xel/utils/template'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLObject } from '@editor/celldlObjects'
 
 //==============================================================================
 
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { CellDLObject } from '../celldlObjects/index.ts'
 
 import { BaseElement } from '../uiElements/index.ts'
 
-import type { ComponentTemplate } from '../components/index.ts'
-import { libraryManager } from '../libraries/manager.ts'
-import type { ModelValue } from '../libraries/bondgraph/libbondgraph/model.ts'
+import type { ComponentTemplate } from '@editor/components'
+import { libraryManager } from '@editor/libraries/manager'
+import type { ModelValue } from '@editor/libraries/bondgraph/libbondgraph/model'
 
-import type { StringProperties } from '../types/index.ts'
+import type { StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 
-import type { PanelInterface } from './index.ts'
-import { prefixId, EntryField, SectionDefinition } from './section.ts'
+import type { PanelInterface } from '.'
+import { prefixId, EntryField, SectionDefinition } from './section'
 
 //==============================================================================
 

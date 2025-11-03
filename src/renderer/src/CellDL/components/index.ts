@@ -18,15 +18,15 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '../metadata/index.ts'
+import * as $rdf from '@editor/metadata'
 
-import type { CellDLObject } from '../celldlObjects/index.ts'
-import type { PointLike } from '../geometry/index.ts'
-import { MetadataPropertiesMap, type NamedNode } from '../metadata/index.ts'
-import { CELLDL_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '../metadata/index.ts'
-import { base64Svg } from '../utils.ts'
+import type { CellDLObject } from '@editor/celldlObjects'
+import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata'
+import { CELLDL_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata'
+import { base64Svg } from '@editor/utils'
 
-import type { Constructor, StringProperties } from '../types/index.ts'
+import type { PointLike } from '@renderer/common/points'
+import type { Constructor, StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 

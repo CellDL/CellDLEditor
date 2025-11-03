@@ -9,7 +9,7 @@ import { isDevMode, isLinux, isMacOs, isPackaged, isWindows } from '../renderer/
 
 import icon from './assets/icon.png?asset'
 import { ApplicationWindow } from './ApplicationWindow'
-import { electronConf, type IElectronConfState } from './index'
+import { electronConf, type IElectronConfState } from '.'
 import { enableDisableMainMenu, updateReopenMenu } from './MainMenu'
 import type { SplashScreenWindow } from './SplashScreenWindow'
 

@@ -7,8 +7,8 @@ const osInfo = await systemInformation.osInfo()
 
 //==============================================================================
 
-import type { ISettings } from '../renderer/src/common/common'
-import type { ISplashScreenInfo } from '../renderer/src/common/electronApi'
+import type { ISettings } from '@renderer/common/common'
+import type { ISplashScreenInfo } from '@renderer/common/electronApi'
 
 //==============================================================================
 

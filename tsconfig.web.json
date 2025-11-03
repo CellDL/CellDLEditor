@@ -1,15 +1,18 @@
 {
     "compilerOptions": {
         "baseUrl": ".",
-        "composite": true,
-//        "module": "esnext",
         "target": "es2024",
         "paths": {
-            "@editor/*": ["./src/renderer/src/CellDLEditor/*"],
+            "@editor/*": ["./src/renderer/src/CellDL/*"],
             "@oxigraph/*": ["./src/renderer/public/oxigraph/*"],
             "@renderer/*": ["./src/renderer/src/*"]
         }
     },
     "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
-    "include": ["src/**/*.ts"]
+    "include": [
+        "src/renderer/src/env.d.ts",
+        "src/renderer/src/**/*",
+        "src/preload/*.d.ts"
+    ],
+    "sourceMap": true
 }

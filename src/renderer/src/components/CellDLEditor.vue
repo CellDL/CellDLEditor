@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import { CellDLDiagram } from '../CellDL/diagram/index.ts'
-import { CellDLEditor } from './editor/index.ts'
+import { CellDLDiagram } from '@editor/diagram'
+import { CellDLEditor } from './editor'
 import editorToolbar from './EditorToolbar.vue'
 
 const editor = new CellDLEditor()

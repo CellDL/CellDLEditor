@@ -18,12 +18,12 @@ limitations under the License.
 
 ******************************************************************************/
 
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { CellDLObject } from '../celldlObjects/index.ts'
-import { Point, type PointLike } from '../geometry/index.ts'
-import type { Statement } from '../metadata/index.ts'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLObject } from '@editor/celldlObjects'
+import { Point, type PointLike } from '@renderer/common/points'
+import type { Statement } from '@editor/metadata'
 
-import { notifyChanges } from './index.ts'
+import { notifyChanges } from '.'
 
 //==============================================================================
 

@@ -30,13 +30,13 @@ import {
     type NamedNode,
     Namespace,
     type Statement
-} from './index.ts'
+} from '.'
 
-import type { SubjectType, PredicateType, ObjectType, NamespaceType } from './index.ts'
+import type { SubjectType, PredicateType, ObjectType, NamespaceType } from '.'
 
 //==============================================================================
 
-import { RDF_NAMESPACE } from './namespaces.ts'
+import { RDF_NAMESPACE } from './namespaces'
 
 const RDF_LIST_END = RDF_NAMESPACE('nil')
 const RDF_LIST_HEAD = RDF_NAMESPACE('first')

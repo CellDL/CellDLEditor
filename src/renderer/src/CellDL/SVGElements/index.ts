@@ -18,13 +18,17 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { CELLDL_CLASS, type CellDLObject } from '../celldlObjects/index.ts'
-import type { UndoMovePosition } from '../editor/undoredo.ts'
-import { Bounds, Point, type PointLike, PointMath, type RestrictedValue, svgCircle } from '../geometry/index.ts'
-import { FixedControlRect } from '../geometry/controls.ts'
-import { Transform } from '../geometry/transforms.ts'
-import { CONNECTION_SPLAY_PADDING, MAX_CONNECTION_SPLAY_PADDING } from '../styles/stylesheet.ts'
-import { CONNECTION_WIDTH, SELECTION_STROKE_WIDTH } from '../styles/stylesheet.ts'
+
+import { CONNECTION_SPLAY_PADDING, MAX_CONNECTION_SPLAY_PADDING } from '@renderer/common/styling'
+import { CONNECTION_WIDTH, SELECTION_STROKE_WIDTH } from '@renderer/common/styling'
+import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { svgCircle } from '@renderer/common/svgUtils'
+import type { UndoMovePosition } from '@renderer/components/editor/undoredo'
+
+import { CELLDL_CLASS, type CellDLObject } from '@editor/celldlObjects'
+import { Bounds, type RestrictedValue } from '@editor/geometry'
+import { FixedControlRect } from '@editor/geometry/controls'
+import { Transform } from '@editor/geometry/transforms'
 
 //==============================================================================
 

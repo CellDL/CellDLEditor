@@ -18,9 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-//import * as $oxigraph from '@oxigraph/web.js'
-import * as $oxigraph from '../../../public/oxigraph/web.js'
-
+import * as $oxigraph from '@oxigraph/web'
 
 import { write as prettyTurtle } from '@jeswr/pretty-turtle'
 
@@ -103,7 +101,7 @@ export const TurtleContentType: ContentType = 'text/turtle'
 //==============================================================================
 //==============================================================================
 
-import { BaseStore } from './store.ts'
+import { BaseStore } from './store'
 
 //==============================================================================
 

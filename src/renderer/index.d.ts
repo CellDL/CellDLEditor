@@ -1,6 +1,6 @@
 import { Component } from 'vue'
 
-import { IEditorProps } from './index.ts'
+import { IEditorProps } from '.'
 export { IEditorProps }
 
 export declare const Editor: Component<IEditorProps>

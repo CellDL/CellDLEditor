@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { EM_SIZE } from '../CellDL/geometry/units.ts'
+import { EM_SIZE } from '@editor/geometry/units'
 
 //==============================================================================
 

@@ -23,8 +23,8 @@ import { html } from '@xel/utils/template'
 //==============================================================================
 
 import { BaseElement } from '../uiElements/index.ts'
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { CellDLObject } from '../celldlObjects/index.ts'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLObject } from '@editor/celldlObjects'
 
 //==============================================================================
 

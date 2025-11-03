@@ -18,12 +18,12 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { editGuides } from '../../components/editor/editguides.ts'
-import type { GridAlignOptions } from '../../components/editor/editguides.ts'
-import type { Transform } from '../geometry/transforms.ts'
-import { round } from '../utils.ts'
+import { editGuides } from '@renderer/components/editor/editguides'
+import type { GridAlignOptions } from '@renderer/components/editor/editguides'
+import type { Transform } from '@editor/geometry/transforms'
+import { round } from '@editor/utils'
 
-import { Point, type PointLike, PointMath } from '../../common/points.ts'
+import { Point, type PointLike, PointMath } from '@renderer/common/points'
 
 //==============================================================================
 

@@ -3,7 +3,7 @@ import * as electron from 'electron'
 import * as constants from '../renderer/src/common/constants'
 
 import { ApplicationWindow } from './ApplicationWindow'
-import { electronConf, type IElectronConfState } from './index'
+import { electronConf, type IElectronConfState } from '.'
 
 export class SplashScreenWindow extends ApplicationWindow {
     constructor() {

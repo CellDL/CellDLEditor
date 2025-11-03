@@ -23,9 +23,9 @@ import RBush from 'rbush'
 
 //==============================================================================
 
-import type { CellDLObject } from '../celldlObjects/index.ts'
+import type { CellDLObject } from '@editor/celldlObjects'
 
-import type { Bounds } from './index.ts'
+import type { Bounds } from '.'
 
 //==============================================================================
 

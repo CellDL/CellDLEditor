@@ -22,10 +22,11 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import { FixedValue, type Point, type PointLike, PointMath, RestrictedValue } from '../geometry/index.ts'
+import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { FixedValue, RestrictedValue } from '@editor/geometry'
 
-import type { BoundedElement } from './boundedelement.ts'
-import { FixedPathPoint, PathElement, PathPoint } from './pathelement.ts'
+import type { BoundedElement } from './boundedelement'
+import { FixedPathPoint, PathElement, PathPoint } from './pathelement'
 
 //==============================================================================
 

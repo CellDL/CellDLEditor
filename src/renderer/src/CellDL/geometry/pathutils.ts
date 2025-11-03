@@ -22,8 +22,8 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import { POINT_EPSILON_SQUARED, Point, type PointLike } from './points.ts'
-import { NormalTransform } from './transforms.ts'
+import { POINT_EPSILON_SQUARED, Point, type PointLike } from '@renderer/common/points'
+import { NormalTransform } from './transforms'
 
 //==============================================================================
 

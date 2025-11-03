@@ -22,13 +22,15 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import { editGuides } from '../editor/editguides.ts'
-import { FixedValue, Point, type PointLike, PointMath, RestrictedValue } from '../geometry/index.ts'
-import { CONNECTION_SPLAY_PADDING } from '../styles/stylesheet.ts'
-import { roundEqual } from '../utils.ts'
+import { CONNECTION_SPLAY_PADDING } from '@renderer/common/styling'
+import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { editGuides } from '@renderer/components/editor/editguides'
 
-import type { BoundedElement } from './boundedelement.ts'
-import { FixedPathPoint, PathElement, PathPoint } from './pathelement.ts'
+import { FixedValue, RestrictedValue } from '@editor/geometry'
+import { roundEqual } from '@editor/utils'
+
+import type { BoundedElement } from './boundedelement'
+import { FixedPathPoint, PathElement, PathPoint } from './pathelement'
 
 //==============================================================================
 

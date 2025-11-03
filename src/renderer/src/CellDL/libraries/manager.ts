@@ -18,17 +18,17 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '../metadata/index.ts'
+import * as $rdf from '@editor/metadata'
 
-import { type CellDLObject, rdfTypeToCellDLObject } from '#editor/celldlObjects'
-import { type MetadataPropertiesMap, type PredicateValue, RdfStore, TurtleContentType } from '../metadata/index.ts'
-import { CELLDL_NAMESPACE } from '../metadata/index.ts'
+import { type CellDLObject, rdfTypeToCellDLObject } from '@editor/celldlObjects'
+import { type MetadataPropertiesMap, type PredicateValue, RdfStore, TurtleContentType } from '@editor/metadata'
+import { CELLDL_NAMESPACE } from '@editor/metadata'
 
-import type { Constructor } from '../types/index.ts'
+import type { Constructor } from '@renderer/common/types'
 
 //==============================================================================
 
-import type { ComponentTemplate } from '../components/index.ts'
+import type { ComponentTemplate } from '@editor/components'
 
 //==============================================================================
 

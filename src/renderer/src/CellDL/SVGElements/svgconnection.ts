@@ -23,19 +23,19 @@ import type { ShapeTypes } from 'svg-path-commander'
 
 //==============================================================================
 
-import type { CellDLConnection } from '../celldlObjects/index.ts'
-import { ConnectionStyle } from '../connections/options.ts'
-import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '../editor/undoredo.ts'
-import type { PointLike } from '../geometry/index.ts'
-import { alert } from '../main.ts'
+import type { CellDLConnection } from '@editor/celldlObjects'
+import { ConnectionStyle } from '@renderer/components/connections'
+import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '@renderer/components/editor/undoredo'
+import type { PointLike } from '@renderer/common/points'
+import { alert } from '@editor/main'
 
 //==============================================================================
 
-import { ID_PART_SEPARATOR, type PathElement } from './pathelement.ts'
-import { LinearPath } from './linearpath.ts'
-import { RectilinearPath } from './rectilinearpath.ts'
-import { CellDLSVGElement } from './index.ts'
-import type { BoundedElement } from './boundedelement.ts'
+import { ID_PART_SEPARATOR, type PathElement } from './pathelement'
+import { LinearPath } from './linearpath'
+import { RectilinearPath } from './rectilinearpath'
+import { CellDLSVGElement } from '.'
+import type { BoundedElement } from './boundedelement'
 
 //==============================================================================
 

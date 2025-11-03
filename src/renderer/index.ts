@@ -1,4 +1,4 @@
-import EditorApp from './src/components/EditorApp.vue'
+import EditorApp from '@renderer/components/EditorApp.vue'
 
 export type Theme = 'light' | 'dark' | 'system'
 

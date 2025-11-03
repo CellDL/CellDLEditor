@@ -18,10 +18,10 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '../metadata/index.ts'
+import * as $rdf from '@editor/metadata'
 
-import type { CellDLObject } from '@renderer/celldlObjects'
-import type { ObjectTemplate } from '@renderer/libraries/component'
+import type { CellDLObject } from '@editor/celldlObjects'
+import type { ObjectTemplate } from '@editor/components'
 
 //==============================================================================
 

@@ -18,14 +18,14 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { electronApi } from '../../common/electronApi.ts'
+import { electronApi } from '@renderer/common/electronApi'
 
-import { Point, type PointLike } from '../../common/points.ts'
-import { getViewbox, SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
-import type { CellDLDiagram } from '../../CellDL/diagram/index.ts'
-import type { CellDLMoveableObject } from '../../CellDL/celldlObjects/index.ts'
-import { type Extent } from '../../CellDL/geometry/index.ts'
-import { range } from '../../CellDL/utils.ts'
+import { Point, type PointLike } from '@renderer/common/points'
+import { getViewbox, SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLMoveableObject } from '@editor/celldlObjects'
+import { type Extent } from '@editor/geometry'
+import { range } from '@editor/utils'
 
 //==============================================================================
 

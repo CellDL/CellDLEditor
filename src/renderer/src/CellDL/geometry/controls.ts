@@ -18,11 +18,14 @@ limitations under the License.
 
 ******************************************************************************/
 
-import type { EditorFrame } from '../editor/editorframe.ts'
-import { editGuides } from '../editor/editguides.ts'
-import type { BoundedElement } from '../SVGElements/boundedelement.ts'
+import type { EditorFrame } from '@renderer/components/editor/editorframe'
+import { editGuides } from '@renderer/components/editor/editguides'
+import type { BoundedElement } from '@editor/SVGElements/boundedelement'
 
-import type { StringProperties } from '../types/index.ts'
+import { svgCircle, svgRect } from '@renderer/common/svgUtils'
+
+import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import type { StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 

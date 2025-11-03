@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { GRID_SNAP_RESOLUTION, GRID_SPACING } from '../components/editor/editguides.ts'
+import { GRID_SNAP_RESOLUTION, GRID_SPACING } from '@renderer/components/editor/editguides'
 
 //==============================================================================
 

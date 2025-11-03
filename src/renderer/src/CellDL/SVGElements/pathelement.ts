@@ -23,13 +23,15 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { EditorFrame } from '../editor/editorframe.ts'
-import { type FixedValue, type Point, type PointLike, type RestrictedValue, svgPathElement } from '../geometry/index.ts'
-import { ControlPoint } from '../geometry/controls.ts'
-import type { FoundPoint } from '../geometry/pathutils.ts'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { EditorFrame } from '@renderer/components/editor/editorframe'
+import { Point, type PointLike } from '@renderer/common/points'
+import { svgPathElement } from '@renderer/common/svgUtils'
+import { type FixedValue, type RestrictedValue } from '@editor/geometry'
+import { ControlPoint } from '@editor/geometry/controls'
+import type { FoundPoint } from '@editor/geometry/pathutils'
 
-import type { BoundedElement } from './boundedelement.ts'
+import type { BoundedElement } from './boundedelement'
 
 //==============================================================================
 

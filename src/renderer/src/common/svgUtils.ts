@@ -18,11 +18,11 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { type Extent } from '../CellDL/geometry/index.ts'
-import { lengthToPixels } from '../CellDL/geometry/units.ts'
+import { type Extent } from '@editor/geometry'
+import { lengthToPixels } from '@editor/geometry/units'
 
-import { type PointLike } from './points.ts'
-import { type StringProperties } from './types.ts'
+import { type PointLike } from '@renderer/common//points'
+import { type StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 

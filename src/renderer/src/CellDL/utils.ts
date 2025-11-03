@@ -20,7 +20,7 @@ limitations under the License.
 
 import { Buffer } from 'buffer'
 
-import type { Pair } from './types/index.ts'
+import type { Pair } from '@renderer/common/types'
 
 //==============================================================================
 

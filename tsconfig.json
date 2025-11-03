@@ -1,30 +1,10 @@
 {
+    "files": [],
     "compilerOptions": {
-        //"module": "nodenext",
-        "strictNullChecks": true,
+        "module": "esnext",
         "target": "es2024",
-
-        // Treat files as modules even if it doesn't use import/export
-        "moduleDetection": "force",
-
-        // Ignore module structure
-        // Best for most modern bundlers and the Bun runtime
-        "module": "preserve",
-
-        // Allow JSON modules to be imported
-        "resolveJsonModule": true,
-
-        // Allow JS files to be imported from TS and vice versa
-        "allowJs": true,
-
-        // Use correct ESM import behavior
-        "esModuleInterop": true,
-
-        // Disallow features that require cross-file awareness
-        "isolatedModules": true,
-
-        // Use explicit syntax for type imports and exports
-        "verbatimModuleSyntax": true
+        "composite": true,
+        "allowJs": true
     },
     "include": ["*.ts"],
     "references": [

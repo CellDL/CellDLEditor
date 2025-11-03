@@ -24,12 +24,12 @@ import type XInputElement from '@xel/elements/x-input'
 
 //==============================================================================
 
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { CellDLObject } from '../celldlObjects/index.ts'
 import { BaseElement } from '../uiElements/index.ts'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLObject } from '@editor/celldlObjects'
 
-import type { PanelInterface } from './index.ts'
-import { EntryField, EntryText, SectionDefinition } from './section.ts'
+import type { PanelInterface } from '.'
+import { EntryField, EntryText, SectionDefinition } from './section'
 
 //==============================================================================
 

@@ -18,10 +18,9 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { isNamedNode, namedNode, type NamedNode } from './rdfstore.ts'
-import * as URI from './uris.ts'
+import { isNamedNode, namedNode, type NamedNode } from './rdfstore'
 
-import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
+import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 

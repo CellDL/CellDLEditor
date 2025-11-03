@@ -47,11 +47,11 @@ export * from './uris.ts'
 
 //==============================================================================
 
-import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from './rdfstore.ts'
+import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from './rdfstore'
 
-import type { PredicateType } from './rdfstore.ts'
+import type { PredicateType } from './rdfstore'
 
-import { RDF_NAMESPACE } from './namespaces.ts'
+import { RDF_NAMESPACE } from './namespaces'
 
 //==============================================================================
 

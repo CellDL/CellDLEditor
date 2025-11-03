@@ -18,46 +18,46 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { electronApi } from '../../common/electronApi.ts'
+import { electronApi } from '@renderer/common/electronApi'
 
 //==============================================================================
 
-import '../../assets/svgContent.css'
+import '@renderer/assets/svgContent.css'
 
 //import '../config'
 
-import type CellDLEditorApp from '../../CellDL/main.ts'  // ?????????????
+import type CellDLEditorApp from '@editor/main.ts'  // ?????????????
 
 
-import { CellDLObject } from '../../CellDL/celldlObjects/index.ts'
-import { CellDLDiagram } from '../../CellDL/diagram/index.ts'
-import { libraryManager, type TemplateEvent } from '../../CellDL/libraries/index.ts'
-import { round } from '../../CellDL/utils.ts'
+import { CellDLObject } from '@editor/celldlObjects'
+import { CellDLDiagram } from '@editor/diagram'
+import { libraryManager, type TemplateEvent } from '@editor/libraries'
+import { round } from '@editor/utils'
 
 /**
 import '../panels'
-import type { PanelInterface } from '../panels/index.ts'
-import type CellDLPanelBar from '../panels/index.ts'
-import type PropertiesPanel from '../panels/properties.ts'
+import type { PanelInterface } from '../panels'
+import type CellDLPanelBar from '../panels'
+import type PropertiesPanel from '../panels/properties'
 
 import '../tools'
-import type CellDLToolBar from '../toolbar/index.ts'
+import type CellDLToolBar from '../toolbar'
 **/
 
 
-import { type PointLike, PointMath } from '../../common/points.ts'
-import type { StringProperties } from '../../common/types.ts'
+import { type PointLike, PointMath } from '@renderer/common/points'
+import type { StringProperties } from '@renderer/common/types'
 
 
-import { PathMaker, type PathNode } from '../connections/pathmaker.ts'
+import { PathMaker, type PathNode } from '../connections/pathmaker'
 
 //==============================================================================
 
-import { EditorFrame } from './editorframe.ts'
-import { editGuides, EDITOR_GRID_CLASS } from './editguides.ts'
-import PanZoom from './panzoom.ts'
-import { SelectionBox } from './selectionbox.ts'
-import { undoRedo } from './undoredo.ts'
+import { EditorFrame } from './editorframe'
+import { editGuides, EDITOR_GRID_CLASS } from './editguides'
+import PanZoom from './panzoom'
+import { SelectionBox } from './selectionbox'
+import { undoRedo } from './undoredo'
 
 //import './contextmenu.ts'
 //import { CONTEXT_MENU, type ContextMenu } from './contextmenu.ts'

@@ -27,13 +27,13 @@ import primeVueToastService from 'primevue/toastservice'
 import { useToast } from 'primevue/usetoast'
 import * as vue from 'vue'
 
-import type { IEditorProps } from '../../index'
+import type { IEditorProps } from '../..'
 
-import '../assets/app.css'
-import * as common from '../common/common'
-import { SHORT_DELAY, TOAST_LIFE } from '../common/constants'
-import { electronApi } from '../common/electronApi'
-import * as vueCommon from '../common/vueCommon'
+import '@renderer/assets/app.css'
+import * as common from '@renderer/common/common'
+import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants'
+import { electronApi } from '@renderer/common/electronApi'
+import * as vueCommon from '@renderer/common/vueCommon'
 
 const props = defineProps<IEditorProps>()
 

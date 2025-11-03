@@ -55,22 +55,11 @@ import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 
 //==============================================================================
 
-//import { getViewbox } from '../geometry/index.ts'
+import { getViewbox, SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
-import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
-
-export type Extent = [number, number, number, number]
-
-export function getViewbox(svgElement: SVGGraphicsElement): Extent {
-    return svgElement
-        .getAttribute('viewBox')
-        ?.split(' ')
-        .map((n) => +n) as Extent
-}
-
-
-import { EM_SIZE, EX_SIZE, lengthToPixels, pixelsToLength } from '../geometry/units.ts'
-import { round } from '../utils.ts'
+import { type Extent } from '@editor/geometry'
+import { EM_SIZE, EX_SIZE, lengthToPixels, pixelsToLength } from '@editor/geometry/units'
+import { round } from '@editor/utils'
 
 //==============================================================================
 

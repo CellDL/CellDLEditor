@@ -18,25 +18,25 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '../metadata/index.ts'
+import * as $rdf from '@editor/metadata'
 
 //==============================================================================
 
-import type { ConnectionStyle } from '../connections/options.ts'
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { CellDLSVGElement } from '../SVGElements/index.ts'
-import { BoundedElement } from '../SVGElements/boundedelement.ts'
-import { SvgConnection } from '../SVGElements/svgconnection.ts'
-import { Point, type PointLike } from '../geometry/index.ts'
-import { notifyChanges } from '../editor/index.ts'
-import { editGuides } from '../editor/editguides.ts'
-import type { UndoMovePosition } from '../editor/undoredo.ts'
-import type { ObjectTemplate } from '../components/index.ts'
-import { alert } from '../main.ts'
-import type { MetadataPropertiesMap, MetadataPropertyValue, NamedNode, RdfStore } from '../metadata/index.ts'
-import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '../metadata/index.ts'
+import type { ConnectionStyle } from '@renderer/components/connections'
+import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLSVGElement } from '@editor/SVGElements'
+import { BoundedElement } from '@editor/SVGElements/boundedelement'
+import { SvgConnection } from '@editor/SVGElements/svgconnection'
+import { Point, type PointLike } from '@renderer/common/points'
+import { notifyChanges } from '@renderer/components/editor'
+import { editGuides } from '@renderer/components/editor/editguides'
+import type { UndoMovePosition } from '@renderer/components/editor/undoredo'
+import type { ObjectTemplate } from '@editor/components'
+import { alert } from '@editor/main'
+import type { MetadataPropertiesMap, MetadataPropertyValue, NamedNode, RdfStore } from '@editor/metadata'
+import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata'
 
-import type { PropertiesType, StringProperties } from '../types/index.ts'
+import type { PropertiesType, StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 

@@ -32,7 +32,7 @@ import {
 
 //==============================================================================
 
-import { Point, type PointLike } from './points'
+import { Point, type PointLike } from '@renderer/common/points'
 
 //==============================================================================
 

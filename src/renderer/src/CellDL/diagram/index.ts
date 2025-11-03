@@ -22,46 +22,48 @@ import { DOMParser } from '@xmldom/xmldom'
 
 //==============================================================================
 
-import * as $rdf from '../metadata/index.ts'
-import { TurtleContentType } from '../metadata/index.ts'
-import type { ContentType, SubjectType } from '../metadata/index.ts'
-import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
+import * as $rdf from '@editor/metadata'
+import { TurtleContentType } from '@editor/metadata'
+import type { ContentType, SubjectType } from '@editor/metadata'
+import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
-import { MetadataPropertiesMap, type MetadataPropertyValue, type NamedNode, RdfStore, type Statement } from '../metadata/index.ts'
-import { CELLDL_NAMESPACE, CELLDL_NAMESPACE_DECLARATIONS } from '../metadata/index.ts'
-import { DCT_NAMESPACE, OWL_NAMESPACE, RDF_TYPE } from '../metadata/index.ts'
+import { MetadataPropertiesMap, type MetadataPropertyValue, type NamedNode, RdfStore, type Statement } from '@editor/metadata'
+import { CELLDL_NAMESPACE, CELLDL_NAMESPACE_DECLARATIONS } from '@editor/metadata'
+import { DCT_NAMESPACE, OWL_NAMESPACE, RDF_TYPE } from '@editor/metadata'
 
-import { type Bounds, type Extent, type PointLike, svgCircleElement, svgRectElement } from '../geometry/index.ts'
-import { ShapeIntersections } from '../geometry/intersections.ts'
-import { CellDLSpatialIndex } from '../geometry/spatialindex.ts'
-import type { ContainedObject } from '../geometry/spatialindex.ts'
-import { lengthToPixels } from '../geometry/units.ts'
-import { type FoundPoint, PointFinder } from '../geometry/pathutils.ts'
+import { type PointLike } from '@renderer/common/points'
+import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styling'
+import { svgCircleElement, svgRectElement } from '@renderer/common/svgUtils'
+import { type Bounds, type Extent } from '@editor/geometry'
+import { ShapeIntersections } from '@editor/geometry/intersections'
+import { CellDLSpatialIndex } from '@editor/geometry/spatialindex'
+import type { ContainedObject } from '@editor/geometry/spatialindex'
+import { lengthToPixels } from '@editor/geometry/units'
+import { type FoundPoint, PointFinder } from '@editor/geometry/pathutils'
 
-import { CELLDL_CLASS, CellDLObject } from '../celldlObjects/index.ts'
+import { CELLDL_CLASS, CellDLObject } from '@editor/celldlObjects'
 import {
     type CellDLConnectedObject,
     CellDLConnection,
     CellDLInterface,
     CellDLUnconnectedPort
-} from '../celldlObjects/index.ts'
-import { CellDLAnnotation, CellDLComponent, CellDLConduit, CellDLCompartment } from '../celldlObjects/index.ts'
-import { setInternalIds } from '../SVGElements/index.ts'
-import type { BoundedElement } from '../SVGElements/boundedelement.ts'
-import type { SvgConnection } from '../SVGElements/svgconnection.ts'
+} from '@editor/celldlObjects/index.ts'
+import { CellDLAnnotation, CellDLComponent, CellDLConduit, CellDLCompartment } from '@editor/celldlObjects'
+import { setInternalIds } from '@editor/SVGElements'
+import type { BoundedElement } from '@editor/SVGElements/boundedelement'
+import type { SvgConnection } from '@editor/SVGElements/svgconnection'
 
-import { type CellDLEditor, notifyChanges } from '../../components/editor/index.ts'
-import { editGuides } from '../../components/editor/editguides.ts'
-import { type EditorUndoAction, undoRedo } from '../../components/editor/undoredo.ts'
+import { type CellDLEditor, notifyChanges } from '@renderer/components/editor'
+import { editGuides } from '@renderer/components/editor/editguides'
+import { type EditorUndoAction, undoRedo } from '@renderer/components/editor/undoredo'
 
-import { libraryManager } from '../libraries/index.ts'
-import type { NewObjectClass, ObjectTemplate } from '../components/index.ts'
-import { LatexStyleRules } from '../mathjax/index.ts'
-import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '../styles/stylesheet.ts'
+import { libraryManager } from '@editor/libraries'
+import type { NewObjectClass, ObjectTemplate } from '@editor/components'
+import { LatexStyleRules } from '@editor/mathjax'
 
-import type { Constructor, StringProperties } from '../types/index.ts'
+import type { Constructor, StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 

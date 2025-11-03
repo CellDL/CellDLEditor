@@ -21,17 +21,17 @@ limitations under the License.
 import { css, html } from '@xel/utils/template'
 import type XButtonElement from '@xel/elements/x-button'
 import type XIconElement from '@xel/elements/x-icon'
+import { type ComponentTemplate } from '@editor/components'
 
 //==============================================================================
 
 import { BaseElement } from '../uiElements/index.ts'
 
-import { type ComponentTemplate } from '../components/index.ts'
 import '../connections/options'
-import { DEFAULT_CONNECTION_STYLE } from '../connections/options.ts'
+import { DEFAULT_CONNECTION_STYLE } from '@renderer/components/connections'
 
 import '../libraries'
-import { libraryManager, templateImageEvent } from '../libraries/index.ts'
+import { libraryManager, templateImageEvent } from '@editor/libraries'
 
 //==============================================================================
 

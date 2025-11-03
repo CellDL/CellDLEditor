@@ -2,7 +2,7 @@ import electron from 'electron'
 
 import { isMacOs, isPackaged } from '../renderer/src/common/electron'
 
-import { mainWindow } from './index'
+import { mainWindow } from '.'
 import { clearRecentFiles } from './MainWindow'
 
 let enabledMenu: electron.Menu | null = null

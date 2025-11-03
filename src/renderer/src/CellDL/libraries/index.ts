@@ -18,19 +18,11 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { css, html } from '@xel/utils/template'
+import { templateImageEvent } from '@editor/components'
+import { libraryManager } from './manager'
 
-//==============================================================================
-
-import { BaseElement } from '../uiElements/index.ts'
-
-//==============================================================================
-
-import { templateImageEvent } from '../components/index.ts'
-import { libraryManager } from './manager.ts'
-
-export { templateImageEvent } from '../components/index.ts'
-export type { ObjectTemplate, TemplateEvent } from '../components/index.ts'
+export { templateImageEvent } from '@editor/components/index.ts'
+export type { ObjectTemplate, TemplateEvent } from '@editor/components/index.ts'
 export { libraryManager } from './manager.ts'
 
 //==============================================================================
