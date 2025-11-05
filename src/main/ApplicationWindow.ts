@@ -12,7 +12,7 @@ export class ApplicationWindow extends electron.BrowserWindow {
         options.show = false
         options.useContentSize = true
         options.webPreferences = {
-            preload: path.join(import.meta.dirname, '../preload/index.mjs'),
+            preload: path.resolve(__dirname, '../preload/index.mjs'),
             sandbox: false
         }
 

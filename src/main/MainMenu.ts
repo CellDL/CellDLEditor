@@ -2,15 +2,18 @@ import electron from 'electron'
 
 import { isMacOs, isPackaged } from '../renderer/src/common/electron'
 
-import { mainWindow } from '.'
-import { clearRecentFiles } from './MainWindow'
+import { application } from './index.ts'
+
+import { clearRecentFiles } from './EditorWindow'
+
+import { SHOW_GRID } from './EditorWindow'
 
 let enabledMenu: electron.Menu | null = null
 let disabledMenu: electron.Menu | null = null
 let recentFilePaths: string[] = []
 let hasFiles = false
 
-export function enableDisableMainMenu(enable: boolean): void {
+export function enableDisableMainMenu(enable: boolean): electron.Menu | null {
     // Build our menu, if needed.
 
     if (enable && enabledMenu !== null) {
@@ -24,7 +27,7 @@ export function enableDisableMainMenu(enable: boolean): void {
             label: 'Settings...',
             accelerator: 'CmdOrCtrl+,',
             click: () => {
-                mainWindow?.webContents.send('settings')
+                application.currentWindow?.send('settings')
             }
         }
 
@@ -34,7 +37,7 @@ export function enableDisableMainMenu(enable: boolean): void {
             checkForUpdatesMenuItem = {
                 label: 'Check For Updates...',
                 click: () => {
-                    mainWindow?.webContents.send('check-for-updates')
+                    application.currentWindow?.send('check-for-updates')
                 }
             }
         }
@@ -42,7 +45,7 @@ export function enableDisableMainMenu(enable: boolean): void {
         const aboutEditorMenuItem: electron.MenuItemConstructorOptions = {
             label: 'About the Editor',
             click: () => {
-                mainWindow?.webContents.send('about')
+                application.currentWindow?.send('about')
             }
         }
 
@@ -87,35 +90,19 @@ export function enableDisableMainMenu(enable: boolean): void {
         }
 
         fileSubMenu.push({
+            label: 'New File',
+            accelerator: 'CmdOrCtrl+N',
+            click: () => {
+                application.newFile()
+            }
+        })
+
+        fileSubMenu.push({
             label: 'Open...',
             accelerator: 'CmdOrCtrl+O',
             click: () => {
-                mainWindow?.open()
+                application.openFileFromMenu()
             }
-        })
-        fileSubMenu.push({
-            label: 'Open Remote...',
-            accelerator: 'CmdOrCtrl+Shift+O',
-            click: () => {
-                mainWindow?.webContents.send('open-remote')
-            }
-        })
-        fileSubMenu.push({
-            label: 'Open Sample',
-            submenu: [
-                {
-                    label: 'Lorenz',
-                    click: () => {
-                        mainWindow?.webContents.send('open-sample-lorenz')
-                    }
-                },
-                {
-                    label: 'Interactive Lorenz',
-                    click: () => {
-                        mainWindow?.webContents.send('open-sample-interactive-lorenz')
-                    }
-                }
-            ]
         })
 
         const fileReopenSubMenu: electron.MenuItemConstructorOptions[] = []
@@ -124,7 +111,7 @@ export function enableDisableMainMenu(enable: boolean): void {
             label: 'Most Recent',
             accelerator: 'CmdOrCtrl+Shift+T',
             click: () => {
-                mainWindow?.webContents.send('open', recentFilePaths[0])
+                application.openFile(recentFilePaths[0])
             },
             enabled: recentFilePaths.length > 0
         })
@@ -136,7 +123,7 @@ export function enableDisableMainMenu(enable: boolean): void {
                 fileReopenSubMenu.push({
                     label: filePath,
                     click: () => {
-                        mainWindow?.webContents.send('open', filePath)
+                        application.openFile(filePath)
                     }
                 })
             })
@@ -156,13 +143,41 @@ export function enableDisableMainMenu(enable: boolean): void {
             label: 'Reopen',
             submenu: fileReopenSubMenu
         })
+
+        fileSubMenu.push({
+            id: 'fileSave',
+            label: 'Save',
+            accelerator: 'CmdOrCtrl+S',
+            click: () => {
+                application.currentWindow?.send('save')
+            },
+            enabled: hasFiles
+        })
+        fileSubMenu.push({
+            id: 'fileSaveAll',
+            label: 'Save All',
+            click: () => {
+                application.currentWindow?.send('save-all')
+            },
+            enabled: hasFiles
+        })
+        fileSubMenu.push({
+            id: 'fileSaveAs',
+            label: 'Save',
+            accelerator: 'Shift+CmdOrCtrl+S',
+            click: () => {
+                application.currentWindow?.send('save-as')
+            },
+            enabled: hasFiles
+        })
+
         fileSubMenu.push({ type: 'separator' })
         fileSubMenu.push({
             id: 'fileClose',
             label: 'Close',
             accelerator: 'CmdOrCtrl+W',
             click: () => {
-                mainWindow?.webContents.send('close')
+                application.currentWindow?.send('close')
             },
             enabled: hasFiles
         })
@@ -170,9 +185,18 @@ export function enableDisableMainMenu(enable: boolean): void {
             id: 'fileCloseAll',
             label: 'Close All',
             click: () => {
-                mainWindow?.webContents.send('close-all')
+                application.currentWindow?.send('close-all')
             },
             enabled: hasFiles
+        })
+
+        fileSubMenu.push({ type: 'separator' })
+        fileSubMenu.push({
+            id: 'fileImport',
+            label: 'Import SVG',
+            click: () => {
+                application.openFileFromMenu(true)
+            }
         })
 
         if (!isMacOs()) {
@@ -202,6 +226,15 @@ export function enableDisableMainMenu(enable: boolean): void {
         const viewMenu: electron.MenuItemConstructorOptions = {
             label: 'View',
             submenu: [
+                {
+                    id: SHOW_GRID,
+                    label: 'Grid',
+                    accelerator: 'F1',
+                    type: 'checkbox',
+                    click: (menuItem, _, __) =>
+                    application.currentWindow?.menuEvent(menuItem.id, menuItem.checked)
+                },
+                { type: 'separator' },
                 { role: 'resetZoom' },
                 { role: 'zoomIn' },
                 { role: 'zoomOut' },
@@ -226,7 +259,7 @@ export function enableDisableMainMenu(enable: boolean): void {
         toolsSubMenu.push({
             label: 'Reset All...',
             click: () => {
-                mainWindow?.webContents.send('reset-all')
+                application.currentWindow?.send('reset-all')
             }
         })
 
@@ -284,6 +317,7 @@ export function enableDisableMainMenu(enable: boolean): void {
             menu.push(helpMenu)
 
             enabledMenu = electron.Menu.buildFromTemplate(menu)
+
         } else {
             if (isMacOs()) {
                 menu.push(appMenu)
@@ -296,6 +330,7 @@ export function enableDisableMainMenu(enable: boolean): void {
 
         electron.Menu.setApplicationMenu(enable ? enabledMenu : disabledMenu)
     }
+    return enable ? enabledMenu : disabledMenu
 }
 
 export function enableDisableFileCloseAndCloseAllMenuItems(enable: boolean): void {
