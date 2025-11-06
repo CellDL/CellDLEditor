@@ -8,7 +8,6 @@ const osInfo = await systemInformation.osInfo()
 //==============================================================================
 
 import type { ISettings } from '@renderer/common/common'
-import type { ISplashScreenInfo } from '@renderer/common/electronApi'
 
 //==============================================================================
 
@@ -28,11 +27,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
         return `${osInfo.distro} ${osInfo.release} (${architecture})`
     },
-
-    onInitSplashScreenWindow: (callback: (info: ISplashScreenInfo) => void) =>
-        ipcRenderer.on('init-splash-screen-window', (_event, info: ISplashScreenInfo) => {
-            callback(info)
-        }),
 
     // Renderer process asking the main process to do something for it.
 

@@ -1,16 +1,9 @@
 import type { ISettings } from './common.js'
 
-export interface ISplashScreenInfo {
-    copyright: string
-    version: string
-}
-
 interface IElectronApi {
     // Note: this must be in sync with src/preload/index.ts.
 
     operatingSystem: () => string
-
-    onInitSplashScreenWindow: (callback: (info: ISplashScreenInfo) => void) => void
 
     // Renderer process asking the main process to do something for it.
 
