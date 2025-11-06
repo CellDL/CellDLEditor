@@ -13,7 +13,7 @@ import type { ISettings } from '@renderer/common/common'
 
 exposeElectronAPI()
 
-contextBridge.exposeInMainWorld('electronAPI', {
+contextBridge.exposeInMainWorld('electronApi', {
 
     operatingSystem: () => {
         const architecture = osInfo.arch === 'x64' ? 'Intel' : 'ARM'
@@ -38,19 +38,35 @@ contextBridge.exposeInMainWorld('electronAPI', {
     resetAll: () => ipcRenderer.invoke('reset-all'),
     saveSettings: (settings: ISettings) => ipcRenderer.invoke('save-settings', settings),
 
+    sendEditorAction: (action: string, ...args: any) =>
+        ipcRenderer.send('EDITOR_OP', action, ...args),
+    sendFileAction: (action: string, path: string, data: string|undefined=undefined) =>
+        ipcRenderer.send('FILE_OP', action, path, data),
+
     // Renderer process listening to the main process.
 
     onAbout: (callback: () => void) =>
         ipcRenderer.on('about', () => {
             callback()
         }),
-    onSettings: (callback: () => void) =>
-        ipcRenderer.on('settings', () => {
-            callback()
-        }),
-
+    onAction: (callback: (action: string) => void) =>
+        ipcRenderer.on('action', (_event, action: string) => {
+        callback(action);
+    }),
+    onEnableDisableUi: (callback: (enable: boolean) => void) =>
+        ipcRenderer.on('enable-disable-ui', (_event, enable: boolean) => {
+          callback(enable);
+    }),
     onCheckForUpdates: (callback: () => void) =>
         ipcRenderer.on('check-for-updates', () => {
+            callback()
+        }),
+    onResetAll: (callback: () => void) =>
+        ipcRenderer.on('reset-all', () => {
+        callback();
+    }),
+    onSettings: (callback: () => void) =>
+        ipcRenderer.on('settings', () => {
             callback()
         }),
     onUpdateAvailable: (callback: (version: string) => void) =>
@@ -81,11 +97,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onFileAction: (callback: () => void) =>
         ipcRenderer.on('FILE_OP', callback),
     onMenuAction: (callback: () => void) =>
-        ipcRenderer.on('EDITOR_OP', callback),
-    sendEditorAction: (action: string, ...args: any) =>
-        ipcRenderer.send('EDITOR_OP', action, ...args),
-    sendFileAction: (action: string, path: string, data: string|undefined=undefined) =>
-        ipcRenderer.send('FILE_OP', action, path, data)
+        ipcRenderer.on('EDITOR_OP', callback)
 })
 
 //==============================================================================

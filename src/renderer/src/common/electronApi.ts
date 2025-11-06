@@ -18,9 +18,11 @@ interface IElectronApi {
     // Renderer process listening to the main process.
 
     onAbout: (callback: () => void) => void
-    onSettings: (callback: () => void) => void
-
+    onAction: (callback: (action: string) => void) => void
     onCheckForUpdates: (callback: () => void) => void
+    onEnableDisableUi: (callback: (enable: boolean) => void) => void;
+    onResetAll: (callback: () => void) => void;
+    onSettings: (callback: () => void) => void
     onUpdateAvailable: (callback: (version: string) => void) => void
     onUpdateCheckError: (callback: (issue: string) => void) => void
     onUpdateDownloaded: (callback: () => void) => void
@@ -28,10 +30,11 @@ interface IElectronApi {
     onUpdateDownloadProgress: (callback: (percent: number) => void) => void
     onUpdateNotAvailable: (callback: () => void) => void
 
-    onFileAction: (callback: () => void) => Promise<void>,
-    onMenuAction: (callback: () => void) => Promise<void>,
-    sendEditorAction: (action: string, ...args: any) => Promise<void>,
-    sendFileAction: (action: string, path: string, data: string|undefined) => Promise<void>
+    onFileAction: (callback: (event: Event, action: string, path: string, ...args: any[]) => void) => Promise<void>,
+    onMenuAction: (callback: (event: Event, action: string, ...args: any[]) => void) => Promise<void>,
+
+    sendEditorAction: (action: string, ...args: any[]) => Promise<void>,
+    sendFileAction: (action: string, path: string, ...args: any[]) => Promise<void>
 }
 
 interface IWindow {
