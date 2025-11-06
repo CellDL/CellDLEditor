@@ -1,23 +1,20 @@
-<template>
-    <BlockUI
+<template lang="pug">
+    BlockUI.overflow-hidden.editor-window(
         ref="blockUi"
         :blocked="compUiBlocked"
-        :class="['overflow-hidden', 'editor-window', blockUiClass]"
+        :class="blockUiClass"
+
         @click="activateInstance"
         @focus="activateInstance"
         @focusin="activateInstance"
         @keydown="activateInstance"
-        @mousedown="activateInstance"
-    >
-        <MainMenu
+        @mousedown="activateInstance")
+        MainMenu(
             :id="mainMenuId"
             v-if="electronApi === undefined"
-
             @about="onAboutMenu"
-            @settings="onSettingsMenu"
-        />
-        <CellDLEditor/>
-    </BlockUI>
+            @settings="onSettingsMenu")
+        CellDLEditor
 </template>
 
 <script setup lang="ts">

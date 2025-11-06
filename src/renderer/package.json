@@ -79,6 +79,8 @@
         "@vitejs/plugin-vue": "^6.0.1",
         "@vue/tsconfig": "^0.8.1",
         "autoprefixer": "^10.4.21",
+        "pug": "^3.0.3",
+        "pug-plain-loader": "^1.1.0",
         "tailwindcss": "^4.1.16",
         "tailwindcss-primeui": "^0.6.1",
         "unplugin-vue-components": "^30.0.0",

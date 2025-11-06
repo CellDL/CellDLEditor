@@ -1,11 +1,19 @@
-<template>
-    <Toolbar class="vertical">
-        <template #start>
-            <ToggleButton onIcon="pi pi-plus" offIcon="pi pi-plus" class="mr-2" />
-            <ToggleButton onIcon="pi pi-print" offIcon="pi pi-print" class="mr-2" severity="secondary" text />
-            <ToggleButton onIcon="pi pi-upload" offIcon="pi pi-upload" severity="secondary" text />
-        </template>
-    </Toolbar>
+<template lang="pug">
+    Toolbar.vertical
+        template(#start)
+            ToggleButton.mr-2(
+                onIcon="pi pi-plus"
+                offIcon="pi pi-plus")
+            ToggleButton.mr-2(
+                onIcon="pi pi-print"
+                offIcon="pi pi-print"
+                severity="secondary"
+                text)
+            ToggleButton.mr-2(
+                onIcon="pi pi-upload"
+                offIcon="pi pi-upload"
+                severity="secondary"
+                text)
 </template>
 
 <script setup lang="ts">

@@ -1,19 +1,14 @@
-<template>
-    <main class="editor-pane">
-        <editor-toolbar class="editor-bar" id="tool-bar"></editor-toolbar>
-
-            <context-menu id="context-menu"></context-menu>
-        <div ref="svg-content" id="svg-content">
-        </div>
-
-
-        <div id="panel-content"><!--Where an open panel is displayed--></div>
-        <cd-panel-bar class="editor-bar" id="panel-bar"></cd-panel-bar>
-    </main>
-    <footer class="status-bar">
-        <span id="status-msg"></span>
-        <span id="status-pos"></span>
-    </footer>
+<template lang="pug">
+    main.editor-pane
+        editor-toolbar.editor-bar#tool-bar
+        div#svg-content(ref="svg-content")
+            <!-- context-menu(id="context-menu")  -->
+        div#panel-content
+            <!-- Where an open panel is displayed -->
+        cd-panel-bar.editor-bar#panel-bar
+    footer.status-bar
+        span#status-msg
+        span#status-pos
 </template>
 
 <script setup lang="ts">
