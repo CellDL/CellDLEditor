@@ -160,6 +160,10 @@ export class CellDLDiagram {
         }
     }
 
+    edit() {
+        this.#celldlEditor.editDiagram(this)
+    }
+
     get editorFrame() {
         return this.#celldlEditor.editorFrame
     }
