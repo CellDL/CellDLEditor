@@ -28,6 +28,7 @@
         "build": "electron-vite build",
         "build:web": "cd ./src/renderer && vite build",
         "clean": "bun src/renderer/scripts/clean.js",
+        "debug": "electron-vite --inspect --sourcemap dev --watch",
         "dev": "electron-vite dev --watch",
         "dev:web": "cd ./src/renderer && vite dev",
         "format": "bunx --bun biome format --fix --max-diagnostics=none",
