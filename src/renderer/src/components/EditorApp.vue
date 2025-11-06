@@ -491,15 +491,13 @@ vue.watch(compUiBlocked, (newCompUiBlocked: boolean) => {
 </script>
 
 <style scoped>
-.editor-application {
-    height: 100vh;
-    height: 100dvh;
-}
 .editor-component {
     height: 100%;
 }
 .editor-window {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
 }
 </style>
