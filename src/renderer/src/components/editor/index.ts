@@ -24,11 +24,6 @@ import { electronApi } from '@renderer/common/electronApi'
 
 import '@renderer/assets/svgContent.css'
 
-//import '../config'
-
-import type CellDLEditorApp from '@editor/main.ts'  // ?????????????
-
-
 import { CellDLObject } from '@editor/celldlObjects'
 import { CellDLDiagram } from '@editor/diagram'
 import { libraryManager, type TemplateEvent } from '@editor/libraries'
@@ -68,6 +63,38 @@ import { undoRedo } from './undoredo'
 const SVG_CLOSE_DISTANCE = 2   // Pointer is close to object in SVG coords
                                // c.f. stroke-width (for connections)??
 WIP ****/
+
+//==============================================================================
+
+export namespace alert {
+    export function error(msg: string) {
+        console.error(msg)
+        if (CellDLEditor.instance) {
+            CellDLEditor.instance.showTooltip(msg, 'error')
+        }
+    }
+
+    export function info(msg: string) {
+        console.log(msg)
+        if (CellDLEditor.instance) {
+            CellDLEditor.instance.showTooltip(msg, 'info')
+        }
+    }
+
+    export function warn(msg: string) {
+        console.warn(msg)
+        if (CellDLEditor.instance) {
+            CellDLEditor.instance.showTooltip(msg, 'warn')
+        }
+    }
+
+    export function elementError(msg: string, svgElement?: SVGGraphicsElement) {
+        if (svgElement) {
+            svgElement.classList.add('error')
+        }
+        error(msg)
+    }
+}
 
 //==============================================================================
 
@@ -115,8 +142,8 @@ export function getElementId(element: SVGGraphicsElement): string {
 const SVG_PANEL_ID = 'svg-panel'
 
 export class CellDLEditor {
+    static instance: CellDLEditor | null = null
 
-    #app: CellDLEditorApp
     #container: HTMLElement | null = null
 /**
     #toolBar: CellDLToolBar
@@ -165,8 +192,7 @@ export class CellDLEditor {
     #pointerDownTime: number = 0
 
     constructor() {
-        this.#app = document.querySelector('cd-editor-app') as CellDLEditorApp
-
+        CellDLEditor.instance = this
 /**
         this.#toolBar = this.getElementById('tool-bar') as CellDLToolBar
         this.#panelBar = this.getElementById('panel-bar') as CellDLPanelBar
