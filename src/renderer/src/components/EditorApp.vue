@@ -37,7 +37,6 @@ import * as vue from 'vue'
 import type { IEditorProps } from '../..'
 
 import '@renderer/assets/app.css'
-import * as common from '@renderer/common/common'
 import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants'
 import { electronApi } from '@renderer/common/electronApi'
 import * as vueCommon from '@renderer/common/vueCommon'

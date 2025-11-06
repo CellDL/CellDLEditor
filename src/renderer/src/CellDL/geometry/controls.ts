@@ -32,13 +32,8 @@ import type { StringProperties } from '@renderer/common/types'
 import {
     FixedPoint,
     FixedValue,
-    Point,
-    type PointLike,
-    PointMath,
     RestrictedPoint,
     RestrictedValue,
-    svgCircle,
-    svgRect
 } from './index.ts'
 
 //==============================================================================

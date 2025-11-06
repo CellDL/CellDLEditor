@@ -43,7 +43,6 @@ export type {
 export type { PredicateValue } from './store.ts'
 
 export * from './namespaces.ts'
-export * from './uris.ts'
 
 //==============================================================================
 

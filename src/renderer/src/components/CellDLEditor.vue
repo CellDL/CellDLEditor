@@ -132,7 +132,4 @@ vue.onMounted(() => {
 #status-pos {
     float: right;
 }
-x-tooltip[type="error"] {
-    background: #F88;
-}
 </style>
