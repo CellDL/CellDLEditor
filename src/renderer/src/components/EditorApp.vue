@@ -49,28 +49,10 @@ function activateInstance(): void {
     activeInstanceUid.value = String(crtInstance?.uid)
 }
 
-const compIsActive = vue.computed(() => {
-    return activeInstanceUid.value === String(crtInstance?.uid)
-})
-
 // Determine if the component UI should be enabled.
 
 const compUiBlocked = vue.computed(() => {
     return !uiEnabled.value || loadingEditorMessageVisible.value
-})
-
-const compUiEnabled = vue.computed(() => {
-    return (
-        !compUiBlocked.value &&
-        !openRemoteVisible.value &&
-        !settingsVisible.value &&
-        !resetAllVisible.value &&
-        !aboutVisible.value &&
-        !updateErrorVisible.value &&
-        !updateAvailableVisible.value &&
-        !updateDownloadProgressVisible.value &&
-        !updateNotAvailableVisible.value
-    )
 })
 
 // Get the current Vue app instance to use some PrimeVue plugins.
@@ -118,18 +100,6 @@ if (props.theme !== undefined) {
 }
 
 const toast = useToast()
-
-// Asynchronously initialise our API.
-//
-//  cf. oxigraph...
-
-/**
-const locApiInitialised = vue.ref(false)
-
-void locApi.initialiseLocApi().then(() => {
-    locApiInitialised.value = true
-})
-**/
 
 // Handle an action.
 
@@ -348,44 +318,6 @@ function onDragLeave(): void {
 
     dragAndDropCounter.value -= 1
 }
-
-// Open.
-
-electronApi?.onOpen((filePath: string) => {
-    openFile(filePath)
-})
-
-function onOpenMenu(): void {
-    files.value?.click()
-}
-
-// Open remote.
-
-const openRemoteVisible = vue.ref<boolean>(false)
-
-electronApi?.onOpenRemote(() => {
-    openRemoteVisible.value = true
-})
-
-function onOpenRemoteMenu(): void {
-    openRemoteVisible.value = true
-}
-
-function onOpenRemote(url: string): void {
-    openFile(url)
-}
-
-// Close.
-
-electronApi?.onClose(() => {
-    onCloseMenu()
-})
-
-// Close all.
-
-electronApi?.onCloseAll(() => {
-    onCloseAllMenu()
-})
 
 // Reset all.
 
