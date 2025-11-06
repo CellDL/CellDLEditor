@@ -222,7 +222,7 @@ export const application = new class Application
             if (browser) {
                 browser.focus()
             } else {
-                const editor = this.#editorsById.get(this.#focusedEditorId)
+                const editor = this.currentWindow
                 if (editor) {
                     if (editor && editor.filePath === '' && !editor.modified) {
                         // Reuse the current window if its empty
@@ -264,7 +264,7 @@ export const application = new class Application
 
     #createEditor(filePath: string='', options={}) {
         let x, y
-        const currentEditor = this.#editorsById.get(this.#focusedEditorId)
+        const currentEditor = this.currentWindow
         if (currentEditor) {
             [x, y] = currentEditor.getPosition()
             x += NEW_WINDOW_OFFSET
