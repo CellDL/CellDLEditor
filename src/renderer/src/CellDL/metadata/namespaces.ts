@@ -64,17 +64,17 @@ export function Namespace(nsuri: string): NamespaceType {
 
 //==============================================================================
 
-export const CELLDL_NAMESPACE = Namespace(URI.CELLDL_NAMESPACE_URI)
+export const CELLDL_NAMESPACE = Namespace(CELLDL_NAMESPACE_URI)
 
-export const CELL_NAMESPACE = Namespace(URI.CELL_NAMESPACE_URI)
-export const BG_NAMESPACE = Namespace(URI.BG_NAMESPACE_URI)
-export const FC_NAMESPACE = Namespace(URI.FC_NAMESPACE_URI)
+export const CELL_NAMESPACE = Namespace(CELL_NAMESPACE_URI)
+export const BG_NAMESPACE = Namespace(BG_NAMESPACE_URI)
+export const FC_NAMESPACE = Namespace(FC_NAMESPACE_URI)
 
-export const DCT_NAMESPACE = Namespace(URI.DCT_NAMESPACE_URI)
-export const OWL_NAMESPACE = Namespace(URI.OWL_NAMESPACE_URI)
-export const RDF_NAMESPACE = Namespace(URI.RDF_NAMESPACE_URI)
-export const RDFS_NAMESPACE = Namespace(URI.RDFS_NAMESPACE_URI)
-export const XS_NAMESPACE = Namespace(URI.XS_NAMESPACE_URI)
+export const DCT_NAMESPACE = Namespace(DCT_NAMESPACE_URI)
+export const OWL_NAMESPACE = Namespace(OWL_NAMESPACE_URI)
+export const RDF_NAMESPACE = Namespace(RDF_NAMESPACE_URI)
+export const RDFS_NAMESPACE = Namespace(RDFS_NAMESPACE_URI)
+export const XS_NAMESPACE = Namespace(XS_NAMESPACE_URI)
 
 //==============================================================================
 
@@ -90,8 +90,8 @@ export function curieSuffix(NS: NamespaceType, term: string | NamedNode): string
 
 //==============================================================================
 
-const declaredNamespaces = Object.assign({}, URI.CELLDL_NAMESPACE_DECLARATIONS,
-                                             URI.WEB_NAMESPACE_DECLARATIONS)
+const declaredNamespaces = Object.assign({}, CELLDL_NAMESPACE_DECLARATIONS,
+                                             WEB_NAMESPACE_DECLARATIONS)
 
 export function getCurie(term: string | NamedNode): string {
     const fullUri: string = isNamedNode(term) ? (<NamedNode>term).uri : <string>term
