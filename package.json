@@ -84,6 +84,8 @@
         "electron-updater": "^6.6.2",
         "electron-vite": "^4.0.1",
         "node-addon-api": "^8.5.0",
+        "pug": "^3.0.3",
+        "pug-plain-loader": "^1.1.0",
         "tailwindcss": "^4.1.16",
         "tailwindcss-primeui": "^0.6.1",
         "unplugin-vue-components": "^30.0.0",
