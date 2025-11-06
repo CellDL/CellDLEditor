@@ -51,19 +51,19 @@ class IdBounds {
 class ExtendableSpatialIndex extends RBush<IdBounds> {
     toBBox(item: IdBounds) {
         return {
-            minX: item.bounds[0],
-            minY: item.bounds[1],
-            maxX: item.bounds[2],
-            maxY: item.bounds[3]
+            minX: item.bounds.left,
+            minY: item.bounds.top,
+            maxX: item.bounds.right,
+            maxY: item.bounds.bottom
         }
     }
 
     compareMinX(a: IdBounds, b: IdBounds): number {
-        return a.bounds[0] - b.bounds[0]
+        return a.bounds.left - b.bounds.left
     }
 
     compareMinY(a: IdBounds, b: IdBounds): number {
-        return a.bounds[1] - b.bounds[1]
+        return a.bounds.top - b.bounds.top
     }
 
     remove(item: IdBounds) {
@@ -107,10 +107,10 @@ export class CellDLSpatialIndex {
 
     objectsContainedIn(bounds: Bounds): ContainedObject[] {
         const intersectingItems = this.#index.search({
-            minX: bounds[0],
-            minY: bounds[1],
-            maxX: bounds[2],
-            maxY: bounds[3]
+            minX: bounds.left,
+            minY: bounds.top,
+            maxX: bounds.right,
+            maxY: bounds.bottom
         })
         return intersectingItems.map((item) => {
             return {

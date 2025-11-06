@@ -177,7 +177,7 @@ export class CellDLSVGElement {
 
     #updateBounds() {
         const bounds = this.svgBounds(true)
-        this.#size = new Point(bounds[2] - bounds[0], bounds[3] - bounds[1])
+        this.#size = new Point(bounds.right - bounds.left, bounds.bottom - bounds.top)
         if (this.#centroid) {
             this.#topLeft = this.#centroid.subtract(this.#size.scale(this.#centroidOffset))
             this.#bounds = new Bounds(
@@ -187,7 +187,7 @@ export class CellDLSVGElement {
                 this.#topLeft.y + this.#size.y
             )
         } else {
-            this.#topLeft = new Point(bounds[0], bounds[1])
+            this.#topLeft = new Point(bounds.left, bounds.top)
             this.#bounds = bounds
             this.#centroid = this.#size.scale(this.#centroidOffset).add(this.#topLeft)
         }
@@ -245,7 +245,7 @@ export class CellDLSVGElement {
                 svgChild.setAttribute('width', `${bounds.width}px`)
                 svgChild.setAttribute('height', `${bounds.height}px`)
             }
-            const selectionRect = new FixedControlRect(bounds) // versus control rect in RectangularObject
+            const selectionRect = new FixedControlRect(bounds.asArray()) // versus control rect in RectangularObject
             const svg = selectionRect.svg({
                 class: `selection-element parent-id editor-specific ${[...this.#selectionClasses.values()].join(' ')}`
             })
@@ -253,9 +253,9 @@ export class CellDLSVGElement {
             this.#selectionElement = this.#svgElement.lastChild as SVGGraphicsElement
             // Indicate a component is a conduit with a circular mark at its centre
             if (this.celldlObject.isConduit) {
-                const centre = new Point(bounds[2] - bounds[0], bounds[3] - bounds[1])
+                const centre = new Point(bounds.right - bounds.left, bounds.bottom - bounds.top)
                     .scale(this.#centroidOffset)
-                    .add(new Point(bounds[0], bounds[1]))
+                    .add(new Point(bounds.left, bounds.top))
                 const svg = svgCircle(centre, CONDUIT_SELECTION_RADIUS, {
                     class: 'selection-element parent-id editor-specific conduit'
                 })
