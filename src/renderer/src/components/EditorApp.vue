@@ -1,4 +1,3 @@
-
 <template>
     <BlockUI
         ref="blockUi"

@@ -186,37 +186,31 @@ export class CellDLDiagram {
     }
 
     get svgDiagram() {
-        //==============
         return this.#svgDiagram
     }
 
     domToSvgCoords(domCoords: PointLike): DOMPoint {
-        //============================================
         // Transform from screen coordinates to SVG coordinates
         const dom_to_svg_transform: DOMMatrix | undefined = this.#svgDiagram?.getScreenCTM()?.inverse()
         return DOMPoint.fromPoint(domCoords).matrixTransform(dom_to_svg_transform)
     }
 
     svgToDomCoords(svgCoords: PointLike): DOMPoint {
-        //============================================
         // Transform from SVG coordinates to screen coordinates
         const svg_to_dom_transform: DOMMatrix | undefined = this.#svgDiagram?.getScreenCTM() as DOMMatrix
         return DOMPoint.fromPoint(svgCoords).matrixTransform(svg_to_dom_transform)
     }
 
     makeUri(id: string): NamedNode {
-        //============================
         return this.#kb.documentNS(id)
     }
 
     #nextIdentifier(): string {
-        //=======================
         this.#lastIdentifier += 1
         return `${ID_PREFIX}${this.#lastIdentifier.toString().padStart(8, '0')}`
     }
 
     removeKnowledge(subject: NamedNode, predicates: NamedNode[]) {
-        //==========================================================
         for (const predicate of predicates) {
             for (const stmt of this.#kb.statementsMatching(subject, predicate, null)) {
                 if ($rdf.isBlankNode(stmt.object)) {
