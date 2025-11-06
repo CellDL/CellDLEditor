@@ -171,7 +171,7 @@ export class CellDLDiagram {
     get metadata(): StringProperties {
         return Object.keys(this.#diagramProperties)
             .filter((key) => key in DiagramProperties)
-            .reduce((obj, key) => {
+            .reduce((obj: Record<string, any>, key: string) => {
                 obj[key] = this.#diagramProperties[key]
                 return obj
             }, {})
@@ -180,6 +180,7 @@ export class CellDLDiagram {
         Object.keys(data)
             .filter((key) => key in DiagramProperties)
             .map((key) => {
+                // @ts-expect-error: `key` is a valid key for `data`
                 this.#diagramProperties[key] = data[key]
             })
         notifyChanges()

@@ -30,7 +30,7 @@ export function base64Svg(svg: string): string {
 
 //==============================================================================
 
-export function sleep(ms) {
+export function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
