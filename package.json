@@ -49,7 +49,6 @@
         "@primeuix/themes": "^1.2.5",
         "@primevue/auto-import-resolver": "4.4.1",
         "@vueuse/core": "14.0.0",
-        "@xmldom/xmldom": "^0.8.11",
         "buffer": "^6.0.3",
         "flatbush": "^4.5.0",
         "isomorphic-fetch": "^3.0.0",

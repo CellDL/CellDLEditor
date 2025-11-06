@@ -18,10 +18,6 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { DOMParser } from '@xmldom/xmldom'
-
-//==============================================================================
-
 import * as $rdf from '@editor/metadata'
 import { TurtleContentType } from '@editor/metadata'
 import type { ContentType, SubjectType } from '@editor/metadata'

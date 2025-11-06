@@ -51,8 +51,6 @@ import { liteAdaptor } from '@mathjax/src/js/adaptors/liteAdaptor.js'
 import { RegisterHTMLHandler } from '@mathjax/src/js/handlers/html.js'
 import '@mathjax/src/js/util/asyncLoad/esm.js'
 
-import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
-
 //==============================================================================
 
 import { getViewbox, SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
