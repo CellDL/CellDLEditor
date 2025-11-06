@@ -10,6 +10,13 @@
         @keydown="activateInstance"
         @mousedown="activateInstance"
     >
+        <MainMenu
+            :id="mainMenuId"
+            v-if="electronApi === undefined"
+
+            @about="onAboutMenu"
+            @settings="onSettingsMenu"
+        />
         <CellDLEditor/>
     </BlockUI>
 </template>
