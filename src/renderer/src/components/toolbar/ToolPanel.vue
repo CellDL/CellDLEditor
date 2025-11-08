@@ -28,7 +28,8 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
 
 .left-panel {
     position: absolute;
-    margin-left: 20px;
+    margin-left: 36px;
+    z-index: 100;
 }
 
 .left-panel.showtip::before {
@@ -38,6 +39,6 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
     width: 20px;
     left: -16px;
     top: attr(data-tip-top px);
-    z-index: -9;
+    z-index: 99;
 }
 </style>

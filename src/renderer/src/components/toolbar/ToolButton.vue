@@ -2,7 +2,7 @@
     .panel(
         ref="tool-panel"
         :class="{ hidden: panelHidden }"
-        :style="panelPosition")
+        :style="{ top: panelTop }")
         slot
     .ci.tool-button(
         :class="icon"
@@ -26,10 +26,7 @@ const props = defineProps<{
 const panelHidden = vue.ref()
 panelHidden.value = true
 
-const panelPosition = vue.reactive({
-    left: '0',
-    top: '0'
-})
+const panelTop = vue.ref()
 
 const pointerPos = vue.ref()
 vue.provide('pointerPos', vue.readonly(pointerPos))
@@ -62,22 +59,22 @@ async function toolButtonClick(e: MouseEvent) {
             if (!panelHidden.value) {
                 panelHidden.value = true
             } else {
-                const toolBounds = target.getBoundingClientRect()
                 panelHidden.value = false
+
                 // Wait for panel to be renderered before getting its height
                 await vue.nextTick()
-                const panelHeight = panelElement?.clientHeight
-                let panelTop = (toolBounds.height - panelHeight)/2
 
+                const panelHeight = panelElement?.clientHeight
+                let top = target.offsetTop + (target.clientWidth - panelHeight)/2
                 pointerPos.value = panelHeight/2 - 10  // 10 is half of pointer's height
-                if ((toolBounds.top - panelTop) < (20 + window.scrollY)) {
-                    // Make sure we are visible when at top of the screen
-                    const adjustment = toolBounds.top - (20 + window.scrollY)
-                    panelTop += adjustment
-                    pointerPos.value += adjustment
+
+                if (top < (20 + window.scrollY)) {
+                    // Make sure our top is at least 20px below top containing element
+                    const adjustment = (20 + window.scrollY) - top
+                    top = (20 + window.scrollY)
+                    pointerPos.value -= adjustment
                 }
-                panelPosition.left = '16px'
-                panelPosition.top = `${panelTop}px`
+                panelTop.value = `${top}px`
             }
         }
         emit('change', target.id, target.classList.contains('active'))
@@ -102,6 +99,10 @@ async function toolButtonClick(e: MouseEvent) {
 
 .hidden {
     display: none;
+}
+
+.panel {
+    position: absolute;
 }
 
 .active {
