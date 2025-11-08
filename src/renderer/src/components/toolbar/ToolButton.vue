@@ -5,7 +5,7 @@
         :style="{ top: panelTop }")
         slot
     .ci.tool-button(
-        :class="icon"
+        :class="buttonClasses"
         v-tooltip="{ value: prompt }"
         :aria-label="prompt"
         @click="toolButtonClick")
@@ -18,8 +18,16 @@ const props = defineProps<{
     id?: string
     icon?: string
     prompt?: string
+    modal?: boolean
 }>()
 
+const buttonClasses = vue.computed(() => {
+    const classes = [props.icon]
+    if (props.modal) {
+        classes.push('modal')
+    }
+    return classes.join(' ')
+})
 
 // need to be able to deactivate a toolbutton
 
@@ -95,6 +103,15 @@ async function toolButtonClick(e: MouseEvent) {
     height: 36px !important;
     scale: 1 !important;
     padding: 0;
+}
+
+.tool-button.modal::before {
+    content: url("/icons/ModalButton.svg");
+    display: inline-block;
+    position: absolute;
+    width: 10px;
+    right: 0;
+    bottom: -4px;
 }
 
 .hidden {

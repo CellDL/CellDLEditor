@@ -117,7 +117,8 @@ export default class CellDLToolBar {
                 v-for="tool in tools"
                 :id="tool.id"
                 :prompt="tool.prompt"
-                :icon="tool.icon")
+                :icon="tool.icon"
+                :modal="!!tool?.panel"
                 component(
                 v-if="tool.panel"
                 :is="tool.panel"
