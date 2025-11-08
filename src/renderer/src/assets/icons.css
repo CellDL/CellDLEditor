@@ -1,0 +1,19 @@
+.ci {
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    display: inline-block;
+    width: 32px;
+    scale: 0.9;
+}
+
+.ci-left-panel-arrow {
+    background: url("/icons/LeftPanelArrow.svg");
+}
+
+.ci-linear-connection {
+    background: url("/icons/LinearConnection.svg");
+}
+
+.ci-rectilinear-connection {
+    background: url("/icons/RectilinearConnection.svg");
+}

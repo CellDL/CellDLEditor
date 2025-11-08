@@ -18,7 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import CellDLEditor from './CellDLEditor.vue'
+import CellDLEditor from '@renderer/components/CellDLEditor.vue'  // is this import needed??
+import '@renderer/assets/icons.css'
 
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import * as vueusecore from '@vueuse/core'

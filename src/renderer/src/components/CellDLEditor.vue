@@ -1,6 +1,6 @@
 <template lang="pug">
     main.editor-pane
-        editor-toolbar.editor-bar#tool-bar
+        EditorToolbar.editor-bar#tool-bar(:tools="tools")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
         div#panel-content
@@ -17,10 +17,32 @@ import * as vue from 'vue'
 
 
 import { CellDLDiagram } from '@editor/diagram'
-import { CellDLEditor } from './editor'
-import { editGuides } from './editor/editguides'
-import { undoRedo } from './editor/undoredo'
-import editorToolbar from './EditorToolbar.vue'
+
+import { CellDLEditor } from '@renderer/components/editor'
+import { editGuides } from '@renderer/components/editor/editguides'
+import { undoRedo } from '@renderer/components/editor/undoredo'
+
+import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
+import ConnectionStylePanel from '@renderer/components/toolbar/ConnectionStyle.vue'
+
+//==============================================================================
+
+const tools = vue.ref([
+    {
+        id: 'linear',
+        prompt: 'Draw linear connection',
+        icon: 'ci-linear-connection',
+        panel: vue.shallowRef(ConnectionStylePanel)
+    },
+    {
+        id: 'rlinear',
+        prompt: 'Draw rectilinear connection',
+        icon: 'ci-rectilinear-connection',
+        panel: vue.shallowRef(ConnectionStylePanel)
+    }
+])
+
+//==============================================================================
 
 const editor = new CellDLEditor()
 const svgContainer = vue.useTemplateRef('svg-content')
