@@ -5,6 +5,7 @@
         :style="{ top: panelTop }")
         slot
     .ci.tool-button(
+        :id="id"
         :class="buttonClasses"
         v-tooltip="{ value: prompt }"
         :aria-label="prompt"
