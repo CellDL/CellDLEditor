@@ -17,6 +17,7 @@ import * as vue from "vue"
 
 const props = defineProps<{
     id?: string
+    active?: boolean
     icon?: string
     prompt?: string
     modal?: boolean
@@ -24,6 +25,9 @@ const props = defineProps<{
 
 const buttonClasses = vue.computed(() => {
     const classes = [props.icon]
+    if (props.active) {
+        classes.push('active')
+    }
     if (props.modal) {
         classes.push('modal')
     }

@@ -116,6 +116,7 @@ export default class CellDLToolBar {
             ToolButton(
                 v-for="tool in tools"
                 :id="tool.id"
+                :active="tool?.active"
                 :prompt="tool.prompt"
                 :icon="tool.icon"
                 :modal="!!tool?.panel"
@@ -141,6 +142,7 @@ const tools = vue.ref([
     },
     {
         id: 'rlinear',
+        active: true,
         prompt: 'Draw rectilinear connection',
         icon: 'ci-rectilinear-connection',
         panel: vue.shallowRef(ConnectionStylePanel)
