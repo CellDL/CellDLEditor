@@ -1,6 +1,6 @@
 <template lang="pug">
     main.editor-pane
-        EditorToolbar.editor-bar#tool-bar(:tools="tools")
+        EditorToolbar.editor-bar#tool-bar(:buttons="toolButtons")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
         div#panel-content
@@ -22,12 +22,13 @@ import { CellDLEditor } from '@renderer/components/editor'
 import { editGuides } from '@renderer/components/editor/editguides'
 import { undoRedo } from '@renderer/components/editor/undoredo'
 
+import { type IToolButton } from '@renderer/components/toolbar'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
 import ConnectionStylePanel from '@renderer/components/toolbar/ConnectionStyle.vue'
 
 //==============================================================================
 
-const tools = vue.ref([
+const toolButtons = vue.ref<IToolButton[]>([
     {
         id: 'linear',
         prompt: 'Draw linear connection',

@@ -114,40 +114,28 @@ export default class CellDLToolBar {
     Toolbar.vertical
         template(#start)
             ToolButton(
-                v-for="tool in tools"
-                :id="tool.id"
-                :active="tool?.active"
-                :prompt="tool.prompt"
-                :icon="tool.icon"
-                :modal="!!tool?.panel"
+                v-for="button in buttons"
+                :id="button.id"
+                :active="button?.active"
+                :prompt="button.prompt"
+                :icon="button.icon"
+                :modal="!!button?.panel"
+                @change="buttonChange")
                 component(
-                v-if="tool.panel"
-                :is="tool.panel"
-                @change="listener")
+                v-if="button.panel"
+                :is="button.panel"
+                @change="panelChange")
 </template>
 
 <script setup lang="ts">
 import * as vue from "vue"
 
 import ConnectionStylePanel from './ConnectionStyle.vue'
+import { type IToolButton } from '.'
 
-
-// tool list needs to come from CellDLEditor.vue as a property...
-const tools = vue.ref([
-    {
-        id: 'linear',
-        prompt: 'Draw linear connection',
-        icon: 'ci-linear-connection',
-        panel: vue.shallowRef(ConnectionStylePanel)
-    },
-    {
-        id: 'rlinear',
-        active: true,
-        prompt: 'Draw rectilinear connection',
-        icon: 'ci-rectilinear-connection',
-        panel: vue.shallowRef(ConnectionStylePanel)
-    }
-])
+const props = defineProps<{
+    buttons: IToolButton[]
+}>()
 
 // each tool button needs to know how to update its state with changes from its panel
 
