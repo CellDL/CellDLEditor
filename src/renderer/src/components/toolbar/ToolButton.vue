@@ -44,16 +44,6 @@ const panelTop = vue.ref()
 const pointerPos = vue.ref()
 vue.provide('pointerPos', vue.readonly(pointerPos))
 
-// Who handles click events?
-//
-// Us to toggle state and open panel??
-// And then emit change event for parent to track what tool is active
-//
-// Then we need to listen to parent (reactive element) who might deactivate/reset us
-//
-
-const emit = defineEmits(['change'])
-
 const panelReference = vue.useTemplateRef('tool-panel')
 let panelElement: HTMLElement | null = null
 
@@ -62,6 +52,18 @@ vue.onMounted(() => {
         panelElement = (<HTMLElement>panelReference.value).firstElementChild as HTMLElement
     }
 })
+
+// Make sure panel is closed when buuton is deactivated
+vue.watch(
+    () => props.active,
+    () => {
+        if (panelElement && !props.active) {
+            panelHidden.value = true
+        }
+    }
+)
+
+const emit = defineEmits(['change'])
 
 async function toolButtonClick(e: MouseEvent) {
     const target: HTMLElement | null = e.target as HTMLElement
@@ -97,7 +99,7 @@ async function toolButtonClick(e: MouseEvent) {
 
 <style scoped>
 .tool-button {
-    border: 1px solid green;
+    border-top: 1px solid grey;
 }
 .tool-button:hover {
     background-color: lightgrey;

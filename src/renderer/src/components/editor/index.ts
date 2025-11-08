@@ -25,6 +25,7 @@ import { electronApi } from '@renderer/common/electronApi'
 import '@renderer/assets/svgContent.css'
 
 import { CellDLObject } from '@editor/celldlObjects'
+import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
 import { CellDLDiagram } from '@editor/diagram'
 import { libraryManager, type TemplateEvent } from '@editor/libraries'
 import { round } from '@editor/utils'
@@ -42,9 +43,6 @@ import type CellDLToolBar from '../toolbar'
 
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { StringProperties } from '@renderer/common/types'
-
-
-import { PathMaker, type PathNode } from '../connections/pathmaker'
 
 //==============================================================================
 

@@ -21,7 +21,6 @@ limitations under the License.
 import { Point, type PointLike } from '@renderer/common/points'
 import type { PropertiesType, StringProperties } from '@renderer/common/types'
 import { alert, notifyChanges } from '@renderer/components/editor'
-import type { ConnectionStyle } from '@renderer/components/connections'
 import { editGuides } from '@renderer/components/editor/editguides'
 import type { UndoMovePosition } from '@renderer/components/editor/undoredo'
 
@@ -31,6 +30,7 @@ import type { CellDLSVGElement } from '@editor/SVGElements'
 import { BoundedElement } from '@editor/SVGElements/boundedelement'
 import { SvgConnection } from '@editor/SVGElements/svgconnection'
 import type { ObjectTemplate } from '@editor/components'
+import type { ConnectionStyle } from '@editor/connections'
 import type { MetadataPropertiesMap, MetadataPropertyValue, NamedNode, RdfStore } from '@editor/metadata'
 import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata'
 

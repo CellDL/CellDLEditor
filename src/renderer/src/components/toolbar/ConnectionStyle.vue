@@ -5,45 +5,56 @@
             Select(
                 v-model="selectedItem"
                 :options="items"
-                optionLabel="label"
+                optionLabel="name"
                 checkmark
                 :highlightOnSelect="false"
                 @change="changed")
                 template(#value="slotProps")
                     .flex.items-center(v-if="slotProps.value")
                         span.ci(:class="[slotProps.value.icon]") &nbsp;
-                        span {{ slotProps.value.label }}
+                        span {{ slotProps.value.name }}
                     span(v-else) {{ slotProps.placeholder }}
                 template(option="slotProps")
                     .flex.items-center
-                        span {{ slotProps.option.label }}
+                        span {{ slotProps.option.name }}
 </template>
 
 <script setup lang="ts">
 import * as vue from "vue"
 
 import Select from 'primevue/select'
+import { type SelectChangeEvent } from 'primevue/select'
 
 import ToolPanel from './ToolPanel.vue'
 
-const selected = 'rectilinear'
-const items = vue.computed(() => [
-    { label: 'Linear', icon: 'ci-linear-connection', code: "linear" },
-    { label: 'Rectilinear', icon: 'ci-rectilinear-connection', code:"rectilinear" },
-]);
-const selectedItem = vue.ref()
+import {
+    type ConnectionStyleDefinition,
+    CONNECTION_STYLE_DEFINITIONS,
+    DEFAULT_CONNECTION_STYLE
+} from '@editor/connections'
+
+const selectedId: string = DEFAULT_CONNECTION_STYLE
+const items = vue.ref<ConnectionStyleDefinition[]>(CONNECTION_STYLE_DEFINITIONS)
+
+const selectedItem = vue.ref<ConnectionStyleDefinition>()
 
 for (const item of items.value) {
-    if (item.code === selected) {
+    if (item.id === selectedId) {
         selectedItem.value = item
         break
     }
 }
 
+//==============================================================================
+
+const props = defineProps<{
+    id: string
+}>()
+
 const emit = defineEmits(['change'])
 
-function changed(e: Event) {
-    emit('change', e)
+function changed(e: SelectChangeEvent) {
+    emit('change', props.id, e.value)
 }
 </script>
 

@@ -1,6 +1,9 @@
 <template lang="pug">
     main.editor-pane
-        EditorToolbar.editor-bar#tool-bar(:buttons="toolButtons")
+        EditorToolbar.editor-bar#tool-bar(
+            :buttons="toolButtons"
+            @tool-button="buttonChanged"
+            @tool-updated="toolUpdated")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
         div#panel-content
@@ -12,9 +15,14 @@
 </template>
 
 <script setup lang="ts">
+
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
+import {
+    type ConnectionStyleDefinition,
+    DEFAULT_CONNECTION_STYLE_DEFINITION
+} from '@editor/connections'
 
 import { CellDLDiagram } from '@editor/diagram'
 
@@ -28,21 +36,63 @@ import ConnectionStylePanel from '@renderer/components/toolbar/ConnectionStyle.v
 
 //==============================================================================
 
+const currentConnectionStyle = vue.ref(DEFAULT_CONNECTION_STYLE_DEFINITION)
+
+function connectionStylePrompt(name: string): string {
+    return `Draw ${name.toLowerCase()} connection`
+}
+
 const toolButtons = vue.ref<IToolButton[]>([
     {
-        id: 'linear',
+        id: 'tool1',
         prompt: 'Draw linear connection',
-        icon: 'ci-linear-connection',
-        panel: vue.shallowRef(ConnectionStylePanel)
+        icon: 'ci-linear-connection'
     },
     {
-        id: 'rlinear',
-        prompt: 'Draw rectilinear connection',
-        icon: 'ci-rectilinear-connection',
+        id: 'tool2',
+        active: true,
+        prompt: connectionStylePrompt(currentConnectionStyle.value.name),
+        icon: currentConnectionStyle.value.icon,
         panel: vue.shallowRef(ConnectionStylePanel)
     }
 ])
 
+function buttonChanged(buttonId: string, active: boolean) {
+    console.log('bc', buttonId, active)
+
+    // This needs to update editor's drawing mode...
+}
+
+function toolUpdated(toolId: string, data: any) {
+    if (toolId === 'tool2') {
+        currentConnectionStyle.value = data
+        toolButtons.value[1]!.prompt = connectionStylePrompt(data.name)
+        toolButtons.value[1]!.icon = data.icon
+
+        // Tell editor style has changed
+        document.dispatchEvent(
+            new CustomEvent('update-connection-tool', {
+                detail: {
+                    style: data.id
+                }
+            })
+        )
+    } else if (toolId === 'tool3') {
+/*
+        // Tell editor about the default component in the toolbar
+        const event = templateImageEvent(this.#currentComponentIcon)
+        event.uri = defaultComponentUri
+        document.dispatchEvent(
+            new CustomEvent('component-selected', {
+                detail: event
+            })
+        )
+
+*/
+    }
+}
+
+//==============================================================================
 //==============================================================================
 
 const editor = new CellDLEditor()

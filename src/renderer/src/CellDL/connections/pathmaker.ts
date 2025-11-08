@@ -18,19 +18,21 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { SVG_NAMESPACE_URI } from '../../common/svgUtils.ts'
-import { CELLDL_NAMESPACE, RDF_TYPE } from '../metadata/index.ts'
-import { MetadataPropertiesMap } from '../metadata/index.ts'
-import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '../celldlObjects/index.ts'
-import type { CellDLSVGElement } from '../SVGElements/index.ts'
-import type { CellDLDiagram } from '../diagram/index.ts'
-import type { EditorFrame } from '../../components/editor/editorframe.ts'
-import { libraryManager } from '../libraries/index.ts'
-import { alert } from '../main.ts'
-import { Point, type PointLike, PointMath, svgPath, svgPathDescription } from '../geometry/index.ts'
-import { round } from '../utils.ts'
+import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
+import { alert } from '@renderer/components/editor'
+import type { EditorFrame } from '@renderer/components/editor/editorframe'
 
-import { ConnectionStyle } from './options.ts'
+import { CELLDL_NAMESPACE, RDF_TYPE } from '@editor/metadata'
+import { MetadataPropertiesMap } from '@editor/metadata'
+import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects'
+import type { CellDLSVGElement } from '@editor/SVGElements'
+import type { CellDLDiagram } from '@editor/diagram'
+import { libraryManager } from '@editor/libraries'
+import { round } from '@editor/utils'
+
+import { ConnectionStyle } from '.'
 
 //==============================================================================
 
