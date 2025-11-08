@@ -24,13 +24,14 @@ import { alert, notifyChanges } from '@renderer/components/editor'
 import { editGuides } from '@renderer/components/editor/editguides'
 import type { UndoMovePosition } from '@renderer/components/editor/undoredo'
 
-import * as $rdf from '@editor/metadata'
-import type { CellDLDiagram } from '@editor/diagram'
-import type { CellDLSVGElement } from '@editor/SVGElements'
 import { BoundedElement } from '@editor/SVGElements/boundedelement'
-import { SvgConnection } from '@editor/SVGElements/svgconnection'
 import type { ObjectTemplate } from '@editor/components'
 import type { ConnectionStyle } from '@editor/connections'
+import type { CellDLDiagram } from '@editor/diagram'
+import { SvgConnection } from '@editor/SVGElements/svgconnection'
+import type { CellDLSVGElement } from '@editor/SVGElements'
+
+import * as $rdf from '@editor/metadata'
 import type { MetadataPropertiesMap, MetadataPropertyValue, NamedNode, RdfStore } from '@editor/metadata'
 import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata'
 
