@@ -18,6 +18,8 @@ limitations under the License.
 
 ******************************************************************************/
 
+import { electronApi } from '@renderer/common/electronApi'
+
 import type { CellDLDiagram } from '@editor/diagram'
 import type { CellDLObject } from '@editor/celldlObjects'
 import { Point, type PointLike } from '@renderer/common/points'
@@ -159,13 +161,13 @@ class UndoRedo {
     clean() {
         this.#redoStack = []
         this.#undoStack = []
-        window.electronAPI.sendEditorAction('CLEAN')
+        electronApi?.sendEditorAction('CLEAN')
     }
 
     #clearRedoStack() {
         if (this.#redoStack.length) {
             this.#redoStack = []
-            window.electronAPI.sendEditorAction('REDONE')
+            electronApi?.sendEditorAction('REDONE')
         }
     }
 
@@ -173,7 +175,7 @@ class UndoRedo {
         if (this.#redoStack.length) {
             const editorAction = this.#redoStack.pop()!
             if (this.#redoStack.length === 0) {
-                window.electronAPI.sendEditorAction('REDONE')
+                electronApi?.sendEditorAction('REDONE')
             }
             return editorAction
         }
@@ -183,7 +185,7 @@ class UndoRedo {
     #pushRedoStack(redoAction: EditorUndoAction) {
         this.#redoStack.push(redoAction)
         if (this.#redoStack.length === 1) {
-            window.electronAPI.sendEditorAction('REDO')
+            electronApi?.sendEditorAction('REDO')
         }
     }
 
@@ -191,7 +193,7 @@ class UndoRedo {
         if (this.#undoStack.length) {
             const editorAction = this.#undoStack.pop()!
             if (this.#undoStack.length === 0) {
-                window.electronAPI.sendEditorAction('CLEAN')
+                electronApi?.sendEditorAction('CLEAN')
             }
             return editorAction
         }
@@ -222,7 +224,7 @@ class UndoRedo {
             } else if (editorAction.action === Action.INSERT) {
                 diagram.deleteInsertedObject(editorAction)
             } else if (editorAction.action === Action.MOVE) {
-                editorAction.objectDetails[0].object.undoControlMove(editorAction.moveDetails(MovePosition.CURRENT))
+                editorAction.objectDetails[0]?.object.undoControlMove(editorAction.moveDetails(MovePosition.CURRENT))
             }
         }
     }
@@ -236,7 +238,7 @@ class UndoRedo {
             } else if (editorAction.action === Action.INSERT) {
                 diagram.insertDeletedObject(editorAction)
             } else if (editorAction.action === Action.MOVE) {
-                editorAction.objectDetails[0].object.undoControlMove(editorAction.moveDetails(MovePosition.LAST))
+                editorAction.objectDetails[0]?.object.undoControlMove(editorAction.moveDetails(MovePosition.LAST))
             }
         }
     }
