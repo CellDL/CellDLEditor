@@ -19,8 +19,8 @@ limitations under the License.
 ******************************************************************************/
 
 import { CELLDL_CLASS, type CellDLConnectedObject, type CellDLObject } from '@editor/celldlObjects'
-import { editGuides } from '@renderer/components/editor/editguides'
-import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '@renderer/components/editor/undoredo'
+import { editGuides } from '@editor/editor/editguides'
+import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '@editor/editor/undoredo'
 import { Point, type PointLike } from '@renderer/common/points'
 import { RestrictedPoint, type RestrictedValue } from '@editor/geometry'
 import { ControlRect } from '@editor/geometry/controls'

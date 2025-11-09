@@ -24,7 +24,7 @@ import type { NormalArray } from 'svg-path-commander'
 
 import { CONNECTION_SPLAY_PADDING } from '@renderer/common/styling'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
-import { editGuides } from '@renderer/components/editor/editguides'
+import { editGuides } from '@editor/editor/editguides'
 
 import { FixedValue, RestrictedValue } from '@editor/geometry'
 import { roundEqual } from '@editor/utils'

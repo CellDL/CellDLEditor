@@ -51,9 +51,9 @@ import { setInternalIds } from '@editor/SVGElements'
 import type { BoundedElement } from '@editor/SVGElements/boundedelement'
 import type { SvgConnection } from '@editor/SVGElements/svgconnection'
 
-import { type CellDLEditor, notifyChanges } from '@renderer/components/editor'
-import { editGuides } from '@renderer/components/editor/editguides'
-import { type EditorUndoAction, undoRedo } from '@renderer/components/editor/undoredo'
+import { type CellDLEditor, notifyChanges } from '@editor/editor'
+import { editGuides } from '@editor/editor/editguides'
+import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
 import { libraryManager } from '@editor/libraries'
 import type { NewObjectClass, ObjectTemplate } from '@editor/components'

@@ -24,7 +24,7 @@ import type { NormalArray } from 'svg-path-commander'
 //==============================================================================
 
 import type { CellDLDiagram } from '@editor/diagram'
-import type { EditorFrame } from '@renderer/components/editor/editorframe'
+import type { EditorFrame } from '@editor/editor/editorframe'
 import { Point, type PointLike } from '@renderer/common/points'
 import { svgPathElement } from '@renderer/common/svgUtils'
 import { type FixedValue, type RestrictedValue } from '@editor/geometry'

@@ -18,8 +18,8 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { editGuides } from '@renderer/components/editor/editguides'
-import type { GridAlignOptions } from '@renderer/components/editor/editguides'
+import { editGuides } from '@editor/editor/editguides'
+import type { GridAlignOptions } from '@editor/editor/editguides'
 import type { Transform } from '@editor/geometry/transforms'
 import { round } from '@editor/utils'
 

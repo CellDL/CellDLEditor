@@ -20,9 +20,9 @@ limitations under the License.
 
 import { Point, type PointLike } from '@renderer/common/points'
 import type { PropertiesType, StringProperties } from '@renderer/common/types'
-import { alert, notifyChanges } from '@renderer/components/editor'
-import { editGuides } from '@renderer/components/editor/editguides'
-import type { UndoMovePosition } from '@renderer/components/editor/undoredo'
+import { alert, notifyChanges } from '@editor/editor'
+import { editGuides } from '@editor/editor/editguides'
+import type { UndoMovePosition } from '@editor/editor/undoredo'
 
 import { BoundedElement } from '@editor/SVGElements/boundedelement'
 import type { ObjectTemplate } from '@editor/components'

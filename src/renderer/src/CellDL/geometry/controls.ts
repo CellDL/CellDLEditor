@@ -18,8 +18,8 @@ limitations under the License.
 
 ******************************************************************************/
 
-import type { EditorFrame } from '@renderer/components/editor/editorframe'
-import { editGuides } from '@renderer/components/editor/editguides'
+import type { EditorFrame } from '@editor/editor/editorframe'
+import { editGuides } from '@editor/editor/editguides'
 import type { BoundedElement } from '@editor/SVGElements/boundedelement'
 
 import { svgCircle, svgRect } from '@renderer/common/svgUtils'

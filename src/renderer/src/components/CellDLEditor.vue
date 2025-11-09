@@ -26,9 +26,9 @@ import {
 
 import { CellDLDiagram } from '@editor/diagram'
 
-import { CellDLEditor } from '@renderer/components/editor'
-import { editGuides } from '@renderer/components/editor/editguides'
-import { undoRedo } from '@renderer/components/editor/undoredo'
+import { CellDLEditor } from '@editor/editor'
+import { editGuides } from '@editor/editor/editguides'
+import { undoRedo } from '@editor/editor/undoredo'
 
 import { type IToolButton } from '@renderer/components/toolbar'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
