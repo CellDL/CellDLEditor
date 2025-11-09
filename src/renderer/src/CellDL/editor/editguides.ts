@@ -32,7 +32,7 @@ import { range } from '@editor/utils'
 export const EDITOR_GRID_CLASS = 'alignment-grid'
 
 export const GRID_SNAP_RESOLUTION = 0.5 // Fraction of GRID_SPACING
-export const GRID_SPACING = 10 // Pixels
+export const GRID_SPACING = 10          // Pixels
 
 // Within EPSILON pixels apart is considered to be aligned
 const EPSILON = 0.1

@@ -76,7 +76,7 @@ async function toolButtonClick(e: MouseEvent) {
             } else {
                 panelHidden.value = false
 
-                // Wait for panel to be renderered before getting its height
+                // Wait for panel to be rendered before getting its height
                 await vue.nextTick()
 
                 const panelHeight = panelElement?.clientHeight
