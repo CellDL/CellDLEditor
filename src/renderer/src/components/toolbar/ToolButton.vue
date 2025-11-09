@@ -99,7 +99,9 @@ async function toolButtonClick(e: MouseEvent) {
 
 <style scoped>
 .tool-button {
-    border-top: 1px solid grey;
+    border-style: solid;
+    border-color: grey;
+    border-width: 0 1px 2px;
 }
 .tool-button:hover {
     background-color: lightgrey;
@@ -118,7 +120,7 @@ async function toolButtonClick(e: MouseEvent) {
     position: absolute;
     width: 10px;
     right: 0;
-    bottom: -4px;
+    bottom: -6px;
 }
 
 .hidden {

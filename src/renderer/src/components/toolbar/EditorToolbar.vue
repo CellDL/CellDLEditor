@@ -47,6 +47,7 @@ function panelChange(id: string, data: any) {
     flex-direction: column !important;
     width: 38px !important;
     padding: 0 !important;
+    border-top: 1px solid grey;
     flex-wrap: nowrap !important;
     border-radius: 0 !important;
 }
