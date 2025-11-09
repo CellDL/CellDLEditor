@@ -241,24 +241,6 @@ class LibraryManager {
         return template ? template.copy() : null
     }
 
-    librariesAsHtml() {
-        //===============
-        return `<div class="component-library">${[...this.#libraries.values()]
-            .map((lib) => {
-                return `<div class="library-title">${lib.title}</div>
-                            <div class="library-icons">
-                                ${[...lib.templates.entries()]
-                                    .map(
-                                        ([id, c]) =>
-                                            `<img id="${id}" class="library-icon" draggable="true" title="${c.name}" src="${c.imageUri}"/>`
-                                    )
-                                    .join('\n')}
-                            </div>
-                        </div>`
-            })
-            .join('\n')}</div>`
-    }
-
     librarySvgDefinitions(): string[] {
         //===============================
         return [...this.#libraries.values()]

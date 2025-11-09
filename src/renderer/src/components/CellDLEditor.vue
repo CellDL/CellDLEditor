@@ -34,6 +34,7 @@ import { undoRedo } from '@editor/editor/undoredo'
 
 import { type IToolButton } from '@renderer/components/toolbar'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
+import ComponentPanel from '@renderer/components/toolbar/ComponentPanel.vue'
 import ConnectionStylePanel from '@renderer/components/toolbar/ConnectionStyle.vue'
 
 //==============================================================================
@@ -57,6 +58,13 @@ const toolButtons = vue.ref<IToolButton[]>([
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
         panel: vue.shallowRef(ConnectionStylePanel)
+    },
+    {
+        id: EDITOR_TOOL_IDS.AddComponentTool,
+        active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.AddComponentTool,
+        prompt: connectionStylePrompt(currentConnectionStyle.value.name),
+        icon: currentConnectionStyle.value.icon,
+        panel: vue.shallowRef(ComponentPanel)
     }
 ])
 

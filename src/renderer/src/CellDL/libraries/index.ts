@@ -27,59 +27,16 @@ export { libraryManager } from './manager.ts'
 
 //==============================================================================
 
-class ComponentLibraries extends BaseElement {
-    static _shadowTemplate = html`
-        <div id="component-libraries">
-        </div>
-    `
-    static _shadowStyleSheet = css`
-        #component-libraries
-        {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .component-library
-        {
-            width: 100px;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid green;
-        }
-        .library-title {
-            padding: 2px;
-            border-bottom: 1px solid green;
-            text-align: center;
-        }
-        .library-icons
-        {
-            display: flex;
-            flex-wrap: wrap;
-            overflow-y: auto;
-            margin: 2px;
-        }
-        .library-icon
-        {
-            width: 45px;
-            height: 45px;
-            border: 2px solid grey;
-            background: lightgrey;
-            margin: 0;
-            padding: 2px;
-        }
-        .library-icon.selected
-        {
-            background: #3584e4;
-        }
-    `
+class ComponentLibraries {
+
     /* We need to wait until theme is loaded before defining custom elements... */
     //            background: #3584e4 /* ${Xel.presetAccentColors.blue} */;
 
     #libContainer: HTMLElement
     #selectedElement: HTMLElement | null = null
 
+/*
     constructor() {
-        super()
         this.#libContainer = this.getElementById('component-libraries')!
     }
 
