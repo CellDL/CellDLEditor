@@ -1,5 +1,5 @@
 <template lang="pug">
-    ToolPanel
+    ToolPopover
         template(#title) Path Style
         template(#content)
             Select(
@@ -25,7 +25,7 @@ import * as vue from "vue"
 import Select from 'primevue/select'
 import { type SelectChangeEvent } from 'primevue/select'
 
-import ToolPanel from './ToolPanel.vue'
+import ToolPopover from './ToolPopover.vue'
 
 import {
     type ConnectionStyleDefinition,

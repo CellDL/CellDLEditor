@@ -1,5 +1,5 @@
 <template lang="pug">
-    ToolPanel
+    ToolPopover
         template(#title) Components
         template(#content)
             .component-library(v-for="library in libraries")
@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import * as vue from "vue"
 
-import ToolPanel from './ToolPanel.vue'
+import ToolPopover from './ToolPopover.vue'
 
 const libraries = vue.ref<ComponentLibrary[]>()
 

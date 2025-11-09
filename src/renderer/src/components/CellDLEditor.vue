@@ -2,8 +2,9 @@
     main.editor-pane
         EditorToolbar.editor-bar#tool-bar(
             :buttons="toolButtons"
-            @tool-button="buttonChanged"
-            @tool-updated="toolUpdated")
+            type="popover"
+            @button-event="buttonChanged"
+            @panel-event="toolUpdated")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
         div#panel-content
@@ -34,8 +35,8 @@ import { undoRedo } from '@editor/editor/undoredo'
 
 import { type IToolButton } from '@renderer/components/toolbar'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
-import ComponentPanel from '@renderer/components/toolbar/ComponentPanel.vue'
-import ConnectionStylePanel from '@renderer/components/toolbar/ConnectionStyle.vue'
+import ComponentPopover from '@renderer/components/toolbar/ComponentPopover.vue'
+import ConnectionStylePopover from '@renderer/components/toolbar/ConnectionStylePopover.vue'
 
 //==============================================================================
 
@@ -57,14 +58,14 @@ const toolButtons = vue.ref<IToolButton[]>([
         active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.DrawConnectionTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
-        panel: vue.shallowRef(ConnectionStylePanel)
+        panel: vue.shallowRef(ConnectionStylePopover)
     },
     {
         id: EDITOR_TOOL_IDS.AddComponentTool,
         active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.AddComponentTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
-        panel: vue.shallowRef(ComponentPanel)
+        panel: vue.shallowRef(ComponentPopover)
     }
 ])
 

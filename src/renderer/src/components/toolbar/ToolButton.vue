@@ -2,7 +2,7 @@
     .panel(
         ref="tool-panel"
         :class="{ hidden: panelHidden }"
-        :style="{ top: panelTop }")
+        :style="panelStyle")
         slot
     .ci.tool-button(
         :id="id"
@@ -21,6 +21,7 @@ const props = defineProps<{
     icon?: string
     prompt?: string
     modal?: boolean
+    type?: string
 }>()
 
 const buttonClasses = vue.computed(() => {
@@ -28,7 +29,7 @@ const buttonClasses = vue.computed(() => {
     if (props.active) {
         classes.push('active')
     }
-    if (props.modal) {
+    if (props.type === 'popover' && props.modal) {
         classes.push('modal')
     }
     return classes.join(' ')
@@ -47,6 +48,11 @@ vue.provide('pointerPos', vue.readonly(pointerPos))
 const panelReference = vue.useTemplateRef('tool-panel')
 let panelElement: HTMLElement | null = null
 
+const panelStyle = vue.computed(() => {
+    if (props.type === 'popover') {
+        return { top: panelTop }
+    }
+})
 vue.onMounted(() => {
     if (panelReference.value) {
         panelElement = (<HTMLElement>panelReference.value).firstElementChild as HTMLElement
@@ -75,21 +81,23 @@ async function toolButtonClick(e: MouseEvent) {
                 panelHidden.value = true
             } else {
                 panelHidden.value = false
+                if (props.type === 'popover') {
 
-                // Wait for panel to be rendered before getting its height
-                await vue.nextTick()
+                    // Wait for panel to be rendered before getting its height
+                    await vue.nextTick()
 
-                const panelHeight = panelElement?.clientHeight
-                let top = target.offsetTop + (target.clientWidth - panelHeight)/2
-                pointerPos.value = panelHeight/2 - 10  // 10 is half of pointer's height
+                    const panelHeight = panelElement?.clientHeight
+                    let top = target.offsetTop + (target.clientWidth - panelHeight)/2
+                    pointerPos.value = panelHeight/2 - 10  // 10 is half of pointer's height
 
-                if (top < (20 + window.scrollY)) {
-                    // Make sure our top is at least 20px below top containing element
-                    const adjustment = (20 + window.scrollY) - top
-                    top = (20 + window.scrollY)
-                    pointerPos.value -= adjustment
+                    if (top < (20 + window.scrollY)) {
+                        // Make sure our top is at least 20px below top containing element
+                        const adjustment = (20 + window.scrollY) - top
+                        top = (20 + window.scrollY)
+                        pointerPos.value -= adjustment
+                    }
+                    panelTop.value = `${top}px`
                 }
-                panelTop.value = `${top}px`
             }
         }
         emit('change', target.id, target.classList.contains('active'))

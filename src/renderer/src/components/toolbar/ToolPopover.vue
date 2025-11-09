@@ -1,5 +1,5 @@
 <template lang="pug">
-     Card.left-panel(
+     Card.left-popover(
         :data-tip-top="pointerPos"
         class="{ showtip: showtip }")
         template(#title)
@@ -26,13 +26,13 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
     width: 210px !important;
 }
 
-.left-panel {
+.left-popover {
     position: absolute;
     margin-left: 36px;
     z-index: 100;
 }
 
-.left-panel.showtip::before {
+.left-popover.showtip::before {
     content: url("/icons/LeftPanelArrow.svg");
     display: inline-block;
     position: absolute;

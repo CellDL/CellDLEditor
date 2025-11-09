@@ -8,6 +8,7 @@
                 :prompt="button.prompt"
                 :icon="button.icon"
                 :modal="!!button?.panel"
+                :type="type"
                 @change="buttonChange")
                 component(
                 v-if="button.panel"
@@ -20,10 +21,11 @@
 import { type IToolButton } from '.'
 
 const props = defineProps<{
+    type?: string
     buttons: IToolButton[]
 }>()
 
-const emit = defineEmits(['tool-button', 'tool-updated'])
+const emit = defineEmits(['button-event', 'panel-event'])
 
 function buttonChange(id: string, active: boolean) {
     for (const button of props.buttons) {
@@ -33,11 +35,11 @@ function buttonChange(id: string, active: boolean) {
             button.active = false
         }
     }
-    emit('tool-button', id, active)
+    emit('button-event', id, active)
 }
 
 function panelChange(id: string, data: any) {
-    emit('tool-updated', id, data)
+    emit('panel-event', id, data)
 }
 </script>
 
