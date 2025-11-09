@@ -40,17 +40,16 @@ import '../tools'
 import type CellDLToolBar from '../toolbar'
 **/
 
-
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 
-import { EditorFrame } from './editorframe'
-import { editGuides, EDITOR_GRID_CLASS } from './editguides'
-import PanZoom from './panzoom'
-import { SelectionBox } from './selectionbox'
-import { undoRedo } from './undoredo'
+import { EditorFrame } from '@editor/editor/editorframe'
+import { editGuides, EDITOR_GRID_CLASS } from '@editor/editor/editguides'
+import PanZoom from '@editor/editor/panzoom'
+import { SelectionBox } from '@editor/editor/selectionbox'
+import { undoRedo } from '@editor/editor/undoredo'
 
 //import './contextmenu.ts'
 //import { CONTEXT_MENU, type ContextMenu } from './contextmenu.ts'
