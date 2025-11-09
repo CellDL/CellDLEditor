@@ -98,17 +98,27 @@ export namespace alert {
 
 // Lookup tables for tracking tool bar state
 
-enum EDITORSTATE {
-    Selecting = 'SELECTING',
-    DrawPath = 'DRAW-PATH',
-    AddComponent = 'ADD-COMPOMENT'
+export enum EDITOR_TOOL_IDS {
+    SelectTool = 'select-tool',
+    DrawConnectionTool = 'draw-connection-tool',
+    AddComponentTool = 'add-component-tool'
 }
 
-const TOOL_TO_EDITORSTATE = {
-    'select-tool': EDITORSTATE.Selecting,
-    'draw-connection-tool': EDITORSTATE.DrawPath,
-    'add-component-tool': EDITORSTATE.AddComponent
+export const DEFAULT_EDITOR_TOOL_ID = EDITOR_TOOL_IDS.SelectTool
+
+enum EDITOR_STATE {
+    Selecting = 'SELECTING',
+    DrawPath = 'DRAW-PATH',
+    AddComponent = 'ADD-COMPONENT'
 }
+
+const TOOL_TO_STATE: Map<EDITOR_TOOL_IDS, EDITOR_STATE> = new Map([
+    [EDITOR_TOOL_IDS.SelectTool, EDITOR_STATE.Selecting],
+    [EDITOR_TOOL_IDS.DrawConnectionTool, EDITOR_STATE.DrawPath],
+    [EDITOR_TOOL_IDS.AddComponentTool, EDITOR_STATE.AddComponent]
+])
+
+const DEFAULT_EDITOR_STATE = TOOL_TO_STATE.get(DEFAULT_EDITOR_TOOL_ID)!
 
 const POPOVER_TO_TOOL = {
     'draw-connection-popover': 'draw-connection-tool',
@@ -164,7 +174,7 @@ export class CellDLEditor {
     #pointerPosition: DOMPoint | null = null
     #moving: boolean = false
 
-    #editorState: EDITORSTATE = EDITORSTATE.Selecting
+    #editorState: EDITOR_STATE = DEFAULT_EDITOR_STATE
     #activeObject: CellDLObject | null = null
     #dirty: boolean = false
 
@@ -173,10 +183,6 @@ export class CellDLEditor {
 
     #pathMaker: PathMaker | null = null
     #nextPathNode: PathNode | null = null
-
-//    #currentPopover: XPopoverElement | null = null
-//    #currentTooltip: XTooltipElement | null = null
-    #lastClickedTool: HTMLElement | null = null
 
 //    #contextMenu: ContextMenu
 
@@ -227,8 +233,8 @@ export class CellDLEditor {
         window.addEventListener('keydown', this.#keyDownEvent.bind(this))
         window.addEventListener('keyup', this.#keyUpEvent.bind(this))
 
-        // Add handler for draw connection tool
-        document.addEventListener('update-connection-tool', this.#drawConnectionUpdateSettings.bind(this))
+        // Add handler for events from toolbar buttons
+        document.addEventListener('toolbar-event', this.#toolBarEvent.bind(this))
 
         // Add handlers for add component tool
         document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
@@ -349,7 +355,7 @@ export class CellDLEditor {
 //        this.#toolBar.enableButton('select-tool', true)
 
         // Set initial state
-        this.#editorState = EDITORSTATE.Selecting
+        this.#editorState = EDITOR_STATE.Selecting
         this.#activeObject = null
         this.#pointerMoved = false
         this.#selectedObject = null
@@ -379,7 +385,7 @@ export class CellDLEditor {
     }
 
     #setDefaultCursor() {
-        if (this.#editorState === EDITORSTATE.DrawPath) {
+        if (this.#editorState === EDITOR_STATE.DrawPath) {
             this.#svgDiagram?.style.setProperty('cursor', 'crosshair')
         } else {
             this.#svgDiagram?.style.removeProperty('cursor')
@@ -393,35 +399,28 @@ export class CellDLEditor {
 //        this.#contextMenu.enableItem(itemId, enable)
     }
 
-    #toolEventListener(event: Event) {
-        const tool = event.currentTarget as HTMLElement
-        if (tool.tagName === 'X-POPOVER') {
-            if (event.type === 'open') {
-                this.#closePopover() // Close any open popover
-//                this.#currentPopover = tool as XPopoverElement
-            } else if (event.type === 'close') {
-//                this.#currentPopover = null
-            }
-        } else if (tool.tagName === 'X-BUTTON') {
-            if (event.type === 'click') {
-                this.#lastClickedTool = tool
-//                if (this.#currentPopover && POPOVER_TO_TOOL[this.#currentPopover.id] != this.#lastClickedTool.id) {
-//                    this.#closePopover()
-//                }
-                if (tool.id in TOOL_TO_EDITORSTATE) {
-//                    this.#editorState = TOOL_TO_EDITORSTATE[tool.id]
-                    this.#setDefaultCursor()
-                    if (this.#editorState !== EDITORSTATE.Selecting) {
+    #toolBarEvent(event: Event) {
+        const detail = (<CustomEvent>event).detail
+        if (detail.type === 'state') {
+            if (detail.value && TOOL_TO_STATE.has(detail.tool as EDITOR_TOOL_IDS)) {
+                this.#editorState = TOOL_TO_STATE.get(detail.tool as EDITOR_TOOL_IDS)!
+                this.#setDefaultCursor()
+                if (this.#editorState !== EDITOR_STATE.Selecting) {
                         this.#unsetSelectedObject()
                         this.#closeSelectionBox()
                     }
-                    if (this.#editorState !== EDITORSTATE.DrawPath) {
-                        // Remove any partial path from editor frame...
-                        if (this.#pathMaker) {
-                            this.#pathMaker.close()
-                            this.#pathMaker = null
-                        }
+                if (this.#editorState !== EDITOR_STATE.DrawPath) {
+                    // Remove any partial path from editor frame...
+                    if (this.#pathMaker) {
+                        this.#pathMaker.close()
+                        this.#pathMaker = null
                     }
+                }
+            }
+        } else if (detail.type === 'value') {
+            if (detail.tool === EDITOR_TOOL_IDS.DrawConnectionTool) {
+                this.#drawConnectionSettings = {
+                    style: detail.value
                 }
             }
         }
@@ -607,10 +606,6 @@ export class CellDLEditor {
         }
     }
 
-    #drawConnectionUpdateSettings(event: Event) {
-        this.#drawConnectionSettings = (<CustomEvent>event).detail
-    }
-
     // Should we be calling event.preventDefault() ????
 
     #pointerClickEvent(event: MouseEvent) {
@@ -624,7 +619,7 @@ export class CellDLEditor {
             return
         }
         const clickedObject = this.#celldlDiagram.objectById(getElementId(element))
-        if (this.#editorState === EDITORSTATE.AddComponent && clickedObject === null) {
+        if (this.#editorState === EDITOR_STATE.AddComponent && clickedObject === null) {
             if (this.#currentComponentTemplate) {
                 this.#addComponentTemplate(event, this.#currentComponentTemplate)
             }
@@ -641,7 +636,7 @@ export class CellDLEditor {
                 this.#unsetSelectedObject()
             }
         }
-        if (this.#editorState === EDITORSTATE.DrawPath) {
+        if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker) {
                 if (this.#activeObject === null) {
                     const svgPoint = this.#domToSvgCoords(event)
@@ -657,7 +652,7 @@ export class CellDLEditor {
     }
 
     #pointerDoubleClickEvent(event: MouseEvent) {
-        if (this.#editorState === EDITORSTATE.DrawPath) {
+        if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker) {
                 if (this.#activeObject === null) {
                     this.#pathMaker.finishPartialPath(this.#celldlDiagram!, event.shiftKey)
@@ -707,7 +702,7 @@ export class CellDLEditor {
 //            this.status = `${currentObject.template.name} ${currentObject.id}`
         }
 
-        if (this.#editorState === EDITORSTATE.DrawPath) {
+        if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (
                 this.#activeObject &&
                 currentObject !== this.#activeObject &&
@@ -748,7 +743,7 @@ export class CellDLEditor {
                 this.#activeObject.finaliseMove()
                 this.#unsetActiveObject()
             }
-        } else if (this.#editorState === EDITORSTATE.DrawPath) {
+        } else if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker === null) {
                 this.#unsetActiveObject()
             }
@@ -767,7 +762,7 @@ export class CellDLEditor {
             return
         }
         const svgPoint = this.#domToSvgCoords(event)
-        if (this.#editorState === EDITORSTATE.DrawPath) {
+        if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#activeObject && this.#nextPathNode) {
                 if (this.#pathMaker === null) {
                     const settings = this.#drawConnectionSettings // settings.type is to come from object's domain...
@@ -782,10 +777,10 @@ export class CellDLEditor {
                 }
             }
         } else if (this.#activeObject !== null && this.#activeObject.moveable) {
-            // EDITORSTATE.Selecting or EDITORSTATE.AddComponent
+            // EDITOR_STATE.Selecting or EDITOR_STATE.AddComponent
             this.#activeObject.startMove(svgPoint)
             this.#moving = true
-        } else if (this.#editorState === EDITORSTATE.Selecting) {
+        } else if (this.#editorState === EDITOR_STATE.Selecting) {
             if (this.#selectionBox) {
                 this.#selectionBox.pointerEvent(event, svgPoint)
             } else if (event.shiftKey) {
@@ -805,18 +800,18 @@ export class CellDLEditor {
         this.#pointerPosition = new DOMPoint(event.x, event.y)
         const svgPoint = this.#domToSvgCoords(event)
         this.#showPos(svgPoint)
-        if (this.#editorState === EDITORSTATE.DrawPath) {
+        if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker) {
                 this.#pathMaker.drawTo(svgPoint, event.shiftKey)
             }
         } else if (this.#activeObject && this.#moving) {
-            // EDITORSTATE.Selecting or EDITORSTATE.AddComponent
+            // EDITOR_STATE.Selecting or EDITOR_STATE.AddComponent
             this.#activeObject!.move(svgPoint)
             this.#celldlDiagram!.objectMoved(this.#activeObject!)
             if (this.#selectionBox) {
                 this.#selectionBox.updateSelectedObjects()
             }
-        } else if (this.#editorState === EDITORSTATE.Selecting) {
+        } else if (this.#editorState === EDITOR_STATE.Selecting) {
             if (this.#selectionBox) {
                 this.#selectionBox.pointerEvent(event, svgPoint)
             }
@@ -846,7 +841,7 @@ export class CellDLEditor {
         const element = event.target as SVGGraphicsElement
         const currentObject = this.#celldlDiagram.objectById(getElementId(element))
 
-        if (this.#editorState !== EDITORSTATE.DrawPath) {
+        if (this.#editorState !== EDITOR_STATE.DrawPath) {
             if (this.#activeObject && this.#moving) {
                 this.#activeObject!.endMove()
                 this.#moving = false
@@ -857,7 +852,7 @@ export class CellDLEditor {
                     }
                     this.#unsetActiveObject()
                 }
-            } else if (this.#editorState === EDITORSTATE.Selecting) {
+            } else if (this.#editorState === EDITOR_STATE.Selecting) {
                 if (this.#selectionBox && !this.#selectionBox.pointerEvent(event, domPoint)) {
                     this.#closeSelectionBox()
                 }
@@ -896,7 +891,7 @@ export class CellDLEditor {
     #keyDownEvent(event: KeyboardEvent) {
         if (this.#haveFocus && event.key === 'Backspace') {
             this.#deleteSelectedObjects()
-        } else if (this.#editorState === EDITORSTATE.DrawPath && event.key === 'Escape') {
+        } else if (this.#editorState === EDITOR_STATE.DrawPath && event.key === 'Escape') {
             if (this.#pathMaker) {
                 // Remove any partial path
                 this.#pathMaker.close()

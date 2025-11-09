@@ -19,6 +19,8 @@
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
+import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor'
+
 import {
     type ConnectionStyleDefinition,
     DEFAULT_CONNECTION_STYLE_DEFINITION
@@ -44,40 +46,50 @@ function connectionStylePrompt(name: string): string {
 
 const toolButtons = vue.ref<IToolButton[]>([
     {
-        id: 'tool1',
+        id: EDITOR_TOOL_IDS.SelectTool,
+        active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.SelectTool,
         prompt: 'Select elements',
         icon: 'ci-pointer'
     },
     {
-        id: 'tool2',
-        active: true,
+        id: EDITOR_TOOL_IDS.DrawConnectionTool,
+        active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.DrawConnectionTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
         panel: vue.shallowRef(ConnectionStylePanel)
     }
 ])
 
-function buttonChanged(buttonId: string, active: boolean) {
-    console.log('bc', buttonId, active)
-
-    // This needs to update editor's drawing mode...
+function buttonChanged(toolId: string, active: boolean) {
+    // Tell the editor that the tool has changed
+    document.dispatchEvent(
+        new CustomEvent('toolbar-event', {
+            detail: {
+                type: 'state',
+                tool: toolId,
+                value: active
+            }
+        })
+    )
 }
 
 function toolUpdated(toolId: string, data: any) {
-    if (toolId === 'tool2') {
+    if (toolId === EDITOR_TOOL_IDS.DrawConnectionTool) {
         currentConnectionStyle.value = data
         toolButtons.value[1]!.prompt = connectionStylePrompt(data.name)
         toolButtons.value[1]!.icon = data.icon
 
-        // Tell editor style has changed
+        // Tell the editor that the connection style has changed
         document.dispatchEvent(
-            new CustomEvent('update-connection-tool', {
+            new CustomEvent('toolbar-event', {
                 detail: {
-                    style: data.id
+                    type: 'value',
+                    tool: toolId,
+                    value: data.id
                 }
             })
         )
-    } else if (toolId === 'tool3') {
+    } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
 /*
         // Tell editor about the default component in the toolbar
         const event = templateImageEvent(this.#currentComponentIcon)
