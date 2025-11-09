@@ -45,8 +45,8 @@ function connectionStylePrompt(name: string): string {
 const toolButtons = vue.ref<IToolButton[]>([
     {
         id: 'tool1',
-        prompt: 'Draw linear connection',
-        icon: 'ci-linear-connection'
+        prompt: 'Select elements',
+        icon: 'ci-pointer'
     },
     {
         id: 'tool2',
