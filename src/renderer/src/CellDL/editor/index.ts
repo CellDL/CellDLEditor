@@ -30,16 +30,6 @@ import { CellDLDiagram } from '@editor/diagram'
 import { libraryManager, type TemplateEvent } from '@editor/libraries'
 import { round } from '@editor/utils'
 
-/**
-import '../panels'
-import type { PanelInterface } from '../panels'
-import type CellDLPanelBar from '../panels'
-import type PropertiesPanel from '../panels/properties'
-
-import '../tools'
-import type CellDLToolBar from '../toolbar'
-**/
-
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { StringProperties } from '@renderer/common/types'
 
@@ -60,6 +50,7 @@ WIP ****/
 
 //==============================================================================
 
+const MAX_POINTER_CLICK_TIME = 200 // milliseconds
 
 //==============================================================================
 
@@ -93,8 +84,6 @@ const POPOVER_TO_TOOL = {
 }
 
 //==============================================================================
-
-const MAX_POINTER_CLICK_TIME = 200 // milliseconds
 
 export enum CONTEXT_MENU {
     DELETE = 'menu-delete',
@@ -380,9 +369,9 @@ export class CellDLEditor {
                 this.#editorState = TOOL_TO_STATE.get(detail.tool as EDITOR_TOOL_IDS)!
                 this.#setDefaultCursor()
                 if (this.#editorState !== EDITOR_STATE.Selecting) {
-                        this.#unsetSelectedObject()
-                        this.#closeSelectionBox()
-                    }
+                    this.#unsetSelectedObject()
+                    this.#closeSelectionBox()
+                }
                 if (this.#editorState !== EDITOR_STATE.DrawPath) {
                     // Remove any partial path from editor frame...
                     if (this.#pathMaker) {
@@ -552,7 +541,7 @@ export class CellDLEditor {
 
     #appDragOverEvent(event: DragEvent) {
         if (this.#dragging && event.dataTransfer) {
-            event.preventDefault(); // Needed to allow drop
+            event.preventDefault() // Needed to allow drop
             event.dataTransfer.dropEffect = 'copy'
         }
     }
