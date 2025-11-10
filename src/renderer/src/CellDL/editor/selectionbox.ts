@@ -24,8 +24,7 @@ import { Point } from '@renderer/common/points'
 import { Bounds, ComputedValue, RestrictedValue } from '@editor/geometry'
 import { ControlPoint } from '@editor/geometry/controls'
 
-import { type CellDLEditor, getElementId } from '.'
-//import { CONTEXT_MENU } from './contextmenu.ts'
+import { type CellDLEditor, CONTEXT_MENU, getElementId } from '.'
 import { editGuides } from './editguides'
 import { type EditorFrame, EDITOR_FRAME_ID } from './editorframe'
 

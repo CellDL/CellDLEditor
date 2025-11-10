@@ -51,9 +51,6 @@ import PanZoom from '@editor/editor/panzoom'
 import { SelectionBox } from '@editor/editor/selectionbox'
 import { undoRedo } from '@editor/editor/undoredo'
 
-//import './contextmenu.ts'
-//import { CONTEXT_MENU, type ContextMenu } from './contextmenu.ts'
-
 //==============================================================================
 
 /****  WIP
@@ -99,6 +96,13 @@ const POPOVER_TO_TOOL = {
 
 const MAX_POINTER_CLICK_TIME = 200 // milliseconds
 
+export enum CONTEXT_MENU {
+    DELETE = 'menu-delete',
+    EDIT_GROUP = 'menu-edit-group',
+    INFO = 'menu-info',
+    GROUP_OBJECTS = 'menu-group',
+    UNGROUP_OBJECTS = 'menu-ungroup'
+}
 //==============================================================================
 
 export function notifyChanges() {
@@ -512,8 +516,8 @@ export class CellDLEditor {
 //            if (this.#currentPanel) {
 //                this.#currentPanel.setCurrentObject(selectedObject)
 //            }
-//            this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
-//            this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
+            this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
+            this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
         }
     }
 
@@ -524,8 +528,8 @@ export class CellDLEditor {
 //            if (this.#currentPanel) {
 //                this.#currentPanel.setCurrentObject(null)
 //            }
-//            this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
-//            this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
+            this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
+            this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
         }
     }
 
