@@ -1,5 +1,5 @@
 <template lang="pug">
-    SafeTeleport(to="#panel-content")
+    Teleport(to="#panel-content" defer)
         .right-panel
             .panel-title
                 slot(name="title")

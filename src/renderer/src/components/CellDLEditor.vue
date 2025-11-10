@@ -7,7 +7,7 @@
             @panel-event="toolUpdated")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
-        TeleportTarget#panel-content
+        #panel-content
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
