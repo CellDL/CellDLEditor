@@ -108,7 +108,7 @@ export class PathNode {
     canConnect(node: PathNode): boolean {
         // Check if objects are allowed to be connected
         return true
- //       return libraryManager.objectMethods(this.object).canConnect(node.object)
+        //       return libraryManager.objectMethods(this.object).canConnect(node.object)
     }
 }
 
@@ -155,12 +155,9 @@ export class PathMaker {
     }
 
     static #checkMaxConnections(celldlObject: CellDLConnectedObject): boolean {
-
-
-
-       // if (celldlObject.numConnections < libraryManager.objectMethods(celldlObject).maxConnections()) {
-       //     return true
-       // }
+        // if (celldlObject.numConnections < libraryManager.objectMethods(celldlObject).maxConnections()) {
+        //     return true
+        // }
         return true
 
         //  An object needs the name of its template/type

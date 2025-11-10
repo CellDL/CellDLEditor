@@ -289,17 +289,13 @@ export class PathElement {
         }
     }
 
-    protected movePathPoint(_position: PointLike) {
-    }
+    protected movePathPoint(_position: PointLike) {}
 
-    protected moveComponentBoundingBox(_index: number, _component: BoundedElement, _centroidDelta: Point) {
-    }
+    protected moveComponentBoundingBox(_index: number, _component: BoundedElement, _centroidDelta: Point) {}
 
-    protected resizeComponentBoundingBox(_index: number, _component: BoundedElement, _cornerDeltas: [Point, Point]) {
-    }
+    protected resizeComponentBoundingBox(_index: number, _component: BoundedElement, _cornerDeltas: [Point, Point]) {}
 
-    protected setPathPoints(_pathArray: NormalArray) {
-    }
+    protected setPathPoints(_pathArray: NormalArray) {}
 
     protected simplifyPathPoints(): PathPoint[] | null {
         return null

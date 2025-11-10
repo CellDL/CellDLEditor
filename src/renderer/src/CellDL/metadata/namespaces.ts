@@ -90,8 +90,7 @@ export function curieSuffix(NS: NamespaceType, term: string | NamedNode): string
 
 //==============================================================================
 
-const declaredNamespaces = Object.assign({}, CELLDL_NAMESPACE_DECLARATIONS,
-                                             WEB_NAMESPACE_DECLARATIONS)
+const declaredNamespaces = Object.assign({}, CELLDL_NAMESPACE_DECLARATIONS, WEB_NAMESPACE_DECLARATIONS)
 
 export function getCurie(term: string | NamedNode): string {
     const fullUri: string = isNamedNode(term) ? (<NamedNode>term).uri : <string>term

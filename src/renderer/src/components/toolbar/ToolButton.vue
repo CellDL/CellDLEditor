@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import * as vue from "vue"
+import * as vue from 'vue'
 
 const props = defineProps<{
     id?: string
@@ -78,7 +78,6 @@ async function toolButtonClick(e: MouseEvent) {
             // Simply toggle the panel button; event emission controls panel visibility
 
             target.classList.toggle('active')
-
         } else {
             if (!target.classList.contains('active')) {
                 target.classList.add('active')
@@ -92,8 +91,8 @@ async function toolButtonClick(e: MouseEvent) {
                     await vue.nextTick()
 
                     const popoverHeight = popoverElement?.clientHeight
-                    let top = target.offsetTop + (target.clientWidth - popoverHeight)/2
-                    pointerPos.value = popoverHeight/2 - 10  // 10 is half of pointer's height
+                    let top = target.offsetTop + (target.clientWidth - popoverHeight) / 2
+                    pointerPos.value = popoverHeight / 2 - 10 // 10 is half of pointer's height
 
                     if (top < (20 + window.scrollY)) {
                         // Make sure our top is at least 20px below top containing element

@@ -18,7 +18,6 @@ limitations under the License.
 
 ******************************************************************************/
 
-
 import { CONNECTION_SPLAY_PADDING, MAX_CONNECTION_SPLAY_PADDING } from '@renderer/common/styling'
 import { CONNECTION_WIDTH, SELECTION_STROKE_WIDTH } from '@renderer/common/styling'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
@@ -302,14 +301,11 @@ export class CellDLSVGElement {
         return false
     }
 
-    startMove(_svgPoint: PointLike) {
-    }
+    startMove(_svgPoint: PointLike) {}
 
-    move(_svgPoint: PointLike) {
-    }
+    move(_svgPoint: PointLike) {}
 
-    endMove() {
-    }
+    endMove() {}
 
     xBounds(padding: number = 0): [number, number] {
         padding = this.xPadding(padding)
@@ -580,25 +576,21 @@ export class CellDLSVGElement {
         return bounds[0].x <= deltaX && deltaX <= bounds[1].x && bounds[0].y <= deltaY && deltaY <= bounds[1].y
     }
 
-    clearControlHandles() {
-    }
+    clearControlHandles() {}
 
-    drawControlHandles() {
-    }
+    drawControlHandles() {}
 
     highlight(highlight = true) {
         this.#setSelectionClass('highlight', highlight)
     }
 
-    undoControlMove(_undoPosition: UndoMovePosition) {
-    }
+    undoControlMove(_undoPosition: UndoMovePosition) {}
 
     pointerEvent(_eventType: string, _svgElement: SVGGraphicsElement, _svgCoords: PointLike): boolean {
         return false
     }
 
-    redraw() {
-    }
+    redraw() {}
 
     remove() {
         this.svgElement.remove()
@@ -609,11 +601,9 @@ export class CellDLSVGElement {
         this.#selected = selected
     }
 
-    limitDirection(_direction: string, _minimum: number | RestrictedValue, _maximum: number | RestrictedValue) {
-    }
+    limitDirection(_direction: string, _minimum: number | RestrictedValue, _maximum: number | RestrictedValue) {}
 
-    unlimitDirection() {
-    }
+    unlimitDirection() {}
 
     /**
      * Update the SVG of the element with new SVG.

@@ -30,7 +30,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['button-event', 'popover-event'])
 
-function buttonEvent(id: string, active: boolean, panel: vue.Raw<vue.Component>|null) {
+function buttonEvent(id: string, active: boolean, panel: vue.Raw<vue.Component> | null) {
     for (const button of props.buttons) {
         if (active && id === button.id) {
             button.active = true

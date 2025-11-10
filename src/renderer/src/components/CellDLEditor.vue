@@ -22,15 +22,12 @@
 </template>
 
 <script setup lang="ts">
-
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
 import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor'
 
-import {
-    DEFAULT_CONNECTION_STYLE_DEFINITION
-} from '@editor/connections'
+import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections'
 
 import { CellDLDiagram } from '@editor/diagram'
 
@@ -56,20 +53,20 @@ function connectionStylePrompt(name: string): string {
 const toolButtons = vue.ref<IToolButton[]>([
     {
         id: EDITOR_TOOL_IDS.SelectTool,
-        active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.SelectTool,
+        active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.SelectTool,
         prompt: 'Select elements',
         icon: 'ci-pointer'
     },
     {
         id: EDITOR_TOOL_IDS.DrawConnectionTool,
-        active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.DrawConnectionTool,
+        active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.DrawConnectionTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
         panel: vue.markRaw(ConnectionStylePopover)
     },
     {
         id: EDITOR_TOOL_IDS.AddComponentTool,
-        active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.AddComponentTool,
+        active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
         panel: vue.markRaw(ComponentPopover)
@@ -79,10 +76,10 @@ const toolButtons = vue.ref<IToolButton[]>([
 //==============================================================================
 
 const panelButtons = vue.ref<IToolButton[]>([
-     {
+    {
         id: 'properties',
-        prompt: "Element Properties",
-        icon: "ci-cog",
+        prompt: 'Element Properties',
+        icon: 'ci-cog',
         panel: vue.markRaw(PropertiesPanel)
     }
 ])
@@ -94,7 +91,7 @@ const panelComponent = vue.ref()
 const panelVisible = vue.ref()
 panelVisible.value = false
 
-function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component>|null) {
+function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component> | null) {
     if (component) {
         // Update the RH panel to show its current component
         if (active) {
@@ -136,7 +133,7 @@ function popoverEvent(toolId: string, data: any) {
             })
         )
     } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
-/*
+        /*
         // Tell editor about the default component in the toolbar
         const event = templateImageEvent(this.#currentComponentIcon)
         event.uri = defaultComponentUri
@@ -171,12 +168,7 @@ vue.onMounted(() => {
                 if (action === 'IMPORT' || action === 'OPEN') {
                     // Load CellDL file (SVG and metadata)
                     try {
-                        celldlDiagram = new CellDLDiagram(
-                            filePath!,
-                            data!,
-                            editor!,
-                            action === 'IMPORT'
-                        )
+                        celldlDiagram = new CellDLDiagram(filePath!, data!, editor!, action === 'IMPORT')
                     } catch (error) {
                         console.log(error)
                         window.alert((error as Error).toString())

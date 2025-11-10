@@ -48,8 +48,8 @@ export class Bounds {
 
     constructor(left: number, top: number, right: number, bottom: number) {
         // Ensure bounds are in ``normal`` order
-        [this.#left, this.#right] = (left <= right) ? [left, right] : [right, left];
-        [this.#top, this.#bottom] = (top <= bottom) ? [top, bottom] : [bottom, top]
+        ;[this.#left, this.#right] = left <= right ? [left, right] : [right, left]
+        ;[this.#top, this.#bottom] = top <= bottom ? [top, bottom] : [bottom, top]
     }
 
     get left() {
@@ -115,13 +115,16 @@ export class Bounds {
     }
 
     expand(margin: number): Bounds {
-        return new Bounds(this.#left - margin, this.#top - margin,
-                          this.#right + margin, this.#bottom + margin)
+        return new Bounds(this.#left - margin, this.#top - margin, this.#right + margin, this.#bottom + margin)
     }
 
     inContainer(container: Bounds): boolean {
-        return this.#left >= container.#left && this.#top <= container.#top
-            && this.#top >= container.#top && this.#bottom <= container.#bottom
+        return (
+            this.#left >= container.#left &&
+            this.#top <= container.#top &&
+            this.#top >= container.#top &&
+            this.#bottom <= container.#bottom
+        )
     }
 }
 
@@ -283,8 +286,7 @@ export class FixedValue extends RestrictedValue {
         return new FixedValue(this.value)
     }
 
-    narrowRange(_minimum: number, _maximum: number) {
-    }
+    narrowRange(_minimum: number, _maximum: number) {}
 
     reassignValue(value: number) {
         super.reassignValue(value)
@@ -315,8 +317,7 @@ export class ComputedValue extends RestrictedValue {
         super.value = this.#value()
         return super.value
     }
-    set value(_: number) {
-    }
+    set value(_: number) {}
 }
 
 //==============================================================================

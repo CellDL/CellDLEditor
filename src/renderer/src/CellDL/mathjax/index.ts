@@ -41,7 +41,6 @@ limitations under the License.
  *  limitations under the License.
  */
 
-
 //  Load the packages needed for MathJax
 import { mathjax } from '@mathjax/src/js/mathjax.js'
 // @ts-expect-error: TexError and MmlNode are declared but not exported
@@ -78,7 +77,7 @@ export const LatexStyleRules = [
 //==============================================================================
 
 //  Create DOM adaptor and register it for HTML documents
-const adaptor = liteAdaptor({fontSize: EM_SIZE})
+const adaptor = liteAdaptor({ fontSize: EM_SIZE })
 RegisterHTMLHandler(adaptor)
 
 //==============================================================================
@@ -90,7 +89,7 @@ class MyTeX<N, T, D> extends TeX<N, T, D> {
 }
 
 const packages = ['base', 'mhchem', 'textmacros']
-const tex = new MyTeX({ packages: {'[+]': packages} })
+const tex = new MyTeX({ packages: { '[+]': packages } })
 const svg = new SVG({ fontCache: 'local' })
 const html = mathjax.document('', { InputJax: tex, OutputJax: svg })
 
@@ -108,7 +107,7 @@ function latexToSvgDocument(latex: string): XMLDocument {
         ex: EX_SIZE
     })
     const svg = adaptor.innerHTML(node)
-    const document = new DOMParser().parseFromString(svg, "image/svg+xml")
+    const document = new DOMParser().parseFromString(svg, 'image/svg+xml')
     return document as unknown as XMLDocument
 }
 
@@ -167,7 +166,6 @@ function latexToSvg(
         const styling = svgElement.getAttribute('style')
         if (styling) {
             const styles = ''
-
         }
 
         console.log(svgElement.getAttribute('style'))
@@ -213,11 +211,14 @@ function latexToSvg(
             if (cornerRadius !== '') {
                 boundingRect.setAttribute('rx', cornerRadius)
             }
-            boundingRect.setAttribute('fill', `${
-                'suffix-background' in options && options['suffix-background'] !== ''
-                    ? options['suffix-background']
-                    : 'transparent'
-            }`)
+            boundingRect.setAttribute(
+                'fill',
+                `${
+                    'suffix-background' in options && options['suffix-background'] !== ''
+                        ? options['suffix-background']
+                        : 'transparent'
+                }`
+            )
             if (svgElement.firstChild) {
                 svgElement.insertBefore(boundingRect, svgElement.firstChild.nextSibling)
             } else {

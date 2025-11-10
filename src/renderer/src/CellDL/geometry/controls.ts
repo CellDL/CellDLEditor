@@ -29,12 +29,7 @@ import type { StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 
-import {
-    FixedPoint,
-    FixedValue,
-    RestrictedPoint,
-    RestrictedValue,
-} from './index.ts'
+import { FixedPoint, FixedValue, RestrictedPoint, RestrictedValue } from './index.ts'
 
 //==============================================================================
 

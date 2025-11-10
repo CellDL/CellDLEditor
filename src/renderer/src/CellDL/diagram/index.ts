@@ -25,7 +25,13 @@ import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
-import { MetadataPropertiesMap, type MetadataPropertyValue, type NamedNode, RdfStore, type Statement } from '@editor/metadata'
+import {
+    MetadataPropertiesMap,
+    type MetadataPropertyValue,
+    type NamedNode,
+    RdfStore,
+    type Statement
+} from '@editor/metadata'
 import { CELLDL_NAMESPACE, CELLDL_NAMESPACE_DECLARATIONS } from '@editor/metadata'
 import { DCT_NAMESPACE, OWL_NAMESPACE, RDF_TYPE } from '@editor/metadata'
 
@@ -308,7 +314,7 @@ export class CellDLDiagram {
         this.#loadSvgDiagram(svgData)
 
         // Put all existing content into group with class of CELLDL_BACKGROUND_CLASS
-        let backgroundGroup: SVGGraphicsElement | null | undefined 
+        let backgroundGroup: SVGGraphicsElement | null | undefined
         const backgroundElements: SVGGraphicsElement[] = []
         for (const child of this.#svgDiagram.children) {
             if (child.tagName !== 'defs') {
@@ -922,11 +928,7 @@ export class CellDLDiagram {
     }
 
     getConnector(connectorNode: MetadataPropertyValue | null): CellDLConnectedObject | null {
-        if (
-            connectorNode &&
-            $rdf.isNamedNode(connectorNode) &&
-            connectorNode.value.startsWith(this.#kb.documentUri)
-        ) {
+        if (connectorNode && $rdf.isNamedNode(connectorNode) && connectorNode.value.startsWith(this.#kb.documentUri)) {
             const connectorId = (<NamedNode>connectorNode).id()
             const connector = this.#objects.get(connectorId) as CellDLConnectedObject
             return connector && connector.isConnectable ? connector : null

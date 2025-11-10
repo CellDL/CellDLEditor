@@ -1,13 +1,13 @@
 svg {
-    background-color: #EEE;
+    background-color: #eee;
     user-select: none;
     /* Element states while editing */
-    --active: #0F8;
-    --highlighted: #05F;
-    --selected: #0DF;
-    --active-selected: #0FF;
-    --connection-selected: #F00;
-    --connection-highlighted: #0F8;
+    --active: #0f8;
+    --highlighted: #05f;
+    --selected: #0df;
+    --active-selected: #0ff;
+    --connection-selected: #f00;
+    --connection-highlighted: #0f8;
 }
 .celldl-background {
     pointer-events: none;
@@ -22,14 +22,14 @@ svg {
 .control-rectangle.selected {
     fill: #f00;
     opacity: 0.4;
-    stroke: #F0F;
+    stroke: #f0f;
     stroke-width: 3;
     pointer-events: all;
 }
 
 /* Alignment guides */
 .alignment-grid {
-    stroke: #08F;
+    stroke: #08f;
     stroke-width: 0.4;
     stroke-opacity: 0.3;
 }
@@ -37,27 +37,27 @@ svg {
     stroke: none;
 }
 .alignment-guide.visible {
-    stroke: #08F;
+    stroke: #08f;
     stroke-width: 1;
     stroke-opacity: 0.8;
 }
 
 /* Control points */
 .control-point {
-    fill: #00C;
+    fill: #00c;
     opacity: 0.8;
-    stroke: #00C;
+    stroke: #00c;
     stroke-width: 2;
 }
 .control-point.fixed {
     fill: white;
 }
 #celldl-editor-selection-frame.highlight .control-point {
-    stroke: #00F;
+    stroke: #00f;
 }
 #celldl-editor-selection-frame.highlight .control-point.active {
-    fill: #88F;
-    opacity: 1.0;
+    fill: #88f;
+    opacity: 1;
 }
 
 /* Active, highlighted, and selected objects */
@@ -97,7 +97,7 @@ svg {
     fill: var(--highlighted);
 }
 .active.selected + .conduit {
-    fill:  var(--active-selected) !important;
+    fill: var(--active-selected) !important;
 }
 
 /* Interfaces */

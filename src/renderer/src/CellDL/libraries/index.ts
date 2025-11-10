@@ -28,14 +28,13 @@ export { libraryManager } from './manager.ts'
 //==============================================================================
 
 class ComponentLibraries {
-
     /* We need to wait until theme is loaded before defining custom elements... */
     //            background: #3584e4 /* ${Xel.presetAccentColors.blue} */;
 
     #libContainer: HTMLElement
     #selectedElement: HTMLElement | null = null
 
-/*
+    /*
     constructor() {
         this.#libContainer = this.getElementById('component-libraries')!
     }

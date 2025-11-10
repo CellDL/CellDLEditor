@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import * as vue from "vue"
+import * as vue from 'vue'
 
 import Card from 'primevue/card'
 

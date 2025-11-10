@@ -23,7 +23,6 @@ export enum ConnectionStyle {
     Rectilinear = 'rectilinear'
 }
 
-
 export interface ConnectionStyleDefinition {
     id: ConnectionStyle
     icon: string
@@ -48,7 +47,6 @@ export const CONNECTION_STYLE_DEFINITIONS: ConnectionStyleDefinition[] = [
     },
     DEFAULT_CONNECTION_STYLE_DEFINITION
 ]
-
 
 //==============================================================================
 //==============================================================================
