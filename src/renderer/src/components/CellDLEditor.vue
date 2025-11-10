@@ -37,8 +37,10 @@ import { undoRedo } from '@editor/editor/undoredo'
 
 import { type IToolButton } from '@renderer/components/toolbar'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
+
 import ComponentPopover from '@renderer/components/toolbar/ComponentPopover.vue'
 import ConnectionStylePopover from '@renderer/components/toolbar/ConnectionStylePopover.vue'
+import PropertiesPanel from '@renderer/components/toolbar/PropertiesPanel.vue'
 
 //==============================================================================
 
@@ -68,6 +70,15 @@ const toolButtons = vue.ref<IToolButton[]>([
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
         panel: vue.shallowRef(ComponentPopover)
+    }
+])
+
+const panelButtons = vue.ref<IToolButton[]>([
+     {
+        id: 'properties',
+        prompt: "Properties...",
+        icon: currentConnectionStyle.value.icon,  // gear icon
+        panel: vue.shallowRef(PropertiesPanel)
     }
 ])
 
