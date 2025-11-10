@@ -76,6 +76,8 @@ const toolButtons = vue.ref<IToolButton[]>([
     }
 ])
 
+//==============================================================================
+
 const panelButtons = vue.ref<IToolButton[]>([
      {
         id: 'properties',
@@ -84,6 +86,8 @@ const panelButtons = vue.ref<IToolButton[]>([
         panel: vue.markRaw(PropertiesPanel)
     }
 ])
+
+//==============================================================================
 
 const panelComponent = vue.ref()
 
@@ -112,6 +116,8 @@ function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Com
     }
 }
 
+//==============================================================================
+
 function popoverEvent(toolId: string, data: any) {
     if (toolId === EDITOR_TOOL_IDS.DrawConnectionTool) {
         currentConnectionStyle.value = data
@@ -119,6 +125,7 @@ function popoverEvent(toolId: string, data: any) {
         toolButtons.value[1]!.icon = data.icon
 
         // Tell the editor that the connection style has changed
+
         document.dispatchEvent(
             new CustomEvent('toolbar-event', {
                 detail: {
@@ -138,7 +145,6 @@ function popoverEvent(toolId: string, data: any) {
                 detail: event
             })
         )
-
 */
     }
 }
@@ -204,6 +210,7 @@ vue.onMounted(() => {
         celldlDiagram.edit()
     }
 })
+//==============================================================================
 </script>
 
 <style scoped>
