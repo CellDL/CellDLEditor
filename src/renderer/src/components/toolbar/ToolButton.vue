@@ -1,8 +1,9 @@
 <template lang="pug">
-    .panel(
-        ref="tool-panel"
-        :class="{ hidden: panelHidden }"
-        :style="panelStyle")
+    .popover(
+        v-if="type === 'popover'"
+        ref="tool-popover"
+        :class="{ hidden: !popoverVisible }"
+        :style="popoverStyle")
         slot
     .ci.tool-button(
         :id="id"
@@ -36,36 +37,34 @@ const buttonClasses = vue.computed(() => {
     return classes.join(' ')
 })
 
-// need to be able to deactivate a toolbutton
-
-const panelHidden = vue.ref()
-panelHidden.value = true
+const popoverVisible = vue.ref()
+popoverVisible.value = false
 
 const panelTop = vue.ref()
 
 const pointerPos = vue.ref()
 vue.provide('pointerPos', vue.readonly(pointerPos))
 
-const panelReference = vue.useTemplateRef('tool-panel')
-let panelElement: HTMLElement | null = null
+const popoverReference = vue.useTemplateRef('tool-popover')
+let popoverElement: HTMLElement | null = null
 
-const panelStyle = vue.computed(() => {
+const popoverStyle = vue.computed(() => {
     if (props.type === 'popover') {
         return { top: panelTop }
     }
 })
 vue.onMounted(() => {
-    if (panelReference.value) {
-        panelElement = (<HTMLElement>panelReference.value).firstElementChild as HTMLElement
+    if (popoverReference.value) {
+        popoverElement = (<HTMLElement>popoverReference.value).firstElementChild as HTMLElement
     }
 })
 
-// Make sure panel is closed when buuton is deactivated
+// Make sure popover is closed when button is deactivated
 vue.watch(
     () => props.active,
     () => {
-        if (panelElement && !props.active) {
-            panelHidden.value = true
+        if (!props.active) {
+            popoverVisible.value = false
         }
     }
 )
@@ -75,21 +74,26 @@ const emit = defineEmits(['button-event'])
 async function toolButtonClick(e: MouseEvent) {
     const target: HTMLElement | null = e.target as HTMLElement
     if (target) {
-        if (!target.classList.contains('active')) {
-            target.classList.add('active')
-        } else if (panelElement) {
-            if (!panelHidden.value) {
-                panelHidden.value = true
-            } else {
-                panelHidden.value = false
-                if (props.type === 'popover') {
+        if (props.type === 'panel') {
+            // Simply toggle the panel button; event emission controls panel visibility
+
+            target.classList.toggle('active')
+
+        } else {
+            if (!target.classList.contains('active')) {
+                target.classList.add('active')
+            } else if (popoverElement) {
+                if (popoverVisible.value) {
+                    popoverVisible.value = false
+                } else {
+                    popoverVisible.value = true
 
                     // Wait for panel to be rendered before getting its height
                     await vue.nextTick()
 
-                    const panelHeight = panelElement?.clientHeight
-                    let top = target.offsetTop + (target.clientWidth - panelHeight)/2
-                    pointerPos.value = panelHeight/2 - 10  // 10 is half of pointer's height
+                    const popoverHeight = popoverElement?.clientHeight
+                    let top = target.offsetTop + (target.clientWidth - popoverHeight)/2
+                    pointerPos.value = popoverHeight/2 - 10  // 10 is half of pointer's height
 
                     if (top < (20 + window.scrollY)) {
                         // Make sure our top is at least 20px below top containing element
@@ -136,7 +140,7 @@ async function toolButtonClick(e: MouseEvent) {
     display: none;
 }
 
-.panel {
+.popover {
     position: absolute;
 }
 
