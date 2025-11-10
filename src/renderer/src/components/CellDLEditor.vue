@@ -3,8 +3,8 @@
         EditorToolbar.editor-bar(
             :buttons="toolButtons"
             type="popover"
-            @button-event="buttonChanged"
-            @panel-event="toolUpdated")
+            @button-event="buttonEvent"
+            @popover-event="popoverEvent")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
         #panel-content(
@@ -15,7 +15,7 @@
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
-            @button-event="buttonChanged")
+            @button-event="buttonEvent")
     footer.status-bar
         span#status-msg
         span#status-pos
@@ -90,7 +90,7 @@ const panelComponent = vue.ref()
 const panelVisible = vue.ref()
 panelVisible.value = false
 
-function buttonChanged(toolId: string, active: boolean, component: vue.Raw<vue.Component>|null) {
+function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component>|null) {
     if (component) {
         // Update the RH panel to show its current component
         if (active) {
@@ -112,7 +112,7 @@ function buttonChanged(toolId: string, active: boolean, component: vue.Raw<vue.C
     }
 }
 
-function toolUpdated(toolId: string, data: any) {
+function popoverEvent(toolId: string, data: any) {
     if (toolId === EDITOR_TOOL_IDS.DrawConnectionTool) {
         currentConnectionStyle.value = data
         toolButtons.value[1]!.prompt = connectionStylePrompt(data.name)

@@ -51,10 +51,10 @@ const props = defineProps<{
     id: string
 }>()
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(['popover-event'])
 
 function changed(e: SelectChangeEvent) {
-    emit('change', props.id, e.value)
+    emit('popover-event', props.id, e.value)
 }
 </script>
 

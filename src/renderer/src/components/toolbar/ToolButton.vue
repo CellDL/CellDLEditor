@@ -70,7 +70,7 @@ vue.watch(
     }
 )
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(['button-event'])
 
 async function toolButtonClick(e: MouseEvent) {
     const target: HTMLElement | null = e.target as HTMLElement
@@ -101,7 +101,7 @@ async function toolButtonClick(e: MouseEvent) {
                 }
             }
         }
-        emit('change', target.id, target.classList.contains('active'), props.panel || null)
+        emit('button-event', target.id, target.classList.contains('active'), props.panel || null)
     }
 }
 </script>
