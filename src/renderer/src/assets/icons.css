@@ -6,6 +6,10 @@
     scale: 0.9;
 }
 
+.ci-cog {
+    background: url("/icons/Cog.svg");
+}
+
 .ci-left-panel-arrow {
     background: url("/icons/LeftPanelArrow.svg");
 }
