@@ -79,8 +79,8 @@ const toolButtons = vue.ref<IToolButton[]>([
 const panelButtons = vue.ref<IToolButton[]>([
      {
         id: 'properties',
-        prompt: "Properties...",
-        icon: currentConnectionStyle.value.icon,  // gear icon
+        prompt: "Element Properties",
+        icon: "ci-cog",
         panel: vue.markRaw(PropertiesPanel)
     }
 ])
