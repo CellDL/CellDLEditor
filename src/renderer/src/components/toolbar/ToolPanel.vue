@@ -1,10 +1,9 @@
 <template lang="pug">
-    Teleport(to="#panel-content" defer)
-        .right-panel
-            .panel-title
-                slot(name="title")
-            .panel-content
-                slot(name="content")
+    .right-panel
+        .panel-title
+            slot(name="title")
+        .panel-content
+            slot(name="content")
 </template>
 
 <script setup lang="ts">

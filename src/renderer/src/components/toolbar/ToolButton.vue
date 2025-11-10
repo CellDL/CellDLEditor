@@ -22,6 +22,7 @@ const props = defineProps<{
     prompt?: string
     modal?: boolean
     type?: string
+    panel?: vue.Raw<vue.Component>
 }>()
 
 const buttonClasses = vue.computed(() => {
@@ -100,7 +101,7 @@ async function toolButtonClick(e: MouseEvent) {
                 }
             }
         }
-        emit('change', target.id, target.classList.contains('active'))
+        emit('change', target.id, target.classList.contains('active'), props.panel || null)
     }
 }
 </script>

@@ -9,15 +9,18 @@
                 :icon="button.icon"
                 :modal="!!button?.panel"
                 :type="type"
+                :panel="button.panel"
                 @change="buttonChange")
                 component(
-                    v-if="button.panel"
+                    v-if="type === 'popover' && button.panel"
                     :is="button.panel"
                     :id="button.id"
                     @change="panelChange")
 </template>
 
 <script setup lang="ts">
+import * as vue from 'vue'
+
 import { type IToolButton } from '.'
 
 const props = defineProps<{
@@ -27,7 +30,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['button-event', 'panel-event'])
 
-function buttonChange(id: string, active: boolean) {
+function buttonChange(id: string, active: boolean, panel: vue.Raw<vue.Component>|null) {
     for (const button of props.buttons) {
         if (active && id === button.id) {
             button.active = true
@@ -35,7 +38,7 @@ function buttonChange(id: string, active: boolean) {
             button.active = false
         }
     }
-    emit('button-event', id, active)
+    emit('button-event', id, active, props.type == 'panel' ? panel : null)
 }
 
 function panelChange(id: string, data: any) {

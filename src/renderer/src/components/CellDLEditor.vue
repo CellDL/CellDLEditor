@@ -7,7 +7,11 @@
             @panel-event="toolUpdated")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
-        #panel-content
+        #panel-content(
+            :class="{ hidden: !panelVisible }")
+            component(
+                    v-if="panelComponent"
+                    :is="panelComponent")
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
@@ -81,17 +85,31 @@ const panelButtons = vue.ref<IToolButton[]>([
     }
 ])
 
-function buttonChanged(toolId: string, active: boolean) {
-    // Tell the editor that the tool has changed
-    document.dispatchEvent(
-        new CustomEvent('toolbar-event', {
-            detail: {
-                type: 'state',
-                tool: toolId,
-                value: active
-            }
-        })
-    )
+const panelComponent = vue.ref()
+
+const panelVisible = vue.ref()
+panelVisible.value = false
+
+function buttonChanged(toolId: string, active: boolean, component: vue.Raw<vue.Component>|null) {
+    if (component) {
+        // Update the RH panel to show its current component
+        if (active) {
+            panelComponent.value = component
+        }
+        panelVisible.value = active
+    } else {
+        // Tell the editor that a popover tool has changed
+
+        document.dispatchEvent(
+            new CustomEvent('toolbar-event', {
+                detail: {
+                    type: 'state',
+                    tool: toolId,
+                    value: active
+                }
+            })
+        )
+    }
 }
 
 function toolUpdated(toolId: string, data: any) {
