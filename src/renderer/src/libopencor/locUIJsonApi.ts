@@ -6,7 +6,7 @@ export interface IUiJson {
   parameters: IUiJsonParameter[];
 }
 
-export type IUiJsonInput = IUiJsonDiscreteInput | IUiJsonScalarInput;
+export type IUiJsonInput = IUiJsonDiscreteInput | IUiJsonScalarInput | IUiJsonTextInput;
 
 interface IUiJsonDiscreteInput {
   defaultValue: number;
@@ -49,6 +49,11 @@ export interface IUiJsonOutputPlot {
 }
 
 export interface IUiJsonParameter {
+  name: string;
+  value: string;
+}
+
+export interface IUiJsonTextInput {
   name: string;
   value: string;
 }
