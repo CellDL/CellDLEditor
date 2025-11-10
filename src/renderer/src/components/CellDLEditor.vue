@@ -25,7 +25,6 @@ import * as vue from 'vue'
 import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor'
 
 import {
-    type ConnectionStyleDefinition,
     DEFAULT_CONNECTION_STYLE_DEFINITION
 } from '@editor/connections'
 
