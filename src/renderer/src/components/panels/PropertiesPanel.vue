@@ -6,5 +6,5 @@
 </template>
 
 <script setup lang="ts">
-import ToolPanel from './ToolPanel.vue'
+import ToolPanel from '../toolbar/ToolPanel.vue'
 </script>

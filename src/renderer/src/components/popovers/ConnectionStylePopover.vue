@@ -20,12 +20,12 @@
 </template>
 
 <script setup lang="ts">
-import * as vue from "vue"
+import * as vue from 'vue'
 
 import Select from 'primevue/select'
 import { type SelectChangeEvent } from 'primevue/select'
 
-import ToolPopover from './ToolPopover.vue'
+import ToolPopover from '../toolbar/ToolPopover.vue'
 
 import {
     type ConnectionStyleDefinition,

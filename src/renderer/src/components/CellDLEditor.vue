@@ -41,9 +41,9 @@ import { undoRedo } from '@editor/editor/undoredo'
 import { type IToolButton } from '@renderer/components/toolbar'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
 
-import ComponentPopover from '@renderer/components/toolbar/ComponentPopover.vue'
-import ConnectionStylePopover from '@renderer/components/toolbar/ConnectionStylePopover.vue'
-import PropertiesPanel from '@renderer/components/toolbar/PropertiesPanel.vue'
+import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue'
+import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
+import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 //==============================================================================
 

@@ -15,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import * as vue from "vue"
+import * as vue from 'vue'
 
-import ToolPopover from './ToolPopover.vue'
+import ToolPopover from '../toolbar/ToolPopover.vue'
 
 const libraries = vue.ref<ComponentLibrary[]>()
 
@@ -33,7 +33,6 @@ libraries.value = [
             }
         ]
     }
-
 ]
 // src="component.image"
 //
@@ -53,9 +52,6 @@ interface ComponentLibrary {
     name: string
     components: ComponentTemplate[]
 }
-
-
-
 </script>
 
 <style scoped>
