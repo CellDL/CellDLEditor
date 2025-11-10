@@ -1,6 +1,6 @@
 <template lang="pug">
-    main.editor-pane
-        EditorToolbar.editor-bar#tool-bar(
+    main#editor-pane.editor-pane
+        EditorToolbar.editor-bar(
             :buttons="toolButtons"
             type="popover"
             @button-event="buttonChanged"

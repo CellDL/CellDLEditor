@@ -11,10 +11,10 @@
                 :type="type"
                 @change="buttonChange")
                 component(
-                v-if="button.panel"
-                :is="button.panel"
-                :id="button.id"
-                @change="panelChange")
+                    v-if="button.panel"
+                    :is="button.panel"
+                    :id="button.id"
+                    @change="panelChange")
 </template>
 
 <script setup lang="ts">
