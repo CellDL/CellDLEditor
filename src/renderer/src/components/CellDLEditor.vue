@@ -7,9 +7,11 @@
             @panel-event="toolUpdated")
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
-        div#panel-content
-            <!-- Where an open panel is displayed -->
-        cd-panel-bar.editor-bar#panel-bar
+        TeleportTarget#panel-content
+        EditorToolbar.editor-bar(
+            :buttons="panelButtons"
+            type="panel"
+            @button-event="buttonChanged")
     footer.status-bar
         span#status-msg
         span#status-pos
@@ -195,15 +197,13 @@ vue.onMounted(() => {
     overflow: hidden;
 }
 #panel-content {
-    padding:  6px;
     width: 250px;
     border: 2px solid grey;
-    display: none;
+    border-left-width: 1px;
     right: 38px; /* This depends on panel bar width... */
     top: 0px;
     bottom: 0px;
     position: absolute;
-    background-color: #ECECEC;
 }
 .status-bar {
     min-height: 1.6em;

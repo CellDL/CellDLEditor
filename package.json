@@ -62,7 +62,8 @@
         "systeminformation": "^5.27.11",
         "transformation-matrix": "^3.1.0",
         "ua-parser-js": "^2.0.6",
-        "vue": "3.5.22"
+        "vue": "3.5.22",
+        "vue-safe-teleport": "^0.1.2"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.2",
