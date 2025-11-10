@@ -12,10 +12,10 @@
       <label>{{ name }}</label>
     </FloatLabel>
   </div>
-  <div v-else>
+  <div v-if="scalarInput">
     <FloatLabel variant="on">
       <InputText
-        v-model="scalarValueString"
+        v-model="valueString"
         v-keyfilter="{ pattern: /^[+-]?(\d*(\.\d*)?|\.d*)([eE][+-]?\d*)?$/, validateOnly: true }"
         v-on:focusout="inputTextFocusOut"
         v-on:keypress="inputTextKeyPress"
@@ -34,6 +34,18 @@
       size="small"
     />
   </div>
+  <div v-else>
+    <FloatLabel variant="on">
+      <InputText
+        v-model="valueString"
+        v-on:focusout="inputTextFocusOut"
+        v-on:keypress="inputTextKeyPress"
+        class="w-full"
+        size="small"
+      />
+      <label>{{ name }}</label>
+    </FloatLabel>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -41,7 +53,7 @@ import * as vue from 'vue';
 
 import type * as locApi from '../../libopencor/locUIJsonApi';
 
-const value = defineModel<number>({ required: true });
+const value = defineModel<number|string>({ required: true });
 const emits = defineEmits(['change']);
 const props = defineProps<{
   maximumValue?: number;
@@ -51,12 +63,17 @@ const props = defineProps<{
   stepValue?: number;
 }>();
 
+const scalarInput = vue.ref<boolean>(!isNaN(+value.value))
+
 let oldValue = value.value;
-const discreteValue = vue.ref<locApi.IUiJsonDiscreteInputPossibleValue | undefined>(
-  props.possibleValues ? props.possibleValues[value.value] : undefined
-);
-const scalarValue = vue.ref<number>(value.value);
-const scalarValueString = vue.ref<string>(String(value.value));
+const discreteValue = vue.ref<locApi.IUiJsonDiscreteInputPossibleValue | undefined>();
+const scalarValue = vue.ref<number>()
+if (scalarInput) {
+    discreteValue.value = props.possibleValues ? props.possibleValues[<number>value.value] : undefined;
+    scalarValue.value = <number>value.value;
+}
+
+const valueString = vue.ref<string>(String(value.value));
 
 // Some methods to handle a scalar value using an input text and a slider.
 
@@ -66,7 +83,7 @@ function emitChange(newValue: number) {
 
     if (props.possibleValues === undefined) {
       scalarValue.value = newValue;
-      scalarValueString.value = String(newValue); // This will properly format the input text.
+      valueString.value = String(newValue); // This will properly format the input text.
     }
 
     oldValue = newValue;
