@@ -7,7 +7,7 @@ export interface IToolButton {
     active?: boolean,
     prompt: string
     icon: string
-    panel?: vue.Ref
+    panel?: vue.Raw<vue.Component>
 }
 
 //==============================================================================

@@ -61,14 +61,14 @@ const toolButtons = vue.ref<IToolButton[]>([
         active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.DrawConnectionTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
-        panel: vue.shallowRef(ConnectionStylePopover)
+        panel: vue.markRaw(ConnectionStylePopover)
     },
     {
         id: EDITOR_TOOL_IDS.AddComponentTool,
         active: DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS === EDITOR_TOOL_IDS.AddComponentTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
-        panel: vue.shallowRef(ComponentPopover)
+        panel: vue.markRaw(ComponentPopover)
     }
 ])
 
@@ -77,7 +77,7 @@ const panelButtons = vue.ref<IToolButton[]>([
         id: 'properties',
         prompt: "Properties...",
         icon: currentConnectionStyle.value.icon,  // gear icon
-        panel: vue.shallowRef(PropertiesPanel)
+        panel: vue.markRaw(PropertiesPanel)
     }
 ])
 
