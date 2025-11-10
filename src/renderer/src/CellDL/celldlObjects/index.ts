@@ -20,7 +20,9 @@ limitations under the License.
 
 import { Point, type PointLike } from '@renderer/common/points'
 import type { PropertiesType, StringProperties } from '@renderer/common/types'
-import { alert, notifyChanges } from '@editor/editor'
+
+import { notifyChanges } from '@editor/editor'
+import { alert } from '@editor/editor/alerts'
 import { editGuides } from '@editor/editor/editguides'
 import type { UndoMovePosition } from '@editor/editor/undoredo'
 

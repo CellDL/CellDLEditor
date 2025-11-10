@@ -21,7 +21,7 @@ limitations under the License.
 import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
 import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
-import { alert } from '@editor/editor'
+import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
 
 import { CELLDL_NAMESPACE, RDF_TYPE } from '@editor/metadata'

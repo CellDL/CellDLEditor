@@ -63,35 +63,6 @@ WIP ****/
 
 //==============================================================================
 
-export namespace alert {
-    export function error(msg: string) {
-        console.error(msg)
-        if (CellDLEditor.instance) {
-            CellDLEditor.instance.showTooltip(msg, 'error')
-        }
-    }
-
-    export function info(msg: string) {
-        console.log(msg)
-        if (CellDLEditor.instance) {
-            CellDLEditor.instance.showTooltip(msg, 'info')
-        }
-    }
-
-    export function warn(msg: string) {
-        console.warn(msg)
-        if (CellDLEditor.instance) {
-            CellDLEditor.instance.showTooltip(msg, 'warn')
-        }
-    }
-
-    export function elementError(msg: string, svgElement?: SVGGraphicsElement) {
-        if (svgElement) {
-            svgElement.classList.add('error')
-        }
-        error(msg)
-    }
-}
 
 //==============================================================================
 
