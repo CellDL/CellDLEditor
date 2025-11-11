@@ -1,50 +1,40 @@
-<template>
-  <div v-if="possibleValues !== undefined">
-    <FloatLabel variant="on">
-      <Select
-        v-model="discreteValue"
-        :options="possibleValues"
-        optionLabel="name"
-        @change="selectChange"
-        class="w-full"
-        size="small"
-      />
-      <label>{{ name }}</label>
-    </FloatLabel>
-  </div>
-  <div v-if="scalarType">
-    <FloatLabel variant="on">
-      <InputText
-        v-model="valueString"
-        v-keyfilter="{ pattern: /^[+-]?(\d*(\.\d*)?|\.d*)([eE][+-]?\d*)?$/, validateOnly: true }"
-        v-on:focusout="inputTextFocusOut"
-        v-on:keypress="inputTextKeyPress"
-        class="w-full"
-        size="small"
-      />
-      <label>{{ name }}</label>
-    </FloatLabel>
-    <Slider
-      v-model="scalarValue"
-      :min="minimumValue"
-      :max="maximumValue"
-      :step="stepValue"
-      @change="sliderChange"
-      class="w-full mt-3"
-      size="small"
-    />
-  </div>
-  <div v-else>
-    <FloatLabel variant="on" class="text-input">
-      <InputText
-        v-model="valueString"
-        @value-change="inputTextChange"
-        class="w-full"
-        size="small"
-      />
-      <label>{{ name }}</label>
-    </FloatLabel>
-  </div>
+<template lang="pug">
+    div(v-if="possibleValues !== undefined")
+        FloatLabel(variant="on")
+            Select(
+                v-model="discreteValue"
+                :options="possibleValues"
+                optionLabel="name"
+                @change="selectChange"
+                class="w-full"
+                size="small")
+            label {{ name }}
+    div(v-if="scalarType")
+        FloatLabel(variant="on")
+            InputText(
+                v-model="valueString"
+                v-keyfilter="{ pattern: /^[+-]?(\d*(\.\d*)?|\.d*)([eE][+-]?\d*)?$/, validateOnly: true }"
+                v-on:focusout="inputTextFocusOut"
+                v-on:keypress="inputTextKeyPress"
+                class="w-full"
+                size="small")
+            label {{ name }}
+        Slider(
+            v-model="scalarValue"
+            :min="minimumValue"
+            :max="maximumValue"
+            :step="stepValue"
+            @change="sliderChange"
+            class="w-full mt-3"
+            size="small")
+    div(v-else)
+        FloatLabel.text-input(variant="on")
+            InputText(
+                v-model="valueString"
+                @value-change="inputTextChange"
+                class="w-full"
+                size="small")
+            label {{ name }}
 </template>
 
 <script setup lang="ts">
