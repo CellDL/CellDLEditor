@@ -1,5 +1,5 @@
 <template lang="pug">
-    ToolPanel
+    ToolPanel(:id=toolId)
         template(#content)
             Accordion(value="0")
                 AccordionPanel.group(

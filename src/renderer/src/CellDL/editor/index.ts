@@ -85,6 +85,12 @@ const POPOVER_TO_TOOL = {
 
 //==============================================================================
 
+export enum PANEL_IDS {
+    PropertyPanel = 'property-panel'
+}
+
+//==============================================================================
+
 export enum CONTEXT_MENU {
     DELETE = 'menu-delete',
     EDIT_GROUP = 'menu-edit-group',

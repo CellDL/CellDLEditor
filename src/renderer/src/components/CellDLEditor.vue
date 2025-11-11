@@ -26,14 +26,13 @@
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
-import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor/index'
-
 import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 import { provideComponentProperties } from '@editor/components/properties'
 
 import { CellDLDiagram } from '@editor/diagram/index'
 
 import { CellDLEditor } from '@editor/editor/index'
+import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS, PANEL_IDS } from '@editor/editor/index'
 import { editGuides } from '@editor/editor/editguides'
 import { undoRedo } from '@editor/editor/undoredo'
 
@@ -81,7 +80,7 @@ provideComponentProperties()
 
 const panelButtons = vue.ref<IToolButton[]>([
     {
-        toolId: 'properties',
+        toolId: PANEL_IDS.PropertyPanel,
         prompt: 'Component properties',
         icon: 'ci-cog',
         panel: vue.markRaw(PropertiesPanel)
