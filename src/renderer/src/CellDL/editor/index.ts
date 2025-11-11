@@ -498,15 +498,6 @@ export class CellDLEditor {
         }
     }
 
-    #closePopover() {
-/**
-        if (this.#currentPopover) {
-            this.#currentPopover.close()
-            this.#currentPopover = null
-        }
-**/
-    }
-
     #componentTemplateDragEvent(_event: Event) {
         this.#dragging = true
     }
