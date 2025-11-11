@@ -1,9 +1,10 @@
 <template lang="pug">
     .right-panel
-        .panel-title
-            slot(name="title")
-        .panel-content
-            slot(name="content")
+        ScrollPanel(class="h-full")
+            .panel-title
+                slot(name="title")
+            .panel-content
+                slot(name="content")
 </template>
 
 <script setup lang="ts">
