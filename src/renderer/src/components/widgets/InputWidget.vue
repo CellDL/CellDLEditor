@@ -12,7 +12,7 @@
       <label>{{ name }}</label>
     </FloatLabel>
   </div>
-  <div v-if="scalarInput">
+  <div v-if="scalarType">
     <FloatLabel variant="on">
       <InputText
         v-model="valueString"
@@ -38,8 +38,7 @@
     <FloatLabel variant="on">
       <InputText
         v-model="valueString"
-        v-on:focusout="inputTextFocusOut"
-        v-on:keypress="inputTextKeyPress"
+        @value-change="inputTextChange"
         class="w-full"
         size="small"
       />
@@ -63,12 +62,12 @@ const props = defineProps<{
   stepValue?: number;
 }>();
 
-const scalarInput = vue.ref<boolean>(!isNaN(+value.value))
+const scalarType = vue.ref<boolean>(!isNaN(+value.value))
 
 let oldValue = value.value;
 const discreteValue = vue.ref<locApi.IUiJsonDiscreteInputPossibleValue | undefined>();
 const scalarValue = vue.ref<number>()
-if (scalarInput) {
+if (scalarType) {
     discreteValue.value = props.possibleValues ? props.possibleValues[<number>value.value] : undefined;
     scalarValue.value = <number>value.value;
 }
@@ -77,12 +76,12 @@ const valueString = vue.ref<string>(String(value.value));
 
 // Some methods to handle a scalar value using an input text and a slider.
 
-function emitChange(newValue: number) {
+function emitChange(newValue: number|string) {
   void vue.nextTick().then(() => {
     value.value = newValue;
 
-    if (props.possibleValues === undefined) {
-      scalarValue.value = newValue;
+    if (scalarType && props.possibleValues === undefined) {
+      scalarValue.value = <number>newValue;
       valueString.value = String(newValue); // This will properly format the input text.
     }
 
@@ -106,7 +105,7 @@ function selectChange(event: ISelectChangeEvent) {
 }
 
 function inputTextChange(newValueString: string) {
-  if (newValueString === '') {
+  if (scalarType.value && newValueString === '') {
     newValueString = String(props.minimumValue);
   }
 
@@ -118,7 +117,7 @@ function inputTextChange(newValueString: string) {
     newValueString = String(props.maximumValue);
   }
 
-  const newValue = Number(newValueString);
+  const newValue = scalarType.value ? Number(newValueString) : newValueString;
 
   if (newValue !== oldValue) {
     emitChange(newValue);
