@@ -24,11 +24,8 @@ import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
+export const BGF_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
 export const CELLDL_NAMESPACE_URI = 'http://celldl.org/ontologies/celldl#'
-
-export const CELL_NAMESPACE_URI = 'http://celldl.org/ontologies/cell-components#'
-export const BG_NAMESPACE_URI = 'http://celldl.org/ontologies/bond-graph#'
-export const FC_NAMESPACE_URI = 'http://celldl.org/ontologies/functional-connectivity#'
 
 export const DCT_NAMESPACE_URI = 'http://purl.org/dc/terms/'
 export const OWL_NAMESPACE_URI = 'http://www.w3.org/2002/07/owl#'
@@ -39,10 +36,8 @@ export const XS_NAMESPACE_URI = 'http://www.w3.org/2001/XMLSchema#'
 //==============================================================================
 
 export const CELLDL_NAMESPACE_DECLARATIONS = {
-    cell: CELL_NAMESPACE_URI,
     celldl: CELLDL_NAMESPACE_URI,
-    bg: BG_NAMESPACE_URI,
-    fc: FC_NAMESPACE_URI
+    bgf: BGF_NAMESPACE_URI,
 }
 
 export const WEB_NAMESPACE_DECLARATIONS = {
@@ -65,10 +60,7 @@ export function Namespace(nsuri: string): NamespaceType {
 //==============================================================================
 
 export const CELLDL_NAMESPACE = Namespace(CELLDL_NAMESPACE_URI)
-
-export const CELL_NAMESPACE = Namespace(CELL_NAMESPACE_URI)
-export const BG_NAMESPACE = Namespace(BG_NAMESPACE_URI)
-export const FC_NAMESPACE = Namespace(FC_NAMESPACE_URI)
+export const BGF_NAMESPACE = Namespace(BGF_NAMESPACE_URI)
 
 export const DCT_NAMESPACE = Namespace(DCT_NAMESPACE_URI)
 export const OWL_NAMESPACE = Namespace(OWL_NAMESPACE_URI)
