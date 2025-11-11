@@ -80,7 +80,6 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     #rdfTypes: Set<string> = new Set()
 
     static fromProperties(properties: MetadataProperty[]): MetadataPropertiesMap {
-        //==========================================================================
         return properties.reduce((metadata, prop) => {
             metadata.setProperty(prop[0], prop[1])
             return metadata
@@ -88,12 +87,10 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     get rdfTypes() {
-        //============
         return this.#rdfTypes
     }
 
     copy(): MetadataPropertiesMap {
-        //===========================
         const metadata = new MetadataPropertiesMap()
         for (const [key, value] of this.entries()) {
             metadata.set(key, this.#copyValue(value))
@@ -103,7 +100,6 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     #copyValue(value: MetadataPropertyValue): MetadataPropertyValue {
-        //=============================================================
         if (isLiteral(value) || isNamedNode(value)) {
             return value
         } else if (value instanceof MetadataPropertiesMap) {
@@ -116,7 +112,6 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     getProperty(predicate: PredicateType): MetadataPropertyValue | null {
-        //==============================================================
         if (isNamedNode(predicate)) {
             return this.get(predicate.uri) || null
         } else {
@@ -125,7 +120,6 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     getPropertyAsArray(predicate: PredicateType): MetadataPropertyValue[] {
-        //===================================================================
         const value = this.getProperty(predicate)
         if (!value) return []
         if (isLiteral(value) || isNamedNode(value) || value instanceof MetadataPropertiesMap) {
@@ -138,19 +132,16 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     isA(type: NamedNode): boolean {
-        //===========================
         return this.#rdfTypes.has(type.uri)
     }
 
     *predicateValues(): IterableIterator<[NamedNode, MetadataPropertyValue]> {
-        //======================================================================
         for (const [p, value] of super.entries()) {
             yield [namedNode(p), value]
         }
     }
 
     setProperty(predicate: PredicateType, value: MetadataPropertyValue, multiValued = false) {
-        //====================================================================================
         if (predicate.equals(RDF_TYPE) && isNamedNode(value)) {
             this.#rdfTypes.add(value.uri)
         }
