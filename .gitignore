@@ -32,3 +32,6 @@ src/renderer/components.d.ts
 
 # oxigraph
 src/renderer/public/oxigraph
+
+# BG-RDF
+src/renderer/src/assets/bg-rdf
