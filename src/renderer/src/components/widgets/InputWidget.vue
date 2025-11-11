@@ -1,5 +1,5 @@
 <template lang="pug">
-    div(v-if="possibleValues !== undefined")
+    .bottom-margin(v-if="possibleValues !== undefined")
         FloatLabel(variant="on")
             Select(
                 v-model="discreteValue"
@@ -9,7 +9,7 @@
                 class="w-full"
                 size="small")
             label {{ name }}
-    div(v-if="scalarType")
+    .bottom-margin(v-else-if="scalarType")
         FloatLabel(variant="on")
             InputText(
                 v-model="scalarValueString"
@@ -27,8 +27,8 @@
             @change="sliderChange"
             class="w-full mt-3"
             size="small")
-    div(v-else)
-        FloatLabel.text-input(variant="on")
+    .bottom-margin(v-else)
+        FloatLabel(variant="on")
             InputText(
                 v-model="value"
                 @value-change="inputTextChange"
@@ -135,7 +135,7 @@ function sliderChange(newValue: number | number[]) {
 </script>
 
 <style scoped>
-    .text-input {
-        margin-bottom: 10px;
+    .bottom-margin {
+        margin-bottom: 30px;
     }
 </style>
