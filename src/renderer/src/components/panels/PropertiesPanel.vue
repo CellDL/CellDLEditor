@@ -47,8 +47,15 @@ inputValues.value = groups.value.map(group => {
     return { values: group.items.map(item => item.value) }
 })
 
-function updateProperties() {
+const emit = defineEmits(['panel-event'])
 
+function updateProperties() {
+    inputValues.value.forEach((g: GroupInputValues, i: number) => {
+        g.values.forEach((v: (number | string), j: number) => {
+            groups.value[i].items[j].value = v
+        })
+    })
+    emit('panel-event', props.toolId)
 }
 </script>
 

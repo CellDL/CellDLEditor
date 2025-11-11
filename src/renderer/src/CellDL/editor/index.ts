@@ -128,9 +128,6 @@ export class CellDLEditor {
     #statusMsg: HTMLElement
     #statusPos: HTMLElement
     #statusStyle: string = ''
-
-    #currentPanel: PanelInterface | null = null
-    #panelContent: HTMLElement
 **/
 
     #celldlDiagram: CellDLDiagram | null = null
@@ -163,6 +160,8 @@ export class CellDLEditor {
     #newSelectionBox: boolean = false
 
     #pointerDownTime: number = 0
+
+    #openPanelId: PANEL_IDS | null = null
 
     constructor() {
         CellDLEditor.instance = this
@@ -210,6 +209,8 @@ export class CellDLEditor {
         document.addEventListener('component-selected', this.#componentTemplateSelectedEvent.bind(this))
 
 /**
+        // Add handler for events from panels
+        document.addEventListener('panel-event', this.#panelEvent.bind(this))
 
         this.#app.addEventListener('dragover', this.#appDragOverEvent.bind(this))
         this.#app.addEventListener('drop', this.#appDropEvent.bind(this))
@@ -370,8 +371,12 @@ export class CellDLEditor {
 
     #toolBarEvent(event: Event) {
         const detail = (<CustomEvent>event).detail
+
         if (detail.type === 'state') {
-            if (detail.value && TOOL_TO_STATE.has(detail.tool as EDITOR_TOOL_IDS)) {
+            if (detail.tool === Object.values(PANEL_IDS).includes(detail.tool)) {
+                this.#openPanelId = detail.value ? detail.tool : null
+            }
+            else if (detail.value && TOOL_TO_STATE.has(detail.tool as EDITOR_TOOL_IDS)) {
                 this.#editorState = TOOL_TO_STATE.get(detail.tool as EDITOR_TOOL_IDS)!
                 this.#setDefaultCursor()
                 if (this.#editorState !== EDITOR_STATE.Selecting) {
@@ -395,34 +400,14 @@ export class CellDLEditor {
         }
     }
 
-    #changePanel(panelTag: string | null) {
-/**
-        if (panelTag !== null) {
-            this.#panelContent.innerHTML = `<${panelTag}/>`
-            this.#currentPanel = this.#panelContent.firstChild as PropertiesPanel
-            this.#currentPanel.setDiagram(this.#celldlDiagram!)
-            this.#currentPanel.setCurrentObject(this.#selectedObject)
-            this.#panelContent.style.setProperty('display', 'block')
-        } else {
-            this.#panelContent.style.setProperty('display', 'none')
-            this.#currentPanel = null
-        }
-**/
-    }
-
-    #panelEventListener(event: Event) {
-        const button = event.currentTarget as HTMLElement
-        if (button.hasAttribute('toggled')) {
-            if (button.id === 'panel-properties') {
-                // const...
-                this.#changePanel('cd-properties-panel')
-            } else if (button.id === 'panel-objects') {
-                this.#changePanel('cd-objects-panel')
-            } else if (button.id === 'panel-metadata') {
-                this.#changePanel('cd-metadata-panel')
+    #panelEvent(event: Event) {
+        const detail = (<CustomEvent>event).detail
+        if (detail.panel === this.#openPanelId) {
+            if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
+                // Properties of current selected object have changed
+                // So update the object and if species/location have
+                // changed, update the object's SVG image.
             }
-        } else {
-            this.#changePanel(null)
         }
     }
 

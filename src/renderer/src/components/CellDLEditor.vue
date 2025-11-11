@@ -12,7 +12,8 @@
             component(
                     v-if="panelComponent"
                     :is="panelComponent"
-                    :toolId="panelToolId")
+                    :toolId="panelToolId"
+                    @panel-event="panelEvent")
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
@@ -96,6 +97,18 @@ panelVisible.value = false
 
 const panelToolId = vue.ref<string>()
 
+function panelEvent(toolId: string) {
+    document.dispatchEvent(
+        new CustomEvent('panel-event', {
+            detail: {
+                panel: toolId,
+            }
+        })
+    )
+}
+
+//==============================================================================
+
 function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component> | null) {
     if (component) {
         // Update the RH panel to show its current component
@@ -104,19 +117,18 @@ function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Com
             panelToolId.value = toolId
         }
         panelVisible.value = active
-    } else {
-        // Tell the editor that a popover tool has changed
-
-        document.dispatchEvent(
-            new CustomEvent('toolbar-event', {
-                detail: {
-                    type: 'state',
-                    tool: toolId,
-                    value: active
-                }
-            })
-        )
     }
+    // Tell the editor that a popover tool has changed
+
+    document.dispatchEvent(
+        new CustomEvent('toolbar-event', {
+            detail: {
+                type: 'state',
+                tool: toolId,
+                value: active
+            }
+        })
+    )
 }
 
 //==============================================================================
