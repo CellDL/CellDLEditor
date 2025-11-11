@@ -9,7 +9,7 @@ export interface IUiJson {
 export type IUiJsonInput = IUiJsonDiscreteInput | IUiJsonScalarInput | IUiJsonTextInput;
 
 interface IUiJsonDiscreteInput {
-  defaultValue: number;
+  defaultValue: number|string;
   id?: string;
   name: string;
   possibleValues: IUiJsonDiscreteInputPossibleValue[];
@@ -18,7 +18,7 @@ interface IUiJsonDiscreteInput {
 
 export interface IUiJsonDiscreteInputPossibleValue {
   name: string;
-  value: number;
+  value: number|string;
 }
 
 interface IUiJsonScalarInput {
