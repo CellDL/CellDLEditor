@@ -24,53 +24,14 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import type * as locApi from '../../libopencor/locUIJsonApi';
-
 import ToolPanel from '../toolbar/ToolPanel.vue'
 
 import InputWidget from '../widgets/InputWidget.vue'
 
-const props = defineProps<{
-
-}>()
-
-
-// each group
-
-type ItemDetails = locApi.IUiJsonInput & { value: number|string }
-
-interface PropertyGroup {
-    title: string
-    items: ItemDetails[]
-}
+import { componentProperties, type PropertyGroup } from '@editor/components/properties'
 
 const groups = vue.ref<PropertyGroup[]>()
-
-
-groups.value = [
-    {
-        title: 'group 1',
-        items: [
-            {
-                name: 'species',
-                value: 'i'
-            }
-        ]
-    },
-    {
-        title: 'Parameters',
-        items: [
-            {
-                defaultValue: 1,
-                maximumValue: 10,
-                minimumValue: 0,
-                name: 'Capacitance',
-                value: 0.5
-            }
-        ]
-    }
-]
-
+groups.value = <PropertyGroup[]>componentProperties
 
 
 
