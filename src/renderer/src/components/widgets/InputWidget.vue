@@ -60,7 +60,7 @@ const scalarType = value.value !== '' &&
 let oldValue = value.value
 
 const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue | undefined>(() => {
-    return props.possibleValues ? props.possibleValues[<number>value.value] : undefined
+    return props.possibleValues ? props.possibleValues[<number>value.value] : props.possibleValues[0]
 })
 const scalarValue = vue.ref<number>(value.value);
 const scalarValueString = vue.ref<string>(String(value.value));

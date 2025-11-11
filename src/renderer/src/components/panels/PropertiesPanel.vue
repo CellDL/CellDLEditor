@@ -14,6 +14,10 @@
                             v-model="item.value"
                             :key="`item_${groupIndex}_${index}`"
                             :name="item.name"
+                            :maximumValue="item.maximumValue"
+                            :minimumValue="item.minimumValue"
+                            :possibleValues="item.possibleValues"
+                            :stepValue="item.stepValue"
                             @change="updateProperties"
                             )
 </template>
