@@ -3,15 +3,15 @@
         template(#content)
             Accordion(value="0")
                 AccordionPanel.group(
-                    v-for="group in groups"
+                    v-for="(group, groupIndex) in groups"
                     :key="group.title"
-                    :value="group.index")
+                    :value="String(groupIndex)")
                     AccordionHeader {{ group.title }}
                     AccordionContent
                         InputWidget(
                             v-for="(input, index) in group.items"
-                            v-model="inputValues[group.index].values[index]"
-                            :key="`input_${group.index}_${index}`"
+                            v-model="inputValues[groupIndex].values[index]"
+                            :key="`input_${groupIndex}_${index}`"
                             :name="input.name"
                             :maximumValue="input.maximumValue"
                             :minimumValue="input.minimumValue"

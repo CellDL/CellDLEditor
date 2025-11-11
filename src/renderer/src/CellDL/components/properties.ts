@@ -25,7 +25,6 @@ import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 type ItemDetails = locApi.IUiJsonInput & { value: number|string }
 
 export interface PropertyGroup {
-    index: string
     items: ItemDetails[]
     title: string
 }
