@@ -58,14 +58,12 @@ const scalarType = value.value !== '' &&
                    vue.ref<boolean>(!isNaN(+value.value))
 
 let oldValue = value.value;
-const discreteValue = vue.ref<locApi.IUiJsonDiscreteInputPossibleValue | undefined>();
-const scalarValue = vue.ref<number>()
-if (scalarType) {
-    discreteValue.value = props.possibleValues ? props.possibleValues[<number>value.value] : undefined;
-    scalarValue.value = <number>value.value;
-}
 
-const valueString = vue.ref<string>(String(value.value));
+const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue | undefined>(() => {
+    return scalarType && props.possibleValues ? props.possibleValues[<number>value.value] : undefined
+})
+const scalarValue = vue.computed<number>(() => scalarType ? <number>value.value : undefined)
+const valueString = vue.computed<string>(() => String(value.value))
 
 // Some methods to handle a scalar value using an input text and a slider.
 
