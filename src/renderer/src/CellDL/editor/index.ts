@@ -122,9 +122,7 @@ export class CellDLEditor {
     static instance: CellDLEditor | null = null
 
     #container: HTMLElement | null = null
-/**
-    #toolBar: CellDLToolBar
-    #panelBar: CellDLPanelBar
+    /**
     #statusMsg: HTMLElement
     #statusPos: HTMLElement
     #statusStyle: string = ''
@@ -165,12 +163,9 @@ export class CellDLEditor {
 
     constructor() {
         CellDLEditor.instance = this
-/**
-        this.#toolBar = this.getElementById('tool-bar') as CellDLToolBar
-        this.#panelBar = this.getElementById('panel-bar') as CellDLPanelBar
+        /**
         this.#statusMsg = this.getElementById('status-msg')!
         this.#statusPos = this.getElementById('status-pos')!
-        this.#panelContent = this.getElementById('panel-content')!
         this.#contextMenu = this.getElementById('context-menu') as ContextMenu
         this.status = 'new editor'
 **/
@@ -239,11 +234,6 @@ export class CellDLEditor {
             }
             this.#contextMenu.close()
         })
-
-        // Toolbar handlers
-        this.#panelBar.setListener(this.#panelEventListener.bind(this))
-        this.#toolBar.setListener(this.#toolEventListener.bind(this))
-        this.#toolBar.enable(false)
 
         // Create a tooltip
         this.#currentTooltip = document.createElement('x-tooltip') as XTooltipElement
@@ -321,8 +311,6 @@ export class CellDLEditor {
 
         // Enable pan/zoom and toolBars
         this.#panzoom!.enable(this.#svgDiagram!)
-//        this.#toolBar.enable()
-//        this.#toolBar.enableButton('select-tool', true)
 
         // Set initial state
         this.#editorState = EDITOR_STATE.Selecting
@@ -336,10 +324,9 @@ export class CellDLEditor {
 
     closeDiagram() {
         if (this.#celldlDiagram !== null) {
-            this.#closePopover()
             this.#editorFrame!.clear()
             this.#editorFrame = null
-//            this.#toolBar.enable(false)
+            //            this.#toolBar.enable(false)
             this.#panzoom!.disable()
             if (this.#container) {
                 this.#container.removeChild(this.#svgDiagram as Node)
