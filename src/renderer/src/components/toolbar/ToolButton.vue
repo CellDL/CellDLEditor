@@ -3,7 +3,7 @@
         v-if="type === 'popover'"
         ref="tool-popover"
         :class="{ hidden: !popoverVisible }"
-        :style="popoverStyle")
+        :style="{ top: popoverTop }")
         slot
     .ci.tool-button(
         :id="id"
@@ -40,7 +40,7 @@ const buttonClasses = vue.computed(() => {
 const popoverVisible = vue.ref()
 popoverVisible.value = false
 
-const panelTop = vue.ref()
+const popoverTop = vue.ref()
 
 const pointerPos = vue.ref()
 vue.provide('pointerPos', vue.readonly(pointerPos))
@@ -48,11 +48,6 @@ vue.provide('pointerPos', vue.readonly(pointerPos))
 const popoverReference = vue.useTemplateRef('tool-popover')
 let popoverElement: HTMLElement | null = null
 
-const popoverStyle = vue.computed(() => {
-    if (props.type === 'popover') {
-        return { top: panelTop }
-    }
-})
 vue.onMounted(() => {
     if (popoverReference.value) {
         popoverElement = (<HTMLElement>popoverReference.value).firstElementChild as HTMLElement
@@ -100,7 +95,7 @@ async function toolButtonClick(e: MouseEvent) {
                         top = (20 + window.scrollY)
                         pointerPos.value -= adjustment
                     }
-                    panelTop.value = `${top}px`
+                    popoverTop.value = `${top}px`
                 }
             }
         }
