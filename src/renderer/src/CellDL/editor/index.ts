@@ -24,10 +24,10 @@ import { electronApi } from '@renderer/common/electronApi'
 
 import '@renderer/assets/svgContent.css'
 
-import { CellDLObject } from '@editor/celldlObjects'
+import { CellDLObject } from '@editor/celldlObjects/index'
 import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
-import { CellDLDiagram } from '@editor/diagram'
-import { libraryManager, type TemplateEvent } from '@editor/libraries'
+import { CellDLDiagram } from '@editor/diagram/index'
+import { libraryManager, type TemplateEvent } from '@editor/libraries/index'
 import { round } from '@editor/utils'
 
 import { type PointLike, PointMath } from '@renderer/common/points'
