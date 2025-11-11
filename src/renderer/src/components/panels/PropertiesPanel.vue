@@ -33,7 +33,17 @@ import { componentProperties, type PropertyGroup } from '@editor/components/prop
 const groups = vue.ref<PropertyGroup[]>()
 groups.value = <PropertyGroup[]>componentProperties
 
+interface GroupInputValues {
+    values: (number | string)[]
+}
 
+const inputValues = vue.ref<GroupInputValues[]>()
+
+// @ts-expect-error: Somehow `groups` has lost its typing...
+inputValues.value = groups.value.map(group => {
+// @ts-expect-error: Somehow `group` has lost its typing...
+    return { values: group.items.map(item => item.value) }
+})
 
 function updateProperties() {
 
