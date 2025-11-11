@@ -85,10 +85,7 @@ class ComponentLibraries {
         this.#clickEvent(event)
         document.dispatchEvent(new CustomEvent('component-drag'))
     }
+*/
 }
-
-//==============================================================================
-
-customElements.define('cd-component-libraries', ComponentLibraries)
 
 //==============================================================================
