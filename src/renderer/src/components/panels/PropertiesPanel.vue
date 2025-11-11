@@ -49,3 +49,10 @@ function updateProperties() {
 
 }
 </script>
+
+<style>
+/* Allow for FloatLabel text of InputWidget */
+.p-accordioncontent-content {
+    padding-top: 8px !important;
+}
+</style>
