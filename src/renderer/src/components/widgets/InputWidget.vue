@@ -12,7 +12,7 @@
     div(v-if="scalarType")
         FloatLabel(variant="on")
             InputText(
-                v-model="valueString"
+                v-model="scalarValueString"
                 v-keyfilter="{ pattern: /^[+-]?(\d*(\.\d*)?|\.d*)([eE][+-]?\d*)?$/, validateOnly: true }"
                 v-on:focusout="inputTextFocusOut"
                 v-on:keypress="inputTextKeyPress"
@@ -30,7 +30,7 @@
     div(v-else)
         FloatLabel.text-input(variant="on")
             InputText(
-                v-model="valueString"
+                v-model="value"
                 @value-change="inputTextChange"
                 class="w-full"
                 size="small")
@@ -62,8 +62,8 @@ let oldValue = value.value
 const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue | undefined>(() => {
     return scalarType && props.possibleValues ? props.possibleValues[<number>value.value] : undefined
 })
-const scalarValue = vue.computed<number>(() => scalarType ? <number>value.value : undefined)
-const valueString = vue.computed<string>(() => String(value.value))
+const scalarValue = vue.ref<number>(value.value);
+const scalarValueString = vue.ref<string>(String(value.value));
 
 // Some methods to handle a scalar value using an input text and a slider.
 
@@ -73,7 +73,7 @@ function emitChange(newValue: number|string) {
 
         if (scalarType && props.possibleValues === undefined) {
             scalarValue.value = <number>newValue
-            valueString.value = String(newValue) // This will properly format the input text.
+            scalarValueString.value = String(newValue) // This will properly format the input text.
         }
 
         oldValue = newValue
