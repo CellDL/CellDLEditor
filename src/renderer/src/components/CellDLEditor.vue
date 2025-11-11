@@ -26,18 +26,18 @@
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
-import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor'
+import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor/index'
 
-import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections'
+import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 import { provideComponentProperties } from '@editor/components/properties'
 
-import { CellDLDiagram } from '@editor/diagram'
+import { CellDLDiagram } from '@editor/diagram/index'
 
-import { CellDLEditor } from '@editor/editor'
+import { CellDLEditor } from '@editor/editor/index'
 import { editGuides } from '@editor/editor/editguides'
 import { undoRedo } from '@editor/editor/undoredo'
 
-import { type IToolButton } from '@renderer/components/toolbar'
+import { type IToolButton } from '@renderer/components/toolbar/index'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
 
 import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue'
