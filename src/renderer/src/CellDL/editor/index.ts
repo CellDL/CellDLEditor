@@ -26,6 +26,7 @@ import '@renderer/assets/svgContent.css'
 
 import { CellDLObject } from '@editor/celldlObjects/index'
 import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
+import { ObjectPropertiesPanel } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'
 import { libraryManager, type TemplateEvent } from '@editor/libraries/index'
 import { round } from '@editor/utils'
@@ -40,6 +41,8 @@ import { editGuides, EDITOR_GRID_CLASS } from '@editor/editor/editguides'
 import PanZoom from '@editor/editor/panzoom'
 import { SelectionBox } from '@editor/editor/selectionbox'
 import { undoRedo } from '@editor/editor/undoredo'
+
+//import { componentProperties } from '@editor/components/properties'
 
 //==============================================================================
 
@@ -160,6 +163,7 @@ export class CellDLEditor {
     #pointerDownTime: number = 0
 
     #openPanelId: PANEL_IDS | null = null
+    #propertiesPanel: ObjectPropertiesPanel = new ObjectPropertiesPanel()
 
     constructor() {
         CellDLEditor.instance = this
@@ -360,7 +364,7 @@ export class CellDLEditor {
         const detail = (<CustomEvent>event).detail
 
         if (detail.type === 'state') {
-            if (detail.tool === Object.values(PANEL_IDS).includes(detail.tool)) {
+            if (Object.values(PANEL_IDS).includes(detail.tool)) {
                 this.#openPanelId = detail.value ? detail.tool : null
             }
             else if (detail.value && TOOL_TO_STATE.has(detail.tool as EDITOR_TOOL_IDS)) {
@@ -391,9 +395,7 @@ export class CellDLEditor {
         const detail = (<CustomEvent>event).detail
         if (detail.panel === this.#openPanelId) {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
-                // Properties of current selected object have changed
-                // So update the object and if species/location have
-                // changed, update the object's SVG image.
+                this.#propertiesPanel.updateObject(this.#selectedObject)
             }
         }
     }
@@ -480,9 +482,7 @@ export class CellDLEditor {
         if (selectedObject !== null) {
             selectedObject.select(true)
             this.#selectedObject = selectedObject
-//            if (this.#currentPanel) {
-//                this.#currentPanel.setCurrentObject(selectedObject)
-//            }
+            this.#propertiesPanel.setCurrentObject(selectedObject)
             this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
             this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
         }
@@ -492,9 +492,7 @@ export class CellDLEditor {
         if (this.#selectedObject) {
             this.#selectedObject.select(false)
             this.#selectedObject = null
-//            if (this.#currentPanel) {
-//                this.#currentPanel.setCurrentObject(null)
-//            }
+            this.#propertiesPanel.setCurrentObject(null)
             this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
             this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
         }

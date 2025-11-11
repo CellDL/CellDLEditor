@@ -22,7 +22,17 @@ import * as vue from 'vue'
 
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
-type ItemDetails = locApi.IUiJsonInput & { value: number|string }
+import { CellDLObject } from '@editor/celldlObjects/index'
+import { BGF_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, type NamedNode }  from '@editor/metadata/index'
+
+import type { PropertiesType } from '@renderer/common/types'
+
+//==============================================================================
+
+type ItemDetails = locApi.IUiJsonInput & {
+    uri: string
+    value?: string|number
+}
 
 export interface PropertyGroup {
     items: ItemDetails[]
@@ -31,19 +41,36 @@ export interface PropertyGroup {
 
 //==============================================================================
 
-const DEFAULT_PROPERTIES: PropertyGroup[] = [
+const VARIABLE_ITEMS: ItemDetails[] = [
     {
-        title: 'Element',
-        items: [
-            {
-                name: 'Species',
-                value: 'i'
-            },
-            {
-                name: 'Location',
-                value: 'j'
-            }
-        ]
+        uri: BGF_NAMESPACE('hasSpecies').value,
+        name: 'Species',
+        defaultValue: ''
+    },
+    {
+        uri: BGF_NAMESPACE('hasLocation').value,
+        name: 'Location',
+        defaultValue: ''
+    }
+]
+
+const METADATA_ITEMS: ItemDetails[] = [
+    {
+        uri: RDFS_NAMESPACE('label').value,
+        name: 'Label',
+        defaultValue: ''
+    },
+    {
+        uri: DCT_NAMESPACE('description').value,
+        name: 'Description',
+        defaultValue: ''
+    }
+]
+
+const PROPERTIES_TEMPLATE: PropertyGroup[] = [
+    {
+        title: 'Variable',
+        items: VARIABLE_ITEMS
     },
     {
         title: 'Parameters',
@@ -51,49 +78,60 @@ const DEFAULT_PROPERTIES: PropertyGroup[] = [
     },
     {
         title: 'Metadata',
-        items: [
-            {
-                name: 'Label',
-                value: ''
-            },
-            {
-                name: 'Description',
-                value: ''
-            }
-        ]
+        items: METADATA_ITEMS
     }
 ]
 
+//==============================================================================
+
 const componentProperties = vue.ref<PropertyGroup[]>([])
-    {
-        index: '0',
-        title: 'Properties',
-        items: [
-            {
-                name: 'species',
-                value: 'i'
-            }
-        ]
-    },
-    {
-        index: '1',
-        title: 'Parameters',
-        items: [
-            {
-                defaultValue: 1,
-                maximumValue: 2,
-                minimumValue: 0,
-                name: 'Capacitance (F)',
-                stepValue: 0.01,
-                value: 0.5
-            }
-        ]
-    }
-])
 
 export function provideComponentProperties() {
-    componentProperties.value = structuredClone(DEFAULT_PROPERTIES)
-    vue.provide('componentProperties', componentProperties)
+    componentProperties.value = structuredClone(PROPERTIES_TEMPLATE)
+    for (const group of componentProperties.value) {
+        group.items = []
+    }
+    vue.provide<PropertyGroup[]>('componentProperties', componentProperties)
+}
+
+//==============================================================================
+
+export class ObjectPropertiesPanel {
+
+    setCurrentObject(celldlObject: CellDLObject|null) {
+        // Clear each group's list of items
+        for (const group of componentProperties.value) {
+            group.items = []
+        }
+        if (celldlObject) {
+            const metadata = celldlObject.metadata  // metadataProperties
+            PROPERTIES_TEMPLATE.forEach((template, index) => {
+                const group = componentProperties.value[index]
+                template.items.forEach((item: ItemDetails) => {
+                    if (item.uri in metadata) {
+                        group.items.push(Object.assign({
+                            value: metadata[item.uri] || item.defaultValue || '',
+                            ...item
+                        }))
+                    }
+                })
+            })
+        }
+    }
+
+    updateObject(celldlObject: CellDLObject|null) {
+        if (celldlObject) {
+            const metadata: PropertiesType = {}
+            for (const group of componentProperties.value) {
+                group.items.forEach((item: ItemDetails) => {
+                    if (item.value !== undefined) {
+                        metadata[item.uri] = item.value
+                    }
+                })
+            celldlObject.metadata = metadata
+            }
+        }
+    }
 }
 
 //==============================================================================

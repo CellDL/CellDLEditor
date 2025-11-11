@@ -1,22 +1,19 @@
 <template lang="pug">
     ToolPanel(:id=toolId)
         template(#content)
-            Accordion(value="0")
+            Accordion(v-model:value="firstPanel")
                 AccordionPanel.group(
                     v-for="(group, groupIndex) in groups"
                     :key="group.title"
+                    :disabled="disabled"
                     :value="String(groupIndex)")
                     AccordionHeader {{ group.title }}
                     AccordionContent
                         InputWidget(
-                            v-for="(input, index) in group.items"
-                            v-model="inputValues[groupIndex].values[index]"
-                            :key="`input_${groupIndex}_${index}`"
-                            :name="input.name"
-                            :maximumValue="input.maximumValue"
-                            :minimumValue="input.minimumValue"
-                            :possibleValues="input.possibleValues"
-                            :stepValue="input.stepValue"
+                            v-for="(item, index) in group.items"
+                            v-model="item.value"
+                            :key="`item_${groupIndex}_${index}`"
+                            :name="item.name"
                             @change="updateProperties"
                             )
 </template>
@@ -33,28 +30,31 @@ const props = defineProps<{
     toolId: string
 }>()
 
-const groups: vue.Ref<PropertyGroup[]> = vue.inject('componentProperties')
+const groups = vue.inject<PropertyGroup[]>('componentProperties')
 
-interface GroupInputValues {
-    values: (number | string)[]
-}
+const firstPanel = vue.computed<string>(() => {
+    let index = 0
+    for (const group of groups.value) {
+        if (group.items.length) {
+            break
+        }
+        index += 1
+    }
+    return String(index)
+})
 
-const inputValues = vue.ref<GroupInputValues[]>()
-
-// @ts-expect-error: Somehow `groups` has lost its typing...
-inputValues.value = groups.value.map(group => {
-// @ts-expect-error: Somehow `group` has lost its typing...
-    return { values: group.items.map(item => item.value) }
+const disabled = vue.computed<boolean>(() => {
+    for (const group of groups.value) {
+        if (group.items.length) {
+            return false
+        }
+    }
+    return true
 })
 
 const emit = defineEmits(['panel-event'])
 
 function updateProperties() {
-    inputValues.value.forEach((g: GroupInputValues, i: number) => {
-        g.values.forEach((v: (number | string), j: number) => {
-            groups.value[i].items[j].value = v
-        })
-    })
     emit('panel-event', props.toolId)
 }
 </script>
