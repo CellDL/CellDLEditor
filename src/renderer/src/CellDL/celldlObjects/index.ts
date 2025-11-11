@@ -39,10 +39,10 @@ import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@edit
 
 //==============================================================================
 
-export const ObjectMetadata = {
-    label: RDFS_NAMESPACE('label'),
-    description: DCT_NAMESPACE('description')
-}
+export const ObjectMetadataUris = [
+    RDFS_NAMESPACE('label'),
+    DCT_NAMESPACE('description')
+]
 
 //==============================================================================
 
@@ -218,22 +218,30 @@ export class CellDLObject {
     // Metadata associated with the base CellDLObject instance
     get metadata(): StringProperties {
         //==============================
-        return Object.keys(this.#objectMetadata)
-            .filter((key) => key in ObjectMetadata)
-            .reduce((obj, key) => {
-                obj[key] = this.#objectMetadata[key]
-                return obj
-            }, {})
+        const properties: StringProperties = {}
+        for (const uri of ObjectMetadataUris) {
+            if (uri.value in this.#objectMetadata) {
+                // @ts-expect-error:
+                properties[uri.value] = this.#objectMetadata[uri.value]
+            }
+        }
+        return properties
     }
     set metadata(data: PropertiesType) {
         //================================
-        Object.keys(data)
-            .filter((key) => key in ObjectMetadata)
-            .map((key) => {
-                this.#objectMetadata[key] = `${data[key]}`
-            })
-        // only if changes...
-        notifyChanges()
+        let changed = false
+        for (const uri of ObjectMetadataUris) {
+            if (uri.value in data) {
+                const value = `${data[uri.value]}`.trim()
+                if (value !== this.#objectMetadata[uri.value]) {
+                    this.#objectMetadata[uri.value] = value
+                    changed = true
+                }
+            }
+        }
+        if (changed) {
+            notifyChanges()
+        }
     }
 
     // Additional metadata about sub-classed instances
@@ -333,9 +341,9 @@ export class CellDLObject {
 
     loadObjectProperties(rdfStore: RdfStore) {
         //======================================
-        for (const [key, property] of Object.entries(ObjectMetadata)) {
-            for (const stmt of rdfStore.statementsMatching(this.uri, property, null)) {
-                this.#objectMetadata[key] = stmt.object.toString()
+        for (const uri of ObjectMetadataUris) {
+            for (const stmt of rdfStore.statementsMatching(this.uri, uri, null)) {
+                this.#objectMetadata[uri.value] = stmt.object.value
                 break
             }
         }
@@ -343,12 +351,12 @@ export class CellDLObject {
 
     saveObjectProperties(rdfStore: RdfStore) {
         //======================================
-        for (const [key, property] of Object.entries(ObjectMetadata)) {
-            rdfStore.removeStatements(this.uri, property, null)
-            if (key in this.#objectMetadata) {
-                const value = this.#objectMetadata[key]
+        for (const uri of ObjectMetadataUris) {
+            rdfStore.removeStatements(this.uri, uri, null)
+            if (uri.value in this.#objectMetadata) {
+                const value = this.#objectMetadata[uri.value]
                 if (value) {
-                    rdfStore.add(this.uri, property, $rdf.literal(value))
+                    rdfStore.add(this.uri, uri, $rdf.literal(value))
                 }
             }
         }
