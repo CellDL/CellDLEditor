@@ -35,7 +35,7 @@
     />
   </div>
   <div v-else>
-    <FloatLabel variant="on">
+    <FloatLabel variant="on" class="text-input">
       <InputText
         v-model="valueString"
         @value-change="inputTextChange"
@@ -62,7 +62,10 @@ const props = defineProps<{
   stepValue?: number;
 }>();
 
-const scalarType = vue.ref<boolean>(!isNaN(+value.value))
+const scalarType = value.value !== '' &&
+                   value.value !== null &&
+                   value.value !== undefined &&
+                   vue.ref<boolean>(!isNaN(+value.value))
 
 let oldValue = value.value;
 const discreteValue = vue.ref<locApi.IUiJsonDiscreteInputPossibleValue | undefined>();
@@ -142,3 +145,9 @@ function sliderChange(newValue: number | number[]) {
   }
 }
 </script>
+
+<style scoped>
+  .text-input {
+    margin-bottom: 10px;
+  }
+</style>
