@@ -11,7 +11,8 @@
             :class="{ hidden: !panelVisible }")
             component(
                     v-if="panelComponent"
-                    :is="panelComponent")
+                    :is="panelComponent"
+                    :toolId="panelToolId")
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
@@ -52,20 +53,20 @@ function connectionStylePrompt(name: string): string {
 
 const toolButtons = vue.ref<IToolButton[]>([
     {
-        id: EDITOR_TOOL_IDS.SelectTool,
+        toolId: EDITOR_TOOL_IDS.SelectTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.SelectTool,
         prompt: 'Selection tool',
         icon: 'ci-pointer'
     },
     {
-        id: EDITOR_TOOL_IDS.DrawConnectionTool,
+        toolId: EDITOR_TOOL_IDS.DrawConnectionTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.DrawConnectionTool,
         prompt: connectionStylePrompt(currentConnectionStyle.value.name),
         icon: currentConnectionStyle.value.icon,
         panel: vue.markRaw(ConnectionStylePopover)
     },
     {
-        id: EDITOR_TOOL_IDS.AddComponentTool,
+        toolId: EDITOR_TOOL_IDS.AddComponentTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
         prompt: 'Add component',
         icon: currentConnectionStyle.value.icon,
@@ -77,7 +78,7 @@ const toolButtons = vue.ref<IToolButton[]>([
 
 const panelButtons = vue.ref<IToolButton[]>([
     {
-        id: 'properties',
+        toolId: 'properties',
         prompt: 'Component properties',
         icon: 'ci-cog',
         panel: vue.markRaw(PropertiesPanel)
@@ -86,16 +87,19 @@ const panelButtons = vue.ref<IToolButton[]>([
 
 //==============================================================================
 
-const panelComponent = vue.ref()
+const panelComponent = vue.ref<vue.Raw<vue.Component>>()
 
-const panelVisible = vue.ref()
+const panelVisible = vue.ref<boolean>()
 panelVisible.value = false
+
+const panelToolId = vue.ref<string>()
 
 function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component> | null) {
     if (component) {
         // Update the RH panel to show its current component
         if (active) {
             panelComponent.value = component
+            panelToolId.value = toolId
         }
         panelVisible.value = active
     } else {

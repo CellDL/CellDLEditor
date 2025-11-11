@@ -30,6 +30,10 @@ import InputWidget from '../widgets/InputWidget.vue'
 
 import { componentProperties, type PropertyGroup } from '@editor/components/properties'
 
+const props = defineProps<{
+    toolId: string
+}>()
+
 const groups = vue.ref<PropertyGroup[]>()
 groups.value = <PropertyGroup[]>componentProperties
 

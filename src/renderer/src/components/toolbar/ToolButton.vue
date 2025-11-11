@@ -6,7 +6,7 @@
         :style="{ top: popoverTop }")
         slot
     .ci.tool-button(
-        :id="id"
+        :id="toolId"
         :class="buttonClasses"
         v-tooltip="{ value: prompt }"
         :aria-label="prompt"
@@ -17,7 +17,7 @@
 import * as vue from 'vue'
 
 const props = defineProps<{
-    id?: string
+    toolId?: string
     active?: boolean
     icon?: string
     prompt?: string

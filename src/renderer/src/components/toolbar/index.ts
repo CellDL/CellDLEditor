@@ -3,7 +3,7 @@
 import * as vue from 'vue'
 
 export interface IToolButton {
-    id: string
+    toolId: string
     active?: boolean
     prompt: string
     icon: string

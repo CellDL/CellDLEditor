@@ -48,13 +48,13 @@ for (const item of items.value) {
 //==============================================================================
 
 const props = defineProps<{
-    id: string
+    toolId: string
 }>()
 
 const emit = defineEmits(['popover-event'])
 
 function changed(e: SelectChangeEvent) {
-    emit('popover-event', props.id, e.value)
+    emit('popover-event', props.toolId, e.value)
 }
 </script>
 

@@ -3,7 +3,7 @@
         template(#start)
             ToolButton(
                 v-for="button in buttons"
-                :id="button.id"
+                :toolId="button.toolId"
                 :active="button?.active"
                 :prompt="button.prompt"
                 :icon="button.icon"
@@ -14,7 +14,7 @@
                 component(
                     v-if="type === 'popover' && button.panel"
                     :is="button.panel"
-                    :id="button.id"
+                    :toolId="button.toolId"
                     @popover-event="popoverEvent")
 </template>
 
@@ -30,15 +30,15 @@ const props = defineProps<{
 
 const emit = defineEmits(['button-event', 'popover-event'])
 
-function buttonEvent(id: string, active: boolean, panel: vue.Raw<vue.Component> | null) {
+function buttonEvent(toolId: string, active: boolean, panel: vue.Raw<vue.Component> | null) {
     for (const button of props.buttons) {
-        if (active && id === button.id) {
+        if (active && toolId === button.toolId) {
             button.active = true
         } else {
             button.active = false
         }
     }
-    emit('button-event', id, active, props.type == 'panel' ? panel : null)
+    emit('button-event', toolId, active, props.type == 'panel' ? panel : null)
 }
 
 function popoverEvent(id: string, data: any) {
