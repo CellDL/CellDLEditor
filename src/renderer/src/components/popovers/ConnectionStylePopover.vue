@@ -6,7 +6,6 @@
                 v-model="selectedItem"
                 :options="items"
                 optionLabel="name"
-                checkmark
                 :highlightOnSelect="true"
                 @change="changed")
                 template(#value="slotProps")
