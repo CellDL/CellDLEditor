@@ -7,7 +7,7 @@
                 :options="items"
                 optionLabel="name"
                 checkmark
-                :highlightOnSelect="false"
+                :highlightOnSelect="true"
                 @change="changed")
                 template(#value="slotProps")
                     .flex.items-center(v-if="slotProps.value")

@@ -54,7 +54,7 @@ const toolButtons = vue.ref<IToolButton[]>([
     {
         id: EDITOR_TOOL_IDS.SelectTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.SelectTool,
-        prompt: 'Select elements',
+        prompt: 'Selection tool',
         icon: 'ci-pointer'
     },
     {
@@ -67,7 +67,7 @@ const toolButtons = vue.ref<IToolButton[]>([
     {
         id: EDITOR_TOOL_IDS.AddComponentTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
-        prompt: connectionStylePrompt(currentConnectionStyle.value.name),
+        prompt: 'Add component',
         icon: currentConnectionStyle.value.icon,
         panel: vue.markRaw(ComponentPopover)
     }
@@ -78,7 +78,7 @@ const toolButtons = vue.ref<IToolButton[]>([
 const panelButtons = vue.ref<IToolButton[]>([
     {
         id: 'properties',
-        prompt: 'Element Properties',
+        prompt: 'Component properties',
         icon: 'ci-cog',
         panel: vue.markRaw(PropertiesPanel)
     }
