@@ -31,7 +31,40 @@ export interface PropertyGroup {
 
 //==============================================================================
 
-const componentProperties = vue.ref<PropertyGroup[]>([
+const DEFAULT_PROPERTIES: PropertyGroup[] = [
+    {
+        title: 'Element',
+        items: [
+            {
+                name: 'Species',
+                value: 'i'
+            },
+            {
+                name: 'Location',
+                value: 'j'
+            }
+        ]
+    },
+    {
+        title: 'Parameters',
+        items: []
+    },
+    {
+        title: 'Metadata',
+        items: [
+            {
+                name: 'Label',
+                value: ''
+            },
+            {
+                name: 'Description',
+                value: ''
+            }
+        ]
+    }
+]
+
+const componentProperties = vue.ref<PropertyGroup[]>([])
     {
         index: '0',
         title: 'Properties',
@@ -59,6 +92,7 @@ const componentProperties = vue.ref<PropertyGroup[]>([
 ])
 
 export function provideComponentProperties() {
+    componentProperties.value = structuredClone(DEFAULT_PROPERTIES)
     vue.provide('componentProperties', componentProperties)
 }
 
