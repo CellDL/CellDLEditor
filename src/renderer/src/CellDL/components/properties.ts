@@ -18,6 +18,8 @@ limitations under the License.
 
 ******************************************************************************/
 
+import * as vue from 'vue'
+
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
 type ItemDetails = locApi.IUiJsonInput & { value: number|string }
@@ -30,7 +32,7 @@ export interface PropertyGroup {
 
 //==============================================================================
 
-export const componentProperties: PropertyGroup[] = [
+const componentProperties = vue.ref<PropertyGroup[]>([
     {
         index: '0',
         title: 'Properties',
@@ -55,7 +57,11 @@ export const componentProperties: PropertyGroup[] = [
             }
         ]
     }
-]
+])
+
+export function provideComponentProperties() {
+    vue.provide('componentProperties', componentProperties)
+}
 
 //==============================================================================
 //==============================================================================

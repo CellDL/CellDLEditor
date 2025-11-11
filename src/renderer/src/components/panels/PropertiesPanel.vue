@@ -25,17 +25,15 @@
 import * as vue from 'vue'
 
 import ToolPanel from '../toolbar/ToolPanel.vue'
-
 import InputWidget from '../widgets/InputWidget.vue'
 
-import { componentProperties, type PropertyGroup } from '@editor/components/properties'
+import { type PropertyGroup } from '@editor/components/properties'
 
 const props = defineProps<{
     toolId: string
 }>()
 
-const groups = vue.ref<PropertyGroup[]>()
-groups.value = <PropertyGroup[]>componentProperties
+const groups: vue.Ref<PropertyGroup[]> = vue.inject('componentProperties')
 
 interface GroupInputValues {
     values: (number | string)[]

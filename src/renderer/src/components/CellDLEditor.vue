@@ -29,6 +29,7 @@ import * as vue from 'vue'
 import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS } from '@editor/editor'
 
 import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections'
+import { provideComponentProperties } from '@editor/components/properties'
 
 import { CellDLDiagram } from '@editor/diagram'
 
@@ -75,6 +76,8 @@ const toolButtons = vue.ref<IToolButton[]>([
 ])
 
 //==============================================================================
+
+provideComponentProperties()
 
 const panelButtons = vue.ref<IToolButton[]>([
     {
