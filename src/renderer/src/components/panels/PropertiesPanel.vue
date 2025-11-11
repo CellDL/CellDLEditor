@@ -1,22 +1,24 @@
 <template lang="pug">
     ToolPanel
-        template(#title) Element Properties
         template(#content)
-            Fieldset(
-                v-for="group in groups"
-                :legend="group.title")
-                InputWidget(
-                    v-for="(input, index) in group.items"
-                    v-model="input.value"
-                    :key="`input_${index}`"
-                    :name="input.name"
-                    :maximumValue="input.maximumValue"
-                    :minimumValue="input.minimumValue"
-                    :possibleValues="input.possibleValues"
-                    :stepValue="input.stepValue"
-                    :class="index !== 0 ? 'mt-6' : ''"
-                    @change="updateProperties"
-                    )
+            Accordion(value="0")
+                AccordionPanel.group(
+                    v-for="group in groups"
+                    :key="group.title"
+                    :value="group.index")
+                    AccordionHeader {{ group.title }}
+                    AccordionContent
+                        InputWidget(
+                            v-for="(input, index) in group.items"
+                            v-model="inputValues[group.index].values[index]"
+                            :key="`input_${group.index}_${index}`"
+                            :name="input.name"
+                            :maximumValue="input.maximumValue"
+                            :minimumValue="input.minimumValue"
+                            :possibleValues="input.possibleValues"
+                            :stepValue="input.stepValue"
+                            @change="updateProperties"
+                            )
 </template>
 
 <script setup lang="ts">

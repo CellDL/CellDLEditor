@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "composite": true,
+        "module": "esnext",
+        "moduleResolution": "esnext",
+        "noEmit": false,
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "paths": {
+            "@editor/*": ["./src/CellDL/*"],
+            "@oxigraph/*": ["./public/oxigraph/*"],
+            "@renderer/*": ["./src/*"]
+        }
+    },
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "include": ["**/*.js", "**/*.ts", "**/*.vue", "package.json"]
+}
