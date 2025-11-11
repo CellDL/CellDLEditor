@@ -40,7 +40,6 @@ class ComponentLibraries {
     }
 
     async connectedCallback() {
-        //=======================
         this.#libContainer.insertAdjacentHTML('beforeend', libraryManager.librariesAsHtml())
         this.updateElements()
         for (const element of this.elements) {
@@ -52,7 +51,6 @@ class ComponentLibraries {
     }
 
     async disconnectedCallback() {
-        //==========================
         for (const element of this.elements) {
             if (element.getAttribute('draggable')) {
                 element.removeEventListener('dragstart', this.#dragStartEvent.bind(this), true)
@@ -65,7 +63,6 @@ class ComponentLibraries {
     }
 
     #clickEvent(event) {
-        //================
         if (this.#selectedElement) {
             this.#selectedElement.classList.remove('selected')
         }
@@ -78,8 +75,7 @@ class ComponentLibraries {
         )
     }
 
-    #dragStartEvent(event) {
-        //====================
+    #dragStartEvent(event: Event) {
         event.dataTransfer.setData('component-detail', JSON.stringify(templateImageEvent(event.target, event)))
         event.dataTransfer.effectAllowed = 'copy'
         this.#clickEvent(event)

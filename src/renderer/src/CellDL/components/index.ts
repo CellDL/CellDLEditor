@@ -18,11 +18,11 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '@editor/metadata'
+import * as $rdf from '@editor/metadata/index'
 
-import type { CellDLObject } from '@editor/celldlObjects'
-import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata'
-import { CELLDL_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata'
+import type { CellDLObject } from '@editor/celldlObjects/index'
+import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata/index'
+import { CELLDL_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
 import { base64Svg } from '@editor/utils'
 
 import type { PointLike } from '@renderer/common/points'
@@ -99,80 +99,65 @@ export class ComponentTemplate implements ObjectTemplate {
     }
 
     get constraints() {
-        //===============
         return this.#constraints
     }
 
     get description() {
-        //===============
         return this.#description
     }
 
     get imageUri() {
-        //============
         return base64Svg(this.svg)
     }
 
     get label() {
-        //=========
         return this.#label
     }
 
     get maxConnections() {
-        //==================
         return this.#maxConnections
     }
 
     get metadataProperties(): MetadataPropertiesMap {
-        //=============================================
         return MetadataPropertiesMap.fromProperties([[RDF_TYPE, this.rdfType]])
     }
 
     get name() {
-        //========
         return this.uri.split('#').at(-1)!
     }
 
     get rdfPredicates(): NamedNode[] {
-        //==============================
         return []
     }
 
     get roles() {
-        //=========
         return this.#roles
     }
 
     get svg() {
-        //=======
         return this.#svg
     }
 
     get templateProperties(): TemplateProperties {
-        //==========================================
         const result: TemplateProperties = {}
         return result
     }
 
     canConnect(_from: CellDLObject, _to: CellDLObject): boolean {
-        //=========================================================
         return true
     }
 
     copy(): ComponentTemplate {
-        //=======================
         const copy = new ComponentTemplate(this.CellDLClass, this.uri)
         copy.assign(this)
         return copy
     }
 
     assign(other: ComponentTemplate) {
-        //===============================
         this.define(other.#definition)
     }
 
     define(definition: MetadataPropertiesMap) {
-        //=======================================
         this.#definition = definition
         const label = definition.getProperty(RDFS_NAMESPACE('label'))
         if (label && $rdf.isLiteral(label)) {
@@ -199,24 +184,21 @@ export class ComponentTemplate implements ObjectTemplate {
      *
      */
     setSvg(svg: string) {
-        //=================
         this.#svg = svg
     }
 
     updateTemplateProperties(_properties: TemplateProperties): boolean {
-        //================================================================
         return false
     }
 
     updateFromMetadata(_properties: MetadataPropertiesMap): boolean {
-        //=============================================================
         return true
     }
 
     validateTemplateProperties(_properties: TemplateProperties) {
-        //=========================================================
         return ''
     }
 }
 
+//==============================================================================
 //==============================================================================

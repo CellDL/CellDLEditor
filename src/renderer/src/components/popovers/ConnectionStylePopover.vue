@@ -33,6 +33,8 @@ import {
     DEFAULT_CONNECTION_STYLE
 } from '@editor/connections'
 
+//==============================================================================
+
 const selectedId: string = DEFAULT_CONNECTION_STYLE
 const items = vue.ref<ConnectionStyleDefinition[]>(CONNECTION_STYLE_DEFINITIONS)
 
@@ -56,6 +58,8 @@ const emit = defineEmits(['popover-event'])
 function changed(e: SelectChangeEvent) {
     emit('popover-event', props.toolId, e.value)
 }
+
+//==============================================================================
 </script>
 
 <style scoped>
