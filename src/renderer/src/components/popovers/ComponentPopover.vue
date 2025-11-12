@@ -24,7 +24,7 @@ import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/c
 
 import ToolPopover from '../toolbar/ToolPopover.vue'
 
-const libraries = vue.inject<ComponentLibrary[]>('componentLibraries')
+const libraries = vue.inject<vue.Ref<ComponentLibrary[]>>('componentLibraries')
 
 const props = defineProps<{
     toolId: string
@@ -34,7 +34,7 @@ const idToComponent: Map<string, ComponentTemplate> = new Map()
 let selectedId: string | undefined = undefined
 
 vue.onMounted(() => {
-    libraries.value.forEach((library: ComponentLibrary) => {
+    libraries!.value.forEach((library: ComponentLibrary) => {
         library.components.forEach((component: ComponentTemplate) => {
             idToComponent.set(component.id, component)
             if (component.selected) {

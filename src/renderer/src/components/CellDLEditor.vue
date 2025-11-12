@@ -26,9 +26,6 @@
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
-import { provideComponentProperties } from '@editor/components/properties'
-
-import { type ComponentTemplate, provideComponentLibraries } from '@editor/plugins/components'
 import { CellDLDiagram } from '@editor/diagram/index'
 
 import { CellDLEditor } from '@editor/editor/index'
@@ -41,6 +38,7 @@ import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
 
 import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue'
 import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
+
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 //==============================================================================
@@ -106,6 +104,10 @@ const toolButtons = vue.ref<EditorToolButton[]>([
 
 //==============================================================================
 
+// Make data available to the properties panel
+
+import { provideComponentProperties } from '@editor/components/properties'
+
 provideComponentProperties()
 
 const panelButtons = vue.ref<EditorToolButton[]>([
@@ -117,8 +119,6 @@ const panelButtons = vue.ref<EditorToolButton[]>([
     }
 ])
 
-//==============================================================================
-
 const panelComponent = vue.ref<vue.Raw<vue.Component>>()
 
 const panelVisible = vue.ref<boolean>()
@@ -128,11 +128,12 @@ const panelToolId = vue.ref<string>()
 
 //==============================================================================
 
-function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component> | null) {
-    if (component) {
+function buttonEvent(toolId: string, active: boolean, newComponent: vue.Raw<vue.Component> | null) {
+    if (newComponent) {
         // Update the RH panel to show its current component
+
         if (active) {
-            panelComponent.value = component
+            panelComponent.value = newComponent
             panelToolId.value = toolId
         }
         panelVisible.value = active
