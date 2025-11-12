@@ -26,7 +26,6 @@
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
-import { type ConnectionStyleDefinition, DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 import { provideComponentProperties } from '@editor/components/properties'
 
 import { type ComponentTemplate, provideComponentLibraries } from '@editor/plugins/components'
@@ -46,7 +45,6 @@ import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 //==============================================================================
 
-const currentConnectionStyle = vue.ref<ConnectionStyleDefinition>(DEFAULT_CONNECTION_STYLE_DEFINITION)
 //==============================================================================
 
 function despatchToolbarEvent(type: string, source: string, value: boolean|string) {
@@ -61,6 +59,9 @@ function despatchToolbarEvent(type: string, source: string, value: boolean|strin
     )
 }
 
+//==============================================================================
+
+import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 
 function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
@@ -88,8 +89,8 @@ const toolButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: EDITOR_TOOL_IDS.DrawConnectionTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.DrawConnectionTool,
-        prompt: connectionStylePrompt(currentConnectionStyle.value.name),
-        icon: currentConnectionStyle.value.icon,
+        prompt: connectionStylePrompt(DEFAULT_CONNECTION_STYLE_DEFINITION.name),
+        icon: DEFAULT_CONNECTION_STYLE_DEFINITION.icon,
         panel: vue.markRaw(ConnectionStylePopover)
     },
     {
@@ -144,7 +145,6 @@ function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Com
 
 function popoverEvent(toolId: string, data: any) {
     if (toolId === EDITOR_TOOL_IDS.DrawConnectionTool) {
-        currentConnectionStyle.value = data
         toolButtons.value[1]!.prompt = connectionStylePrompt(data.name)
         toolButtons.value[1]!.icon = data.icon
 
