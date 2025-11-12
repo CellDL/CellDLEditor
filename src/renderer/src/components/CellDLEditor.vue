@@ -27,7 +27,7 @@
 import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
-import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
+import { type ConnectionStyleDefinition, DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 import { provideComponentProperties } from '@editor/components/properties'
 
 import { type ComponentTemplate, provideComponentLibraries } from '@editor/plugins/components'
@@ -47,7 +47,7 @@ import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 //==============================================================================
 
-const currentConnectionStyle = vue.ref(DEFAULT_CONNECTION_STYLE_DEFINITION)
+const currentConnectionStyle = vue.ref<ConnectionStyleDefinition>(DEFAULT_CONNECTION_STYLE_DEFINITION)
 
 function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
@@ -187,7 +187,6 @@ let celldlDiagram: CellDLDiagram | null = null
 
 vue.onMounted(() => {
     if (svgContainer.value) {
-        // @ts-expect-error: `svgContainer.value` is a HTMLElement
         editor.mount(svgContainer.value)
 
         // Create a new diagram in the editor's window
