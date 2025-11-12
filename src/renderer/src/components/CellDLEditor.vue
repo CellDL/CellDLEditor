@@ -67,11 +67,13 @@ function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
 }
 
+//==============================================================================
+
 // Make data available to the component selection tool and to the properties panel
 
-const defaultComponent = provideComponentLibraries()
+import { loadComponentLibraries } from '@editor/plugins/components'
 
-const currentSelectedComponent = vue.ref<ComponentTemplate>(defaultComponent)
+let defaultComponent = loadComponentLibraries()
 
 function addComponentPrompt(name: string): string {
     return `Add ${name.toLowerCase()} component`
@@ -96,8 +98,8 @@ const toolButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: EDITOR_TOOL_IDS.AddComponentTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
-        prompt: addComponentPrompt(currentSelectedComponent.value.label),
-        image: currentSelectedComponent.value.image,
+        prompt: addComponentPrompt(defaultComponent.label),
+        image: defaultComponent.image,
         panel: vue.markRaw(ComponentPopover)
     }
 ])
@@ -153,6 +155,9 @@ function popoverEvent(toolId: string, data: any) {
         despatchToolbarEvent('value', toolId, data.id)
 
     } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
+        toolButtons.value[2]!.prompt = addComponentPrompt(data.label)
+        toolButtons.value[2]!.image = data.image
+
         // Tell the editor that the component template has changed
 
         despatchToolbarEvent('value', toolId, data.id)

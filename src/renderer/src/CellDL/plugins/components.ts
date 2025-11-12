@@ -39,14 +39,20 @@ export interface ComponentLibrary {
 
 import { BondgraphComponents } from '@editor/plugins/bondgraph/index'
 
-const componentLibraries = vue.ref<ComponentLibrary[]>([BondgraphComponents])
+const componentLibraries = [BondgraphComponents]
+const componentLibrariesRef = vue.ref<ComponentLibrary[]>(componentLibraries)
 
-export function provideComponentLibraries(): ComponentTemplate {
-    vue.provide<ComponentLibrary[]>('componentLibraries', componentLibraries)
+export function loadComponentLibraries(): ComponentTemplate|undefined {
+    let selectedTemplate: ComponentTemplate|undefined = undefined
+    if (componentLibraries.length && componentLibraries[0].components.length) {
 
-    // The default component template
-    componentLibraries.value[0].components[0].selected = true
-    return {...BondgraphComponents.components[0]!}
+        // Select the default component template
+
+        selectedTemplate = componentLibraries[0].components[0]
+        selectedTemplate!.selected = true
+    }
+    vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', componentLibrariesRef)
+    return selectedTemplate
 }
 
 //==============================================================================
