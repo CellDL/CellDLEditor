@@ -200,12 +200,11 @@ export class CellDLEditor {
         window.addEventListener('keydown', this.#keyDownEvent.bind(this))
         window.addEventListener('keyup', this.#keyUpEvent.bind(this))
 
-        // Add handler for events from toolbar buttons
+        // Add a handler for events from toolbar buttons
         document.addEventListener('toolbar-event', this.#toolBarEvent.bind(this))
 
-        // Add handlers for add component tool
+        // Add a handler for dropping components on the canvas
         document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
-        document.addEventListener('component-selected', this.#componentTemplateSelectedEvent.bind(this))
 
 /**
         // Add handler for events from panels
@@ -383,10 +382,12 @@ export class CellDLEditor {
                 }
             }
         } else if (detail.type === 'value') {
-            if (detail.tool === EDITOR_TOOL_IDS.DrawConnectionTool) {
+            if (detail.source === EDITOR_TOOL_IDS.DrawConnectionTool) {
                 this.#drawConnectionSettings = {
                     style: detail.value
                 }
+            } else if (detail.source === EDITOR_TOOL_IDS.AddComponentTool) {
+                this.#currentComponentTemplate = detail.value // **** this is only an id........
             }
         }
     }
@@ -500,10 +501,6 @@ export class CellDLEditor {
 
     #componentTemplateDragEvent(_event: Event) {
         this.#dragging = true
-    }
-
-    #componentTemplateSelectedEvent(event: Event) {
-        this.#currentComponentTemplate = (<CustomEvent>event).detail
     }
 
     #appDragOverEvent(event: DragEvent) {

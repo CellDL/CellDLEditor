@@ -12,8 +12,7 @@
             component(
                     v-if="panelComponent"
                     :is="panelComponent"
-                    :toolId="panelToolId"
-                    @panel-event="panelEvent")
+                    :toolId="panelToolId")
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
@@ -48,6 +47,20 @@ import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 //==============================================================================
 
 const currentConnectionStyle = vue.ref<ConnectionStyleDefinition>(DEFAULT_CONNECTION_STYLE_DEFINITION)
+//==============================================================================
+
+function despatchToolbarEvent(type: string, source: string, value: boolean|string) {
+    document.dispatchEvent(
+        new CustomEvent('toolbar-event', {
+            detail: {
+                type,
+                source,
+                value
+            }
+        })
+    )
+}
+
 
 function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
@@ -110,16 +123,6 @@ panelVisible.value = false
 
 const panelToolId = vue.ref<string>()
 
-function panelEvent(toolId: string) {
-    document.dispatchEvent(
-        new CustomEvent('panel-event', {
-            detail: {
-                panel: toolId,
-            }
-        })
-    )
-}
-
 //==============================================================================
 
 function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Component> | null) {
@@ -131,17 +134,10 @@ function buttonEvent(toolId: string, active: boolean, component: vue.Raw<vue.Com
         }
         panelVisible.value = active
     }
-    // Tell the editor that a popover tool has changed
 
-    document.dispatchEvent(
-        new CustomEvent('toolbar-event', {
-            detail: {
-                type: 'state',
-                tool: toolId,
-                value: active
-            }
-        })
-    )
+    // Tell the editor that a tool has changed
+
+    despatchToolbarEvent('state', toolId, active)
 }
 
 //==============================================================================
@@ -154,26 +150,12 @@ function popoverEvent(toolId: string, data: any) {
 
         // Tell the editor that the connection style has changed
 
-        document.dispatchEvent(
-            new CustomEvent('toolbar-event', {
-                detail: {
-                    type: 'value',
-                    tool: toolId,
-                    value: data.id
-                }
-            })
-        )
+        despatchToolbarEvent('value', toolId, data.id)
+
     } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
-        /*
-        // Tell editor about the default component in the toolbar
-        const event = templateImageEvent(this.#currentComponentIcon)
-        event.uri = defaultComponentUri
-        document.dispatchEvent(
-            new CustomEvent('component-selected', {
-                detail: event
-            })
-        )
-*/
+        // Tell the editor that the component template has changed
+
+        despatchToolbarEvent('value', toolId, data.id)
     }
 }
 
@@ -186,6 +168,11 @@ const svgContainer = vue.useTemplateRef('svg-content')
 let celldlDiagram: CellDLDiagram | null = null
 
 vue.onMounted(() => {
+    // Tell the editor about the default connection style and component
+
+    despatchToolbarEvent('value', EDITOR_TOOL_IDS.DrawConnectionTool, DEFAULT_CONNECTION_STYLE_DEFINITION.id)
+    despatchToolbarEvent('value', EDITOR_TOOL_IDS.AddComponentTool, defaultComponent.id)
+
     if (svgContainer.value) {
         editor.mount(svgContainer.value)
 
