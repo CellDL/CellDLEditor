@@ -69,7 +69,7 @@ const METADATA_ITEMS: ItemDetails[] = [
 
 const PROPERTIES_TEMPLATE: PropertyGroup[] = [
     {
-        title: 'Variable',
+        title: 'Element',
         items: VARIABLE_ITEMS
     },
     {
