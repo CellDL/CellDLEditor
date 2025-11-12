@@ -40,7 +40,7 @@ const buttonClasses = vue.computed(() => {
         classes.push('modal')
     }
     if (props.image) {
-         classes.push('image')
+        classes.push('image')
     }
     return classes.join(' ')
 })
