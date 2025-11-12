@@ -1,9 +1,10 @@
 <template lang="pug">
      Card.left-popover(
-        :data-tip-top="pointerPos"
-        class="{ showtip: showtip }")
+        :class="{ 'no-gap': !hasTitle, showtip: showtip }"
+        :data-tip-top="pointerPos")
         template(#title)
-            slot(name="title")
+            div(v-if="hasTitle")
+                slot(name="title")
         template(#content)
             slot(name="content")
 </template>
@@ -13,12 +14,22 @@ import * as vue from 'vue'
 
 import Card from 'primevue/card'
 
+const slots = vue.useSlots()
+
+const hasTitle = vue.computed(() => !!slots.title);
+
 const pointerPos = vue.inject('pointerPos')
 
 // Don't show a wrongly positioned tooltip in Firefox
 const showtip = vue.ref()
 showtip.value = true //CSS.supports("x: attr(x type(*))")
 </script>
+
+<style>
+.p-card.no-gap > .p-card-body {
+    gap: 0px !important;
+}
+</style>
 
 <style scoped>
 /* What does `md.w-56` do?? */
