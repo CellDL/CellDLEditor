@@ -30,6 +30,7 @@ import * as vue from 'vue'
 import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 import { provideComponentProperties } from '@editor/components/properties'
 
+import { type ComponentTemplate, provideComponentLibraries } from '@editor/plugins/components'
 import { CellDLDiagram } from '@editor/diagram/index'
 
 import { CellDLEditor } from '@editor/editor/index'
@@ -52,6 +53,18 @@ function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
 }
 
+// Make data available to the component selection tool and to the properties panel
+
+const defaultComponent = provideComponentLibraries()
+
+const currentSelectedComponent = vue.ref<ComponentTemplate>(defaultComponent)
+
+function addComponentPrompt(name: string): string {
+    return `Add ${name.toLowerCase()} component`
+}
+
+//==============================================================================
+
 const toolButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: EDITOR_TOOL_IDS.SelectTool,
@@ -69,8 +82,8 @@ const toolButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: EDITOR_TOOL_IDS.AddComponentTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
-        prompt: 'Add component',
-        icon: currentConnectionStyle.value.icon,
+        prompt: addComponentPrompt(currentSelectedComponent.value.label),
+        image: currentSelectedComponent.value.image,
         panel: vue.markRaw(ComponentPopover)
     }
 ])

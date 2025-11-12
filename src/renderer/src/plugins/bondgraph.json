@@ -1,5 +1,5 @@
 {
-    "title": "Bondgraph Elements",
+    "name": "Bondgraph Elements",
     "comment": "set labels from ontology?'",
     "note": "All components have implicit 'hasSpecies' and 'hasLocation' (od `i` and `j`)",
     "components": [
