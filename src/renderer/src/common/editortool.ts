@@ -2,11 +2,12 @@
 
 import * as vue from 'vue'
 
-export interface IToolButton {
+export interface EditorToolButton {
     toolId: string
     active?: boolean
     prompt: string
-    icon: string
+    icon?: string
+    image?: string
     panel?: vue.Raw<vue.Component>
 }
 

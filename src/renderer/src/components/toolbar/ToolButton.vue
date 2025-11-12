@@ -8,6 +8,7 @@
     .ci.tool-button(
         :id="toolId"
         :class="buttonClasses"
+        :style="buttonStyle"
         v-tooltip="{ value: prompt }"
         :aria-label="prompt"
         @click="toolButtonClick")
@@ -20,6 +21,7 @@ const props = defineProps<{
     toolId?: string
     active?: boolean
     icon?: string
+    image?: string
     prompt?: string
     modal?: boolean
     type?: string
@@ -27,14 +29,28 @@ const props = defineProps<{
 }>()
 
 const buttonClasses = vue.computed(() => {
-    const classes = [props.icon]
+    const classes = []
+    if (props.icon) {
+        classes.push(props.icon)
+    }
     if (props.active) {
         classes.push('active')
     }
     if (props.type === 'popover' && props.modal) {
         classes.push('modal')
     }
+    if (props.image) {
+         classes.push('image')
+    }
     return classes.join(' ')
+})
+
+const buttonStyle = vue.computed(() => {
+    const style = []
+    if (props.image) {
+        style.push(`background: url("${props.image}");`)
+    }
+    return style.join(' ')
 })
 
 const popoverVisible = vue.ref()
@@ -119,6 +135,10 @@ async function toolButtonClick(e: MouseEvent) {
     height: 36px !important;
     scale: 1 !important;
     padding: 0;
+}
+
+.tool-button.image {
+    background-size: 100% 100% !important;
 }
 
 .tool-button.modal::before {

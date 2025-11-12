@@ -37,7 +37,7 @@ import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS, PANEL_IDS } from '@editor/edit
 import { editGuides } from '@editor/editor/editguides'
 import { undoRedo } from '@editor/editor/undoredo'
 
-import { type IToolButton } from '@renderer/components/toolbar/index'
+import { type EditorToolButton } from '@renderer/common/editortool'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
 
 import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue'
@@ -52,7 +52,7 @@ function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
 }
 
-const toolButtons = vue.ref<IToolButton[]>([
+const toolButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: EDITOR_TOOL_IDS.SelectTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.SelectTool,
@@ -79,7 +79,7 @@ const toolButtons = vue.ref<IToolButton[]>([
 
 provideComponentProperties()
 
-const panelButtons = vue.ref<IToolButton[]>([
+const panelButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: PANEL_IDS.PropertyPanel,
         prompt: 'Component properties',

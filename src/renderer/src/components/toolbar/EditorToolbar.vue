@@ -7,6 +7,7 @@
                 :active="button?.active"
                 :prompt="button.prompt"
                 :icon="button.icon"
+                :image="button.image"
                 :modal="!!button?.panel"
                 :type="type"
                 :panel="button.panel"
@@ -21,11 +22,11 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import { type IToolButton } from '.'
+import { type EditorToolButton } from '@renderer/common/editortool'
 
 const props = defineProps<{
     type?: string
-    buttons: IToolButton[]
+    buttons: EditorToolButton[]
 }>()
 
 const emit = defineEmits(['button-event', 'popover-event'])
