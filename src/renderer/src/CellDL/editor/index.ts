@@ -28,7 +28,7 @@ import { CellDLObject } from '@editor/celldlObjects/index'
 import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'
-import { libraryManager, type TemplateEvent } from '@editor/libraries/index'
+import { pluginComponents } from '@editor/plugins/index'
 import { round } from '@editor/utils'
 
 import { type PointLike, PointMath } from '@renderer/common/points'
@@ -153,7 +153,7 @@ export class CellDLEditor {
 
 //    #contextMenu: ContextMenu
 
-    #currentComponentTemplate: TemplateEvent | null = null
+    #currentTemplateId: string | null = null
     #drawConnectionSettings: StringProperties = {}
 
     #selectedObject: CellDLObject | null = null
@@ -387,7 +387,7 @@ export class CellDLEditor {
                     style: detail.value
                 }
             } else if (detail.source === EDITOR_TOOL_IDS.AddComponentTool) {
-                this.#currentComponentTemplate = detail.value // **** this is only an id........
+                this.#currentTemplateId = detail.value
             }
         }
     }
@@ -510,13 +510,13 @@ export class CellDLEditor {
         }
     }
 
-    #addComponentTemplate(eventPosition: PointLike, event: TemplateEvent) {
+    #addComponentTemplate(eventPosition: PointLike, templateId: string) {
         const zoomScale = this.#panzoom?.scale || 1
-        const topLeft = PointMath.subtract(eventPosition, PointMath.scalarScale(event.centre, zoomScale))
-        // Copy so we don't modify passed parameter
-        const template = libraryManager.copyTemplate(event.uri)
+        const topLeft = eventPosition // PointMath.subtract(eventPosition, PointMath.scalarScale(event.centre, zoomScale))
+
+        const template = {...pluginComponents.getComponentTemplate(templateId)}
         if (template === null) {
-            console.error(`Drop of unknown component template '${event.uri}'`)
+            console.error(`Drop of unknown component template '${templateId}'`)
             return
         }
         const componentGroup = this.#editorFrame!.addSvgElement(template, this.#domToSvgCoords(topLeft))
@@ -547,8 +547,8 @@ export class CellDLEditor {
         }
         const clickedObject = this.#celldlDiagram.objectById(getElementId(element))
         if (this.#editorState === EDITOR_STATE.AddComponent && clickedObject === null) {
-            if (this.#currentComponentTemplate) {
-                this.#addComponentTemplate(event, this.#currentComponentTemplate)
+            if (this.#currentTemplateId) {
+                this.#addComponentTemplate(event, this.#currentTemplateId)
             }
             return
         }

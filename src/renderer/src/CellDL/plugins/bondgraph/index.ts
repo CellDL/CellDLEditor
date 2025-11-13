@@ -36,7 +36,9 @@ if ('id' in BondgraphJsonData) {
     BondgraphComponents.id = String(BondgraphJsonData.id)
 }
 
-const BondgraphComponentIds = BondgraphComponents.components.map(c => c.id)
+const BondgraphComponentTemplates: Map<string, ComponentTemplate> = new Map(
+    BondgraphComponents.components.map(c => [c.id, c])
+)
 
 //==============================================================================
 //==============================================================================
@@ -63,11 +65,13 @@ class BaseComponent {
     #id: string
     #label: string|undefined
     #nodeType: string
+    #template: ComponentTemplate
 
     constructor(id: string, label: string, nodeType: string) {
         this.#id = id
         this.#label = label
         this.#nodeType = nodeType
+        this.#template = BondgraphComponentTemplates.get(id)!
     }
 
     get id() {
@@ -76,6 +80,10 @@ class BaseComponent {
 
     get label() {
         return this.#label
+    }
+
+    get template() {
+        return this.#template
     }
 
     get isBondElement() {
@@ -143,6 +151,13 @@ export class BondgraphPlugin {
         this.#getTemplateParameters()
     }
 
+    getComponentTemplate(id: string): ComponentTemplate|undefined {
+        const component = this.#baseComponents.get(id)
+        if (component) {
+            return component.template
+        }
+    }
+
     #query(sparql: string) {
         return this.#rdfStore.sparqlQuery(`${SPARQL_PREFIXES}${sparql}`)
     }
@@ -202,7 +217,7 @@ export class BondgraphPlugin {
             const element = r.get('element')!
             const label = r.get('label')
             const subType = r.get('subType')!
-            if (BondgraphComponentIds.includes(element.value)) {
+            if (BondgraphComponentTemplates.has(element.value)) {
                 const component = new BaseComponent(element.value,
                                             label ? label.value : getCurie(element.value),
                                             subType.value)

@@ -42,6 +42,7 @@ export interface ComponentLibrary {
 export class PluginComponents {
     static #instance: PluginComponents | null = null
 
+    #bondgraphPlugin = new BondgraphPlugin()
     #componentLibraries = [BondgraphComponents]
     #componentLibrariesRef = vue.ref<ComponentLibrary[]>(this.#componentLibraries)
 
@@ -54,6 +55,10 @@ export class PluginComponents {
 
     static get instance() {
         return PluginComponents.#instance ?? (PluginComponents.#instance = new PluginComponents())
+    }
+
+    getComponentTemplate(id: string): ComponentTemplate|undefined {
+        return this.#bondgraphPlugin.getComponentTemplate(id)
     }
 
     loadComponentLibraries(): ComponentTemplate|undefined {
@@ -74,6 +79,9 @@ export class PluginComponents {
 }
 
 //==============================================================================
+
+// Instantiate our plugin components. This will load the BondgraphPlugin
+// and hence BG template definitions from the BG-RDF framework
 
 export const pluginComponents = PluginComponents.instance
 
