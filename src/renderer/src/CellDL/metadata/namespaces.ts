@@ -24,6 +24,7 @@ import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
+export const BG_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph#'
 export const BGF_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
 export const CELLDL_NAMESPACE_URI = 'http://celldl.org/ontologies/celldl#'
 
@@ -37,7 +38,8 @@ export const XS_NAMESPACE_URI = 'http://www.w3.org/2001/XMLSchema#'
 
 export const CELLDL_NAMESPACE_DECLARATIONS = {
     celldl: CELLDL_NAMESPACE_URI,
-    bgf: BGF_NAMESPACE_URI,
+    bg: BG_NAMESPACE_URI,
+    bgf: BGF_NAMESPACE_URI
 }
 
 export const WEB_NAMESPACE_DECLARATIONS = {
@@ -60,6 +62,7 @@ export function Namespace(nsuri: string): NamespaceType {
 //==============================================================================
 
 export const CELLDL_NAMESPACE = Namespace(CELLDL_NAMESPACE_URI)
+export const BG_NAMESPACE = Namespace(BG_NAMESPACE_URI)
 export const BGF_NAMESPACE = Namespace(BGF_NAMESPACE_URI)
 
 export const DCT_NAMESPACE = Namespace(DCT_NAMESPACE_URI)

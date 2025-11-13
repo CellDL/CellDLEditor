@@ -25,7 +25,7 @@ import { arrowMarkerDefinition } from '@renderer/common/styling'
 import { CellDLComponent } from '@editor/celldlObjects/index'
 import { type ObjectTemplate } from '@editor/components/index'
 import * as $rdf from '@editor/metadata/index'
-import { BGF_NAMESPACE, getCurie, RDFS_NAMESPACE, RdfStore } from '@editor/metadata/index'
+import { BG_NAMESPACE, BGF_NAMESPACE, getCurie, RDFS_NAMESPACE, RdfStore } from '@editor/metadata/index'
 import { type MetadataProperty, MetadataPropertiesMap } from '@editor/metadata/index'
 import { type ComponentLibrary, type ComponentTemplate, type ElementTemplateName } from '@editor/plugins/index'
 
@@ -62,7 +62,8 @@ import MECHANICAL_TEMPLATE from '/bg-rdf/templates/mechanical.ttl?url&raw'
 //==============================================================================
 
 const SPARQL_PREFIXES = `
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdfs: ${RDFS_NAMESPACE('').toString()}
+PREFIX bg: ${BG_NAMESPACE('').toString()}
 PREFIX bgf: ${BGF_NAMESPACE('').toString()}
 `
 //==============================================================================
@@ -115,7 +116,8 @@ interface PhysicalDomain {
 type ElementTemplate = ElementTemplateName & {
     domain: string
     parameters: Variable[]
-    states: Variable[]
+    states: Variable[],
+    baseComponentId?: string
 }
 
 //==============================================================================
@@ -254,21 +256,21 @@ export class BondgraphPlugin {
     #loadBaseComponents() {
         // Get information about the components showing in the add component tool
         this.#query(`
-            SELECT ?element ?label ?subType WHERE {
-                ?element rdfs:subClassOf ?subType .
+            SELECT ?element ?label ?base WHERE {
+                ?element rdfs:subClassOf ?base .
                 OPTIONAL { ?element rdfs:label ?label }
-                { ?element rdfs:subClassOf bgf:BondElement }
+                { ?base rdfs:subClassOf bg:BondElement }
             UNION
-                { ?element rdfs:subClassOf bgf:JunctionStructure }
+                { ?base rdfs:subClassOf bg:JunctionStructure }
             }`
         ).map((r) => {
             const element = r.get('element')!
             const label = r.get('label')
-            const subType = r.get('subType')!
+            const base = r.get('base')!
             if (BondgraphComponentTemplates.has(element.value)) {
                 const component = new BaseComponent(element.value,
                                             label ? label.value : getCurie(element.value),
-                                            subType.value)
+                                            base.value)
                 this.#baseComponents.set(element.value, component)
             }
         })
@@ -303,11 +305,58 @@ export class BondgraphPlugin {
                     domain: r.get('domain')!.value,
                     name: label ? label.value : getCurie(element.value),
                     parameters: [],
-                    states: []
+                    states: [],
+                    baseComponentId: component.id
                 }
                 this.#elementTemplates.set(template.id, template)
                 this.#baseComponentToTemplates.get(component.id)!.push(template)
             }
+        })
+
+        // Composite element templates are incorrectly inserted into `baseComponentToTemplates`
+        // above, so now correct their entries
+        this.#query(`
+            SELECT ?element ?base WHERE {
+                { ?element
+                    a bgf:CompositeElement ;
+                    rdfs:subClassOf* ?base ;
+                    rdfs:subClassOf* bgf:ZeroStorageNode
+                }
+                UNION
+                { ?element
+                    a bgf:CompositeElement ;
+                    rdfs:subClassOf* ?base ;
+                    rdfs:subClassOf* bgf:OneResistanceNode
+                }
+            }`
+        ).map((r) => {
+            const base = r.get('base')!
+            if ([BGF_NAMESPACE('ZeroStorageNode').value, BGF_NAMESPACE('OneResistanceNode').value]
+                    .includes(base.value)) {
+                const component = this.#baseComponents.get(r.get('base')!.value)
+                if (component) {
+                    const element = r.get('element')!
+                    const template = this.#elementTemplates.get(element.value)
+                    if (template) {
+                        if (!this.#baseComponentToTemplates.has(component.id)) {
+                            this.#baseComponentToTemplates.set(component.id, [])
+                        }
+                        const templates = this.#baseComponentToTemplates.get(component.id)!
+                        if (template.baseComponentId) {
+                            // Remove from list assigned above
+                            const baseTemplates = this.#baseComponentToTemplates.get(template.baseComponentId)
+                            if (baseTemplates) {
+                                const filtered =
+                                this.#baseComponentToTemplates.set(template.baseComponentId,
+                                    baseTemplates.filter(t => (t.id !== element.value)))
+                            }
+                        }
+                        template.baseComponentId = component.id
+                        this.#baseComponentToTemplates.get(component.id)!.push(template)
+                    }
+                }
+            }
+
         })
     }
 
