@@ -173,6 +173,11 @@ export class CellDLEditor {
         this.#contextMenu = this.getElementById('context-menu') as ContextMenu
         this.status = 'new editor'
 **/
+        // Add a handler for events from toolbar buttons
+        document.addEventListener('toolbar-event', this.#toolBarEvent.bind(this))
+
+        // Add handler for events from panels
+        document.addEventListener('panel-event', this.#panelEvent.bind(this))
     }
 
     mount(svgContainer: HTMLElement) {
@@ -200,15 +205,10 @@ export class CellDLEditor {
         window.addEventListener('keydown', this.#keyDownEvent.bind(this))
         window.addEventListener('keyup', this.#keyUpEvent.bind(this))
 
-        // Add a handler for events from toolbar buttons
-        document.addEventListener('toolbar-event', this.#toolBarEvent.bind(this))
-
         // Add a handler for dropping components on the canvas
         document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
 
 /**
-        // Add handler for events from panels
-        document.addEventListener('panel-event', this.#panelEvent.bind(this))
 
         this.#app.addEventListener('dragover', this.#appDragOverEvent.bind(this))
         this.#app.addEventListener('drop', this.#appDropEvent.bind(this))
