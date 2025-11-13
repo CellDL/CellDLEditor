@@ -44,10 +44,12 @@ const componentLibrariesRef = vue.ref<ComponentLibrary[]>(componentLibraries)
 
 export function loadComponentLibraries(): ComponentTemplate|undefined {
     let selectedTemplate: ComponentTemplate|undefined = undefined
+    // @ts-expect-error: `componentLibraries` is at least 1 long
     if (componentLibraries.length && componentLibraries[0].components.length) {
 
         // Select the default component template
 
+        // @ts-expect-error: `componentLibraries` is at least 1 long
         selectedTemplate = componentLibraries[0].components[0]
         selectedTemplate!.selected = true
     }
