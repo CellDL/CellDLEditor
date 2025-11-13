@@ -42,7 +42,7 @@ export interface PropertyGroup {
 
 //==============================================================================
 
-const VARIABLE_ITEMS: ItemDetails[] = [
+const ELEMENT_ITEMS: ItemDetails[] = [
     {
         uri: BGF_NAMESPACE('hasSpecies').value,
         name: 'Species',
@@ -71,7 +71,7 @@ const METADATA_ITEMS: ItemDetails[] = [
 const PROPERTIES_TEMPLATE: PropertyGroup[] = [
     {
         title: 'Element',
-        items: VARIABLE_ITEMS
+        items: ELEMENT_ITEMS
     },
     {
         title: 'Parameters',
