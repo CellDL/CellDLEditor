@@ -13,6 +13,7 @@
                         :aria-label="component.label"
                         :title="component.label"
                         draggable="true"
+                        @dragstart="dragstart"
                         @click="selected"
                         @mousedown="selected")
 </template>
@@ -57,6 +58,20 @@ function selected(e: MouseEvent) {
         selectedId = componentId
     }
     emit('popover-event', props.toolId, component)
+}
+
+function dragstart(e: DragEvent) {
+    const componentId = (<HTMLElement>e.target).id
+    e.dataTransfer!.items.add(JSON.stringify({id: componentId}), 'text/plain')
+    document.dispatchEvent(
+        new CustomEvent('component-drag', {
+            detail: {
+                type: 'dragstart',
+                source: props.toolId,
+                value: componentId
+            }
+        })
+    )
 }
 </script>
 

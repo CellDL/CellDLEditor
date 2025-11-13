@@ -205,13 +205,12 @@ export class CellDLEditor {
         window.addEventListener('keydown', this.#keyDownEvent.bind(this))
         window.addEventListener('keyup', this.#keyUpEvent.bind(this))
 
-        // Add a handler for dropping components on the canvas
+        // Add handlers for dropping components on the canvas
         document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
+        this.#container.addEventListener('dragover', this.#appDragOverEvent.bind(this))
+        this.#container.addEventListener('drop', this.#appDropEvent.bind(this))
 
 /**
-
-        this.#app.addEventListener('dragover', this.#appDragOverEvent.bind(this))
-        this.#app.addEventListener('drop', this.#appDropEvent.bind(this))
 
         // Handle context menu events
         this.#container.addEventListener('contextmenu', (event) => {
@@ -528,8 +527,15 @@ export class CellDLEditor {
 
     #appDropEvent(event: DragEvent) {
         this.#dragging = false
+        event.preventDefault();
         if (event.dataTransfer) {
-            this.#addComponentTemplate(event, JSON.parse(event.dataTransfer.getData('component-detail')))
+            for (const item of event.dataTransfer!.items) {
+                if (item.kind === "string" && item.type.match("^text/plain")) {
+                    item.getAsString((s: string) => {
+                        this.#addComponentTemplate(event, JSON.parse(s).id)
+                    })
+                }
+            }
         }
     }
 
