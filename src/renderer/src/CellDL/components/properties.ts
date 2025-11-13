@@ -32,6 +32,7 @@ import type { PropertiesType } from '@renderer/common/types'
 type ItemDetails = locApi.IUiJsonInput & {
     uri: string
     value?: string|number
+    optional?: boolean
 }
 
 export interface PropertyGroup {
@@ -113,6 +114,11 @@ export class ObjectPropertiesPanel {
                             value: metadata[item.uri] || item.defaultValue || '',
                             ...item
                         }))
+                    } else if (!item.optional) {
+                        group.items.push({
+                            value: '',
+                            ...item
+                        })
                     }
                 })
             })
