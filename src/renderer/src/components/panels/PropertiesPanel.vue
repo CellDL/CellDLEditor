@@ -1,7 +1,7 @@
 <template lang="pug">
     ToolPanel(:id=toolId)
         template(#content)
-            Accordion(v-model:value="firstPanel")
+            Accordion(v-model:value="openPanel")
                 AccordionPanel.group(
                     v-for="(group, groupIndex) in groups"
                     :key="group.title"
@@ -36,16 +36,9 @@ const props = defineProps<{
 
 const groups = vue.inject<PropertyGroup[]>('componentProperties')
 
-const firstPanel = vue.computed<string>(() => {
-    let index = 0
-    for (const group of groups.value) {
-        if (group.items.length) {
-            break
-        }
-        index += 1
-    }
-    return String(index)
-})
+// Remember last opened AccordionPanel
+
+const openPanel = vue.ref<string>('')
 
 const disabled = vue.computed<boolean>(() => {
     for (const group of groups.value) {
