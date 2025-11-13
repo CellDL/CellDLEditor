@@ -69,9 +69,9 @@ function connectionStylePrompt(name: string): string {
 
 // Make data available to the component selection tool and to the properties panel
 
-import { loadComponentLibraries } from '@editor/plugins/components'
+import { pluginComponents } from '@editor/plugins/index'
 
-let defaultComponent = loadComponentLibraries()
+let defaultComponent = pluginComponents.loadComponentLibraries()!
 
 function addComponentPrompt(name: string): string {
     return `Add ${name.toLowerCase()} component`

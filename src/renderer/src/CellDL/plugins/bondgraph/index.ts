@@ -21,9 +21,7 @@ limitations under the License.
 import * as vue from 'vue'
 
 import { BGF_NAMESPACE, getCurie, RdfStore } from '@editor/metadata/index'
-
-import { type EditorPlugin } from '@editor/plugins/index'
-import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/components'
+import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/index'
 
 //==============================================================================
 
@@ -120,7 +118,7 @@ interface Variable {
 
 //==============================================================================
 
-export class BondgraphPlugin implements EditorPlugin {
+export class BondgraphPlugin {
     #baseComponents: Map<string, BaseComponent> = new Map()
     #baseComponentToTemplates: Map<string, ElementTemplate[]> = new Map()
     #physicalDomains: Map<string, PhysicalDomain> = new Map()

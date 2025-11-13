@@ -18,11 +18,64 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { RdfStore } from '@editor/metadata/index'
+import * as vue from 'vue'
+
+import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 
 //==============================================================================
 
-export interface EditorPlugin {
+export interface ComponentTemplate {
+    id: string
+    label: string
+    image: string
+    selected?: boolean
 }
 
+export interface ComponentLibrary {
+    id?: string
+    name: string
+    components: ComponentTemplate[]
+}
+
+//==============================================================================
+
+export class PluginComponents {
+    static #instance: PluginComponents | null = null
+
+    #componentLibraries = [BondgraphComponents]
+    #componentLibrariesRef = vue.ref<ComponentLibrary[]>(this.#componentLibraries)
+
+    private constructor() {
+        if (PluginComponents.#instance) {
+            throw new Error('Use PluginComponents.instance instead of `new`')
+        }
+        PluginComponents.#instance = this
+    }
+
+    static get instance() {
+        return PluginComponents.#instance ?? (PluginComponents.#instance = new PluginComponents())
+    }
+
+    loadComponentLibraries(): ComponentTemplate|undefined {
+        let selectedTemplate: ComponentTemplate|undefined = undefined
+        if (this.#componentLibraries.length &&
+            // @ts-expect-error: `componentLibraries` is at least 1 long
+            this.#componentLibraries[0].components.length) {
+
+            // Select the default component template
+
+            // @ts-expect-error: `componentLibraries` is at least 1 long
+            selectedTemplate = this.#componentLibraries[0].components[0]
+            selectedTemplate!.selected = true
+        }
+        vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
+        return selectedTemplate
+    }
+}
+
+//==============================================================================
+
+export const pluginComponents = PluginComponents.instance
+
+//==============================================================================
 //==============================================================================

@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/components'
+import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/index'
 
 import ToolPopover from '../toolbar/ToolPopover.vue'
 
