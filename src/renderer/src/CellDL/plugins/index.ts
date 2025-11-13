@@ -20,8 +20,6 @@ limitations under the License.
 
 import * as vue from 'vue'
 
-import { arrowMarkerDefinition } from '@renderer/common/styling'
-
 import { type ObjectTemplate } from '@editor/components/index'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 import { MetadataPropertiesMap } from '@editor/metadata/index'
@@ -95,13 +93,12 @@ export class PluginComponents {
     }
 
     styleRules(): string {
-        return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
+        return this.#bondgraphPlugin.styleRules()
     }
 
     svgDefinitions(): string {
-        return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
+        return this.#bondgraphPlugin.svgDefinitions()
     }
-
 }
 
 //==============================================================================

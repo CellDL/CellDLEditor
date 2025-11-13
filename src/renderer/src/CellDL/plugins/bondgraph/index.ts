@@ -20,6 +20,8 @@ limitations under the License.
 
 import * as $oxigraph from '@oxigraph/web'
 
+import { arrowMarkerDefinition } from '@renderer/common/styling'
+
 import { CellDLComponent } from '@editor/celldlObjects/index'
 import { type ObjectTemplate } from '@editor/components/index'
 import * as $rdf from '@editor/metadata/index'
@@ -149,6 +151,14 @@ export class BondgraphPlugin {
         this.#loadBaseComponents()
         this.#assignTemplates()
         this.#loadTemplateParameters()
+    }
+
+    styleRules(): string {
+        return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
+    }
+
+    svgDefinitions(): string {
+        return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
     }
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
