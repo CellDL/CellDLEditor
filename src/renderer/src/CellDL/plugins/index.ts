@@ -24,6 +24,7 @@ import { arrowMarkerDefinition } from '@renderer/common/styling'
 
 import { type ObjectTemplate } from '@editor/components/index'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
+import { MetadataPropertiesMap } from '@editor/metadata/index'
 
 //==============================================================================
 
@@ -38,6 +39,11 @@ export interface ComponentLibrary {
     id?: string
     name: string
     components: ComponentTemplate[]
+}
+
+export interface ElementTemplateName {
+    id: string
+    name: string
 }
 
 //==============================================================================
@@ -62,6 +68,14 @@ export class PluginComponents {
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
         return this.#bondgraphPlugin.getObjectTemplate(id)
+    }
+
+    getElementTemplateNames(id: string): ElementTemplateName[] {
+        return this.#bondgraphPlugin.getElementTemplateNames(id)
+    }
+
+    getTemplateParameters(id: string): MetadataPropertiesMap {
+        return this.#bondgraphPlugin.getTemplateParameters(id)
     }
 
     loadComponentLibraries(): ComponentTemplate|undefined {

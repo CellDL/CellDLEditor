@@ -25,7 +25,7 @@ import { type ObjectTemplate } from '@editor/components/index'
 import * as $rdf from '@editor/metadata/index'
 import { BGF_NAMESPACE, getCurie, RDFS_NAMESPACE, RdfStore } from '@editor/metadata/index'
 import { type MetadataProperty, MetadataPropertiesMap } from '@editor/metadata/index'
-import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/index'
+import { type ComponentLibrary, type ComponentTemplate, type ElementTemplateName } from '@editor/plugins/index'
 
 //==============================================================================
 
@@ -109,11 +109,6 @@ interface PhysicalDomain {
 }
 
 //==============================================================================
-
-interface ElementTemplateName {
-    id: string
-    name: string
-}
 
 type ElementTemplate = ElementTemplateName & {
     domain: string
