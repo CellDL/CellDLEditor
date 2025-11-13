@@ -22,17 +22,21 @@ import * as vue from 'vue'
 
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
-import { CellDLObject } from '@editor/celldlObjects/index'
-import { BGF_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, type NamedNode }  from '@editor/metadata/index'
-
 import type { PropertiesType } from '@renderer/common/types'
 
+import { CellDLObject } from '@editor/celldlObjects/index'
+import { BGF_NAMESPACE, DCT_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE, type NamedNode }  from '@editor/metadata/index'
+import { type ElementTemplateName, pluginComponents } from '@editor/plugins/index'
+
 //==============================================================================
+
+type ItemSelector = (key: string) => ElementTemplateName[]
 
 type ItemDetails = locApi.IUiJsonInput & {
     uri: string
     value?: string|number
     optional?: boolean
+    selector?: [number, string]  // Allow for deep cloning
 }
 
 export interface PropertyGroup {
@@ -42,7 +46,19 @@ export interface PropertyGroup {
 
 //==============================================================================
 
+const itemSelectors: ItemSelector[] = [
+    pluginComponents.getElementTemplateNames
+]
+
 const ELEMENT_ITEMS: ItemDetails[] = [
+    {
+        uri: RDF_NAMESPACE('type').value,
+        name: 'Bond Element',
+        defaultValue: 0,
+        possibleValues: [],
+        selector: [0, RDFS_NAMESPACE('subClassOf').value],
+        optional: true
+    },
     {
         uri: BGF_NAMESPACE('hasSpecies').value,
         name: 'Species',
@@ -110,10 +126,34 @@ export class ObjectPropertiesPanel {
                 const group = componentProperties.value[index]
                 template.items.forEach((item: ItemDetails) => {
                     if (item.uri in metadata) {
-                        group.items.push(Object.assign({
-                            value: metadata[item.uri] || item.defaultValue || '',
-                            ...item
-                        }))
+                        if ('possibleValues' in item) {
+                            const discreteItem = {...item}
+                            if ('selector' in item) {
+                                const selector = itemSelectors[item.selector![0]]!
+                                const key = metadata[item.selector![1]]
+                                if (key) {
+                                    const selection = selector(key)
+                                    discreteItem.possibleValues = selection.map(s => {
+                                        return {
+                                            name: s.name,
+                                            value: s.id
+                                        }
+                                    })
+                                }
+                            }
+                            const discreteValue = metadata[item.uri]
+                            discreteItem.value = discreteItem.possibleValues.findIndex(v => {
+                                if (discreteValue === v.value) {
+                                    return true
+                                }
+                            })
+                            group.items.push(discreteItem)
+                        } else {
+                            group.items.push(Object.assign({
+                                value: metadata[item.uri] || item.defaultValue || '',
+                                ...item
+                            }))
+                        }
                     } else if (!item.optional) {
                         group.items.push({
                             value: '',
