@@ -18,9 +18,13 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as vue from 'vue'
+import * as $oxigraph from '@oxigraph/web'
 
-import { BGF_NAMESPACE, getCurie, RdfStore } from '@editor/metadata/index'
+import { CellDLComponent } from '@editor/celldlObjects/index'
+import { type ObjectTemplate } from '@editor/components/index'
+import * as $rdf from '@editor/metadata/index'
+import { BGF_NAMESPACE, getCurie, RDFS_NAMESPACE, RdfStore } from '@editor/metadata/index'
+import { type MetadataProperty, MetadataPropertiesMap } from '@editor/metadata/index'
 import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/index'
 
 //==============================================================================
@@ -106,14 +110,15 @@ interface PhysicalDomain {
 
 //==============================================================================
 
-interface ElementTemplate {
+interface ElementTemplateName {
     id: string
-    domain: string
     name: string
 }
 
-class TemplateParameter {
-
+type ElementTemplate = ElementTemplateName & {
+    domain: string
+    parameters: Variable[]
+    states: Variable[]
 }
 
 //==============================================================================
@@ -130,7 +135,7 @@ export class BondgraphPlugin {
     #baseComponents: Map<string, BaseComponent> = new Map()
     #baseComponentToTemplates: Map<string, ElementTemplate[]> = new Map()
     #physicalDomains: Map<string, PhysicalDomain> = new Map()
-    #templateParameters: Map<string, TemplateParameter[]> = new Map()
+    #elementTemplates: Map<string, ElementTemplate> = new Map()
 
     #rdfStore: RdfStore = new RdfStore('https://bg-rdf.org/ontologies/bondgraph-framework')
 
@@ -148,14 +153,52 @@ export class BondgraphPlugin {
         this.#loadDomains()
         this.#loadBaseComponents()
         this.#assignTemplates()
-        this.#getTemplateParameters()
+        this.#loadTemplateParameters()
     }
 
-    getComponentTemplate(id: string): ComponentTemplate|undefined {
-        const component = this.#baseComponents.get(id)
-        if (component) {
-            return component.template
+    getObjectTemplate(id: string): ObjectTemplate|undefined {
+        const baseComponent = this.#baseComponents.get(id)
+        if (baseComponent && baseComponent.template) {
+            const template = baseComponent.template
+            const metadataProperties: MetadataProperty[] = [
+                [ RDFS_NAMESPACE('subClassOf'), $rdf.namedNode(baseComponent.id)],
+                [ BGF_NAMESPACE('hasSpecies'), $rdf.literal('i')],
+                [ BGF_NAMESPACE('hasLocation'), $rdf.literal('j')]
+            ]
+            return {
+                uri: template.id,
+                CellDLClass: CellDLComponent,
+                label: template.label,
+                image: template.image,
+                metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties)
+            }
         }
+    }
+
+    getElementTemplateNames(id: string): ElementTemplateName[] {
+        const templates = this.#baseComponentToTemplates.get(id)
+        if (templates) {
+            return templates.map(t => {
+                return {
+                    id: t.id,
+                    name: t.name
+                }
+            })
+        }
+        return []
+    }
+
+    getTemplateParameters(id: string): MetadataPropertiesMap {
+        const parameterProperties: MetadataProperty[] = []
+        const elementTemplate = this.#elementTemplates.get(id)
+        if (elementTemplate) {
+            for (const variable of elementTemplate.parameters) {
+            }
+            const domain = this.#physicalDomains.get(elementTemplate.domain)
+            for (const variable of elementTemplate.states) {
+            }
+        }
+        return MetadataPropertiesMap.fromProperties(parameterProperties)
     }
 
     #query(sparql: string) {
@@ -250,17 +293,86 @@ export class BondgraphPlugin {
                 }
                 const element = r.get('element')!
                 const label = r.get('label')
-                this.#baseComponentToTemplates.get(component.id)!.push({
+                const template = {
                     id: element.value,
                     domain: r.get('domain')!.value,
-                    name: label ? label.value : getCurie(element.value)
-                })
+                    name: label ? label.value : getCurie(element.value),
+                    parameters: [],
+                    states: []
+                }
+                this.#elementTemplates.set(template.id, template)
+                this.#baseComponentToTemplates.get(component.id)!.push(template)
             }
         })
     }
 
-    #getTemplateParameters() {
-        // WIP
+    #saveParametersAndStates(r: Map<string, $oxigraph.Term>) {
+        const element = r.get('element')!
+        const template = this.#elementTemplates.get(element.value)
+        if (!template) return ;
+        if (r.has('parameterName')) {
+            template.parameters.push({
+                name: r.get('parameterName')!.value,
+                units: r.get('parameterUnits')!.value
+            })
+        }
+        if (r.has('variableName')) {
+            template.states.push({
+                name: r.get('variableName')!.value,
+                units: r.get('variableUnits')!.value
+            })
+        }
+    }
+
+    #loadTemplateParameters() {
+        // Find parameters and variables for Element templates
+        this.#query(`
+            SELECT ?element ?parameterName ?parameterUnits
+                            ?variableName ?variableUnits
+            WHERE {
+                ?element a bgf:ElementTemplate .
+                {
+                    ?element bgf:hasParameter [
+                        bgf:varName ?parameterName ;
+                        bgf:hasUnits ?parameterUnits
+                    ]
+                }
+                UNION
+                {
+                    ?element bgf:hasVariable [
+                        bgf:varName ?variableName ;
+                        bgf:hasUnits ?variableUnits
+                    ]
+                }
+            }`
+        ).map((r) => {
+            this.#saveParametersAndStates(r)
+        })
+        // Find parameters and variables for Composite templates
+        this.#query(`
+            SELECT ?element ?parameterName ?parameterUnits
+                            ?variableName ?variableUnits
+            WHERE {
+                ?element a bgf:CompositeElement ;
+                    rdfs:subClassOf ?base .
+                ?base a bgf:ElementTemplate .
+                {
+                    ?base bgf:hasParameter [
+                        bgf:varName ?parameterName ;
+                        bgf:hasUnits ?parameterUnits
+                    ]
+                }
+                UNION
+                {
+                    ?base bgf:hasVariable [
+                        bgf:varName ?variableName ;
+                        bgf:hasUnits ?variableUnits
+                    ]
+                }
+            }`
+        ).map((r) => {
+            this.#saveParametersAndStates(r)
+        })
     }
 }
 

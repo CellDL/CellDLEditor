@@ -20,6 +20,8 @@ limitations under the License.
 
 import * as vue from 'vue'
 
+import { type ObjectTemplate } from '@editor/components/index'
+
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 
 //==============================================================================
@@ -57,8 +59,8 @@ export class PluginComponents {
         return PluginComponents.#instance ?? (PluginComponents.#instance = new PluginComponents())
     }
 
-    getComponentTemplate(id: string): ComponentTemplate|undefined {
-        return this.#bondgraphPlugin.getComponentTemplate(id)
+    getObjectTemplate(id: string): ObjectTemplate|undefined {
+        return this.#bondgraphPlugin.getObjectTemplate(id)
     }
 
     loadComponentLibraries(): ComponentTemplate|undefined {
