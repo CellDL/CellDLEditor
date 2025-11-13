@@ -40,6 +40,7 @@ export interface ObjectTemplate extends NewObjectClass {
     label?: string
     metadataProperties: MetadataPropertiesMap
     name?: string
+    image?: string
     svg?: string
 }
 

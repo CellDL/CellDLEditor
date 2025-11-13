@@ -19,7 +19,8 @@ limitations under the License.
 ******************************************************************************/
 
 import { type PointLike, PointMath } from '@renderer/common/points'
-import type { ObjectTemplate } from '@editor/components'
+import type { ObjectTemplate } from '@editor/components/index'
+import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
@@ -56,9 +57,14 @@ export class EditorFrame {
     }
 
     addSvgElement(template: ObjectTemplate, topLeft: PointLike): SVGGElement {
-        const componentGroup = `<g style="visibility: hidden">${template.svg}</g>`
-        this.#frameGroupElement.insertAdjacentHTML('beforeend', componentGroup)
-        const svgElement = this.#frameGroupElement.lastChild as SVGGElement
+        const svgElement: SVGGElement = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+        svgElement.setAttribute('style', 'visibility: hidden')
+        if (template.image) {
+            svgElement.insertAdjacentHTML('beforeend', `<image href="${template.image}">`)
+        } else if (template.svg) {
+            svgElement.insertAdjacentHTML('beforeend', template.svg)
+        }
+        this.#frameGroupElement.append(svgElement)
         const bbox = svgElement.getBBox()
         const translation = PointMath.subtract(topLeft, bbox)
         svgElement.setAttribute('transform', `translate(${translation.x}, ${translation.y})`)

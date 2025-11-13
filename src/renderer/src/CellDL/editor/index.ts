@@ -514,8 +514,8 @@ export class CellDLEditor {
         const zoomScale = this.#panzoom?.scale || 1
         const topLeft = eventPosition // PointMath.subtract(eventPosition, PointMath.scalarScale(event.centre, zoomScale))
 
-        const template = {...pluginComponents.getComponentTemplate(templateId)}
-        if (template === null) {
+        const template = pluginComponents.getObjectTemplate(templateId)
+        if (!template) {
             console.error(`Drop of unknown component template '${templateId}'`)
             return
         }
