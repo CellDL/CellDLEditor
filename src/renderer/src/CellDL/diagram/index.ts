@@ -67,6 +67,8 @@ import { LatexStyleRules } from '@editor/mathjax'
 
 import type { Constructor, StringProperties } from '@renderer/common/types'
 
+import { pluginComponents } from '@editor/plugins/index'
+
 //==============================================================================
 
 export const CELLDL_VERSION = '1.0'
@@ -273,14 +275,12 @@ export class CellDLDiagram {
             this.#svgDiagram.insertAdjacentHTML('afterbegin', `<defs></defs>`)
             defsElement = this.#svgDiagram.firstChild as SVGDefsElement
             defsElement.id = CELLDL_DEFINITIONS_ID
-            for (const definitions of libraryManager.librarySvgDefinitions()) {
-                defsElement.insertAdjacentHTML('afterbegin', definitions)
-            }
+            defsElement.insertAdjacentHTML('afterbegin', pluginComponents.svgDefinitions())
         }
     }
 
     #setStylesheet() {
-        const css = `${LatexStyleRules}${CellDLStylesheet}${libraryManager.libraryStyleRules()}`
+        const css = `${LatexStyleRules}${CellDLStylesheet}${pluginComponents.styleRules()}`
         let styleElement = this.#svgDiagram.querySelector(
             `defs#${CELLDL_DEFINITIONS_ID} > style#${CELLDL_STYLESHEET_ID}`
         )
