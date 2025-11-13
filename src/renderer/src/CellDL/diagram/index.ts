@@ -853,7 +853,6 @@ export class CellDLDiagram {
     }
 
     #addNewObject(svgElement: SVGGraphicsElement, template: ObjectTemplate, assignId = true) {
-        // @ts-expect-error: celldlClassName is a property of CellDLClass
         const celldlClassName = template.CellDLClass.celldlClassName
         if (assignId) {
             this.#setUniqueId(svgElement)

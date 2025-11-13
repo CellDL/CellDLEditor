@@ -61,17 +61,14 @@ export abstract class BaseStore {
     }
 
     get documentUri(): string {
-        //=======================
         return this.#documentNode ? this.#documentNode.uri : ''
     }
 
     get documentNode(): NamedNode | undefined {
-        //===========================
         return this.#documentNode
     }
 
     documentNS(suffix: string): NamedNode {
-        //===================================
         return this.#documentNS(suffix)
     }
 
@@ -113,7 +110,6 @@ export abstract class BaseStore {
     abstract subjectsOfType(parentType: NamedNode): [SubjectType, NamedNode][]
 
     addMetadataPropertiesForSubject(subject: SubjectType, properties: MetadataPropertiesMap) {
-        //======================================================================================
         const statements: Statement[] = []
         for (const [predicate, value] of properties.predicateValues()) {
             statements.push(...this.#addMetadataProperties(subject, predicate, value))
@@ -122,7 +118,6 @@ export abstract class BaseStore {
     }
 
     #addMetadataProperties(subject: SubjectType, predicate: PredicateType, value: MetadataPropertyValue): Statement[] {
-        //===============================================================================================================
         const statements: Statement[] = []
         if (isLiteral(value) || isNamedNode(value)) {
             // @ts-expect-error: value is a Literal or NamedNode
@@ -144,12 +139,10 @@ export abstract class BaseStore {
     }
 
     addStatementList(statements: Statement[]) {
-        //=======================================
         statements.forEach((s) => this.add(s.subject, s.predicate, s.object, null))
     }
 
     metadataFromPredicates(predicateValues: PredicateValue[]): MetadataPropertiesMap {
-        //==============================================================================
         const metadata = new MetadataPropertiesMap()
         for (const predicateValue of predicateValues) {
             const value = this.#metadataValue(predicateValue.object)
@@ -161,7 +154,6 @@ export abstract class BaseStore {
     }
 
     metadataPropertiesForSubject(subject: SubjectType): MetadataPropertiesMap {
-        //=======================================================================
         const predicateValues = this.statementsMatching(subject, null, null, null) as PredicateValue[]
         return this.metadataFromPredicates(predicateValues)
     }
