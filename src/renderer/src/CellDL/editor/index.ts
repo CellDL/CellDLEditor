@@ -363,11 +363,11 @@ export class CellDLEditor {
         const detail = (<CustomEvent>event).detail
 
         if (detail.type === 'state') {
-            if (Object.values(PANEL_IDS).includes(detail.tool)) {
-                this.#openPanelId = detail.value ? detail.tool : null
+            if (Object.values(PANEL_IDS).includes(detail.source)) {
+                this.#openPanelId = detail.value ? detail.source : null
             }
-            else if (detail.value && TOOL_TO_STATE.has(detail.tool as EDITOR_TOOL_IDS)) {
-                this.#editorState = TOOL_TO_STATE.get(detail.tool as EDITOR_TOOL_IDS)!
+            else if (detail.value && TOOL_TO_STATE.has(detail.source as EDITOR_TOOL_IDS)) {
+                this.#editorState = TOOL_TO_STATE.get(detail.source as EDITOR_TOOL_IDS)!
                 this.#setDefaultCursor()
                 if (this.#editorState !== EDITOR_STATE.Selecting) {
                     this.#unsetSelectedObject()
