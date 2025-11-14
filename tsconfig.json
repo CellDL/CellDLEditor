@@ -4,7 +4,8 @@
         "module": "esnext",
         "target": "es2024",
         "composite": true,
-        "allowJs": true
+        "allowJs": true,
+        "resolveJsonModule": true
     },
     "include": ["*.ts"],
     "references": [
