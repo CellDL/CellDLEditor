@@ -7,3 +7,5 @@ cp ./BG-RDF/templates/*.ttl ./src/renderer/src/assets/bg-rdf/templates
 
 cp ./BG-RDF/schema/ontology.ttl ./src/renderer/public/bg-rdf
 cp ./BG-RDF/templates/*.ttl ./src/renderer/public/bg-rdf/templates
+
+cp ./node_modules/pyodide/* ./src/renderer/public/pyodide
