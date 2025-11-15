@@ -47,6 +47,7 @@ const emits = defineEmits(['change'])
 const props = defineProps<{
     maximumValue?: number
     minimumValue?: number
+    id: string
     name: string
     possibleValues?: locApi.IUiJsonDiscreteInputPossibleValue[]
     stepValue?: number
@@ -78,8 +79,8 @@ function emitChange(newValue: number|string) {
 
         oldValue = newValue
 
-        emits('change', props.name, newValue)
-    });
+        emits('change', props.id, newValue)
+    })
 }
 
 interface ISelectChangeEvent {

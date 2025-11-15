@@ -12,7 +12,7 @@
                         InputWidget(
                             v-for="(item, index) in group.items"
                             v-model="item.value"
-                            :key="`item_${groupIndex}_${index}`"
+                            :id="item.uri"
                             :name="item.name"
                             :maximumValue="item.maximumValue"
                             :minimumValue="item.minimumValue"
@@ -51,9 +51,9 @@ const disabled = vue.computed<boolean>(() => {
 
 const emit = defineEmits(['panel-event'])
 
-function updateProperties() {
+function updateProperties(id: string, value: number | string) {
     void vue.nextTick().then(() => {
-        emit('panel-event', props.toolId)
+        emit('panel-event', props.toolId, id, value)
     })
 }
 </script>
