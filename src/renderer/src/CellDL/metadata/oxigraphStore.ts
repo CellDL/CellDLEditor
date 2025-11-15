@@ -54,7 +54,13 @@ export interface NamedNode extends $oxigraph.NamedNode {
 function makeNamedNode(term: $oxigraph.Term): NamedNode | $oxigraph.Term {
     if (isNamedNode(term)) {
         ;(term as NamedNode).uri = term.value
-        ;(term as NamedNode).id = () => term.value.split('#')[1]
+        ;(term as NamedNode).id = () => {
+            let parts = term.value.split('#')
+            if (parts.length < 2) {
+                parts = term.value.split('/')
+            }
+            return parts.length > 1 ? parts.at(-1) : ''
+        }
         return term as NamedNode
     }
     return term
