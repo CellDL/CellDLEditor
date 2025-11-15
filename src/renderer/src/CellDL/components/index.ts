@@ -22,7 +22,7 @@ import * as $rdf from '@editor/metadata/index'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata/index'
-import { CELLDL_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
+import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
 import { base64Svg } from '@editor/utils'
 
 import type { PointLike } from '@renderer/common/points'
@@ -43,6 +43,24 @@ export interface ObjectTemplate extends NewObjectClass {
     image?: string
     svg?: string
 }
+
+//==============================================================================
+
+export interface NamedUri {
+    name: string
+    uri: string
+}
+
+export const OBJECT_METADATA: NamedUri[] = [
+    {
+        name: 'Label',
+        uri: RDFS_NAMESPACE('label').value
+    },
+    {
+        name: 'Description',
+        uri: DCT_NAMESPACE('description').value
+    }
+]
 
 //==============================================================================
 

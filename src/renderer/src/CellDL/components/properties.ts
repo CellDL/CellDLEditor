@@ -22,21 +22,19 @@ import * as vue from 'vue'
 
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
-import type { PropertiesType } from '@renderer/common/types'
+import { type PropertiesType } from '@renderer/common/types'
 
 import { CellDLObject } from '@editor/celldlObjects/index'
-import { BGF_NAMESPACE, DCT_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE, type NamedNode }  from '@editor/metadata/index'
-import { type ElementTemplateName, pluginComponents } from '@editor/plugins/index'
+import { type NamedUri, OBJECT_METADATA } from '@editor/components/index'
+import { pluginComponents } from '@editor/plugins/index'
 
 //==============================================================================
 
-type ItemSelector = (key: string) => ElementTemplateName[]
-
-type ItemDetails = locApi.IUiJsonInput & {
+export type ItemDetails = locApi.IUiJsonInput & {
     uri: string
     value?: string|number
     optional?: boolean
-    selector?: [number, string]  // Allow for deep cloning
+    selector?: string
 }
 
 export interface PropertyGroup {
@@ -46,68 +44,28 @@ export interface PropertyGroup {
 
 //==============================================================================
 
-const itemSelectors: ItemSelector[] = [
-    pluginComponents.getElementTemplateNames
-]
-
-const ELEMENT_ITEMS: ItemDetails[] = [
-    {
-        uri: RDF_NAMESPACE('type').value,
-        name: 'Bond Element',
-        defaultValue: 0,
-        possibleValues: [],
-        selector: [0, RDFS_NAMESPACE('subClassOf').value],
-        optional: true
-    },
-    {
-        uri: BGF_NAMESPACE('hasSpecies').value,
-        name: 'Species',
-        defaultValue: ''
-    },
-    {
-        uri: BGF_NAMESPACE('hasLocation').value,
-        name: 'Location',
-        defaultValue: ''
-    }
-]
-
-const METADATA_ITEMS: ItemDetails[] = [
-    {
-        uri: RDFS_NAMESPACE('label').value,
-        name: 'Label',
-        defaultValue: ''
-    },
-    {
-        uri: DCT_NAMESPACE('description').value,
-        name: 'Description',
-        defaultValue: ''
-    }
-]
-
-const PROPERTIES_TEMPLATE: PropertyGroup[] = [
-    {
-        title: 'Element',
-        items: ELEMENT_ITEMS
-    },
-    {
-        title: 'Parameters',
-        items: []
-    },
-    {
-        title: 'Metadata',
-        items: METADATA_ITEMS
-    }
-]
-
+const METADATA_GROUP: PropertyGroup = {
+    title: 'Metadata',
+    items: OBJECT_METADATA.map((nameUri: NamedUri) => {
+        return {
+            uri: nameUri.uri,
+            name: nameUri.name,
+            defaultValue: ''
+        }
+    })
 }
 
+//==============================================================================
 //==============================================================================
 
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])
+    #propertyGroups = [...pluginComponents.propertyGroups(), METADATA_GROUP]
+    #metadataIndex: number
 
     constructor() {
-        this.#componentProperties.value = structuredClone(PROPERTIES_TEMPLATE)
+        this.#metadataIndex = this.#propertyGroups.length
+        this.#componentProperties.value = structuredClone(this.#propertyGroups)
         for (const group of this.#componentProperties.value) {
             group.items = []
         }
@@ -118,48 +76,36 @@ export class ObjectPropertiesPanel {
 
     setCurrentObject(celldlObject: CellDLObject|null) {
         // Clear each group's list of items
-        for (const group of componentProperties.value) {
+        for (const group of this.#componentProperties.value) {
             group.items = []
         }
         if (celldlObject) {
-            const metadata = celldlObject.metadata  // metadataProperties
-            PROPERTIES_TEMPLATE.forEach((template, index) => {
-                const group = componentProperties.value[index]
-                template.items.forEach((item: ItemDetails) => {
-                    if (item.uri in metadata) {
-                        if ('possibleValues' in item) {
-                            const discreteItem = {...item}
-                            if ('selector' in item) {
-                                const selector = itemSelectors[item.selector![0]]!
-                                const key = metadata[item.selector![1]]
-                                if (key) {
-                                    const selection = selector(key)
-                                    discreteItem.possibleValues = selection.map(s => {
-                                        return {
-                                            name: s.name,
-                                            value: s.id
-                                        }
-                                    })
-                                }
-                            }
-                            const discreteValue = metadata[item.uri]
-                            discreteItem.value = discreteItem.possibleValues.findIndex(v => {
-                                if (discreteValue === v.value) {
-                                    return true
-                                }
+            const metadataProperties = celldlObject.metadataProperties
+            this.#propertyGroups.forEach((property_group, index) => {
+                const group = this.#componentProperties.value[index]
+                property_group.items.forEach((itemTemplate: ItemDetails) => {
+                    let item: ItemDetails | undefined = undefined
+                    if (index !== this.#metadataIndex) {
+                        item = pluginComponents.propertyItem(itemTemplate, metadataProperties)
+                    } else {
+                        const objectValue = metadataProperties.get(itemTemplate.uri)
+                        if (objectValue) {
+                            // objectValue could be a MetadataPropertiesMap
+                            const propertyValue = objectValue.value
+                            item = Object.assign({
+                                value: propertyValue || itemTemplate.defaultValue || '',
+                                ...itemTemplate
                             })
-                            group.items.push(discreteItem)
-                        } else {
-                            group.items.push(Object.assign({
-                                value: metadata[item.uri] || item.defaultValue || '',
-                                ...item
-                            }))
+                        } else if (!itemTemplate.optional) {
+                            // Non-optional fields with no `metadataProperties` value
+                            item = {
+                                value: '',
+                                ...itemTemplate
+                            }
                         }
-                    } else if (!item.optional) {
-                        group.items.push({
-                            value: '',
-                            ...item
-                        })
+                    }
+                    if (item) {
+                        group.items.push(item)
                     }
                 })
             })

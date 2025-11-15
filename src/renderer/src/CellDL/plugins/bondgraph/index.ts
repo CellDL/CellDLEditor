@@ -24,9 +24,10 @@ import { arrowMarkerDefinition } from '@renderer/common/styling'
 
 import { CellDLComponent } from '@editor/celldlObjects/index'
 import { type ObjectTemplate } from '@editor/components/index'
+import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
-import { BG_NAMESPACE, BGF_NAMESPACE, getCurie, RDFS_NAMESPACE, RdfStore } from '@editor/metadata/index'
-import { type MetadataProperty, MetadataPropertiesMap } from '@editor/metadata/index'
+import { BG_NAMESPACE, BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE } from '@editor/metadata/index'
+import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 import { type ComponentLibrary, type ComponentTemplate, type ElementTemplateName } from '@editor/plugins/index'
 
 //==============================================================================
@@ -130,6 +131,38 @@ interface Variable {
 
 //==============================================================================
 
+const PROPERTY_GROUPS: PropertyGroup[] = [
+    {
+        title: 'Element',
+        items: [
+            {
+                uri: RDF_NAMESPACE('type').value,
+                name: 'Bond Element',
+                defaultValue: 0,
+                possibleValues: [],
+                selector: RDFS_NAMESPACE('subClassOf').value,
+                optional: true
+            },
+            {
+                uri: BGF_NAMESPACE('hasSpecies').value,
+                name: 'Species',
+                defaultValue: ''
+            },
+            {
+                uri: BGF_NAMESPACE('hasLocation').value,
+                name: 'Location',
+                defaultValue: ''
+            }
+        ]
+    },
+    {
+        title: 'Parameters',
+        items: []
+    }
+]
+
+//==============================================================================
+
 export class BondgraphPlugin {
     #baseComponents: Map<string, BaseComponent> = new Map()
     #baseComponentToTemplates: Map<string, ElementTemplate[]> = new Map()
@@ -177,12 +210,12 @@ export class BondgraphPlugin {
                 CellDLClass: CellDLComponent,
                 label: template.label,
                 image: template.image,
-                metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties)
+                metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties),
             }
         }
     }
 
-    getElementTemplateNames(id: string): ElementTemplateName[] {
+    #getElementTemplateNames(id: string): ElementTemplateName[] {
         const templates = this.#baseComponentToTemplates.get(id)
         if (templates) {
             return templates.map(t => {
@@ -196,8 +229,8 @@ export class BondgraphPlugin {
     }
 
     getTemplateParameters(id: string): MetadataPropertiesMap {
-        const parameterProperties: MetadataProperty[] = []
         const elementTemplate = this.#elementTemplates.get(id)
+        const metadataProperties: MetadataProperty[] = []
         if (elementTemplate) {
             for (const variable of elementTemplate.parameters) {
             }
@@ -205,7 +238,51 @@ export class BondgraphPlugin {
             for (const variable of elementTemplate.states) {
             }
         }
-        return MetadataPropertiesMap.fromProperties(parameterProperties)
+        return MetadataPropertiesMap.fromProperties(metadataProperties)
+    }
+
+    propertyGroups(): PropertyGroup[] {
+        return PROPERTY_GROUPS
+    }
+
+    propertyItem(itemTemplate: ItemDetails, metadataProperties: MetadataPropertiesMap): ItemDetails|undefined {
+        const objectValue = metadataProperties.get(itemTemplate.uri)
+        if (objectValue) {
+            const propertyValue = objectValue.value
+            if ('possibleValues' in itemTemplate) {
+                const discreteItem = {...itemTemplate}
+                if ('selector' in itemTemplate) {
+                    const key = metadataProperties.get(itemTemplate.selector).value
+                    if (key) {
+                        const selection: ElementTemplateName[] = this.#getElementTemplateNames(key)
+                        discreteItem.possibleValues = selection.map(s => {
+                            return {
+                                name: s.name,
+                                value: s.id
+                            }
+                        })
+                    }
+                }
+                const discreteValue = propertyValue
+                discreteItem.value = discreteItem.possibleValues.findIndex(v => {
+                    if (String(discreteValue) === String(v.value)) {
+                        return true
+                    }
+                })
+                return discreteItem
+            } else {
+                return Object.assign({
+                    value: propertyValue || itemTemplate.defaultValue || '',
+                    ...itemTemplate
+                })
+            }
+        } else if (!itemTemplate.optional) {
+            // Non-optional fields with no `metadataProperties` value
+            return {
+                value: '',
+                ...itemTemplate
+            }
+        }
     }
 
     #query(sparql: string) {

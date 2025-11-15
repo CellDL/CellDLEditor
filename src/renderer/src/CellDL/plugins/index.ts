@@ -21,6 +21,7 @@ limitations under the License.
 import * as vue from 'vue'
 
 import { type ObjectTemplate } from '@editor/components/index'
+import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 import { MetadataPropertiesMap } from '@editor/metadata/index'
 
@@ -68,10 +69,6 @@ export class PluginComponents {
         return this.#bondgraphPlugin.getObjectTemplate(id)
     }
 
-    getElementTemplateNames(id: string): ElementTemplateName[] {
-        return this.#bondgraphPlugin.getElementTemplateNames(id)
-    }
-
     getTemplateParameters(id: string): MetadataPropertiesMap {
         return this.#bondgraphPlugin.getTemplateParameters(id)
     }
@@ -90,6 +87,14 @@ export class PluginComponents {
         }
         vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
         return selectedTemplate
+    }
+
+    propertyGroups(): PropertyGroup[] {
+        return this.#bondgraphPlugin.propertyGroups()
+    }
+
+    propertyItem(itemTemplate: ItemDetails, metadataProperties: MetadataPropertiesMap): ItemDetails|undefined {
+        return this.#bondgraphPlugin.propertyItem(itemTemplate, metadataProperties)
     }
 
     styleRules(): string {
