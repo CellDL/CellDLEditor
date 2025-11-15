@@ -43,7 +43,9 @@ import * as vue from 'vue'
 import type * as locApi from '../../libopencor/locUIJsonApi'
 
 const value = defineModel<number|string>({ required: true })
+
 const emits = defineEmits(['change'])
+
 const props = defineProps<{
     maximumValue?: number
     minimumValue?: number
@@ -67,12 +69,13 @@ const discreteValue = vue.computed<number | string | undefined>({
     set(_: number | string) {
     }
 })
+
 const scalarValue = vue.ref<number>(value.value);
 const scalarValueString = vue.ref<string>(String(value.value));
 
 // Some methods to handle a scalar value using an input text and a slider.
 
-function emitChange(newValue: number|string) {
+function emitChange(newValue: number | string) {
     void vue.nextTick().then(() => {
         value.value = newValue
 
