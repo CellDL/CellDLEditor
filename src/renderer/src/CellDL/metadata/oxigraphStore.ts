@@ -139,11 +139,15 @@ export class RdfStore extends BaseStore {
     }
 
     load(rdf: string, contentType: ContentType = TurtleContentType, graph: NamedNode | null = null) {
-        this.#rdfStore.load(rdf, {
-            format: contentType,
-            base_iri: this.documentUri,
-            to_graph_name: graph || $oxigraph.defaultGraph()
-        })
+        try {
+            this.#rdfStore.load(rdf, {
+                format: contentType,
+                base_iri: this.documentUri,
+                to_graph_name: graph || $oxigraph.defaultGraph()
+            })
+        } catch (error) {
+            throw new Error(`Error parsing RDF: ${(<Error>error).message}`)
+        }
     }
 
     removeStatements(
