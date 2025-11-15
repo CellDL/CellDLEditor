@@ -43,6 +43,11 @@ import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 //==============================================================================
 
+const celldlEditor = new CellDLEditor()
+const svgContainer = vue.useTemplateRef('svg-content')
+
+let celldlDiagram: CellDLDiagram | null = null
+
 //==============================================================================
 
 function despatchToolbarEvent(type: string, source: string, value: boolean|string) {
@@ -104,12 +109,6 @@ const toolButtons = vue.ref<EditorToolButton[]>([
 
 //==============================================================================
 
-// Make data available to the properties panel
-
-import { provideComponentProperties } from '@editor/components/properties'
-
-provideComponentProperties()
-
 const panelButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: PANEL_IDS.PropertyPanel,
@@ -168,10 +167,7 @@ function popoverEvent(toolId: string, data: any) {
 //==============================================================================
 //==============================================================================
 
-const editor = new CellDLEditor()
-const svgContainer = vue.useTemplateRef('svg-content')
 
-let celldlDiagram: CellDLDiagram | null = null
 
 vue.onMounted(() => {
     // Tell the editor about the default connection style and component
@@ -180,10 +176,10 @@ vue.onMounted(() => {
     despatchToolbarEvent('value', EDITOR_TOOL_IDS.AddComponentTool, defaultComponent.id)
 
     if (svgContainer.value) {
-        editor.mount(svgContainer.value)
+        celldlEditor.mount(svgContainer.value)
 
         // Create a new diagram in the editor's window
-        celldlDiagram = new CellDLDiagram('', '', editor)
+        celldlDiagram = new CellDLDiagram('', '', celldlEditor)
 
         // Listen for events from host when running as an Electron app
         if ('electronApi' in window) {
@@ -191,14 +187,14 @@ vue.onMounted(() => {
                 if (action === 'IMPORT' || action === 'OPEN') {
                     // Load CellDL file (SVG and metadata)
                     try {
-                        celldlDiagram = new CellDLDiagram(filePath!, data!, editor!, action === 'IMPORT')
+                        celldlDiagram = new CellDLDiagram(filePath!, data!, celldlEditor, action === 'IMPORT')
                     } catch (error) {
                         console.log(error)
                         window.alert((error as Error).toString())
                         electronApi?.sendFileAction('ERROR', filePath)
-                        celldlDiagram = new CellDLDiagram('', '', editor!)
+                        celldlDiagram = new CellDLDiagram('', '', celldlEditor)
                     }
-                    editor!.editDiagram(celldlDiagram)
+                    celldlEditor.editDiagram(celldlDiagram)
                 } else if (action === 'GET_DATA') {
                     const celldlData = await celldlDiagram?.serialise(filePath!)
                     electronApi?.sendFileAction('WRITE', filePath, celldlData)

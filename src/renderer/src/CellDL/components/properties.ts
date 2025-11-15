@@ -99,21 +99,22 @@ const PROPERTIES_TEMPLATE: PropertyGroup[] = [
     }
 ]
 
-//==============================================================================
-
-const componentProperties = vue.ref<PropertyGroup[]>([])
-
-export function provideComponentProperties() {
-    componentProperties.value = structuredClone(PROPERTIES_TEMPLATE)
-    for (const group of componentProperties.value) {
-        group.items = []
-    }
-    vue.provide<PropertyGroup[]>('componentProperties', componentProperties)
 }
 
 //==============================================================================
 
 export class ObjectPropertiesPanel {
+    #componentProperties = vue.ref<PropertyGroup[]>([])
+
+    constructor() {
+        this.#componentProperties.value = structuredClone(PROPERTIES_TEMPLATE)
+        for (const group of this.#componentProperties.value) {
+            group.items = []
+        }
+        // Make data available to the properties panel
+
+        vue.provide<PropertyGroup[]>('componentProperties', this.#componentProperties)
+    }
 
     setCurrentObject(celldlObject: CellDLObject|null) {
         // Clear each group's list of items
