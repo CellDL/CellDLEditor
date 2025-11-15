@@ -14,7 +14,6 @@
                         :title="component.label"
                         draggable="true"
                         @dragstart="dragstart"
-                        @click="selected"
                         @mousedown="selected")
 </template>
 
