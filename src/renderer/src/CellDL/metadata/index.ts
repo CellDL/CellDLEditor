@@ -107,6 +107,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
         } else if (Array.isArray(value)) {
             return value.map((v) => this.#copyValue(v)) as MetadataPropertyValue
         } else {
+            // @ts-expect-error: `value` is not a Literal nor NamedNode
             return new Set([...value.values()].map((v) => this.#copyValue(v))) as MetadataPropertyValue
         }
     }

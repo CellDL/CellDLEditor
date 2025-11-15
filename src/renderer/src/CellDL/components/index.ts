@@ -180,10 +180,12 @@ export class ComponentTemplate implements ObjectTemplate {
         this.#definition = definition
         const label = definition.getProperty(RDFS_NAMESPACE('label'))
         if (label && $rdf.isLiteral(label)) {
+            // @ts-expect-error: `label` is a Literal
             this.#label = label.value
         }
         const maxConnections = definition.getProperty(CELLDL_NAMESPACE('maxConnections'))
         if (maxConnections && $rdf.isLiteral(maxConnections)) {
+            // @ts-expect-error: `maxConnections` is a Literal
             this.#maxConnections = +maxConnections.value
         }
         const constraints = definition.getProperty(CELLDL_NAMESPACE('hasConstraint'))

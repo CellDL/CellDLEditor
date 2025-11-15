@@ -227,7 +227,8 @@ SELECT DISTINCT ?s ?t WHERE {
     ?s rdf:type ?t .
   } ORDER BY ?s`,
             true
-        ).map((r) => [r.get('s'), r.get('t')])
+        ).map((r) => [r.get('s') as SubjectType,
+                      r.get('t') as NamedNode])
     }
 }
 
