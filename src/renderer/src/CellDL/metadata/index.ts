@@ -112,11 +112,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     getProperty(predicate: PredicateType): MetadataPropertyValue | null {
-        if (isNamedNode(predicate)) {
-            return this.get(predicate.uri) || null
-        } else {
-            return this.get(predicate.value) || null
-        }
+        return this.get(predicate.value) || null
     }
 
     getPropertyAsArray(predicate: PredicateType): MetadataPropertyValue[] {
