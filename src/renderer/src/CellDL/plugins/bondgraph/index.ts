@@ -188,14 +188,6 @@ export class BondgraphPlugin {
         this.#loadTemplateParameters()
     }
 
-    styleRules(): string {
-        return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
-    }
-
-    svgDefinitions(): string {
-        return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
-    }
-
     getObjectTemplate(id: string): ObjectTemplate|undefined {
         const baseComponent = this.#baseComponents.get(id)
         if (baseComponent && baseComponent.template) {
@@ -283,6 +275,14 @@ export class BondgraphPlugin {
                 ...itemTemplate
             }
         }
+    }
+
+    styleRules(): string {
+        return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
+    }
+
+    svgDefinitions(): string {
+        return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
     }
 
     #query(sparql: string) {
