@@ -478,8 +478,8 @@ export class PathMaker {
         // need to unregister redo handler...
         celldlDiagram.addNewConnection(svgElement, {
             CellDLClass: CellDLConnection,
-            uri: CellDLConnection.rdfType.uri,
             metadataProperties
+            uri: CellDLConnection.celldlType.uri,
         })
     }
 

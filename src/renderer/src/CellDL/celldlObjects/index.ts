@@ -81,17 +81,17 @@ class BranchPoint implements PointLike {
 
 export class CellDLObject {
     static celldlClassName = CELLDL_CLASS.Unknown
-    static rdfType = CELLDL_NAMESPACE('Object')
+    static celldlType = CELLDL_NAMESPACE('Object')
 
     #celldlClassName: CELLDL_CLASS
     #celldlDiagram: CellDLDiagram
     #celldlSvgElement: CellDLSVGElement | null = null
     #moveable: boolean = false
+    #celldlType: NamedNode
 
     #label: string | null = null
     #metadataProperties!: MetadataPropertiesMap
     #objectMetadata: StringProperties = {}
-    #rdfType: NamedNode
     #template!: ObjectTemplate
 
     #children: Map<string, CellDLObject> = new Map()
@@ -106,8 +106,8 @@ export class CellDLObject {
         this.#celldlDiagram = celldlDiagram
         // @ts-expect-error: celldlClassName is a member of the object's constructor
         this.#celldlClassName = this.constructor.celldlClassName
-        // @ts-expect-error: rdfType is a member of the object's constructor
-        this.#rdfType = this.constructor.rdfType
+        // @ts-expect-error: celldlType is a member of the object's constructor
+        this.#celldlType = this.constructor.celldlType
         this.#setMetadataProperties(metadata)
     }
 
@@ -145,7 +145,7 @@ export class CellDLObject {
     }
 
     isA(rdfType: NamedNode) {
-        return this.#rdfType.equals(rdfType) || this.#metadataProperties.isA(rdfType)
+        return this.#celldlType.equals(rdfType) || this.#metadataProperties.isA(rdfType)
     }
 
     get isAlignable() {
@@ -327,7 +327,7 @@ export class CellDLObject {
     #setMetadataProperties(properties: MetadataPropertiesMap) {
         // Create a new MetadataPropertiesMap rather than storing a reference
         const metadataProperties = properties.copy()
-        metadataProperties.setProperty(RDF_TYPE, this.#rdfType, true)
+        metadataProperties.setProperty(RDF_TYPE, this.#celldlType, true)
         this.#metadataProperties = metadataProperties
         const label = properties.get(RDFS_NAMESPACE('label').uri) || 0
         if ($rdf.isLiteral(label)) {
@@ -380,7 +380,7 @@ export class CellDLMoveableObject extends CellDLObject {
 
 export class CellDLAnnotation extends CellDLMoveableObject {
     static celldlClassName = CELLDL_CLASS.Annotation
-    static rdfType = CELLDL_NAMESPACE('Annotation')
+    static celldlType = CELLDL_NAMESPACE('Annotation')
 
     get hasEditGuides() {
         return true
@@ -390,7 +390,7 @@ export class CellDLAnnotation extends CellDLMoveableObject {
 //==============================================================================
 
 export class CellDLConnectedObject extends CellDLMoveableObject {
-    static rdfType = CELLDL_NAMESPACE('Connector')
+    static celldlType = CELLDL_NAMESPACE('Connector')
 
     #connections: Map<string, CellDLConnection> = new Map()
 
@@ -444,7 +444,7 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
 
 export class CellDLComponent extends CellDLConnectedObject {
     static celldlClassName = CELLDL_CLASS.Component
-    static rdfType = CELLDL_NAMESPACE('Component')
+    static celldlType = CELLDL_NAMESPACE('Component')
 
     get hasEditGuides() {
         return true
@@ -455,14 +455,14 @@ export class CellDLComponent extends CellDLConnectedObject {
 
 export class CellDLConduit extends CellDLComponent {
     static readonly celldlClassName = CELLDL_CLASS.Conduit
-    static rdfType = CELLDL_NAMESPACE('Conduit')
+    static celldlType = CELLDL_NAMESPACE('Conduit')
 }
 
 //==============================================================================
 
 export class CellDLCompartment extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.Compartment
-    static rdfType = CELLDL_NAMESPACE('Compartment')
+    static celldlType = CELLDL_NAMESPACE('Compartment')
 
     #interfacePorts: CellDLInterface[] = []
 
@@ -516,7 +516,7 @@ export class CellDLCompartment extends CellDLConnectedObject {
 
 export class CellDLConnection extends CellDLObject {
     static readonly celldlClassName = CELLDL_CLASS.Connection
-    static rdfType = CELLDL_NAMESPACE('Connection')
+    static celldlType = CELLDL_NAMESPACE('Connection')
 
     #connectedObjects: CellDLConnectedObject[] = []
 
@@ -580,7 +580,7 @@ export class CellDLConnection extends CellDLObject {
 
 export class CellDLInterface extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.Interface
-    static rdfType = CELLDL_NAMESPACE('Interface')
+    static celldlType = CELLDL_NAMESPACE('Interface')
 
     #externalConnections: CellDLConnection[] = []
 
@@ -631,7 +631,7 @@ export class CellDLInterface extends CellDLConnectedObject {
 
 export class CellDLUnconnectedPort extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.UnconnectedPort
-    static rdfType = CELLDL_NAMESPACE('UnconnectedPort')
+    static celldlType = CELLDL_NAMESPACE('UnconnectedPort')
 }
 
 //==============================================================================
