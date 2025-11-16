@@ -146,9 +146,24 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
         if (multiValued && this.has(property)) {
             const values = this.get(property)
             if (values instanceof Set) {
-                values.add(value)
+                let inSet = false
+                if (isLiteral(value) || isNamedNode(value)) {
+                    for (const v of values) {
+                        // @ts-expect-error: `value` is a Literal or NamedNode
+                        if (value.equals(v)) {
+                            inSet = true
+                            break
+                        }
+                    }
+                }
+                if (!inSet) {
+                    values.add(value)
+                }
             } else if (values) {
-                this.set(property, new Set<MetadataPropertyValue>([values, value]))
+                // @ts-expect-error: `values` is a Literal or NamedNode
+                if (!(isLiteral(values) || isNamedNode(values)) || !values.equals(value)) {
+                    this.set(property, new Set<MetadataPropertyValue>([values, value]))
+                }
             } else {
                 this.set(property, new Set<MetadataPropertyValue>([value]))
             }
