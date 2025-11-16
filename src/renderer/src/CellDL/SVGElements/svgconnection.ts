@@ -27,15 +27,15 @@ import type { PointLike } from '@renderer/common/points'
 import { alert } from '@editor/editor/alerts'
 import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '@editor/editor/undoredo'
 
-import type { CellDLConnection } from '@editor/celldlObjects'
-import { ConnectionStyle } from '@editor/connections'
+import type { CellDLConnection } from '@editor/celldlObjects/index'
+import { ConnectionStyle } from '@editor/connections/index'
 
 //==============================================================================
 
 import { ID_PART_SEPARATOR, type PathElement } from './pathelement'
 import { LinearPath } from './linearpath'
 import { RectilinearPath } from './rectilinearpath'
-import { CellDLSVGElement } from '.'
+import { CellDLSVGElement } from './index'
 import type { BoundedElement } from './boundedelement'
 
 //==============================================================================

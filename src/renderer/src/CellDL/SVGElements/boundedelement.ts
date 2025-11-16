@@ -18,15 +18,15 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { CELLDL_CLASS, type CellDLConnectedObject, type CellDLObject } from '@editor/celldlObjects'
+import { CELLDL_CLASS, type CellDLConnectedObject, type CellDLObject } from '@editor/celldlObjects/index'
 import { editGuides } from '@editor/editor/editguides'
 import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '@editor/editor/undoredo'
 import { Point, type PointLike } from '@renderer/common/points'
-import { RestrictedPoint, type RestrictedValue } from '@editor/geometry'
+import { RestrictedPoint, type RestrictedValue } from '@editor/geometry/index'
 import { ControlRect } from '@editor/geometry/controls'
 import { Transform } from '@editor/geometry/transforms'
 
-import { CellDLSVGElement } from '.'
+import { CellDLSVGElement } from './index'
 import type { PathElement } from './pathelement'
 
 //==============================================================================

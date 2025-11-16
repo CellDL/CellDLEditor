@@ -24,8 +24,8 @@ import { Point, type PointLike, PointMath } from '@renderer/common/points'
 import { svgCircle } from '@renderer/common/svgUtils'
 import type { UndoMovePosition } from '@editor/editor/undoredo'
 
-import { CELLDL_CLASS, type CellDLObject } from '@editor/celldlObjects'
-import { Bounds, type RestrictedValue } from '@editor/geometry'
+import { CELLDL_CLASS, type CellDLObject } from '@editor/celldlObjects/index'
+import { Bounds, type RestrictedValue } from '@editor/geometry/index'
 import { FixedControlRect } from '@editor/geometry/controls'
 import { Transform } from '@editor/geometry/transforms'
 

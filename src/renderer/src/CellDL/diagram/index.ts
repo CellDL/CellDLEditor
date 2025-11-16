@@ -18,54 +18,58 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '@editor/metadata'
-import { TurtleContentType } from '@editor/metadata'
-import type { ContentType, SubjectType } from '@editor/metadata'
-import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { type PointLike } from '@renderer/common/points'
+import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styling'
+import { svgCircleElement, SVG_NAMESPACE_URI, svgRectElement } from '@renderer/common/svgUtils'
+import type { Constructor, StringProperties } from '@renderer/common/types'
 
-//==============================================================================
-
+import * as $rdf from '@editor/metadata/index'
 import {
+    CELLDL_NAMESPACE,
+    CELLDL_NAMESPACE_DECLARATIONS,
+    type ContentType,
+    DCT_NAMESPACE,
     MetadataPropertiesMap,
     type MetadataPropertyValue,
     type NamedNode,
+    OWL_NAMESPACE,
     RdfStore,
-    type Statement
-} from '@editor/metadata'
-import { CELLDL_NAMESPACE, CELLDL_NAMESPACE_DECLARATIONS } from '@editor/metadata'
-import { DCT_NAMESPACE, OWL_NAMESPACE, RDF_TYPE } from '@editor/metadata'
+    RDF_TYPE,
+    type Statement,
+    type SubjectType,
+    TurtleContentType
+} from '@editor/metadata/index'
 
-import { type PointLike } from '@renderer/common/points'
-import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styling'
-import { svgCircleElement, svgRectElement } from '@renderer/common/svgUtils'
-import { type Bounds, type Extent } from '@editor/geometry'
+import { type Bounds, type Extent } from '@editor/geometry/index'
 import { ShapeIntersections } from '@editor/geometry/intersections'
 import { CellDLSpatialIndex } from '@editor/geometry/spatialindex'
 import type { ContainedObject } from '@editor/geometry/spatialindex'
 import { lengthToPixels } from '@editor/geometry/units'
 import { type FoundPoint, PointFinder } from '@editor/geometry/pathutils'
 
-import { CELLDL_CLASS, CellDLObject } from '@editor/celldlObjects'
+import { CELLDL_CLASS, CellDLObject } from '@editor/celldlObjects/index'
 import {
+    CellDLAnnotation,
+    CellDLComponent,
+    CellDLConduit,
     type CellDLConnectedObject,
     CellDLConnection,
+    CellDLCompartment,
     CellDLInterface,
     CellDLUnconnectedPort
 } from '@editor/celldlObjects/index.ts'
-import { CellDLAnnotation, CellDLComponent, CellDLConduit, CellDLCompartment } from '@editor/celldlObjects'
-import { setInternalIds } from '@editor/SVGElements'
+
+import { setInternalIds } from '@editor/SVGElements/index'
 import type { BoundedElement } from '@editor/SVGElements/boundedelement'
 import type { SvgConnection } from '@editor/SVGElements/svgconnection'
 
-import { type CellDLEditor, notifyChanges } from '@editor/editor'
+import { type CellDLEditor, notifyChanges } from '@editor/editor/index'
 import { editGuides } from '@editor/editor/editguides'
 import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
 import { libraryManager } from '@editor/libraries'
-import type { NewObjectClass, ObjectTemplate } from '@editor/components'
-import { LatexStyleRules } from '@editor/mathjax'
-
-import type { Constructor, StringProperties } from '@renderer/common/types'
+import type { NewObjectClass, ObjectTemplate } from '@editor/components/index'
+import { LatexStyleRules } from '@editor/mathjax/index'
 
 import { pluginComponents } from '@editor/plugins/index'
 

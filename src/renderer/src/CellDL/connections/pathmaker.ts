@@ -24,15 +24,15 @@ import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
 import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
 
-import { CELLDL_NAMESPACE, RDF_TYPE } from '@editor/metadata'
-import { MetadataPropertiesMap } from '@editor/metadata'
-import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects'
-import type { CellDLSVGElement } from '@editor/SVGElements'
-import type { CellDLDiagram } from '@editor/diagram'
 import { libraryManager } from '@editor/libraries'
+import { CELLDL_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
+import { MetadataPropertiesMap } from '@editor/metadata/index'
+import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects/index'
+import type { CellDLSVGElement } from '@editor/SVGElements/index'
+import type { CellDLDiagram } from '@editor/diagram/index'
 import { round } from '@editor/utils'
 
-import { ConnectionStyle } from '.'
+import { ConnectionStyle } from './index'
 
 //==============================================================================
 
