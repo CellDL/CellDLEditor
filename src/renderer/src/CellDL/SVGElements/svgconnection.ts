@@ -131,9 +131,12 @@ export class SvgConnection extends CellDLSVGElement {
                 .split(ID_PART_SEPARATOR)
                 .slice(-2)
                 .map((n) => +n)
+            // @ts-expect-error: `0` and `1` indexes are in range
             if (indices[0] > 0 && indices[0] <= this.#pathElements.length) {
+                // @ts-expect-error:
                 if (this.#pathElements[indices[0] - 1].isMoveable(indices[1])) {
-                    this.#moveableElement = this.#pathElements[indices[0] - 1]
+                    // @ts-expect-error:
+                    this.#moveableElement = this.#pathElements[indices[0] - 1] || null
                     return true
                 }
             }

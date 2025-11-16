@@ -124,6 +124,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
         } else if (Array.isArray(value)) {
             return value
         } else {
+            // @ts-expect-error: `value` is a set`
             return [...value.values()]
         }
     }
@@ -140,8 +141,10 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
 
     setProperty(predicate: PredicateType, value: MetadataPropertyValue, multiValued = false) {
         if (predicate.equals(RDF_TYPE) && isNamedNode(value)) {
+            // @ts-expect-error: `value` is a NamedNode
             this.#rdfTypes.add(value.uri)
         }
+        // @ts-expect-error: `predicate` is a NamedNode
         const property = predicate.uri
         if (multiValued && this.has(property)) {
             const values = this.get(property)

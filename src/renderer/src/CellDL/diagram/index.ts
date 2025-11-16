@@ -223,6 +223,7 @@ export class CellDLDiagram {
         for (const predicate of predicates) {
             for (const stmt of this.#kb.statementsMatching(subject, predicate, null)) {
                 if ($rdf.isBlankNode(stmt.object)) {
+                    // @ts-expect-error: `stmt.object` is a BlankNode
                     this.#kb.removeStatements(stmt.object, null, null)
                 }
             }
@@ -452,7 +453,7 @@ export class CellDLDiagram {
                     yMax: -Infinity
                 }
             )
-        const round10 = (x) => 10 * Math.round(x / 10)
+        const round10 = (x: number) => 10 * Math.round(x / 10)
         if (bounds.xMin < bounds.xMax && bounds.yMin < bounds.yMax) {
             return [
                 round10(bounds.xMin - DIAGRAM_MARGIN),
@@ -645,7 +646,7 @@ export class CellDLDiagram {
             svgElements.forEach((element) => element.classList.remove('selected'))
             svgElements.forEach((element) => svgElement.appendChild(element))
         } else {
-            svgElement = svgElements[0]
+            svgElement = svgElements[0]!
             svgElement.classList.remove('parent-id', 'selected')
         }
         if (!svgElement.hasAttribute('id')) {
@@ -653,8 +654,8 @@ export class CellDLDiagram {
         }
         // what ComponentPlugin was used to create the object?
         const metadataProperties = MetadataPropertiesMap.fromProperties([
-            [CELLDL_NAMESPACE('hasSource'), connectedObjects[0].uri],
-            [CELLDL_NAMESPACE('hasTarget'), connectedObjects[connectedObjects.length - 1].uri],
+            [CELLDL_NAMESPACE('hasSource'), connectedObjects[0]!.uri],
+            [CELLDL_NAMESPACE('hasTarget'), connectedObjects[connectedObjects.length - 1]!.uri],
             [CELLDL_NAMESPACE('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]
         ])
         const connection = this.#addNewObject(
@@ -927,6 +928,7 @@ export class CellDLDiagram {
     }
 
     getConnector(connectorNode: MetadataPropertyValue | null): CellDLConnectedObject | null {
+        // @ts-expect-error: `value` property exists on a NamedNode
         if (connectorNode && $rdf.isNamedNode(connectorNode) && connectorNode.value.startsWith(this.#kb.documentUri)) {
             const connectorId = (<NamedNode>connectorNode).id()
             const connector = this.#objects.get(connectorId) as CellDLConnectedObject

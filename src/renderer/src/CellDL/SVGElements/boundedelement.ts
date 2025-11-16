@@ -173,6 +173,7 @@ export class BoundedElement extends CellDLSVGElement {
             RestrictedPoint.fromPoint(this.topLeft),
             RestrictedPoint.fromPoint(this.topLeft.add(this.size))
         )
+        // @ts-expect-error: `index` is in range
         const cornerDeltas = this.corners.map((corner, index) => corner.subtract(savedCorners[index]))
         if (this.celldlObject.isConnectable) {
             // Reset any restrictions for `componentBoundingBoxResisized()`
