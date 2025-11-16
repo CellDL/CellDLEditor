@@ -24,7 +24,6 @@ import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
 import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
 
-import { libraryManager } from '@editor/libraries'
 import { CELLDL_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
 import { MetadataPropertiesMap } from '@editor/metadata/index'
 import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects/index'

@@ -67,7 +67,6 @@ import { type CellDLEditor, notifyChanges } from '@editor/editor/index'
 import { editGuides } from '@editor/editor/editguides'
 import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
-import { libraryManager } from '@editor/libraries'
 import type { NewObjectClass, ObjectTemplate } from '@editor/components/index'
 import { LatexStyleRules } from '@editor/mathjax/index'
 

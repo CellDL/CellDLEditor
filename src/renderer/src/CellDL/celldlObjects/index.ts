@@ -635,19 +635,4 @@ export class CellDLUnconnectedPort extends CellDLConnectedObject {
 }
 
 //==============================================================================
-
-export const rdfTypeToCellDLObject = new Map(
-    [
-        CellDLObject,
-        CellDLAnnotation,
-        CellDLComponent,
-        CellDLConduit,
-        CellDLConnectedObject,
-        CellDLConnection,
-        CellDLCompartment,
-        CellDLInterface,
-        CellDLUnconnectedPort
-    ].map((c) => [c.rdfType.uri, c])
-)
-
 //==============================================================================
