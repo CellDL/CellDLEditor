@@ -69,6 +69,14 @@ export class PluginComponents {
         return this.#bondgraphPlugin.getObjectTemplate(id)
     }
 
+    getPropertyGroups(): PropertyGroup[] {
+        return this.#bondgraphPlugin.getPropertyGroups()
+    }
+
+    getPropertyItem(itemTemplate: ItemDetails, metadataProperties: MetadataPropertiesMap): ItemDetails|undefined {
+        return this.#bondgraphPlugin.getPropertyItem(itemTemplate, metadataProperties)
+    }
+
     getTemplateParameters(id: string): MetadataPropertiesMap {
         return this.#bondgraphPlugin.getTemplateParameters(id)
     }
@@ -87,14 +95,6 @@ export class PluginComponents {
         }
         vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
         return selectedTemplate
-    }
-
-    propertyGroups(): PropertyGroup[] {
-        return this.#bondgraphPlugin.propertyGroups()
-    }
-
-    propertyItem(itemTemplate: ItemDetails, metadataProperties: MetadataPropertiesMap): ItemDetails|undefined {
-        return this.#bondgraphPlugin.propertyItem(itemTemplate, metadataProperties)
     }
 
     styleRules(): string {
