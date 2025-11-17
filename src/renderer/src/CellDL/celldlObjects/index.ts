@@ -27,6 +27,7 @@ import { editGuides } from '@editor/editor/editguides'
 import { type UndoMovePosition } from '@editor/editor/undoredo'
 
 import { BoundedElement } from '@editor/SVGElements/boundedelement'
+import { OBJECT_METADATA, type ObjectTemplate } from '@editor/components/index'
 import { type ConnectionStyle } from '@editor/connections/index'
 import { type CellDLDiagram } from '@editor/diagram/index'
 import { SvgConnection } from '@editor/SVGElements/svgconnection'
@@ -34,14 +35,7 @@ import { type CellDLSVGElement } from '@editor/SVGElements/index'
 
 import * as $rdf from '@editor/metadata/index'
 import type { MetadataPropertiesMap, MetadataPropertyValue, NamedNode, RdfStore } from '@editor/metadata/index'
-import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
-
-//==============================================================================
-
-export const ObjectMetadataUris = [
-    RDFS_NAMESPACE('label'),
-    DCT_NAMESPACE('description')
-]
+import { CELLDL_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
 
 //==============================================================================
 
@@ -197,8 +191,9 @@ export class CellDLObject {
     // Metadata associated with the base CellDLObject instance
     get metadata(): StringProperties {
         const properties: StringProperties = {}
-        for (const uri of ObjectMetadataUris) {
-            if (uri.value in this.#objectMetadata) {
+        for (const nameUri of OBJECT_METADATA) {
+            const uri = nameUri.uri
+            if (uri in this.#objectMetadata) {
                 // @ts-expect-error:
                 properties[uri.value] = this.#objectMetadata[uri.value]
             }
@@ -208,11 +203,12 @@ export class CellDLObject {
 
     set metadata(data: PropertiesType) {
         let changed = false
-        for (const uri of ObjectMetadataUris) {
-            if (uri.value in data) {
-                const value = `${data[uri.value]}`.trim()
-                if (value !== this.#objectMetadata[uri.value]) {
-                    this.#objectMetadata[uri.value] = value
+        for (const nameUri of OBJECT_METADATA) {
+            const uri = nameUri.uri
+            if (uri in data) {
+                const value = `${data[uri]}`.trim()
+                if (value !== this.#objectMetadata[uri]) {
+                    this.#objectMetadata[uri] = value
                     changed = true
                 }
             }
@@ -300,21 +296,25 @@ export class CellDLObject {
     }
 
     loadObjectProperties(rdfStore: RdfStore) {
-        for (const uri of ObjectMetadataUris) {
-            for (const stmt of rdfStore.statementsMatching(this.uri, uri, null)) {
-                this.#objectMetadata[uri.value] = stmt.object.value
+        const store = this.#celldlDiagram.rdfStore
+        for (const nameUri of OBJECT_METADATA) {
+            const uri = nameUri.uri
+            for (const stmt of rdfStore.statementsMatching(this.uri, $rdf.namedNode(uri), null)) {
+                this.#objectMetadata[uri] = stmt.object.value
                 break
             }
         }
     }
 
     saveObjectProperties(rdfStore: RdfStore) {
-        for (const uri of ObjectMetadataUris) {
-            rdfStore.removeStatements(this.uri, uri, null)
-            if (uri.value in this.#objectMetadata) {
-                const value = this.#objectMetadata[uri.value]
+        const store = this.#celldlDiagram.rdfStore
+        for (const nameUri of OBJECT_METADATA) {
+            const uri = nameUri.uri
+            rdfStore.removeStatements(this.uri, $rdf.namedNode(uri), null)
+            if (uri in this.#objectMetadata) {
+                const value = this.#objectMetadata[uri]
                 if (value) {
-                    rdfStore.add(this.uri, uri, $rdf.literal(value))
+                    rdfStore.add(this.uri, $rdf.namedNode(uri), $rdf.literal(value))
                 }
             }
         }
