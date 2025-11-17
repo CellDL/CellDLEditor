@@ -112,6 +112,6 @@ function dragstart(e: DragEvent) {
 }
 .library-icon.selected
 {
-    background: var(--p-select-option-selected-focus-background); /* #3584e4; */
+    background: #3584e4;
 }
 </style>

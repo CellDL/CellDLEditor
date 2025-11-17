@@ -161,6 +161,6 @@ async function toolButtonClick(e: MouseEvent) {
 }
 
 .active {
-    background-color: var(--p-select-option-selected-focus-background) !important;
+    background-color: #3584e4 !important;
 }
 </style>
