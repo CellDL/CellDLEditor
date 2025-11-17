@@ -115,6 +115,8 @@ interface Variable {
     value?: string
 }
 
+type IdVariableMap = Map<string, Variable>
+
 //==============================================================================
 
 interface PhysicalDomain {
@@ -129,8 +131,8 @@ interface PhysicalDomain {
 type ElementTemplate = ElementIdName & {
     domain: string
     value?: Variable
-    parameters: Variable[]
-    states: Variable[],
+    parameters: IdVariableMap
+    states: IdVariableMap
     baseComponentId?: string
 }
 
@@ -282,12 +284,12 @@ export class BondgraphPlugin {
         }
     }
 
-    #setVariableTemplates(variables: Variable[], group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
+    #setVariableTemplates(variables: IdVariableMap, group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
         if (reset) {
             group.items.length = 0
         }
         if (group.items.length === 0) {
-            for (const variable of variables) {
+            for (const variable of variables.values()) {
                 // @ts-expect-error: WIP
                 group.items.push({
                     itemId: `${itemId}/${variable.name}`,
@@ -300,7 +302,7 @@ export class BondgraphPlugin {
         }
     }
 
-    #setVariableProperties(variables: Variable[], group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
+    #setVariableProperties(variables: IdVariableMap, group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
 
         // Need to get values in RDF using SPARQl
     }
@@ -309,22 +311,17 @@ export class BondgraphPlugin {
                               celldlObject: CellDLObject, rdfStore: RdfStore) {
 
         this.#updateElementProperties(value, itemId, celldlObject, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
+        const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
+        if (template && template.elementTemplate) {
+            if (itemId === INPUT.ElementType && value.newValue !== value.oldValue) {
+                    this.#setVariableTemplates(template.elementTemplate.parameters, componentProperties[PARAMS_GROUP_INDEX]!,
+                                               INPUT.ParameterValue, true)
+                    this.#setVariableTemplates(template.elementTemplate.states, componentProperties[STATES_GROUP_INDEX]!,
+                                               INPUT.StateValue), true
+                }
 
-        if (itemId === INPUT.ElementType && value.newValue !== value.oldValue) {
-            const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
-            if (template && template.elementTemplate) {
-                this.#setVariableTemplates(template.elementTemplate.parameters, componentProperties[PARAMS_GROUP_INDEX]!,
-                                           INPUT.ParameterValue, true)
-                this.#setVariableTemplates(template.elementTemplate.states, componentProperties[STATES_GROUP_INDEX]!,
-                                           INPUT.StateValue), true
-            }
+            this.#updateVariableProperties(value, itemId, celldlObject, template.elementTemplate, rdfStore)
         }
-
-        this.#updateVariableProperties(value, itemId, celldlObject, componentProperties[PARAMS_GROUP_INDEX]!,
-                                       PROPERTY_GROUPS[PARAMS_GROUP_INDEX]!, rdfStore)
-
-        this.#updateVariableProperties(value, itemId, celldlObject, componentProperties[STATES_GROUP_INDEX]!,
-                                       PROPERTY_GROUPS[STATES_GROUP_INDEX]!, rdfStore)
     }
 
     #updateElementProperties(value: ValueChange, itemId: string,
@@ -346,10 +343,43 @@ export class BondgraphPlugin {
     }
 
     #updateVariableProperties(value: ValueChange, itemId: string, celldlObject: CellDLObject,
-                              group: PropertyGroup,  propertyTemplates: PropertyGroup, rdfStore: RdfStore) {
+                              elementTemplate: ElementTemplate, rdfStore: RdfStore) {
+        const itemVariable = itemId.split('/')
+        if (itemVariable.length !== 2) {
+            return
+        }
+        itemId = itemVariable[0]!
+        if (itemId !== INPUT.ParameterValue && itemId === INPUT.StateValue) {
+            return
+        }
+        const varName = itemVariable[1]!
+        const objectUri = celldlObject.uri.toString()
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
 
-        // Need to update values in RDF using SPARQl
+            DELETE WHERE {
+                ${objectUri} bgf:parameterValue ?pv .
+                ?pv bgf:varName "${varName}" ;
+                    bgf:hasValue ?value .
+            }`)
+        let variable = elementTemplate.parameters.get(varName)
+        if (!variable) {
+            variable = elementTemplate.states.get(varName)
+        }
+        if (!variable) {
+            return
+        }
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
 
+            INSERT DATA {
+                ${objectUri} bgf:parameterValue _:pv .
+                _:pv bgf:varName "${varName}" ;
+                     bgf:hasValue "${value.newValue} ${variable.units}"^^cdt:ucum .
+            }
+        `)
+// Check units...
+//            ucum.isConvertible(units1: string, units2: string)
     }
 
     styleRules(): string {
@@ -576,12 +606,12 @@ export class BondgraphPlugin {
                 const element = r.get('element')!
                 const label = r.get('label')
                 const domainId = r.get('domain')!.value
-                const template = {
+                const template: ElementTemplate = {
                     id: element.value,
                     domain: domainId,
                     name: label ? label.value : getCurie(element.value),
-                    parameters: [],
-                    states: [],
+                    parameters: new Map(),
+                    states: new Map(),
                     baseComponentId: component.id
                 }
                 const relation = r.get('relation')
@@ -648,14 +678,16 @@ export class BondgraphPlugin {
         const template = this.#elementTemplates.get(element.value)
         if (!template) return ;
         if (r.has('parameterName')) {
-            template.parameters.push({
-                name: r.get('parameterName')!.value,
+            const name = r.get('parameterName')!.value
+            template.parameters.set(name, {
+                name: name,
                 units: r.get('parameterUnits')!.value
             })
         }
         if (r.has('variableName')) {
-            template.states.push({
-                name: r.get('variableName')!.value,
+            const name = r.get('variableName')!.value
+            template.states.set(name, {
+                name: name,
                 units: r.get('variableUnits')!.value
             })
         }
