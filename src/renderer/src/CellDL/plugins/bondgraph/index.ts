@@ -21,6 +21,7 @@ limitations under the License.
 import * as $oxigraph from '@oxigraph/web'
 
 import { arrowMarkerDefinition } from '@renderer/common/styling'
+import { type IUiJsonDiscreteInput, type IUiJsonDiscreteInputPossibleValue } from '@renderer/libopencor/locUIJsonApi'
 
 import { CellDLComponent, CellDLObject } from '@editor/celldlObjects/index'
 import {
@@ -133,11 +134,17 @@ interface Variable {
 
 //==============================================================================
 
+enum INPUT {
+    ElementType = 'bg-element-type',
+    ElementSpecies = 'bg-species',
+    ElementLocation = 'bg-location',
+}
 const PROPERTY_GROUPS: PropertyGroup[] = [
     {
         title: 'Element',
         items: [
             {
+                itemId: INPUT.ElementType,
                 uri: RDF_NAMESPACE('type').value,
                 name: 'Bond Element',
                 defaultValue: 0,
@@ -147,11 +154,13 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
             },
             {
                 uri: BGF_NAMESPACE('hasSpecies').value,
+                itemId: INPUT.ElementSpecies,
                 name: 'Species',
                 defaultValue: ''
             },
             {
                 uri: BGF_NAMESPACE('hasLocation').value,
+                itemId: INPUT.ElementLocation,
                 name: 'Location',
                 defaultValue: ''
             }
@@ -214,12 +223,103 @@ export class BondgraphPlugin {
     }
 
 
+    setComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
+        PROPERTY_GROUPS.forEach((property_group, index) => {
+            // This only works because we only have a single plugin...
+            const group = componentProperties[index]!
+            property_group.items.forEach((itemTemplate: ItemDetails) => {
+                const items: ItemDetails[] = []
+                if (itemTemplate.itemId === INPUT.ElementType) {
+                    const discreteItem = this.#getElementTypeItem(itemTemplate, celldlObject, rdfStore)
+                    items.push(discreteItem)
+                } else if (itemTemplate.itemId === INPUT.ElementSpecies ||
+                           itemTemplate.itemId === INPUT.ElementLocation) {
+                    const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
+                    if (item) {
+                        items.push(item)
+                    }
+                }
+                // else...
+                group.items.push(...items)
+            })
+        })
+
+    }
+
     styleRules(): string {
         return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
     }
 
     svgDefinitions(): string {
         return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
+    }
+
+    #getElementTypeItem(itemTemplate: ItemDetails, celldlObject: CellDLObject, rdfStore: RdfStore): ItemDetails {
+        let baseComponent: BaseComponent|undefined = undefined
+        let baseComponentId: string|undefined = undefined
+        let templates: ElementTemplate[] = []
+        let elementTemplate: ElementTemplate|undefined = undefined
+        rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            SELECT ?type ?subClass WHERE {
+                { ${celldlObject.uri.toString()} a ?type }
+                UNION
+                { ${celldlObject.uri.toString()} rdfs:subClassOf ?subClass }
+            }`
+        ).map((r) => {
+            if (r.has('type')) {
+                const rdfType = r.get('type')!.value
+                if (this.#baseComponents.has(rdfType)) {
+                    baseComponentId = rdfType
+                } else if (this.#elementTemplates.has(rdfType)) {
+                    elementTemplate = this.#elementTemplates.get(rdfType)!
+                    baseComponentId = elementTemplate.baseComponentId
+                }
+            }
+            if (r.has('subClass')) {
+                const subClass = r.get('subClass')!.value
+                if (this.#baseComponents.has(subClass)) {
+                    baseComponentId = subClass
+                }
+            }
+        })
+        const discreteItem = <IUiJsonDiscreteInput & {
+            value: string|number
+        }>{...itemTemplate}
+
+        discreteItem.possibleValues = []
+        if (baseComponentId) {
+            baseComponent = this.#baseComponents.get(baseComponentId)!
+            templates = this.#baseComponentToTemplates.get(baseComponentId)! || []
+            // `baseComponent` and `templates` are possible values
+            discreteItem.possibleValues.push({
+                name: baseComponent.label || '',
+                value: baseComponent.id,
+                emphasise: true
+            })
+            discreteItem.possibleValues.push(
+                ...templates.map(t => {
+                    return {
+                        name: t.name,
+                        value: t.id
+                    }
+                })
+            )
+        }
+
+        if (elementTemplate) {
+            // this, along with baseComponent, determines selected item
+        }
+        const discreteValue = elementTemplate ? elementTemplate.id
+                            : baseComponentId ? baseComponentId
+                            : ""
+         discreteItem.value = discreteItem.possibleValues.findIndex(v => {
+            if (String(discreteValue) === String(v.value)) {
+                return true
+            }
+        })
+        return discreteItem as ItemDetails
     }
 
     #query(sparql: string) {
