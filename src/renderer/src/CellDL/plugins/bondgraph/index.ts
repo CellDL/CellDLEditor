@@ -309,8 +309,8 @@ export class BondgraphPlugin {
 
     updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
                               celldlObject: CellDLObject, rdfStore: RdfStore) {
+        this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
 
-        this.#updateElementProperties(value, itemId, celldlObject, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
         const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
         if (template && template.elementTemplate) {
             if (itemId === INPUT.ElementType && value.newValue !== value.oldValue) {
@@ -325,7 +325,7 @@ export class BondgraphPlugin {
     }
 
     #updateElementProperties(value: ValueChange, itemId: string,
-                            celldlObject: CellDLObject, group: PropertyGroup, rdfStore: RdfStore) {
+                            celldlObject: CellDLObject, rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
         for (const itemTemplate of propertyTemplates.items) {
             if (itemId === itemTemplate.itemId) {
