@@ -119,6 +119,7 @@ interface PhysicalDomain {
 
 type ElementTemplate = ElementIdName & {
     domain: string
+    value?: Variable
     parameters: Variable[]
     states: Variable[],
     baseComponentId?: string
@@ -449,16 +450,35 @@ export class BondgraphPlugin {
         })
     }
 
+    #getDiffVariable(domainId: string, relation: string): Variable|undefined {
+        const domain = this.#physicalDomains.get(domainId)
+        if (domain) {
+            relation = relation.replace(/\n \s*/g, '')  // Remove blanks and new lines
+            const diffStateVar = relation.match(/<apply><diff\/><bvar><ci>[^\<]*<\/ci><\/bvar><ci>([^\<]*)<\/ci><\/apply>/)
+            if (diffStateVar) {
+                const symbol = diffStateVar[1]
+                if (symbol === domain.quantity.name) {
+                    return domain.quantity
+                } else if (symbol === domain.flow.name) {
+                    return domain.flow
+                } else if (symbol === domain.potential.name) {
+                    return domain.potential
+                }
+            }
+        }
+    }
+
     #assignTemplates() {
         // Find what templates correspond to each base element
         this.#query(`
-            SELECT ?element ?label ?domain ?base WHERE {
+            SELECT ?element ?label ?domain ?relation ?base WHERE {
                 ?element
                     rdfs:subClassOf* ?subType .
                     ?subType bgf:hasDomain ?domain ;
                             rdfs:subClassOf* ?base .
                     ?base rdfs:subClassOf bgf:BondElement .
                 OPTIONAL { ?element rdfs:label ?label }
+                OPTIONAL { ?subType bgf:constitutiveRelation ?relation }
                 FILTER EXISTS {
                     { ?element a bgf:ElementTemplate }
                 UNION
@@ -473,13 +493,21 @@ export class BondgraphPlugin {
                 }
                 const element = r.get('element')!
                 const label = r.get('label')
+                const domainId = r.get('domain')!.value
                 const template = {
                     id: element.value,
-                    domain: r.get('domain')!.value,
+                    domain: domainId,
                     name: label ? label.value : getCurie(element.value),
                     parameters: [],
                     states: [],
                     baseComponentId: component.id
+                }
+                const relation = r.get('relation')
+                if (relation) {
+                    const differentiatedVariable = this.#getDiffVariable(domainId, relation.value)
+                    if (differentiatedVariable) {
+                        template.value = differentiatedVariable
+                    }
                 }
                 this.#elementTemplates.set(template.id, template)
                 this.#baseComponentToTemplates.get(component.id)!.push(template)
