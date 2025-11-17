@@ -6,24 +6,10 @@ import electron from 'electron'
 import { Conf as ElectronConf } from 'electron-conf'
 import process from 'node:process'
 
-import type { ISettings } from '../renderer/src/common/common'
 import { isDevMode, isMacOs, isPackaged } from '../renderer/src/common/electron'
 
 //==============================================================================
 
-import {
-    enableDisableFileCloseAndCloseAllMenuItems,
-    enableDisableMainMenu
-} from './MainMenu'
-import {
-    checkForUpdates,
-    downloadAndInstallUpdate,
-    EditorWindow,
-    installUpdateAndRestart,
-    loadSettings,
-    resetAll,
-    saveSettings
-} from './EditorWindow'
 import icon from './assets/icon.png?asset';
 
 //==============================================================================
@@ -52,7 +38,6 @@ interface IElectronConf {
         }
         state: IElectronConfState
     }
-    settings: ISettings
 }
 
 export let electronConf: ElectronConf<IElectronConf>
@@ -102,11 +87,6 @@ export const application = new class Application
                                 isMaximized: false,
                                 isFullScreen: false
                             }
-                        },
-                        settings: {
-                            general: {
-                                checkForUpdatesAtStartup: true
-                            }
                         }
                     }
                 })
@@ -122,31 +102,6 @@ export const application = new class Application
                         electronToolkitUtils.optimizer.watchWindowShortcuts(window)
                     })
                 }
-
-                // Handle some requests from our renderer process.
-
-                electron.ipcMain.handle('check-for-updates', (_event, atStartup: boolean) => {
-                    checkForUpdates(atStartup)
-                })
-                electron.ipcMain.handle('download-and-install-update', () => {
-                    downloadAndInstallUpdate()
-                })
-                electron.ipcMain.handle('enable-disable-main-menu', (_event, enable: boolean) => {
-                    enableDisableMainMenu(enable)
-                })
-                electron.ipcMain.handle('enable-disable-file-close-and-close-all-menu-items', (_event, enable: boolean) => {
-                    enableDisableFileCloseAndCloseAllMenuItems(enable)
-                })
-                electron.ipcMain.handle('install-update-and-restart', () => {
-                    installUpdateAndRestart()
-                })
-                electron.ipcMain.handle('load-settings', (): ISettings => {
-                    return loadSettings()
-                })
-                electron.ipcMain.handle('reset-all', resetAll)
-                electron.ipcMain.handle('save-settings', (_event, settings: ISettings) => {
-                    saveSettings(settings)
-                })
 
                 electron.ipcMain.on('FILE_OP', (event, action, filePath, data) => {
                     const currentEditor = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)

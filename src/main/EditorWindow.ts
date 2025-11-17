@@ -100,22 +100,6 @@ export function installUpdateAndRestart(): void {
     autoUpdater.quitAndInstall(true, true)
 }
 
-export function loadSettings(): ISettings {
-    return electronConf.get('settings')
-}
-
-export function saveSettings(settings: ISettings): void {
-    electronConf.set('settings', settings)
-}
-
-let _resetAll = false
-
-export function resetAll(): void {
-    _resetAll = true
-
-    electron.app.relaunch()
-    electron.app.quit()
-}
 
 let recentFilePaths: string[] = []
 

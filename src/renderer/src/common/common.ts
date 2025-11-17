@@ -1,15 +1,5 @@
 import { UAParser } from 'ua-parser-js'
 
-// Some interfaces.
-
-export interface ISettingsGeneral {
-    checkForUpdatesAtStartup: boolean
-}
-
-export interface ISettings {
-    general: ISettingsGeneral
-}
-
 // Some methods to determine the operating system, whether the application is running on a mobile device, etc.
 
 const uaParser = new UAParser()

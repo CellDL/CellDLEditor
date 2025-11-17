@@ -154,14 +154,6 @@ export function enableDisableMainMenu(enable: boolean): electron.Menu | null {
             enabled: hasFiles
         })
         fileSubMenu.push({
-            id: 'fileSaveAll',
-            label: 'Save All',
-            click: () => {
-                application.currentWindow?.send('save-all')
-            },
-            enabled: hasFiles
-        })
-        fileSubMenu.push({
             id: 'fileSaveAs',
             label: 'Save',
             accelerator: 'Shift+CmdOrCtrl+S',
