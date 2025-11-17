@@ -24,9 +24,13 @@ import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
+export const CELLDL_NAMESPACE_URI = 'http://celldl.org/ontologies/celldl#'
+
 export const BG_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph#'
 export const BGF_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
-export const CELLDL_NAMESPACE_URI = 'http://celldl.org/ontologies/celldl#'
+export const CDT_NAMESPACE_URI = 'https://w3id.org/cdt/'
+
+export const TPL_NAMESPACE_URI = 'https://bg-rdf.org/templates/'
 
 export const DCT_NAMESPACE_URI = 'http://purl.org/dc/terms/'
 export const OWL_NAMESPACE_URI = 'http://www.w3.org/2002/07/owl#'
@@ -39,7 +43,9 @@ export const XS_NAMESPACE_URI = 'http://www.w3.org/2001/XMLSchema#'
 export const CELLDL_NAMESPACE_DECLARATIONS = {
     celldl: CELLDL_NAMESPACE_URI,
     bg: BG_NAMESPACE_URI,
-    bgf: BGF_NAMESPACE_URI
+    bgf: BGF_NAMESPACE_URI,
+    cdt: CDT_NAMESPACE_URI,
+    tpl: TPL_NAMESPACE_URI
 }
 
 export const WEB_NAMESPACE_DECLARATIONS = {
@@ -50,6 +56,11 @@ export const WEB_NAMESPACE_DECLARATIONS = {
     svg: `${SVG_NAMESPACE_URI}/`,
     xsd: XS_NAMESPACE_URI
 }
+
+const declaredNamespaces = Object.assign({}, CELLDL_NAMESPACE_DECLARATIONS, WEB_NAMESPACE_DECLARATIONS)
+
+export const SPARQL_PREFIXES = Object.entries(declaredNamespaces).map(
+                                    (prefixUri) => `PREFIX ${prefixUri[0]}: <${prefixUri[1]}>`).join('\n')
 
 //==============================================================================
 
@@ -64,6 +75,8 @@ export function Namespace(nsuri: string): NamespaceType {
 export const CELLDL_NAMESPACE = Namespace(CELLDL_NAMESPACE_URI)
 export const BG_NAMESPACE = Namespace(BG_NAMESPACE_URI)
 export const BGF_NAMESPACE = Namespace(BGF_NAMESPACE_URI)
+export const CDT_NAMESPACE = Namespace(CDT_NAMESPACE_URI)
+export const TPL_NAMESPACE = Namespace(TPL_NAMESPACE_URI)
 
 export const DCT_NAMESPACE = Namespace(DCT_NAMESPACE_URI)
 export const OWL_NAMESPACE = Namespace(OWL_NAMESPACE_URI)
@@ -84,8 +97,6 @@ export function curieSuffix(NS: NamespaceType, term: string | NamedNode): string
 }
 
 //==============================================================================
-
-const declaredNamespaces = Object.assign({}, CELLDL_NAMESPACE_DECLARATIONS, WEB_NAMESPACE_DECLARATIONS)
 
 export function getCurie(term: string | NamedNode): string {
     const fullUri: string = isNamedNode(term) ? (<NamedNode>term).uri : <string>term

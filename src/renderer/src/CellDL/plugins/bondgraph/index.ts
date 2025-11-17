@@ -32,7 +32,7 @@ import {
 } from '@editor/components/index'
 import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
-import { BG_NAMESPACE, BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE } from '@editor/metadata/index'
+import { BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
@@ -65,13 +65,6 @@ import ELECTRICAL_TEMPLATE from '/bg-rdf/templates/electrical.ttl?url&raw'
 import HYDRAULIC_TEMPLATE from '/bg-rdf/templates/hydraulic.ttl?url&raw'
 import MECHANICAL_TEMPLATE from '/bg-rdf/templates/mechanical.ttl?url&raw'
 
-//==============================================================================
-
-const SPARQL_PREFIXES = `
-PREFIX rdfs: ${RDFS_NAMESPACE('').toString()}
-PREFIX bg: ${BG_NAMESPACE('').toString()}
-PREFIX bgf: ${BGF_NAMESPACE('').toString()}
-`
 //==============================================================================
 
 class BaseComponent {
