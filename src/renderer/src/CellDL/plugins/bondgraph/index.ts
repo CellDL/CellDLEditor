@@ -109,6 +109,14 @@ class BaseComponent {
 
 //==============================================================================
 
+interface Variable {
+    name: string
+    units: string
+    value?: string
+}
+
+//==============================================================================
+
 interface PhysicalDomain {
     id: string
     flow: Variable
@@ -124,14 +132,6 @@ type ElementTemplate = ElementIdName & {
     parameters: Variable[]
     states: Variable[],
     baseComponentId?: string
-}
-
-//==============================================================================
-
-interface Variable {
-    name: string
-    units: string
-    value?: string
 }
 
 //==============================================================================
@@ -163,14 +163,14 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
                 optional: true
             },
             {
-                uri: BGF_NAMESPACE('hasSpecies').value,
                 itemId: INPUT.ElementSpecies,
+                uri: BGF_NAMESPACE('hasSpecies').value,
                 name: 'Species',
                 defaultValue: ''
             },
             {
-                uri: BGF_NAMESPACE('hasLocation').value,
                 itemId: INPUT.ElementLocation,
+                uri: BGF_NAMESPACE('hasLocation').value,
                 name: 'Location',
                 defaultValue: ''
             }
