@@ -45,6 +45,11 @@ export interface PropertyGroup {
     title: string
 }
 
+export interface ValueChange {
+    oldValue: string
+    newValue: string
+}
+
 //==============================================================================
 
 const METADATA_GROUP: PropertyGroup = {
@@ -145,8 +150,8 @@ export class ObjectPropertiesPanel {
         }
     }
 
-    updateObjectProperties(newValue: string, itemId: string,
-                           celldlObject: CellDLObject|null, rdfStore: RdfStore): boolean {
+    updateObjectProperties(value: ValueChange, itemId: string,
+                           celldlObject: CellDLObject|null, rdfStore: RdfStore) {
         if (celldlObject) {
             const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
             const group = this.#componentProperties.value[this.#metadataIndex]
@@ -156,9 +161,7 @@ export class ObjectPropertiesPanel {
                     break
                 }
             }
-            return true
         }
-        return false
     }
 }
 

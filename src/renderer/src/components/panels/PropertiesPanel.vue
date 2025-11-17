@@ -52,9 +52,9 @@ const disabled = vue.computed<boolean>(() => {
 
 const emit = defineEmits(['panel-event'])
 
-function updateProperties(itemId: string, value: number | string) {
+function updateProperties(itemId: string, oldValue: number | string, newValue: number | string) {
     void vue.nextTick().then(() => {
-        emit('panel-event', props.toolId, itemId, value)
+        emit('panel-event', props.toolId, itemId, oldValue, newValue)
     })
 }
 </script>

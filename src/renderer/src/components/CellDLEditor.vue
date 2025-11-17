@@ -169,14 +169,17 @@ function popoverEvent(toolId: string, data: any) {
     }
 }
 
-function panelEvent(toolId: string, itemId: string, value: string) {
+function panelEvent(toolId: string, itemId: string, oldValue: string, newValue: string) {
     document.dispatchEvent(
         new CustomEvent('panel-event', {
             detail: {
                 type: 'value',
                 source: toolId,
                 itemId: itemId,
-                value: value
+                value: {
+                    oldValue,
+                    newValue
+                }
             }
         })
     )

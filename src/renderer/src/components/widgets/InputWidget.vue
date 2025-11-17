@@ -97,9 +97,8 @@ function emitChange(newValue: number | string) {
             scalarValueString.value = String(newValue) // This will properly format the input text.
         }
 
+        emits('change', props.itemId, oldValue, newValue)
         oldValue = newValue
-
-        emits('change', props.itemId, newValue)
     })
 }
 
