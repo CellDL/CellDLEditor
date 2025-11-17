@@ -13,7 +13,7 @@
                         span.ci(:class="[slotProps.value.icon]") &nbsp;
                         span {{ slotProps.value.name }}
                     span(v-else) {{ slotProps.placeholder }}
-                template(option="slotProps")
+                template(#option="slotProps")
                     .flex.items-center
                         span {{ slotProps.option.name }}
 </template>
