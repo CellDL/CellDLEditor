@@ -112,7 +112,7 @@ export class ObjectPropertiesPanel {
     #metadataIndex: number
 
     constructor() {
-        this.#metadataIndex = this.#propertyGroups.length
+        this.#metadataIndex = this.#propertyGroups.length - 1
         this.#componentProperties.value = structuredClone(this.#propertyGroups)
         for (const group of this.#componentProperties.value) {
             group.items = []
