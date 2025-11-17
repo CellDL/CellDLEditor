@@ -147,6 +147,8 @@ enum INPUT {
     ElementType = 'bg-element-type',
     ElementSpecies = 'bg-species',
     ElementLocation = 'bg-location',
+    ParameterValue = 'bg-parameter-value',
+    StateValue = 'bg-state-value'
 }
 const PROPERTY_GROUPS: PropertyGroup[] = [
     {
@@ -177,10 +179,17 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
     {
         title: 'Parameters',
         items: []
+    },
+    {
+        title: 'States',
+        items: []
     }
 ]
 
 const ELEMENT_GROUP_INDEX = 0
+const PARAMS_GROUP_INDEX = 1
+const STATES_GROUP_INDEX = 2
+
 //==============================================================================
 
 export class BondgraphPlugin {
@@ -236,6 +245,12 @@ export class BondgraphPlugin {
         const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
 
         this.#getElementProperties(celldlObject, template, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
+
+        this.#getElementVariables(celldlObject, template, componentProperties[PARAMS_GROUP_INDEX]!,
+                                  PROPERTY_GROUPS[PARAMS_GROUP_INDEX]!, rdfStore)
+
+        this.#getElementVariables(celldlObject, template, componentProperties[STATES_GROUP_INDEX]!,
+                                  PROPERTY_GROUPS[STATES_GROUP_INDEX]!, rdfStore)
     }
 
     #getElementProperties(celldlObject: CellDLObject, template: ObjectElementTemplate|undefined,
@@ -259,12 +274,57 @@ export class BondgraphPlugin {
         })
     }
 
+    #getElementVariables(celldlObject: CellDLObject, template: ObjectElementTemplate|undefined,
+                          group: PropertyGroup,  propertyTemplates: PropertyGroup, rdfStore: RdfStore) {
+        if (template && template.elementTemplate) {
+            this.#setVariableTemplates(template.elementTemplate.parameters, group, INPUT.ParameterValue)
+            this.#setVariableTemplates(template.elementTemplate.states, group, INPUT.StateValue)
+        }
+    }
+
+    #setVariableTemplates(variables: Variable[], group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
+        if (reset) {
+            group.items.length = 0
+        }
+        if (group.items.length === 0) {
+            for (const variable of variables) {
+                // @ts-expect-error: WIP
+                group.items.push({
+                    itemId: `${itemId}/${variable.name}`,
+                    uri: BGF_NAMESPACE('parameterValue').value,
+                    name: `${variable.name} (${variable.units})`,
+                    minimumValue: 0,
+                    defaultValue: 0
+                })
+            }
+        }
+    }
+
+    #setVariableProperties(variables: Variable[], group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
+
+        // Need to get values in RDF using SPARQl
     }
 
     updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
                               celldlObject: CellDLObject, rdfStore: RdfStore) {
 
         this.#updateElementProperties(value, itemId, celldlObject, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
+
+        if (itemId === INPUT.ElementType && value.newValue !== value.oldValue) {
+            const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
+            if (template && template.elementTemplate) {
+                this.#setVariableTemplates(template.elementTemplate.parameters, componentProperties[PARAMS_GROUP_INDEX]!,
+                                           INPUT.ParameterValue, true)
+                this.#setVariableTemplates(template.elementTemplate.states, componentProperties[STATES_GROUP_INDEX]!,
+                                           INPUT.StateValue), true
+            }
+        }
+
+        this.#updateVariableProperties(value, itemId, celldlObject, componentProperties[PARAMS_GROUP_INDEX]!,
+                                       PROPERTY_GROUPS[PARAMS_GROUP_INDEX]!, rdfStore)
+
+        this.#updateVariableProperties(value, itemId, celldlObject, componentProperties[STATES_GROUP_INDEX]!,
+                                       PROPERTY_GROUPS[STATES_GROUP_INDEX]!, rdfStore)
     }
 
     #updateElementProperties(value: ValueChange, itemId: string,
@@ -283,6 +343,13 @@ export class BondgraphPlugin {
                 break
             }
         }
+    }
+
+    #updateVariableProperties(value: ValueChange, itemId: string, celldlObject: CellDLObject,
+                              group: PropertyGroup,  propertyTemplates: PropertyGroup, rdfStore: RdfStore) {
+
+        // Need to update values in RDF using SPARQl
+
     }
 
     styleRules(): string {
