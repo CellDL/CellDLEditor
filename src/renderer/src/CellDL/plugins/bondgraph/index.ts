@@ -281,6 +281,8 @@ export class BondgraphPlugin {
         if (template && template.elementTemplate) {
             this.#setVariableTemplates(template.elementTemplate.parameters, group, INPUT.ParameterValue)
             this.#setVariableTemplates(template.elementTemplate.states, group, INPUT.StateValue)
+
+            this.#setVariableProperties(celldlObject, group, propertyTemplates, rdfStore)
         }
     }
 
@@ -296,15 +298,40 @@ export class BondgraphPlugin {
                     uri: BGF_NAMESPACE('parameterValue').value,
                     name: `${variable.name} (${variable.units})`,
                     minimumValue: 0,
-                    defaultValue: 0
+                    defaultValue: 0,
+                    value: 0
                 })
             }
         }
     }
 
-    #setVariableProperties(variables: IdVariableMap, group: PropertyGroup, itemId: INPUT, reset: boolean=false) {
+    #setVariableProperties(celldlObject: CellDLObject, group: PropertyGroup,
+                           propertyTemplates: PropertyGroup,  rdfStore: RdfStore) {
+        const objectUri = celldlObject.uri.toString()
 
-        // Need to get values in RDF using SPARQl
+        const values: Map<string, string> = new Map()
+        rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            SELECT ?name ?value
+            WHERE {
+                ${objectUri} bgf:parameterValue [
+                    bgf:varName ?name ;
+                    bgf:hasValue ?value
+                ]
+            }`
+        ).map((r) => {
+            values.set(r.get('name')!.value, r.get('value')!.value)
+        })
+
+        group.items.forEach(item => {
+            const itemVariable = item.itemId.split('/')
+            const varName = itemVariable[1]!
+            if (values.has(varName)) {
+                const valueUnits = values.get(varName)!.split(' ')
+                item.value = valueUnits[0]
+            }
+        })
     }
 
     updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
