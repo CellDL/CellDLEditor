@@ -46,6 +46,26 @@ export interface ObjectTemplate extends NewObjectClass {
 
 //==============================================================================
 
+export interface ComponentLibraryTemplate {
+    id: string
+    name: string
+    image: string
+    selected?: boolean
+}
+
+export interface ComponentLibrary {
+    id?: string
+    name: string
+    components: ComponentLibraryTemplate[]
+}
+
+export interface ElementIdName {
+    id: string
+    name: string
+}
+
+//==============================================================================
+
 export interface NamedUri {
     name: string
     uri: string

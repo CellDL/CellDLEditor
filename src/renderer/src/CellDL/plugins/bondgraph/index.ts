@@ -24,11 +24,16 @@ import { arrowMarkerDefinition } from '@renderer/common/styling'
 
 import { CellDLComponent } from '@editor/celldlObjects/index'
 import { type ObjectTemplate } from '@editor/components/index'
+import {
+    type ComponentLibrary,
+    type ComponentLibraryTemplate,
+    type ElementIdName,
+    type ObjectTemplate
+} from '@editor/components/index'
 import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
 import { BG_NAMESPACE, BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
-import { type ComponentLibrary, type ComponentTemplate, type ElementTemplateName } from '@editor/plugins/index'
 
 //==============================================================================
 
@@ -43,7 +48,7 @@ if ('id' in BondgraphJsonData) {
     BondgraphComponents.id = String(BondgraphJsonData.id)
 }
 
-const BondgraphComponentTemplates: Map<string, ComponentTemplate> = new Map(
+const BondgraphComponentTemplates: Map<string, ComponentLibraryTemplate> = new Map(
     BondgraphComponents.components.map(c => [c.id, c])
 )
 
@@ -73,7 +78,7 @@ class BaseComponent {
     #id: string
     #label: string|undefined
     #nodeType: string
-    #template: ComponentTemplate
+    #template: ComponentLibraryTemplate
 
     constructor(id: string, label: string, nodeType: string) {
         this.#id = id
@@ -114,7 +119,7 @@ interface PhysicalDomain {
 
 //==============================================================================
 
-type ElementTemplate = ElementTemplateName & {
+type ElementTemplate = ElementIdName & {
     domain: string
     parameters: Variable[]
     states: Variable[],

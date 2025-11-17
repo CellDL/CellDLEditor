@@ -20,29 +20,13 @@ limitations under the License.
 
 import * as vue from 'vue'
 
-import { type ObjectTemplate } from '@editor/components/index'
+import {
+    type ComponentLibrary,
+    type ComponentLibraryTemplate,
+    type ObjectTemplate
+} from '@editor/components/index'
 import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
-
-//==============================================================================
-
-export interface ComponentTemplate {
-    id: string
-    label: string
-    image: string
-    selected?: boolean
-}
-
-export interface ComponentLibrary {
-    id?: string
-    name: string
-    components: ComponentTemplate[]
-}
-
-export interface ElementTemplateName {
-    id: string
-    name: string
-}
 import { MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
@@ -81,8 +65,8 @@ export class PluginComponents {
         return this.#bondgraphPlugin.getTemplateParameters(id)
     }
 
-    loadComponentLibraries(): ComponentTemplate|undefined {
-        let selectedTemplate: ComponentTemplate|undefined = undefined
+    loadComponentLibraries(): ComponentLibraryTemplate|undefined {
+        let selectedTemplate: ComponentLibraryTemplate|undefined = undefined
         if (this.#componentLibraries.length &&
             // @ts-expect-error: `componentLibraries` is at least 1 long
             this.#componentLibraries[0].components.length) {
