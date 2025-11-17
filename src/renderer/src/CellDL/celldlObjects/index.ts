@@ -85,7 +85,6 @@ export class CellDLObject {
 
     #label: string | null = null
     #metadataProperties!: MetadataPropertiesMap
-    #objectMetadata: StringProperties = {}
     #template!: ObjectTemplate
 
     #children: Map<string, CellDLObject> = new Map()
@@ -188,36 +187,6 @@ export class CellDLObject {
         parent.#children.set(this.id, this)
     }
 
-    // Metadata associated with the base CellDLObject instance
-    get metadata(): StringProperties {
-        const properties: StringProperties = {}
-        for (const nameUri of OBJECT_METADATA) {
-            const uri = nameUri.uri
-            if (uri in this.#objectMetadata) {
-                // @ts-expect-error:
-                properties[uri.value] = this.#objectMetadata[uri.value]
-            }
-        }
-        return properties
-    }
-
-    set metadata(data: PropertiesType) {
-        let changed = false
-        for (const nameUri of OBJECT_METADATA) {
-            const uri = nameUri.uri
-            if (uri in data) {
-                const value = `${data[uri]}`.trim()
-                if (value !== this.#objectMetadata[uri]) {
-                    this.#objectMetadata[uri] = value
-                    changed = true
-                }
-            }
-        }
-        if (changed) {
-            notifyChanges()
-        }
-    }
-
     // Additional metadata about sub-classed instances
     get metadataProperties() {
         return this.#metadataProperties
@@ -295,35 +264,6 @@ export class CellDLObject {
     assignSvgElement(_svgElement: SVGGraphicsElement) {
     }
 
-    loadObjectProperties(rdfStore: RdfStore) {
-        const store = this.#celldlDiagram.rdfStore
-        for (const nameUri of OBJECT_METADATA) {
-            const uri = nameUri.uri
-            for (const stmt of rdfStore.statementsMatching(this.uri, $rdf.namedNode(uri), null)) {
-                this.#objectMetadata[uri] = stmt.object.value
-                break
-            }
-        }
-    }
-
-    saveObjectProperties(rdfStore: RdfStore) {
-        const store = this.#celldlDiagram.rdfStore
-        for (const nameUri of OBJECT_METADATA) {
-            const uri = nameUri.uri
-            rdfStore.removeStatements(this.uri, $rdf.namedNode(uri), null)
-            if (uri in this.#objectMetadata) {
-                const value = this.#objectMetadata[uri]
-                if (value) {
-                    rdfStore.add(this.uri, $rdf.namedNode(uri), $rdf.literal(value))
-                }
-            }
-        }
-    }
-
-    getMetadataProperty(predicate: NamedNode): MetadataPropertyValue | null {
-        return this.#metadataProperties.getProperty(predicate)
-    }
-
     #setMetadataProperties(properties: MetadataPropertiesMap) {
         // Create a new MetadataPropertiesMap rather than storing a reference
         const metadataProperties = properties.copy()
@@ -334,16 +274,6 @@ export class CellDLObject {
             // @ts-expect-error: label is a Literal
             this.#label = label.value
         }
-    }
-
-    updateMetadataProperties(template: ObjectTemplate) {
-        this.#setMetadataProperties(template.metadataProperties)
-        // only if changes...
-        notifyChanges()
-        // Remove existing knowledge the diagram might have about the object
-        this.#celldlDiagram.removeKnowledge(this.uri, template.rdfPredicates)
-        // And add the object's updated knowledge to the diagram
-        this.#celldlDiagram.updateObjectKnowledge(this)
     }
 }
 

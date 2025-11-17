@@ -20,6 +20,7 @@ limitations under the License.
 
 import * as vue from 'vue'
 
+import { CellDLObject } from '@editor/celldlObjects/index'
 import {
     type ComponentLibrary,
     type ComponentLibraryTemplate,
@@ -79,6 +80,10 @@ export class PluginComponents {
         }
         vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
         return selectedTemplate
+    }
+
+    setComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
+        return this.#bondgraphPlugin.setComponentProperties(componentProperties, celldlObject, rdfStore)
     }
 
     styleRules(): string {

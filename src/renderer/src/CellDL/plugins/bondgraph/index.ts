@@ -22,15 +22,19 @@ import * as $oxigraph from '@oxigraph/web'
 
 import { arrowMarkerDefinition } from '@renderer/common/styling'
 
-import { CellDLComponent } from '@editor/celldlObjects/index'
-import { type ObjectTemplate } from '@editor/components/index'
+import { CellDLComponent, CellDLObject } from '@editor/celldlObjects/index'
 import {
     type ComponentLibrary,
     type ComponentLibraryTemplate,
     type ElementIdName,
     type ObjectTemplate
 } from '@editor/components/index'
-import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
+import {
+    getItemProperty,
+    type ItemDetails,
+    type PropertyGroup,
+    updateItemProperty
+} from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
 import { BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'

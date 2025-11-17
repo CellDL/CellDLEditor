@@ -160,7 +160,6 @@ export class CellDLDiagram {
         this.#loadConduits()
         this.#loadConnections()
         this.#loadAnnotations()
-        this.#loadObjectProperties()
         if (this.#imported) {
             // We want the file to be flagged as modified
             notifyChanges()
@@ -191,6 +190,10 @@ export class CellDLDiagram {
                 this.#diagramProperties[key] = data[key]
             })
         notifyChanges()
+    }
+
+    get rdfStore() {
+        return this.#kb
     }
 
     get svgDiagram() {
@@ -487,7 +490,6 @@ export class CellDLDiagram {
 
             // Make sure metadata is up-to-date
             this.#saveDiagramProperties()
-            this.#saveObjectProperties()
 
             // Serialise metadata as Turtle into CDATA section in <metadata> element
             const metadata: string = await this.#serialiseMetadata(TurtleContentType)
@@ -838,18 +840,6 @@ export class CellDLDiagram {
 
     updateObjectKnowledge(celldlObject: CellDLObject): Statement[] {
         return this.#kb.addMetadataPropertiesForSubject(celldlObject.uri, celldlObject.metadataProperties)
-    }
-
-    #loadObjectProperties() {
-        for (const celldlObject of this.#objects.values()) {
-            celldlObject.loadObjectProperties(this.#kb)
-        }
-    }
-
-    #saveObjectProperties() {
-        for (const celldlObject of this.#objects.values()) {
-            celldlObject.saveObjectProperties(this.#kb)
-        }
     }
 
     #addNewObject(svgElement: SVGGraphicsElement, template: ObjectTemplate, assignId = true) {

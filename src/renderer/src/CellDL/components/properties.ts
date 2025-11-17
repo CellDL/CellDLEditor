@@ -26,7 +26,8 @@ import { type PropertiesType } from '@renderer/common/types'
 
 import { CellDLObject } from '@editor/celldlObjects/index'
 import { type NamedUri, OBJECT_METADATA } from '@editor/components/index'
-import { MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
+import * as $rdf from '@editor/metadata/index'
+import { MetadataPropertiesMap, RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { pluginComponents } from '@editor/plugins/index'
 
 //==============================================================================
@@ -61,6 +62,50 @@ const METADATA_GROUP: PropertyGroup = {
 //==============================================================================
 //==============================================================================
 
+export function getItemProperty(celldlObject: CellDLObject,
+                                itemTemplate: ItemDetails, rdfStore: RdfStore): ItemDetails|undefined {
+    let item: ItemDetails|undefined = undefined
+
+    rdfStore.query(`${SPARQL_PREFIXES}
+        PREFIX : <${rdfStore.documentUri}#>
+
+        SELECT ?value WHERE {
+            ${celldlObject.uri.toString()} <${itemTemplate.uri}> ?value
+        }`
+    ).map((r) => {
+        const value = r.get('value')!.value
+        item = {
+            value: value,
+            ...itemTemplate
+        }
+    })
+    if (!itemTemplate.optional && item === undefined) {
+        item = Object.assign({
+            value: itemTemplate.defaultValue || '',
+            ...itemTemplate
+        })
+    }
+    return item
+}
+
+export function updateItemProperty(newValue: string, celldlObject: CellDLObject,
+                                   itemTemplate: ItemDetails, rdfStore: RdfStore) {
+    newValue = newValue.trim()
+    const insertClause = newValue
+                       ? `INSERT { ${celldlObject.uri.toString()} <${itemTemplate.uri}> "${newValue}" }`
+                       : ''
+    rdfStore.update(`${SPARQL_PREFIXES}
+        PREFIX : <${rdfStore.documentUri}#>
+
+        DELETE {
+            ${celldlObject.uri.toString()} <${itemTemplate.uri}> ?value
+        }
+        ${insertClause}
+        WHERE {
+            ${celldlObject.uri.toString()} ?p ?value
+        }`)
+}
+
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])
     #propertyGroups = [...pluginComponents.propertyGroups(), METADATA_GROUP]
@@ -77,55 +122,41 @@ export class ObjectPropertiesPanel {
         vue.provide<PropertyGroup[]>('componentProperties', this.#componentProperties)
     }
 
-    setCurrentObject(celldlObject: CellDLObject|null) {
+    setObjectProperties(celldlObject: CellDLObject|null, rdfStore: RdfStore) {
         // Clear each group's list of items
         for (const group of this.#componentProperties.value) {
             group.items = []
         }
         if (celldlObject) {
-            const metadataProperties = celldlObject.metadataProperties
-            this.#propertyGroups.forEach((property_group, index) => {
-                const group = this.#componentProperties.value[index]
-                property_group.items.forEach((itemTemplate: ItemDetails) => {
-                    let item: ItemDetails | undefined = undefined
-                    if (index !== this.#metadataIndex) {
-                        item = pluginComponents.propertyItem(itemTemplate, metadataProperties)
-                    } else {
-                        const objectValue = metadataProperties.get(itemTemplate.uri)
-                        if (objectValue) {
-                            // objectValue could be a MetadataPropertiesMap
-                            const propertyValue = objectValue.value
-                            item = Object.assign({
-                                value: propertyValue || itemTemplate.defaultValue || '',
-                                ...itemTemplate
-                            })
-                        } else if (!itemTemplate.optional) {
-                            // Non-optional fields with no `metadataProperties` value
-                            item = {
-                                value: '',
-                                ...itemTemplate
-                            }
-                        }
-                    }
-                    if (item) {
-                        group.items.push(item)
-                    }
-                })
+            // Get properties from plugins
+
+            pluginComponents.setComponentProperties(this.#componentProperties.value, celldlObject, rdfStore)
+
+            // Now set properties from the METADATA_GROUP
+
+            const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
+            const group = this.#componentProperties.value[this.#metadataIndex]
+            metadataGroup.items.forEach((itemTemplate: ItemDetails) => {
+                const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
+                if (item) {
+                    group.items.push(item)
+                }
             })
         }
     }
 
-    updateObject(celldlObject: CellDLObject|null, rdfStore: RdfStore, itemId: string, value: string): boolean {
+    updateObjectProperties(newValue: string, itemId: string,
+                           celldlObject: CellDLObject|null, rdfStore: RdfStore): boolean {
         if (celldlObject) {
-            const metadata: PropertiesType = {}
-            for (const group of componentProperties.value) {
-                group.items.forEach((item: ItemDetails) => {
-                    if (item.value !== undefined) {
-                        metadata[item.uri] = item.value
-                    }
-                })
-            celldlObject.metadata = metadata
+            const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
+            const group = this.#componentProperties.value[this.#metadataIndex]
+            for (const itemTemplate of metadataGroup.items) {
+                if (itemId === itemTemplate.itemId) {
+                    updateItemProperty(newValue, celldlObject, itemTemplate, rdfStore)
+                    break
+                }
             }
+            return true
         }
         return false
     }

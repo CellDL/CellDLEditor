@@ -395,9 +395,9 @@ export class CellDLEditor {
         const detail = (<CustomEvent>event).detail
         if (detail.panel === this.#openPanelId) {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
-                if (this.#propertiesPanel.updateObject(this.#selectedObject,
-                                                       this.#celldlDiagram!.rdfStore,
-                                                       detail.itemId, detail.value)) {
+                if (this.#propertiesPanel.updateObjectProperties(detail.value, detail.itemId,
+                                                                 this.#selectedObject,
+                                                                 this.#celldlDiagram!.rdfStore)) {
                     notifyChanges()
                 }
             }
@@ -486,7 +486,7 @@ export class CellDLEditor {
         if (selectedObject !== null) {
             selectedObject.select(true)
             this.#selectedObject = selectedObject
-            this.#propertiesPanel.setCurrentObject(selectedObject)
+            this.#propertiesPanel.setObjectProperties(selectedObject, this.#celldlDiagram!.rdfStore)
             this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
             this.enableContextMenuItem(CONTEXT_MENU.INFO, true)
         }
@@ -496,7 +496,7 @@ export class CellDLEditor {
         if (this.#selectedObject) {
             this.#selectedObject.select(false)
             this.#selectedObject = null
-            this.#propertiesPanel.setCurrentObject(null)
+            this.#propertiesPanel.setObjectProperties(null, this.#celldlDiagram!.rdfStore)
             this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
             this.enableContextMenuItem(CONTEXT_MENU.INFO, false)
         }
