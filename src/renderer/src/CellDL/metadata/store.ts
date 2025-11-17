@@ -109,6 +109,8 @@ export abstract class BaseStore {
 
     abstract subjectsOfType(parentType: NamedNode): [SubjectType, NamedNode][]
 
+    abstract update(sparql: string): void
+
     addMetadataPropertiesForSubject(subject: SubjectType, properties: MetadataPropertiesMap) {
         const statements: Statement[] = []
         for (const [predicate, value] of properties.predicateValues()) {

@@ -198,7 +198,7 @@ export class RdfStore extends BaseStore {
             }
             return results
         } catch (error) {
-            console.log(`Error parsing SPARQL: ${(<Error>error).message} ${sparql}`)
+            console.log(`Error parsing SPARQL query: ${(<Error>error).message} ${sparql}`)
             let inLib = true
             for (const location of (<Error>error).stack!.split('\n')) {
                 if (inLib) {
@@ -233,6 +233,22 @@ SELECT DISTINCT ?s ?t WHERE {
             true
         ).map((r) => [r.get('s') as SubjectType,
                       r.get('t') as NamedNode])
+    }
+
+    update(sparql: string): void {
+        try {
+            this.#rdfStore.update(sparql)
+        } catch (error) {
+            console.log(`Error parsing SPARQL update: ${(<Error>error).message} ${sparql}`)
+            let inLib = true
+            for (const location of (<Error>error).stack!.split('\n')) {
+                if (inLib) {
+                    inLib = location.indexOf('RdfStore.update') < 0
+                } else {
+                    console.log(location)
+                }
+            }
+        }
     }
 }
 
