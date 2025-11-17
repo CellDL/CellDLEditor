@@ -222,62 +222,10 @@ export class BondgraphPlugin {
         return []
     }
 
-    getTemplateParameters(id: string): MetadataPropertiesMap {
-        const elementTemplate = this.#elementTemplates.get(id)
-        const metadataProperties: MetadataProperty[] = []
-        if (elementTemplate) {
-            for (const variable of elementTemplate.parameters) {
-            }
-            const domain = this.#physicalDomains.get(elementTemplate.domain)
-            for (const variable of elementTemplate.states) {
-            }
-        }
-        return MetadataPropertiesMap.fromProperties(metadataProperties)
-    }
-
     getPropertyGroups(): PropertyGroup[] {
         return PROPERTY_GROUPS
     }
 
-    propertyItem(itemTemplate: ItemDetails, metadataProperties: MetadataPropertiesMap): ItemDetails|undefined {
-        const objectValue = metadataProperties.get(itemTemplate.uri)
-        if (objectValue) {
-            const propertyValue = objectValue.value
-            if ('possibleValues' in itemTemplate) {
-                const discreteItem = {...itemTemplate}
-                if ('selector' in itemTemplate) {
-                    const key = metadataProperties.get(itemTemplate.selector).value
-                    if (key) {
-                        const selection: ElementTemplateName[] = this.#getElementTemplateNames(key)
-                        discreteItem.possibleValues = selection.map(s => {
-                            return {
-                                name: s.name,
-                                value: s.id
-                            }
-                        })
-                    }
-                }
-                const discreteValue = propertyValue
-                discreteItem.value = discreteItem.possibleValues.findIndex(v => {
-                    if (String(discreteValue) === String(v.value)) {
-                        return true
-                    }
-                })
-                return discreteItem
-            } else {
-                return Object.assign({
-                    value: propertyValue || itemTemplate.defaultValue || '',
-                    ...itemTemplate
-                })
-            }
-        } else if (!itemTemplate.optional) {
-            // Non-optional fields with no `metadataProperties` value
-            return {
-                value: '',
-                ...itemTemplate
-            }
-        }
-    }
 
     styleRules(): string {
         return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'

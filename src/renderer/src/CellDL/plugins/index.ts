@@ -58,14 +58,6 @@ export class PluginComponents {
         return this.#bondgraphPlugin.getPropertyGroups()
     }
 
-    getPropertyItem(itemTemplate: ItemDetails, metadataProperties: MetadataPropertiesMap): ItemDetails|undefined {
-        return this.#bondgraphPlugin.getPropertyItem(itemTemplate, metadataProperties)
-    }
-
-    getTemplateParameters(id: string): MetadataPropertiesMap {
-        return this.#bondgraphPlugin.getTemplateParameters(id)
-    }
-
     loadComponentLibraries(): ComponentLibraryTemplate|undefined {
         let selectedTemplate: ComponentLibraryTemplate|undefined = undefined
         if (this.#componentLibraries.length &&
