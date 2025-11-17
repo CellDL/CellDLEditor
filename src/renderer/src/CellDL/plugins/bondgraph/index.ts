@@ -34,7 +34,8 @@ import {
     getItemProperty,
     type ItemDetails,
     type PropertyGroup,
-    updateItemProperty
+    updateItemProperty,
+    type ValueChange
 } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
 import { BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE, SPARQL_PREFIXES } from '@editor/metadata/index'
@@ -135,6 +136,13 @@ interface Variable {
 
 //==============================================================================
 
+interface ObjectElementTemplate {
+    baseComponentId: string
+    elementTemplate?: ElementTemplate
+}
+
+//==============================================================================
+
 enum INPUT {
     ElementType = 'bg-element-type',
     ElementSpecies = 'bg-species',
@@ -150,7 +158,6 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
                 name: 'Bond Element',
                 defaultValue: 0,
                 possibleValues: [],
-                selector: RDFS_NAMESPACE('subClassOf').value,
                 optional: true
             },
             {
@@ -173,6 +180,7 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
     }
 ]
 
+const ELEMENT_GROUP_INDEX = 0
 //==============================================================================
 
 export class BondgraphPlugin {
@@ -205,7 +213,7 @@ export class BondgraphPlugin {
         if (baseComponent && baseComponent.template) {
             const template = baseComponent.template
             const metadataProperties: MetadataProperty[] = [
-                [ RDFS_NAMESPACE('subClassOf'), $rdf.namedNode(baseComponent.id)],
+                [ RDF_NAMESPACE('type'), $rdf.namedNode(baseComponent.id)],
                 [ BGF_NAMESPACE('hasSpecies'), $rdf.literal('i')],
                 [ BGF_NAMESPACE('hasLocation'), $rdf.literal('j')]
             ]
@@ -225,46 +233,57 @@ export class BondgraphPlugin {
 
 
     getComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
-        PROPERTY_GROUPS.forEach((property_group, index) => {
-            // This only works because we only have a single plugin...
-            const group = componentProperties[index]!
-            property_group.items.forEach((itemTemplate: ItemDetails) => {
-                const items: ItemDetails[] = []
-                if (itemTemplate.itemId === INPUT.ElementType) {
-                    const discreteItem = this.#getElementTypeItem(itemTemplate, celldlObject, rdfStore)
+        const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
+
+        this.#getElementProperties(celldlObject, template, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
+    }
+
+    #getElementProperties(celldlObject: CellDLObject, template: ObjectElementTemplate|undefined,
+                          group: PropertyGroup,  rdfStore: RdfStore) {
+        const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
+        propertyTemplates.items.forEach((itemTemplate: ItemDetails) => {
+            const items: ItemDetails[] = []
+            if (itemTemplate.itemId === INPUT.ElementType) {
+                if (template) {
+                    const discreteItem = this.#getElementTypeItem(itemTemplate, template)
                     items.push(discreteItem)
-                } else if (itemTemplate.itemId === INPUT.ElementSpecies ||
-                           itemTemplate.itemId === INPUT.ElementLocation) {
-                    const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
-                    if (item) {
-                        items.push(item)
-                    }
                 }
-                // else...
-                group.items.push(...items)
-            })
+            } else if (itemTemplate.itemId === INPUT.ElementSpecies ||
+                       itemTemplate.itemId === INPUT.ElementLocation) {
+                const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
+                if (item) {
+                    items.push(item)
+                }
+            }
+            group.items.push(...items)
         })
+    }
 
     }
 
     updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
                               celldlObject: CellDLObject, rdfStore: RdfStore) {
-        PROPERTY_GROUPS.forEach((property_group, index) => {
-            // This only works because we only have a single plugin...
-            const group = componentProperties[index]!
-            for (const itemTemplate of property_group.items) {
-                if (itemId === itemTemplate.itemId) {
-                    if (itemId === INPUT.ElementType) {
-                        this.#updateElementType(itemTemplate, value, celldlObject, rdfStore)
-                    } else if (itemId === INPUT.ElementSpecies ||
-                               itemId === INPUT.ElementLocation) {
-                       updateItemProperty(itemTemplate.uri, value, celldlObject, rdfStore)
-                    }
-                    break
+
+        this.#updateElementProperties(value, itemId, celldlObject, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
+    }
+
+    #updateElementProperties(value: ValueChange, itemId: string,
+                            celldlObject: CellDLObject, group: PropertyGroup, rdfStore: RdfStore) {
+        const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
+        for (const itemTemplate of propertyTemplates.items) {
+            if (itemId === itemTemplate.itemId) {
+                if (itemId === INPUT.ElementType) {
+                    this.#updateElementType(itemTemplate, value, celldlObject, rdfStore)
+
+                } else if (itemId === INPUT.ElementSpecies ||
+                           itemId === INPUT.ElementLocation) {
+                   updateItemProperty(itemTemplate.uri, value, celldlObject, rdfStore)
+
                 }
+                break
             }
-        })
-   }
+        }
+    }
 
     styleRules(): string {
         return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
@@ -274,67 +293,63 @@ export class BondgraphPlugin {
         return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
     }
 
-    #getElementTypeItem(itemTemplate: ItemDetails, celldlObject: CellDLObject, rdfStore: RdfStore): ItemDetails {
-        let baseComponent: BaseComponent|undefined = undefined
+    #getObjectsElementTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectElementTemplate|undefined {
         let baseComponentId: string|undefined = undefined
-        let templates: ElementTemplate[] = []
         let elementTemplate: ElementTemplate|undefined = undefined
         rdfStore.query(`${SPARQL_PREFIXES}
             PREFIX : <${rdfStore.documentUri}#>
 
-            SELECT ?type ?subClass WHERE {
-                { ${celldlObject.uri.toString()} a ?type }
-                UNION
-                { ${celldlObject.uri.toString()} rdfs:subClassOf ?subClass }
+            SELECT ?type WHERE {
+                ${celldlObject.uri.toString()} a ?type
             }`
         ).map((r) => {
-            if (r.has('type')) {
-                const rdfType = r.get('type')!.value
-                if (this.#baseComponents.has(rdfType)) {
-                    baseComponentId = rdfType
-                } else if (this.#elementTemplates.has(rdfType)) {
-                    elementTemplate = this.#elementTemplates.get(rdfType)!
-                    baseComponentId = elementTemplate.baseComponentId
-                }
-            }
-            if (r.has('subClass')) {
-                const subClass = r.get('subClass')!.value
-                if (this.#baseComponents.has(subClass)) {
-                    baseComponentId = subClass
-                }
+            const rdfType = r.get('type')!.value
+            if (this.#baseComponents.has(rdfType)) {
+                baseComponentId = rdfType
+            } else if (this.#elementTemplates.has(rdfType)) {
+                elementTemplate = this.#elementTemplates.get(rdfType)!
+                baseComponentId = elementTemplate.baseComponentId
             }
         })
+        if (baseComponentId) {
+            return {
+                baseComponentId,
+                elementTemplate
+            }
+        }
+    }
+
+    #getElementTypeItem(itemTemplate: ItemDetails, template: ObjectElementTemplate): ItemDetails {
         const discreteItem = <IUiJsonDiscreteInput & {
             value: string|number
         }>{...itemTemplate}
 
         discreteItem.possibleValues = []
-        if (baseComponentId) {
-            baseComponent = this.#baseComponents.get(baseComponentId)!
-            templates = this.#baseComponentToTemplates.get(baseComponentId)! || []
-            // `baseComponent` and `templates` are possible values
-            discreteItem.possibleValues.push({
-                name: baseComponent.label || '',
-                value: baseComponent.id,
-                emphasise: true
-            })
-            discreteItem.possibleValues.push(
-                ...templates.map(t => {
-                    return {
-                        name: t.name,
-                        value: t.id
-                    }
-                })
-            )
-        }
+        const baseComponent = this.#baseComponents.get(template.baseComponentId)!
+        const templates = this.#baseComponentToTemplates.get(template.baseComponentId)! || []
 
-        if (elementTemplate) {
+        // `baseComponent` and `templates` are possible values
+        discreteItem.possibleValues.push({
+            name: baseComponent.label || '',
+            value: baseComponent.id,
+            emphasise: true
+        })
+        discreteItem.possibleValues.push(
+            ...templates.map(t => {
+                return {
+                    name: t.name,
+                    value: t.id
+                }
+            })
+        )
+
+        if (template.elementTemplate) {
             // this, along with baseComponent, determines selected item
         }
-        const discreteValue = elementTemplate ? elementTemplate.id
-                            : baseComponentId ? baseComponentId
+        const discreteValue = template.elementTemplate ? template.elementTemplate.id
+                            : template.baseComponentId ? template.baseComponentId
                             : ""
-         discreteItem.value = discreteItem.possibleValues.findIndex(v => {
+        discreteItem.value = discreteItem.possibleValues.findIndex(v => {
             if (String(discreteValue) === String(v.value)) {
                 return true
             }
