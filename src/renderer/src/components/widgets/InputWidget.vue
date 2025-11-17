@@ -7,12 +7,13 @@
                 optionLabel="name"
                 @change="selectChange"
                 class="w-full"
-                size="small")
+                size="small"
+            )
                 template(#value="slotProps")
                     span(
                         v-if="slotProps.value"
                         :class="{ emphasise: slotProps.value.emphasise }"
-                        ) {{ slotProps.value.name }}
+                    ) {{ slotProps.value.name }}
                     span(v-else) {{ slotProps.placeholder }}
                 template(#option="slotProps")
                     .flex.items-center
@@ -26,7 +27,8 @@
                 v-on:focusout="inputTextFocusOut"
                 v-on:keypress="inputTextKeyPress"
                 class="w-full"
-                size="small")
+                size="small"
+            )
             label {{ name }}
         Slider(
             v-model="scalarValue"
@@ -35,14 +37,16 @@
             :step="stepValue"
             @change="sliderChange"
             class="w-full mt-3"
-            size="small")
+            size="small"
+        )
     .bottom-margin(v-else)
         FloatLabel(variant="on")
             InputText(
                 v-model="value"
                 @value-change="inputTextChange"
                 class="w-full"
-                size="small")
+                size="small"
+            )
             label {{ name }}
 </template>
 

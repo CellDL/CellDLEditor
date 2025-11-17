@@ -8,14 +8,16 @@
         @focus="activateInstance"
         @focusin="activateInstance"
         @keydown="activateInstance"
-        @mousedown="activateInstance")
+        @mousedown="activateInstance"
+    )
         MainMenu(
             :id="mainMenuId"
             v-if="electronApi === undefined"
             @about="onAboutMenu"
             @open="onOpenMenu"
             @save="onSaveMenu"
-            @settings="onSettingsMenu")
+            @settings="onSettingsMenu"
+        )
         CellDLEditor(
             :fileData="fileData"
             :saveFile="saveFile"

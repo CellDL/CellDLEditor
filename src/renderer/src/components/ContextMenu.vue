@@ -1,6 +1,7 @@
 <template lang="pug">
     ContextMenu(
-        ref="menu" :model="items")
+        ref="menu" :model="items"
+    )
 </template>
 
 

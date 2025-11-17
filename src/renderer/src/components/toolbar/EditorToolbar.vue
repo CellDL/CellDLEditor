@@ -11,12 +11,14 @@
                 :modal="!!button?.panel"
                 :type="type"
                 :panel="button.panel"
-                @button-event="buttonEvent")
+                @button-event="buttonEvent"
+            )
                 component(
                     v-if="type === 'popover' && button.panel"
                     :is="button.panel"
                     :toolId="button.toolId"
-                    @popover-event="popoverEvent")
+                    @popover-event="popoverEvent"
+                )
 </template>
 
 <script setup lang="ts">

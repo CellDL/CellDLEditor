@@ -1,7 +1,8 @@
 <template lang="pug">
-     Card.left-popover(
+    Card.left-popover(
         :class="{ 'no-gap': !hasTitle, showtip: showtip }"
-        :data-tip-top="pointerPos")
+        :data-tip-top="pointerPos"
+    )
         template(#title)
             div(v-if="hasTitle")
                 slot(name="title")

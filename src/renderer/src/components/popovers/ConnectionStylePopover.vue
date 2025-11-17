@@ -7,7 +7,8 @@
                 :options="items"
                 optionLabel="name"
                 :highlightOnSelect="true"
-                @change="changed")
+                @change="changed"
+            )
                 template(#value="slotProps")
                     .flex.items-center(v-if="slotProps.value")
                         span.ci(:class="[slotProps.value.icon]") &nbsp;

@@ -4,20 +4,24 @@
             :buttons="toolButtons"
             type="popover"
             @button-event="buttonEvent"
-            @popover-event="popoverEvent")
+            @popover-event="popoverEvent"
+        )
         div#svg-content(ref="svg-content")
             <!-- context-menu(id="context-menu")  -->
         #panel-content(
-            :class="{ hidden: !panelVisible }")
+            :class="{ hidden: !panelVisible }"
+        )
             component(
                     v-if="panelComponent"
                     :is="panelComponent"
                     :toolId="panelToolId"
-                    @panel-event="panelEvent")
+                    @panel-event="panelEvent"
+                )
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
-            @button-event="buttonEvent")
+            @button-event="buttonEvent"
+        )
     footer.status-bar
         span#status-msg
         span#status-pos

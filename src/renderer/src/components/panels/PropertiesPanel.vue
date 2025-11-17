@@ -6,7 +6,8 @@
                     v-for="(group, groupIndex) in groups"
                     :key="group.title"
                     :disabled="disabled"
-                    :value="String(groupIndex)")
+                    :value="String(groupIndex)"
+                )
                     AccordionHeader {{ group.title }}
                     AccordionContent
                         InputWidget(
@@ -19,7 +20,7 @@
                             :possibleValues="item.possibleValues"
                             :stepValue="item.stepValue"
                             @change="updateProperties"
-                            )
+                        )
 </template>
 
 <script setup lang="ts">

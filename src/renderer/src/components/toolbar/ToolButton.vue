@@ -3,7 +3,8 @@
         v-if="type === 'popover'"
         ref="tool-popover"
         :class="{ hidden: !popoverVisible }"
-        :style="{ top: popoverTop }")
+        :style="{ top: popoverTop }"
+    )
         slot
     .ci.tool-button(
         :id="toolId"
@@ -11,7 +12,8 @@
         :style="buttonStyle"
         v-tooltip="{ value: prompt }"
         :aria-label="prompt"
-        @click="toolButtonClick")
+        @click="toolButtonClick"
+    )
 </template>
 
 <script setup lang="ts">

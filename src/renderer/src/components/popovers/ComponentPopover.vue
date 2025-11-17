@@ -14,7 +14,8 @@
                         :title="component.name"
                         draggable="true"
                         @dragstart="dragstart"
-                        @mousedown="selected")
+                        @mousedown="selected"
+                    )
 </template>
 
 <script setup lang="ts">

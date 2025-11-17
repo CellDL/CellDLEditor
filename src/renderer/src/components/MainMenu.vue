@@ -1,12 +1,13 @@
 <template lang="pug">
-  Menubar(ref="menuBar" :model="items")
-    template(#item="{ item, props }")
-      a(v-bind="props.action")
-        div.p-menubar-item-label {{ item.label }}
-        .ml-auto.p-icon.p-menubar-submenu-icon(
-          v-if="item.items !== undefined"
-          content="url(/icons/Chevron.svg)"
-          class="")
+    Menubar(ref="menuBar" :model="items")
+        template(#item="{ item, props }")
+            a(v-bind="props.action")
+                div.p-menubar-item-label {{ item.label }}
+                .ml-auto.p-icon.p-menubar-submenu-icon(
+                    v-if="item.items !== undefined"
+                    content="url(/icons/Chevron.svg)"
+                    class=""
+                )
 </template>
 
 <script setup lang="ts">
