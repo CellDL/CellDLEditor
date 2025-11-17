@@ -14,7 +14,10 @@
             v-if="electronApi === undefined"
             @about="onAboutMenu"
             @settings="onSettingsMenu")
-        CellDLEditor
+        CellDLEditor(
+            :fileData="fileData"
+            :saveFile="saveFile"
+        )
 </template>
 
 <script setup lang="ts">
@@ -86,21 +89,27 @@ if (props.theme !== undefined) {
 }
 
 
+const fileData = vue.ref()
 
+// Open.
 
-// Open a file.
+async function onOpenMenu() {
+//=========================
+    const fileHandles = await window.showOpenFilePicker()
+    if (fileHandles.length) {
+        const file = await fileHandles[0].getFile()
+        const contents = await file.text()
+        fileData.value = {
+            name: file.name,
+            contents: contents
+        }
+    }
+}
 
-function openFile(_fileOrFilePath: string | File): void {
-    // Check whether the file is already open and if so then select it.
-    /*
-  const filePath = locCommon.filePath(fileOrFilePath)
+// Open a file
 
-  if (contents.value?.hasFile(filePath) ?? false) {
-    contents.value?.selectFile(filePath)
-
-    return
-  }
-*/
+function openFile(fileOrFilePath: string | File): void {
+console.log('open', fileOrFilePath)   // <<<<<<<<<<<<<
 }
 
 // Open file(s) dialog.
@@ -112,6 +121,25 @@ function onChange(event: Event): void {
         for (const file of Array.from(files)) {
             openFile(file)
         }
+  }
+}
+
+const saveFile = vue.ref()
+
+async function onSaveMenu() {
+    const options = {
+        types: [
+            {
+                description: 'CellDL files',
+                accept: {
+                    'text/plain': ['.celldl', '.svg'],
+                }
+            }
+        ]
+    }
+    const handle = await window.showSaveFilePicker(options).catch(() => {})
+    if (handle) {
+        saveFile.value = handle
     }
 }
 

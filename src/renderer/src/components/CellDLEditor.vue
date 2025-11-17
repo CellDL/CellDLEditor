@@ -168,6 +168,40 @@ function popoverEvent(toolId: string, data: any) {
 //==============================================================================
 
 
+const props = defineProps<{
+    fileData: {
+        name: string
+        contents: string
+    },
+    saveFile: FileSystemHandle
+}>()
+
+vue.watch(
+    () => props.fileData,
+    () => {
+        if (props.fileData) {
+            const fileData = props.fileData
+            if (fileData.contents) {
+                celldlDiagram = new CellDLDiagram(fileData.name, fileData.contents, celldlEditor)
+                celldlEditor.editDiagram(celldlDiagram)
+            }
+        }
+    }
+)
+
+vue.watch(
+    () => props.saveFile,
+    async () => {
+        if (props.saveFile) {
+            const saveFile = props.saveFile
+            const celldlData = await celldlDiagram?.serialise(saveFile.name)
+            const writable = await saveFile.createWritable()
+            await writable.write(celldlData)
+            await writable.close()
+            undoRedo.clean()
+        }
+    }
+)
 
 vue.onMounted(() => {
     // Tell the editor about the default connection style and component

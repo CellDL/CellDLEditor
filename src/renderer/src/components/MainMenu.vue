@@ -23,7 +23,7 @@ const props = defineProps<{
     hasFiles: boolean
 }>()
 
-const emit = defineEmits(['about', 'close', 'closeAll', 'open', 'settings'])
+const emit = defineEmits(['about', 'close', 'closeAll', 'open', 'save', 'settings'])
 const isWindowsOrLinux = common.isWindows() || common.isLinux()
 const isMacOs = common.isMacOs()
 
@@ -37,6 +37,15 @@ const items = [
                 command: () => {
                     emit('open')
                 }
+            },
+            { separator: true },
+            {
+                label: 'Save...',
+                shortcut: isWindowsOrLinux ? 'Ctrl+Alt+S' : isMacOs ? '⌘⌥S' : undefined,
+                command: () => {
+                    emit('save')
+                },
+                disabled: () => !props.hasFiles
             },
             { separator: true },
             {
