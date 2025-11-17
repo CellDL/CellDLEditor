@@ -186,7 +186,7 @@ export class RdfStore extends BaseStore {
         }
     }
 
-    sparqlQuery(sparql: string, all_graphs: boolean = false): Map<string, $oxigraph.Term>[] {
+    query(sparql: string, all_graphs: boolean = false): Map<string, $oxigraph.Term>[] {
         try {
             const results = this.#rdfStore.query(sparql, {
                 use_default_graph_as_union: all_graphs
@@ -202,7 +202,7 @@ export class RdfStore extends BaseStore {
             let inLib = true
             for (const location of (<Error>error).stack!.split('\n')) {
                 if (inLib) {
-                    inLib = location.indexOf('RdfStore.sparqlQuery') < 0
+                    inLib = location.indexOf('RdfStore.query') < 0
                 } else {
                     console.log(location)
                 }
@@ -222,7 +222,7 @@ export class RdfStore extends BaseStore {
     }
 
     subjectsOfType(parentType: NamedNode): [SubjectType, NamedNode][] {
-        return this.sparqlQuery(
+        return this.query(
             `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 

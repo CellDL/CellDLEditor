@@ -284,7 +284,7 @@ export class BondgraphPlugin {
     }
 
     #query(sparql: string) {
-        return this.#rdfStore.sparqlQuery(`${SPARQL_PREFIXES}${sparql}`)
+        return this.#rdfStore.query(`${SPARQL_PREFIXES}${sparql}`)
     }
 
     #loadDomains() {

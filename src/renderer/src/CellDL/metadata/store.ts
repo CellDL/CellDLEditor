@@ -96,7 +96,7 @@ export abstract class BaseStore {
         graph: NamedNode | null
     ): Promise<string>
 
-    abstract sparqlQuery(sparql: string, all_graphs: boolean): Map<string, unknown>[]
+    abstract query(sparql: string, all_graphs: boolean): Map<string, unknown>[]
 
     abstract statements(graph: NamedNode | null): Statement[]
 
