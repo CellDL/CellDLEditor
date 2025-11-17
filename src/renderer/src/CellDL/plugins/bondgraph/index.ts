@@ -235,7 +235,7 @@ export class BondgraphPlugin {
         return MetadataPropertiesMap.fromProperties(metadataProperties)
     }
 
-    propertyGroups(): PropertyGroup[] {
+    getPropertyGroups(): PropertyGroup[] {
         return PROPERTY_GROUPS
     }
 

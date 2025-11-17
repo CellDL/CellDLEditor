@@ -108,7 +108,7 @@ export function updateItemProperty(newValue: string, celldlObject: CellDLObject,
 
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])
-    #propertyGroups = [...pluginComponents.propertyGroups(), METADATA_GROUP]
+    #propertyGroups = [...pluginComponents.getPropertyGroups(), METADATA_GROUP]
     #metadataIndex: number
 
     constructor() {
