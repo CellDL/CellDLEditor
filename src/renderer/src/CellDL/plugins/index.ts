@@ -23,7 +23,6 @@ import * as vue from 'vue'
 import { type ObjectTemplate } from '@editor/components/index'
 import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
-import { MetadataPropertiesMap } from '@editor/metadata/index'
 
 //==============================================================================
 
@@ -44,6 +43,7 @@ export interface ElementTemplateName {
     id: string
     name: string
 }
+import { MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
 

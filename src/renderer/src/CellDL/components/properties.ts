@@ -26,11 +26,13 @@ import { type PropertiesType } from '@renderer/common/types'
 
 import { CellDLObject } from '@editor/celldlObjects/index'
 import { type NamedUri, OBJECT_METADATA } from '@editor/components/index'
+import { MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 import { pluginComponents } from '@editor/plugins/index'
 
 //==============================================================================
 
 export type ItemDetails = locApi.IUiJsonInput & {
+    itemId: string
     uri: string
     value?: string|number
     optional?: boolean
@@ -48,6 +50,7 @@ const METADATA_GROUP: PropertyGroup = {
     title: 'Metadata',
     items: OBJECT_METADATA.map((nameUri: NamedUri) => {
         return {
+            itemId: nameUri.uri,
             uri: nameUri.uri,
             name: nameUri.name,
             defaultValue: ''
@@ -112,7 +115,7 @@ export class ObjectPropertiesPanel {
         }
     }
 
-    updateObject(celldlObject: CellDLObject|null) {
+    updateObject(celldlObject: CellDLObject|null, rdfStore: RdfStore, itemId: string, value: string): boolean {
         if (celldlObject) {
             const metadata: PropertiesType = {}
             for (const group of componentProperties.value) {
@@ -124,6 +127,7 @@ export class ObjectPropertiesPanel {
             celldlObject.metadata = metadata
             }
         }
+        return false
     }
 }
 

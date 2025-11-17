@@ -58,7 +58,7 @@ const emits = defineEmits(['change'])
 const props = defineProps<{
     maximumValue?: number
     minimumValue?: number
-    id: string
+    itemId: string
     name: string
     possibleValues?: locApi.IUiJsonDiscreteInputPossibleValue[]
     stepValue?: number
@@ -95,7 +95,7 @@ function emitChange(newValue: number | string) {
 
         oldValue = newValue
 
-        emits('change', props.id, newValue)
+        emits('change', props.itemId, newValue)
     })
 }
 

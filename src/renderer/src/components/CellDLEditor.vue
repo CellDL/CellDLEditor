@@ -12,7 +12,8 @@
             component(
                     v-if="panelComponent"
                     :is="panelComponent"
-                    :toolId="panelToolId")
+                    :toolId="panelToolId"
+                    @panel-event="panelEvent")
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
             type="panel"
@@ -162,6 +163,19 @@ function popoverEvent(toolId: string, data: any) {
 
         despatchToolbarEvent('value', toolId, data.id)
     }
+}
+
+function panelEvent(toolId: string, itemId: string, value: string) {
+    document.dispatchEvent(
+        new CustomEvent('panel-event', {
+            detail: {
+                type: 'value',
+                source: toolId,
+                itemId: itemId,
+                value: value
+            }
+        })
+    )
 }
 
 //==============================================================================
