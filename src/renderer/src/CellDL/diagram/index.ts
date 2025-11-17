@@ -252,7 +252,7 @@ export class CellDLDiagram {
             this.#kb.removeStatements(this.#kb.documentNode, property, null)
             if (key in this.#diagramProperties) {
                 const value = this.#diagramProperties[key]
-                if (value) {
+                if (value && this.#kb.documentNode) {
                     this.#kb.add(this.#kb.documentNode, property, $rdf.literal(value))
                 }
             }
@@ -398,7 +398,9 @@ export class CellDLDiagram {
     }
 
     #initaliseMetadata() {
-        this.#kb.add(this.#kb.documentNode, RDF_TYPE, CELLDL_NAMESPACE('Document'))
+        if (this.#kb.documentNode) {
+            this.#kb.add(this.#kb.documentNode, RDF_TYPE, CELLDL_NAMESPACE('Document'))
+        }
         this.#diagramProperties['celldlVersion'] = CELLDL_VERSION
     }
 
@@ -843,6 +845,7 @@ export class CellDLDiagram {
     }
 
     #addNewObject(svgElement: SVGGraphicsElement, template: ObjectTemplate, assignId = true) {
+        // @ts-expect-error:
         const celldlClassName = template.CellDLClass.celldlClassName
         if (assignId) {
             this.#setUniqueId(svgElement)

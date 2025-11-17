@@ -80,11 +80,13 @@ export class CellDLObject {
     #celldlClassName: CELLDL_CLASS
     #celldlDiagram: CellDLDiagram
     #celldlSvgElement: CellDLSVGElement | null = null
-    #moveable: boolean = false
     #celldlType: NamedNode
 
     #label: string | null = null
+    #moveable: boolean = false
+
     #metadataProperties!: MetadataPropertiesMap
+
     #template!: ObjectTemplate
 
     #children: Map<string, CellDLObject> = new Map()
@@ -269,7 +271,7 @@ export class CellDLObject {
         const metadataProperties = properties.copy()
         metadataProperties.setProperty(RDF_TYPE, this.#celldlType, true)
         this.#metadataProperties = metadataProperties
-        const label = properties.get(RDFS_NAMESPACE('label').uri) || 0
+        const label = properties.get(RDFS_NAMESPACE('label').value) || 0
         if ($rdf.isLiteral(label)) {
             // @ts-expect-error: label is a Literal
             this.#label = label.value
@@ -494,11 +496,11 @@ export class CellDLConnection extends CellDLObject {
     }
 
     get source(): CellDLConnectedObject | null {
-        return this.#connectedObjects.length ? this.#connectedObjects[0] : null
+        return this.#connectedObjects[0] || null
     }
 
     get target(): CellDLConnectedObject | null {
-        return this.#connectedObjects.length > 1 ? this.#connectedObjects.slice(-1)[0] : null
+        return this.#connectedObjects.length > 1 ? this.#connectedObjects.at(-1) : null
     }
 
     assignSvgElement(svgElement: SVGGraphicsElement) {

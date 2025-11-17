@@ -30,9 +30,9 @@ import {
     type NamedNode,
     Namespace,
     type Statement
-} from '.'
+} from './index'
 
-import type { SubjectType, PredicateType, ObjectType, NamespaceType } from '.'
+import type { SubjectType, PredicateType, ObjectType, NamespaceType } from './index'
 
 //==============================================================================
 
