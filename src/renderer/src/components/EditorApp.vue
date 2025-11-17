@@ -13,6 +13,8 @@
             :id="mainMenuId"
             v-if="electronApi === undefined"
             @about="onAboutMenu"
+            @open="onOpenMenu"
+            @save="onSaveMenu"
             @settings="onSettingsMenu")
         CellDLEditor(
             :fileData="fileData"
