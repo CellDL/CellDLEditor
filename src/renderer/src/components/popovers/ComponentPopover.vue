@@ -10,8 +10,8 @@
                         :library="library.id"
                         :id="component.id"
                         :src="component.image"
-                        :aria-label="component.label"
-                        :title="component.label"
+                        :aria-label="component.name"
+                        :title="component.name"
                         draggable="true"
                         @dragstart="dragstart"
                         @mousedown="selected")

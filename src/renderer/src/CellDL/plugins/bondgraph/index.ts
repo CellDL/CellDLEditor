@@ -198,7 +198,7 @@ export class BondgraphPlugin {
             return {
                 uri: template.id,
                 CellDLClass: CellDLComponent,
-                label: template.label,
+                name: template.name,
                 image: template.image,
                 metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties),
             }
