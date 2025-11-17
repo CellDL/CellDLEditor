@@ -482,22 +482,6 @@ export class BondgraphPlugin {
         return this.#rdfStore.query(`${SPARQL_PREFIXES}${sparql}`)
     }
 
-    #getElementTemplates(id: string): ElementTemplate[] {
-        const templates = this.#baseComponentToTemplates.get(id)
-        if (templates) {
-            return templates.map(t => {
-                return {
-                    id: t.id,
-                    name: t.name,
-                    domain: '',
-                    parameters: [],
-                    states: []
-                }
-            })
-        }
-        return []
-    }
-
     #loadDomains() {
         this.#query(`
             SELECT ?domain
