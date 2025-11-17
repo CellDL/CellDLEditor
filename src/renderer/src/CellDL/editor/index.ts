@@ -393,7 +393,7 @@ export class CellDLEditor {
 
     #panelEvent(event: Event) {
         const detail = (<CustomEvent>event).detail
-        if (detail.panel === this.#openPanelId) {
+        if (detail.source === this.#openPanelId) {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
                 const values = detail.value
                 if (values.oldValue != values.newValue) {
