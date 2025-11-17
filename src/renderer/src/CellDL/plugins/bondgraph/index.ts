@@ -246,6 +246,25 @@ export class BondgraphPlugin {
 
     }
 
+    updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
+                              celldlObject: CellDLObject, rdfStore: RdfStore) {
+        PROPERTY_GROUPS.forEach((property_group, index) => {
+            // This only works because we only have a single plugin...
+            const group = componentProperties[index]!
+            for (const itemTemplate of property_group.items) {
+                if (itemId === itemTemplate.itemId) {
+                    if (itemId === INPUT.ElementType) {
+                        this.#updateElementType(itemTemplate, value, celldlObject, rdfStore)
+                    } else if (itemId === INPUT.ElementSpecies ||
+                               itemId === INPUT.ElementLocation) {
+                       updateItemProperty(itemTemplate.uri, value, celldlObject, rdfStore)
+                    }
+                    break
+                }
+            }
+        })
+   }
+
     styleRules(): string {
         return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
     }
@@ -320,6 +339,30 @@ export class BondgraphPlugin {
             }
         })
         return discreteItem as ItemDetails
+    }
+
+    #updateElementType(itemTemplate: ItemDetails, value: ValueChange,
+                       celldlObject: CellDLObject, rdfStore: RdfStore) {
+        const objectUri = celldlObject.uri.toString()
+        const deleteTriples: string[] = []
+        if (this.#elementTemplates.has(value.oldValue)) {
+            deleteTriples.push(`${objectUri} a <${value.oldValue}>`)
+            const baseComponentId = this.#elementTemplates.get(value.oldValue)!.baseComponentId
+            deleteTriples.push(`${objectUri} a <${baseComponentId}>`)
+        } else if (this.#baseComponents.has(value.oldValue)) {
+            deleteTriples.push(`${objectUri} a <${value.oldValue}>`)
+        }
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            DELETE DATA {
+                ${deleteTriples.join('\n')}
+            }`)
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            INSERT DATA { ${objectUri} a <${value.newValue}> }
+        `)
     }
 
     #query(sparql: string) {

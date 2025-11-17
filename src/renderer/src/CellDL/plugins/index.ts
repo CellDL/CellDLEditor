@@ -26,7 +26,7 @@ import {
     type ComponentLibraryTemplate,
     type ObjectTemplate
 } from '@editor/components/index'
-import { type ItemDetails, type PropertyGroup } from '@editor/components/properties'
+import { type ItemDetails, type PropertyGroup, type ValueChange } from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 import { MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 
@@ -77,6 +77,12 @@ export class PluginComponents {
     getComponentProperties(componentProperties: PropertyGroup[],
                            celldlObject: CellDLObject, rdfStore: RdfStore) {
         return this.#bondgraphPlugin.getComponentProperties(componentProperties, celldlObject, rdfStore)
+    }
+
+    updateComponentProperties(componentProperties: PropertyGroup[],
+                              value: ValueChange, itemId: string,
+                              celldlObject: CellDLObject, rdfStore: RdfStore) {
+        return this.#bondgraphPlugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
     }
 
     styleRules(): string {

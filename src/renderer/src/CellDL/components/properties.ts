@@ -93,22 +93,25 @@ export function getItemProperty(celldlObject: CellDLObject,
     return item
 }
 
-export function updateItemProperty(newValue: string, celldlObject: CellDLObject,
-                                   itemTemplate: ItemDetails, rdfStore: RdfStore) {
-    newValue = newValue.trim()
-    const insertClause = newValue
-                       ? `INSERT { ${celldlObject.uri.toString()} <${itemTemplate.uri}> "${newValue}" }`
-                       : ''
+export function updateItemProperty(property: string, value: ValueChange,
+                                   celldlObject: CellDLObject, rdfStore: RdfStore) {
     rdfStore.update(`${SPARQL_PREFIXES}
         PREFIX : <${rdfStore.documentUri}#>
 
         DELETE {
-            ${celldlObject.uri.toString()} <${itemTemplate.uri}> ?value
+            ${celldlObject.uri.toString()} <${property}> ?value
         }
-        ${insertClause}
         WHERE {
-            ${celldlObject.uri.toString()} ?p ?value
+            ${celldlObject.uri.toString()} <${property}> ?value
         }`)
+    const newValue = value.newValue.trim()
+    if (newValue) {
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            INSERT DATA { ${celldlObject.uri.toString()} <${property}> "${newValue}" }
+        `)
+    }
 }
 
 export class ObjectPropertiesPanel {
@@ -153,11 +156,18 @@ export class ObjectPropertiesPanel {
     updateObjectProperties(value: ValueChange, itemId: string,
                            celldlObject: CellDLObject|null, rdfStore: RdfStore) {
         if (celldlObject) {
+            // Save plugin specific component properties
+
+            pluginComponents.updateComponentProperties(this.#componentProperties.value,
+                                                       value, itemId, celldlObject, rdfStore)
+
+            // Save component properties in the METADATA_GROUP
+
             const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
             const group = this.#componentProperties.value[this.#metadataIndex]
             for (const itemTemplate of metadataGroup.items) {
                 if (itemId === itemTemplate.itemId) {
-                    updateItemProperty(newValue, celldlObject, itemTemplate, rdfStore)
+                    updateItemProperty(itemTemplate.uri, value, celldlObject, rdfStore)
                     break
                 }
             }
