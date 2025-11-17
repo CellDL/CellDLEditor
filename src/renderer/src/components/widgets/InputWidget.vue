@@ -8,6 +8,15 @@
                 @change="selectChange"
                 class="w-full"
                 size="small")
+                template(#value="slotProps")
+                    span(
+                        v-if="slotProps.value"
+                        :class="{ emphasise: slotProps.value.emphasise }"
+                        ) {{ slotProps.value.name }}
+                    span(v-else) {{ slotProps.placeholder }}
+                template(#option="slotProps")
+                    .flex.items-center
+                        span(:class="{ emphasise: slotProps.option.emphasise }") {{ slotProps.option.name }}
             label {{ name }}
     .bottom-margin(v-else-if="scalarType")
         FloatLabel(variant="on")
@@ -145,5 +154,8 @@ function sliderChange(newValue: number | number[]) {
 <style scoped>
     .bottom-margin {
         margin-bottom: 30px;
+    }
+    .emphasise {
+        font-style: italic;
     }
 </style>

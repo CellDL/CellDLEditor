@@ -19,6 +19,7 @@ interface IUiJsonDiscreteInput {
 export interface IUiJsonDiscreteInputPossibleValue {
   name: string;
   value: number|string;
+  emphasise?: boolean
 }
 
 interface IUiJsonScalarInput {
