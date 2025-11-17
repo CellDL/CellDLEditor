@@ -133,11 +133,11 @@ export class ObjectPropertiesPanel {
             group.items = []
         }
         if (celldlObject) {
-            // Get properties from plugins
+            // Update component properties with plugin specific values
 
-            pluginComponents.setComponentProperties(this.#componentProperties.value, celldlObject, rdfStore)
+            pluginComponents.getComponentProperties(this.#componentProperties.value, celldlObject, rdfStore)
 
-            // Now set properties from the METADATA_GROUP
+            // Update component properties in the METADATA_GROUP
 
             const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
             const group = this.#componentProperties.value[this.#metadataIndex]

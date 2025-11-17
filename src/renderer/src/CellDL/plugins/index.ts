@@ -74,8 +74,9 @@ export class PluginComponents {
         return selectedTemplate
     }
 
-    setComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
-        return this.#bondgraphPlugin.setComponentProperties(componentProperties, celldlObject, rdfStore)
+    getComponentProperties(componentProperties: PropertyGroup[],
+                           celldlObject: CellDLObject, rdfStore: RdfStore) {
+        return this.#bondgraphPlugin.getComponentProperties(componentProperties, celldlObject, rdfStore)
     }
 
     styleRules(): string {

@@ -223,7 +223,7 @@ export class BondgraphPlugin {
     }
 
 
-    setComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
+    getComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
         PROPERTY_GROUPS.forEach((property_group, index) => {
             // This only works because we only have a single plugin...
             const group = componentProperties[index]!
