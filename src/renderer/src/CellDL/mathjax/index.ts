@@ -59,7 +59,7 @@ import '@mathjax/src/js/input/tex/mhchem/MhchemConfiguration'
 
 import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
 
-import { type Extent } from '@editor/geometry'
+import { type Extent } from '@editor/geometry/index'
 import { EM_SIZE, EX_SIZE, lengthToPixels, pixelsToLength } from '@editor/geometry/units'
 import { round } from '@editor/utils'
 
@@ -137,7 +137,6 @@ function latexToSvgDocument(latex: string): XMLDocument {
 function latexToSvg(
     latex: string,
     suffix: string,
-    //================================================
     options: LatexMathOptions = {},
     includeStyleRules: boolean = false
 ): string {
