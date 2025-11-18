@@ -106,7 +106,7 @@ const toolButtons = vue.ref<EditorToolButton[]>([
     {
         toolId: EDITOR_TOOL_IDS.AddComponentTool,
         active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
-        prompt: addComponentPrompt(defaultComponent.label),
+        prompt: addComponentPrompt(defaultComponent.name),
         image: defaultComponent.image,
         panel: vue.markRaw(ComponentPopover)
     }
@@ -160,7 +160,7 @@ function popoverEvent(toolId: string, data: any) {
         despatchToolbarEvent('value', toolId, data.id)
 
     } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
-        toolButtons.value[2]!.prompt = addComponentPrompt(data.label)
+        toolButtons.value[2]!.prompt = addComponentPrompt(data.name)
         toolButtons.value[2]!.image = data.image
 
         // Tell the editor that the component template has changed
