@@ -584,8 +584,11 @@ export class CellDLDiagram {
         return object
     }
 
-    addNewConnection(svgElement: SVGGraphicsElement, template: ObjectTemplate): CellDLConnection | null {
-        return this.#addNewObject(svgElement, template) as CellDLConnection
+    addNewConnection(svgElement: SVGGraphicsElement, template: ObjectTemplate): CellDLConnection {
+        const connection = this.#addNewObject(svgElement, template) as CellDLConnection
+        // let the plugins know
+        pluginComponents.addNewConnection(connection, this.rdfStore)
+        return connection
     }
 
     createCompartment(bounds: Bounds, objects: CellDLObject[]): CellDLCompartment {
@@ -671,6 +674,8 @@ export class CellDLDiagram {
             false
         ) as CellDLConnection
         this.#addConnection(connection)
+        // let the plugins know
+        pluginComponents.addNewConnection(connection, this.rdfStore)
         return connection
     }
 
@@ -990,11 +995,13 @@ export class CellDLDiagram {
             const connections = (<CellDLConnectedObject>celldlObject).connections
             for (const connection of connections) {
                 this.#removeObject(connection, undoAction)
+                pluginComponents.deleteConnection(connection, this.rdfStore)
                 connector.deleteConnection(connection)
             }
         }
         if (celldlObject.isConnection) {
             const connection = <CellDLConnection>celldlObject
+            pluginComponents.deleteConnection(connection, this.rdfStore)
             for (const connector of connection.connectedObjects) {
                 connector.deleteConnection(connection)
             }

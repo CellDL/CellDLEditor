@@ -23,7 +23,11 @@ import * as $oxigraph from '@oxigraph/web'
 import { arrowMarkerDefinition } from '@renderer/common/styling'
 import { type IUiJsonDiscreteInput, type IUiJsonDiscreteInputPossibleValue } from '@renderer/libopencor/locUIJsonApi'
 
-import { CellDLComponent, CellDLObject } from '@editor/celldlObjects/index'
+import {
+    CellDLComponent,
+    CellDLConnection,
+    CellDLObject
+} from '@editor/celldlObjects/index'
 import {
     type ComponentLibrary,
     type ComponentLibraryTemplate,
@@ -242,6 +246,34 @@ export class BondgraphPlugin {
         return PROPERTY_GROUPS
     }
 
+
+    //==========================================================================
+
+    addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
+        const uri = connection.uri.toString()
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            INSERT DATA {
+                ${uri} bgf:hasSource ${connection.source!.uri.toString()} .
+                ${uri} bgf:hasTarget ${connection.target!.uri.toString()} .
+            }
+        `)
+    }
+
+    deleteConnection(connection: CellDLConnection, rdfStore: RdfStore) {
+        const uri = connection.uri.toString()
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            DELETE DATA {
+                ${uri} bgf:hasSource ${connection.source!.uri.toString()} .
+                ${uri} bgf:hasTarget ${connection.target!.uri.toString()} .
+            }
+        `)
+    }
+
+    //==========================================================================
 
     getComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
         const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)

@@ -20,7 +20,10 @@ limitations under the License.
 
 import * as vue from 'vue'
 
-import { CellDLObject } from '@editor/celldlObjects/index'
+import {
+    CellDLConnection,
+    CellDLObject
+} from '@editor/celldlObjects/index'
 import {
     type ComponentLibrary,
     type ComponentLibraryTemplate,
@@ -48,6 +51,14 @@ export class PluginComponents {
 
     static get instance() {
         return PluginComponents.#instance ?? (PluginComponents.#instance = new PluginComponents())
+    }
+
+    addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
+        this.#bondgraphPlugin.addNewConnection(connection, rdfStore)
+    }
+
+    deleteConnection(connection: CellDLConnection, rdfStore: RdfStore) {
+        this.#bondgraphPlugin.deleteConnection(connection, rdfStore)
     }
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
