@@ -123,15 +123,18 @@ function getLengthFromOptions(options: LatexMathOptions, key: string): number {
     return length || 0
 }
 
-function latexToSvgDocument(latex: string): XMLDocument {
+export function latexAsSvgString(latex: string): string {
     const node = html.convert(latex, {
         display: false, // process as inline math
         em: EM_SIZE,
         ex: EX_SIZE
     })
-    const svg = adaptor.innerHTML(node)
-    const document = new DOMParser().parseFromString(svg, 'image/svg+xml')
-    return document as unknown as XMLDocument
+    return adaptor.innerHTML(node)
+}
+
+export function latexAsSvgDocument(latex: string): XMLDocument {
+    const svg = latexAsSvgString(latex)
+    return new DOMParser().parseFromString(svg, 'image/svg+xml')
 }
 
 function latexToSvg(
@@ -140,7 +143,8 @@ function latexToSvg(
     options: LatexMathOptions = {},
     includeStyleRules: boolean = false
 ): string {
-    let svgDocument = latexToSvgDocument(latex)
+    let svgDocument = latexAsSvgDocument(latex)
+
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
     const svgWidth = lengthToPixels(svgElement.getAttribute('width'))
     const svgHeight = lengthToPixels(svgElement.getAttribute('height'))
@@ -163,7 +167,7 @@ function latexToSvg(
         const rectSize = ` width="${round(width - 2 * border * scale[0])}" height="${round(height - 2 * border * scale[1])}"`
         if (suffix !== '') {
             const suffixLatex = suffix !== '' ? `\\;${suffix}` : ''
-            svgDocument = latexToSvgDocument(`${latex}${suffixLatex}`)
+            svgDocument = latexAsSvgDocument(`${latex}${suffixLatex}`)
             svgElement = (<Element>svgDocument.documentElement) as SVGSVGElement
             viewBox = getViewbox(svgElement)
             right = Math.max(right, viewBox[0] + viewBox[2] + scale[0] * padding)
