@@ -275,6 +275,19 @@ export class BondgraphPlugin {
 
     //==========================================================================
 
+    addDocumentMetadata(rdfStore: RdfStore) {
+        const statements: string[] = []
+        statements.push(`<${rdfStore.documentUri}> a bgf:BondgraphModel .`)
+
+        rdfStore.update(`${SPARQL_PREFIXES}
+            INSERT DATA {
+                ${statements.join('\n')}
+            }
+        `)
+    }
+
+    //==========================================================================
+
     getComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
         const template = this.#getObjectsElementTemplate(celldlObject, rdfStore)
 

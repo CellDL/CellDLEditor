@@ -57,6 +57,10 @@ export class PluginComponents {
         this.#bondgraphPlugin.addNewConnection(connection, rdfStore)
     }
 
+    addDocumentMetadata(rdfStore: RdfStore) {
+        this.#bondgraphPlugin.addDocumentMetadata(rdfStore)
+    }
+
     deleteConnection(connection: CellDLConnection, rdfStore: RdfStore) {
         this.#bondgraphPlugin.deleteConnection(connection, rdfStore)
     }

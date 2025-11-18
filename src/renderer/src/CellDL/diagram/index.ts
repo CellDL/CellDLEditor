@@ -490,6 +490,9 @@ export class CellDLDiagram {
                 svgDiagram!.setAttribute('viewBox', trimmedViewbox.map((n) => String(n)).join(' '))
             }
 
+            // Add statements about the document fron plugins
+            pluginComponents.addDocumentMetadata(this.rdfStore)
+
             // Make sure metadata is up-to-date
             this.#saveDiagramProperties()
 
