@@ -118,6 +118,7 @@ const html = mathjax.document('', {
 //==============================================================================
 
 function getLengthFromOptions(options: LatexMathOptions, key: string): number {
+    // @ts-expect-error: `key` is an option
     const length = key in options ? lengthToPixels(options[key]) : null
     return length || 0
 }
@@ -199,7 +200,7 @@ function latexToSvg(
         viewBox[1] = round(top)
         viewBox[2] = round(width)
         viewBox[3] = round(height)
-        svgElement.setAttribute('viewBox', viewBox.map((n) => '' + n).join(' '))
+        svgElement.setAttribute('viewBox', viewBox.map((n: number) => '' + n).join(' '))
         svgElement.setAttribute('width', pixelsToLength(width / scale[0], 'ex')!)
         svgElement.setAttribute('height', pixelsToLength(height / scale[1], 'ex')!)
 
