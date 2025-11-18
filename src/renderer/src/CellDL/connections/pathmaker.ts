@@ -18,13 +18,13 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { SVG_URI } from '@renderer/common/svgUtils'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
 import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
 import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
 
-import { CELLDL_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
+import { CELLDL, RDF_TYPE } from '@editor/metadata/index'
 import { MetadataPropertiesMap } from '@editor/metadata/index'
 import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects/index'
 import type { CellDLSVGElement } from '@editor/SVGElements/index'
@@ -461,7 +461,7 @@ export class PathMaker {
         if (this.#edges.length == 1) {
             svgElement = this.#edges[0].svgPath!
         } else {
-            svgElement = document.createElementNS(SVG_NAMESPACE_URI, 'g') as SVGGraphicsElement
+            svgElement = document.createElementNS(SVG_URI, 'g') as SVGGraphicsElement
             this.#edges.forEach((edge) => edge.svgPath!.classList.add('parent-id'))
             this.#edges.forEach((edge) => svgElement.appendChild(edge.svgPath!))
         }
@@ -469,10 +469,10 @@ export class PathMaker {
 
         // Create a new connection between start and end objects
         const metadataProperties = MetadataPropertiesMap.fromProperties([
-            [RDF_TYPE, CELLDL_NAMESPACE('Connection')], // shouldn't CellDLClass imply this??
-            [CELLDL_NAMESPACE('hasSource'), this.#nodes[0].uri],
-            [CELLDL_NAMESPACE('hasTarget'), endNode.uri],
-            [CELLDL_NAMESPACE('hasIntermediate'), this.#nodes.slice(1, -1).map((c) => c.uri)]
+            [RDF_TYPE, CELLDL('Connection')], // shouldn't CellDLClass imply this??
+            [CELLDL('hasSource'), this.#nodes[0]!.uri],
+            [CELLDL('hasTarget'), endNode.uri],
+            [CELLDL('hasIntermediate'), this.#nodes.slice(1, -1).map((c) => c.uri)]
         ])
         // need to unregister redo handler...
         celldlDiagram.addNewConnection(svgElement, {

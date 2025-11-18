@@ -79,12 +79,12 @@ export const CELLDL_VERSION = '1.0'
 //==============================================================================
 
 export const DiagramProperties = {
-    author: DCT_NAMESPACE('creator'),
-    created: DCT_NAMESPACE('created'),
-    description: DCT_NAMESPACE('description'),
-    modified: DCT_NAMESPACE('modified'),
-    title: DCT_NAMESPACE('title'),
-    celldlVersion: OWL_NAMESPACE('versionInfo')
+    author: DCT('creator'),
+    created: DCT('created'),
+    description: DCT('description'),
+    modified: DCT('modified'),
+    title: DCT('title'),
+    celldlVersion: OWL('versionInfo')
 }
 
 //==============================================================================
@@ -293,7 +293,7 @@ export class CellDLDiagram {
         )
         if (styleElement === null) {
             const defsElement = this.#svgDiagram.getElementById(CELLDL_DEFINITIONS_ID)
-            styleElement = document.createElementNS(SVG_NAMESPACE_URI, 'style')
+            styleElement = document.createElementNS(SVG_URI, 'style')
             styleElement.id = CELLDL_STYLESHEET_ID
             defsElement!.prepend(styleElement)
             styleElement.textContent = css
@@ -334,7 +334,7 @@ export class CellDLDiagram {
             }
         }
         if (!backgroundGroup) {
-            backgroundGroup = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+            backgroundGroup = document.createElementNS(SVG_URI, 'g')
             this.#svgDiagram.appendChild(backgroundGroup)
             for (const child of backgroundElements) {
                 backgroundGroup.appendChild(child)
@@ -371,7 +371,7 @@ export class CellDLDiagram {
 
     #newDiagram() {
         const windowSize = this.#celldlEditor.windowSize
-        const svgDiagram = document.createElementNS(SVG_NAMESPACE_URI, 'svg')
+        const svgDiagram = document.createElementNS(SVG_URI, 'svg')
         svgDiagram.setAttribute('viewBox', `0 0 ${windowSize[0]} ${windowSize[1]}`)
         this.#svgDiagram = svgDiagram
         this.#setLayer(CELLDL_DIAGRAM_ID)
@@ -380,7 +380,7 @@ export class CellDLDiagram {
     #setLayer(layerId: string) {
         let newLayer = <SVGGElement>this.#svgDiagram.querySelector(`svg > g.${CELLDL_CLASS.Layer}[id="${layerId}"]`)
         if (newLayer === null) {
-            newLayer = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+            newLayer = document.createElementNS(SVG_URI, 'g')
             newLayer.id = layerId
             newLayer.setAttribute('class', CELLDL_CLASS.Layer)
             this.#svgDiagram.appendChild(newLayer)
@@ -399,7 +399,7 @@ export class CellDLDiagram {
 
     #initaliseMetadata() {
         if (this.#kb.documentNode) {
-            this.#kb.add(this.#kb.documentNode, RDF_TYPE, CELLDL_NAMESPACE('Document'))
+            this.#kb.add(this.#kb.documentNode, RDF_TYPE, CELLDL('Document'))
         }
         this.#diagramProperties['celldlVersion'] = CELLDL_VERSION
     }
@@ -417,7 +417,7 @@ export class CellDLDiagram {
                 }
             }
         }
-        if (!this.#kb.contains(this.#kb.documentNode, RDF_TYPE, CELLDL_NAMESPACE('Document'))) {
+        if (!this.#kb.contains(this.#kb.documentNode, RDF_TYPE, CELLDL('Document'))) {
             throw new Error(`${this.#filePath} metadata doesn't describe a valid CellDL document`)
         }
         this.#loadDiagramProperties()
@@ -511,7 +511,7 @@ export class CellDLDiagram {
     async #serialiseMetadata(metadataFormat: ContentType): Promise<string> {
         let metadata: string = ''
         try {
-            metadata = await this.#kb.serialise(metadataFormat, CELLDL_NAMESPACE_DECLARATIONS)
+            metadata = await this.#kb.serialise(metadataFormat, CELLDL_DECLARATIONS)
         } catch (err) {
             console.log(err)
         }
@@ -596,7 +596,7 @@ export class CellDLDiagram {
 
     createCompartment(bounds: Bounds, objects: CellDLObject[]): CellDLCompartment {
         // we could simply pass ids into #objects
-        const compartmentGroup = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+        const compartmentGroup = document.createElementNS(SVG_URI, 'g')
         compartmentGroup.id = this.#nextIdentifier()
         const cornerPoints = bounds.asPoints()
         const compartmentRect = svgRectElement(cornerPoints[0], cornerPoints[1], { class: 'compartment' })
@@ -631,8 +631,8 @@ export class CellDLDiagram {
                 CellDLClass: CellDLCompartment,
                 uri: CellDLCompartment.celldlType.uri,
                 metadataProperties: MetadataPropertiesMap.fromProperties([
-                    [CELLDL_NAMESPACE('hasInterface'), interfacePorts.map((p) => p.uri)]
-                ])
+                    [CELLDL('hasInterface'), interfacePorts.map((p) => p.uri)]
+                ]),
             },
             false
         ) as CellDLCompartment
@@ -649,7 +649,7 @@ export class CellDLDiagram {
             debugger
         }
         if (svgElements.length > 1) {
-            svgElement = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+            svgElement = document.createElementNS(SVG_URI, 'g')
             svgElement.classList.add(CELLDL_CLASS.Connection)
             svgElements.forEach((element) => element.classList.add('parent-id'))
             svgElements.forEach((element) => element.classList.remove('selected'))
@@ -663,9 +663,9 @@ export class CellDLDiagram {
         }
         // what ComponentPlugin was used to create the object?
         const metadataProperties = MetadataPropertiesMap.fromProperties([
-            [CELLDL_NAMESPACE('hasSource'), connectedObjects[0]!.uri],
-            [CELLDL_NAMESPACE('hasTarget'), connectedObjects[connectedObjects.length - 1]!.uri],
-            [CELLDL_NAMESPACE('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]
+            [CELLDL('hasSource'), connectedObjects[0]!.uri],
+            [CELLDL('hasTarget'), connectedObjects[connectedObjects.length - 1]!.uri],
+            [CELLDL('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]
         ])
         const connection = this.#addNewObject(
             svgElement,
@@ -911,20 +911,20 @@ export class CellDLDiagram {
     }
 
     #loadAnnotations() {
-        this.#loadObject(CELLDL_NAMESPACE('Annotation'), CellDLAnnotation)
+        this.#loadObject(CELLDL('Annotation'), CellDLAnnotation)
     }
 
     #loadComponents() {
-        this.#loadObject(CELLDL_NAMESPACE('Component'), CellDLComponent)
-        this.#loadObject(CELLDL_NAMESPACE('UnconnectedPort'), CellDLUnconnectedPort)
+        this.#loadObject(CELLDL('Component'), CellDLComponent)
+        this.#loadObject(CELLDL('UnconnectedPort'), CellDLUnconnectedPort)
     }
 
     #loadInterfaces() {
-        this.#loadObject(CELLDL_NAMESPACE('Connector'), CellDLInterface)
+        this.#loadObject(CELLDL('Connector'), CellDLInterface)
     }
 
     #loadConduits() {
-        this.#loadObject(CELLDL_NAMESPACE('Conduit'), CellDLConduit)
+        this.#loadObject(CELLDL('Conduit'), CellDLConduit)
     }
 
     getConnector(connectorNode: MetadataPropertyValue | null): CellDLConnectedObject | null {
@@ -938,7 +938,7 @@ export class CellDLDiagram {
     }
 
     #loadConnections() {
-        this.#loadObject(CELLDL_NAMESPACE('Connection'), CellDLConnection)
+        this.#loadObject(CELLDL('Connection'), CellDLConnection)
     }
 
     objectsContainedIn(compartment: Bounds): ContainedObject[] {

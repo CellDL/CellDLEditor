@@ -20,7 +20,7 @@ limitations under the License.
 
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { ObjectTemplate } from '@editor/components/index'
-import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { SVG_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
@@ -57,7 +57,7 @@ export class EditorFrame {
     }
 
     addSvgElement(template: ObjectTemplate, topLeft: PointLike): SVGGElement {
-        const svgElement: SVGGElement = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+        const svgElement: SVGGElement = document.createElementNS(SVG_URI, 'g')
         svgElement.setAttribute('style', 'visibility: hidden')
         if (template.image) {
             svgElement.insertAdjacentHTML('beforeend', `<image href="${template.image}">`)

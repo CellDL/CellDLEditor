@@ -26,7 +26,7 @@ import { type StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 
-export const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg'
+export const SVG_URI = 'http://www.w3.org/2000/svg'
 
 //==============================================================================
 
@@ -55,7 +55,7 @@ export function getViewbox(svgElement: SVGGraphicsElement): Extent {
 type Attributes = StringProperties
 
 export function createSVGElement(tagName: string, attributes: Attributes): SVGElement {
-    const element = document.createElementNS(SVG_NAMESPACE_URI, tagName)
+    const element = document.createElementNS(SVG_URI, tagName)
     for (const [key, value] of Object.entries(attributes)) {
         element.setAttribute(key, value)
     }

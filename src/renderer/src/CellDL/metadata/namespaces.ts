@@ -20,44 +20,46 @@ limitations under the License.
 
 import { isNamedNode, namedNode, type NamedNode } from './rdfstore'
 
-import { SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { SVG_URI } from '@renderer/common/svgUtils'
 
 //==============================================================================
 
-export const CELLDL_NAMESPACE_URI = 'http://celldl.org/ontologies/celldl#'
+export const CELLDL_URI = 'http://celldl.org/ontologies/celldl#'
 
-export const BG_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph#'
-export const BGF_NAMESPACE_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
-export const CDT_NAMESPACE_URI = 'https://w3id.org/cdt/'
+export const BG_URI = 'https://bg-rdf.org/ontologies/bondgraph#'
+export const BGF_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
+export const CDT_URI = 'https://w3id.org/cdt/'
 
-export const TPL_NAMESPACE_URI = 'https://bg-rdf.org/templates/'
+export const TPL_URI = 'https://bg-rdf.org/templates/'
 
-export const DCT_NAMESPACE_URI = 'http://purl.org/dc/terms/'
-export const OWL_NAMESPACE_URI = 'http://www.w3.org/2002/07/owl#'
-export const RDF_NAMESPACE_URI = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-export const RDFS_NAMESPACE_URI = 'http://www.w3.org/2000/01/rdf-schema#'
-export const XS_NAMESPACE_URI = 'http://www.w3.org/2001/XMLSchema#'
+export const DCT_URI = 'http://purl.org/dc/terms/'
+export const OWL_URI = 'http://www.w3.org/2002/07/owl#'
+export const RDF_URI = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+export const RDFS_URI = 'http://www.w3.org/2000/01/rdf-schema#'
+export const XS_URI = 'http://www.w3.org/2001/XMLSchema#'
 
 //==============================================================================
 
-export const CELLDL_NAMESPACE_DECLARATIONS = {
-    celldl: CELLDL_NAMESPACE_URI,
-    bg: BG_NAMESPACE_URI,
-    bgf: BGF_NAMESPACE_URI,
-    cdt: CDT_NAMESPACE_URI,
-    tpl: TPL_NAMESPACE_URI
+export const CELLDL_DECLARATIONS = {
+    celldl: CELLDL_URI,
+
+    // These should come from BG plugin
+    bg: BG_URI,
+    bgf: BGF_URI,
+    cdt: CDT_URI,
+    tpl: TPL_URI
 }
 
-export const WEB_NAMESPACE_DECLARATIONS = {
-    dcterms: DCT_NAMESPACE_URI,
-    owl: OWL_NAMESPACE_URI,
-    rdf: RDF_NAMESPACE_URI,
-    rdfs: RDFS_NAMESPACE_URI,
-    svg: `${SVG_NAMESPACE_URI}/`,
-    xsd: XS_NAMESPACE_URI
+export const WEB_DECLARATIONS = {
+    dcterms: DCT_URI,
+    owl: OWL_URI,
+    rdf: RDF_URI,
+    rdfs: RDFS_URI,
+    svg: `${SVG_URI}/`,
+    xsd: XS_URI
 }
 
-const declaredNamespaces = Object.assign({}, CELLDL_NAMESPACE_DECLARATIONS, WEB_NAMESPACE_DECLARATIONS)
+const declaredNamespaces = Object.assign({}, CELLDL_DECLARATIONS, WEB_DECLARATIONS)
 
 export const SPARQL_PREFIXES = Object.entries(declaredNamespaces).map(
                                     (prefixUri) => `PREFIX ${prefixUri[0]}: <${prefixUri[1]}>`).join('\n')
@@ -72,17 +74,18 @@ export function Namespace(nsuri: string): NamespaceType {
 
 //==============================================================================
 
-export const CELLDL_NAMESPACE = Namespace(CELLDL_NAMESPACE_URI)
-export const BG_NAMESPACE = Namespace(BG_NAMESPACE_URI)
-export const BGF_NAMESPACE = Namespace(BGF_NAMESPACE_URI)
-export const CDT_NAMESPACE = Namespace(CDT_NAMESPACE_URI)
-export const TPL_NAMESPACE = Namespace(TPL_NAMESPACE_URI)
+export const CELLDL = Namespace(CELLDL_URI)
 
-export const DCT_NAMESPACE = Namespace(DCT_NAMESPACE_URI)
-export const OWL_NAMESPACE = Namespace(OWL_NAMESPACE_URI)
-export const RDF_NAMESPACE = Namespace(RDF_NAMESPACE_URI)
-export const RDFS_NAMESPACE = Namespace(RDFS_NAMESPACE_URI)
-export const XS_NAMESPACE = Namespace(XS_NAMESPACE_URI)
+export const BG = Namespace(BG_URI)
+export const BGF = Namespace(BGF_URI)
+export const CDT = Namespace(CDT_URI)
+export const TPL = Namespace(TPL_URI)
+
+export const DCT = Namespace(DCT_URI)
+export const OWL = Namespace(OWL_URI)
+export const RDF = Namespace(RDF_URI)
+export const RDFS = Namespace(RDFS_URI)
+export const XS = Namespace(XS_URI)
 
 //==============================================================================
 

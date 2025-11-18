@@ -52,7 +52,7 @@ import '@mathjax/src/js/util/asyncLoad/esm.js'
 
 //==============================================================================
 
-import { getViewbox, SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
 
 import { type Extent } from '@editor/geometry'
 import { EM_SIZE, EX_SIZE, lengthToPixels, pixelsToLength } from '@editor/geometry/units'

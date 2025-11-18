@@ -21,7 +21,7 @@ limitations under the License.
 import { electronApi } from '@renderer/common/electronApi'
 
 import { Point, type PointLike } from '@renderer/common/points'
-import { getViewbox, SVG_NAMESPACE_URI } from '@renderer/common/svgUtils'
+import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
 import type { CellDLDiagram } from '@editor/diagram'
 import type { CellDLMoveableObject } from '@editor/celldlObjects'
 import { type Extent } from '@editor/geometry'
@@ -92,7 +92,7 @@ class AlignmentGrid {
     }
 
     #lineElement(lineDescription: string): SVGPathElement {
-        const pathElement = document.createElementNS(SVG_NAMESPACE_URI, 'path')
+        const pathElement = document.createElementNS(SVG_URI, 'path')
         pathElement.classList.add(EDITOR_GRID_CLASS)
         pathElement.setAttribute('d', lineDescription)
         return pathElement
@@ -169,7 +169,7 @@ class IntervalGuide {
     constructor(position: number, type: string, extent: [number, number]) {
         this.#centre = position
         this.#useCount = 1
-        this.#svgElement = document.createElementNS(SVG_NAMESPACE_URI, 'path')
+        this.#svgElement = document.createElementNS(SVG_URI, 'path')
         this.#svgElement.classList.add('alignment-guide')
         if (type === 'H') {
             this.#svgElement.setAttribute('d', `M${extent[0]},${position}h${extent[1]}`)
@@ -220,7 +220,7 @@ class ComponentGuideGroup {
     #type: string // 'H' | 'V'
 
     constructor(type: string, extent: [number, number]) {
-        this.#svgGroup = document.createElementNS(SVG_NAMESPACE_URI, 'g')
+        this.#svgGroup = document.createElementNS(SVG_URI, 'g')
         this.#svgGroup.id = `${type}-alignment-guides`
         this.#extent = extent
         this.#type = type

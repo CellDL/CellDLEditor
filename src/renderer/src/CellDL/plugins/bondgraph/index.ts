@@ -42,7 +42,7 @@ import {
     type ValueChange
 } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
-import { BGF_NAMESPACE, RDF_NAMESPACE, RDFS_NAMESPACE, SPARQL_PREFIXES } from '@editor/metadata/index'
+import { BGF, RDF, RDFS, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
@@ -103,11 +103,11 @@ class BaseComponent {
     }
 
     get isBondElement() {
-        return this.#nodeType === BGF_NAMESPACE('BondElement').value
+        return this.#nodeType === BGF('BondElement').value
     }
 
     get isJunctionStructure() {
-        return this.#nodeType === BGF_NAMESPACE('JunctionStructure').value
+        return this.#nodeType === BGF('JunctionStructure').value
     }
 }
 
@@ -162,7 +162,7 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
         items: [
             {
                 itemId: INPUT.ElementType,
-                uri: RDF_NAMESPACE('type').value,
+                uri: RDF('type').value,
                 name: 'Bond Element',
                 defaultValue: 0,
                 possibleValues: [],
@@ -170,13 +170,13 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
             },
             {
                 itemId: INPUT.ElementSpecies,
-                uri: BGF_NAMESPACE('hasSpecies').value,
+                uri: BGF('hasSpecies').value,
                 name: 'Species',
                 defaultValue: ''
             },
             {
                 itemId: INPUT.ElementLocation,
-                uri: BGF_NAMESPACE('hasLocation').value,
+                uri: BGF('hasLocation').value,
                 name: 'Location',
                 defaultValue: ''
             }
@@ -228,9 +228,9 @@ export class BondgraphPlugin {
         if (baseComponent && baseComponent.template) {
             const template = baseComponent.template
             const metadataProperties: MetadataProperty[] = [
-                [ RDF_NAMESPACE('type'), $rdf.namedNode(baseComponent.id)],
-                [ BGF_NAMESPACE('hasSpecies'), $rdf.literal('i')],
-                [ BGF_NAMESPACE('hasLocation'), $rdf.literal('j')]
+                [ RDF('type'), $rdf.namedNode(baseComponent.id)],
+                [ BGF('hasSpecies'), $rdf.literal('i')],
+                [ BGF('hasLocation'), $rdf.literal('j')]
             ]
             return {
                 uri: template.id,
@@ -340,7 +340,7 @@ export class BondgraphPlugin {
                 // @ts-expect-error: WIP
                 group.items.push({
                     itemId: `${itemId}/${variable.name}`,
-                    uri: BGF_NAMESPACE('parameterValue').value,
+                    uri: BGF('parameterValue').value,
                     name: `${variable.name} (${variable.units})`,
                     minimumValue: 0,
                     defaultValue: 0,
@@ -710,7 +710,7 @@ export class BondgraphPlugin {
             }`
         ).map((r) => {
             const base = r.get('base')!
-            if ([BGF_NAMESPACE('ZeroStorageNode').value, BGF_NAMESPACE('OneResistanceNode').value]
+            if ([BGF('ZeroStorageNode').value, BGF('OneResistanceNode').value]
                     .includes(base.value)) {
                 const component = this.#baseComponents.get(r.get('base')!.value)
                 if (component) {

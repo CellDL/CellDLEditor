@@ -36,11 +36,11 @@ import type { SubjectType, PredicateType, ObjectType, NamespaceType } from './in
 
 //==============================================================================
 
-import { RDF_NAMESPACE } from './namespaces'
+import { RDF } from './namespaces'
 
-const RDF_LIST_END = RDF_NAMESPACE('nil')
-const RDF_LIST_HEAD = RDF_NAMESPACE('first')
-const RDF_LIST_REST = RDF_NAMESPACE('rest')
+const RDF_LIST_END = RDF('nil')
+const RDF_LIST_HEAD = RDF('first')
+const RDF_LIST_REST = RDF('rest')
 
 //==============================================================================
 

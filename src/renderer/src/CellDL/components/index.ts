@@ -22,7 +22,7 @@ import * as $rdf from '@editor/metadata/index'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata/index'
-import { CELLDL_NAMESPACE, DCT_NAMESPACE, RDFS_NAMESPACE, RDF_TYPE } from '@editor/metadata/index'
+import { CELLDL, DCT, RDFS, RDF_TYPE } from '@editor/metadata/index'
 import { base64Svg } from '@editor/utils'
 
 import type { PointLike } from '@renderer/common/points'
@@ -74,11 +74,11 @@ export interface NamedUri {
 export const OBJECT_METADATA: NamedUri[] = [
     {
         name: 'Label',
-        uri: RDFS_NAMESPACE('label').value
+        uri: RDFS('label').value
     },
     {
         name: 'Description',
-        uri: DCT_NAMESPACE('description').value
+        uri: DCT('description').value
     }
 ]
 
@@ -198,21 +198,21 @@ export class ComponentTemplate implements ObjectTemplate {
 
     define(definition: MetadataPropertiesMap) {
         this.#definition = definition
-        const label = definition.getProperty(RDFS_NAMESPACE('label'))
+        const label = definition.getProperty(RDFS('label'))
         if (label && $rdf.isLiteral(label)) {
             // @ts-expect-error: `label` is a Literal
             this.#label = label.value
         }
-        const maxConnections = definition.getProperty(CELLDL_NAMESPACE('maxConnections'))
+        const maxConnections = definition.getProperty(CELLDL('maxConnections'))
         if (maxConnections && $rdf.isLiteral(maxConnections)) {
             // @ts-expect-error: `maxConnections` is a Literal
             this.#maxConnections = +maxConnections.value
         }
-        const constraints = definition.getProperty(CELLDL_NAMESPACE('hasConstraint'))
+        const constraints = definition.getProperty(CELLDL('hasConstraint'))
         if (constraints instanceof MetadataPropertiesMap) {
             this.#constraints = constraints
         }
-        const roles = definition.getProperty(CELLDL_NAMESPACE('hasRole'))
+        const roles = definition.getProperty(CELLDL('hasRole'))
         if (roles instanceof MetadataPropertiesMap) {
             this.#roles = roles
         }

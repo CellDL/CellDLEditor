@@ -50,11 +50,11 @@ import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from 
 
 import type { PredicateType } from './rdfstore'
 
-import { RDF_NAMESPACE } from './namespaces'
+import { RDF } from './namespaces'
 
 //==============================================================================
 
-export const RDF_TYPE = RDF_NAMESPACE('type')
+export const RDF_TYPE = RDF('type')
 
 //==============================================================================
 
