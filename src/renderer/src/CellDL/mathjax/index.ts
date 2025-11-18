@@ -43,12 +43,17 @@ limitations under the License.
 
 //  Load the packages needed for MathJax
 import { mathjax } from '@mathjax/src/js/mathjax.js'
-// @ts-expect-error: TexError and MmlNode are declared but not exported
-import { TeX, type TexError, type MmlNode } from '@mathjax/src/js/input/tex.js'
+import { TeX, type TexError } from '@mathjax/src/js/input/tex.js'
 import { SVG } from '@mathjax/src/js/output/svg.js'
 import { liteAdaptor } from '@mathjax/src/js/adaptors/liteAdaptor.js'
 import { RegisterHTMLHandler } from '@mathjax/src/js/handlers/html.js'
+import { STATE } from '@mathjax/src/js/core/MathItem.js'
 import '@mathjax/src/js/util/asyncLoad/esm.js'
+
+import '@mathjax/src/js/input/tex/base/BaseConfiguration.js'
+import '@mathjax/src/js/input/tex/ams/AmsConfiguration.js'
+import '@mathjax/src/js/input/tex/color/ColorConfiguration'
+import '@mathjax/src/js/input/tex/mhchem/MhchemConfiguration'
 
 //==============================================================================
 
@@ -82,16 +87,33 @@ RegisterHTMLHandler(adaptor)
 
 //==============================================================================
 
-class MyTeX<N, T, D> extends TeX<N, T, D> {
-    formatError(error: TexError): MmlNode {
+const tex = new TeX({
+    packages: ['base', 'ams', 'color', 'mhchem'],
+    formatError(_: any, error: TexError) {
         throw Error(`LaTeX: ${error.message}`)
     }
-}
+})
+const svg = new SVG({
+    fontCache: 'local'
+})
 
-const packages = ['base', 'mhchem', 'textmacros']
-const tex = new MyTeX({ packages: { '[+]': packages } })
-const svg = new SVG({ fontCache: 'local' })
-const html = mathjax.document('', { InputJax: tex, OutputJax: svg })
+const html = mathjax.document('', {
+    InputJax: tex,
+    OutputJax: svg,
+    renderActions: {
+        removeLatex: [  // remove latex specific attributes
+            STATE.CONVERT + 1,
+            () => {},
+            (math: any, _doc: any) => {
+                math.root.walkTree((node: any) => {
+                    const attributes = node.attributes
+                    attributes.unset('data-latex')
+                    attributes.unset('data-latex-item')
+                })
+            }
+        ]
+    }
+})
 
 //==============================================================================
 
