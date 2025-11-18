@@ -27,7 +27,7 @@ import {
 import {
     type ComponentLibrary,
     type ComponentLibraryTemplate,
-    type ObjectTemplate
+    type ObjectTemplate,
 } from '@editor/components/index'
 import { type ItemDetails, type PropertyGroup, type ValueChange } from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
@@ -73,6 +73,17 @@ export class PluginComponents {
         return this.#bondgraphPlugin.getPropertyGroups()
     }
 
+    getComponentProperties(componentProperties: PropertyGroup[],
+                           celldlObject: CellDLObject, rdfStore: RdfStore) {
+        return this.#bondgraphPlugin.getComponentProperties(componentProperties, celldlObject, rdfStore)
+    }
+
+    updateComponentProperties(componentProperties: PropertyGroup[],
+                              value: ValueChange, itemId: string,
+                              celldlObject: CellDLObject, rdfStore: RdfStore) {
+        return this.#bondgraphPlugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
+    }
+
     loadComponentLibraries(): ComponentLibraryTemplate|undefined {
         let selectedTemplate: ComponentLibraryTemplate|undefined = undefined
         if (this.#componentLibraries.length &&
@@ -87,17 +98,6 @@ export class PluginComponents {
         }
         vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
         return selectedTemplate
-    }
-
-    getComponentProperties(componentProperties: PropertyGroup[],
-                           celldlObject: CellDLObject, rdfStore: RdfStore) {
-        return this.#bondgraphPlugin.getComponentProperties(componentProperties, celldlObject, rdfStore)
-    }
-
-    updateComponentProperties(componentProperties: PropertyGroup[],
-                              value: ValueChange, itemId: string,
-                              celldlObject: CellDLObject, rdfStore: RdfStore) {
-        return this.#bondgraphPlugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
     }
 
     styleRules(): string {
