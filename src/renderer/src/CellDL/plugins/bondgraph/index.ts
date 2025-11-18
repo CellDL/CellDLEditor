@@ -379,6 +379,8 @@ export class BondgraphPlugin {
         })
     }
 
+    //==========================================================================
+
     updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
                               celldlObject: CellDLObject, rdfStore: RdfStore) {
         this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
@@ -454,6 +456,8 @@ export class BondgraphPlugin {
 //            ucum.isConvertible(units1: string, units2: string)
     }
 
+    //==========================================================================
+
     styleRules(): string {
         return '.celldl-Connection.bondgraph.arrow { marker-end:url(#connection-end-arrow-bondgraph) }'
     }
@@ -461,6 +465,8 @@ export class BondgraphPlugin {
     svgDefinitions(): string {
         return arrowMarkerDefinition('connection-end-arrow-bondgraph', 'bondgraph')
     }
+
+    //==========================================================================
 
     #getObjectsElementTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectElementTemplate|undefined {
         let baseComponentId: string|undefined = undefined
@@ -487,6 +493,8 @@ export class BondgraphPlugin {
             }
         }
     }
+
+    //==========================================================================
 
     #getElementTypeItem(itemTemplate: ItemDetails, template: ObjectElementTemplate): ItemDetails {
         const discreteItem = <IUiJsonDiscreteInput & {
@@ -525,6 +533,8 @@ export class BondgraphPlugin {
         })
         return discreteItem as ItemDetails
     }
+
+    //==========================================================================
 
     #updateElementType(itemTemplate: ItemDetails, value: ValueChange,
                        celldlObject: CellDLObject, rdfStore: RdfStore) {
