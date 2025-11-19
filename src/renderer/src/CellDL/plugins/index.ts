@@ -105,17 +105,35 @@ export class PluginComponents {
         return selectedTemplate
     }
 
+    //==========================================================================
+
     addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
-        this.#bondgraphPlugin.addNewConnection(connection, rdfStore)
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.addNewConnection(connection, rdfStore)
+        }
     }
 
     addDocumentMetadata(rdfStore: RdfStore) {
-        this.#bondgraphPlugin.addDocumentMetadata(rdfStore)
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.addDocumentMetadata(rdfStore)
+        }
     }
 
     deleteConnection(connection: CellDLConnection, rdfStore: RdfStore) {
-        this.#bondgraphPlugin.deleteConnection(connection, rdfStore)
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.deleteConnection(connection, rdfStore)
+        }
     }
+
+    updateComponentProperties(componentProperties: PropertyGroup[],
+                              value: ValueChange, itemId: string,
+                              celldlObject: CellDLObject, rdfStore: RdfStore) {
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
+        }
+    }
+
+    //==========================================================================
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
         return this.#bondgraphPlugin.getObjectTemplate(id)
@@ -128,12 +146,6 @@ export class PluginComponents {
     getComponentProperties(componentProperties: PropertyGroup[],
                            celldlObject: CellDLObject, rdfStore: RdfStore) {
         return this.#bondgraphPlugin.getComponentProperties(componentProperties, celldlObject, rdfStore)
-    }
-
-    updateComponentProperties(componentProperties: PropertyGroup[],
-                              value: ValueChange, itemId: string,
-                              celldlObject: CellDLObject, rdfStore: RdfStore) {
-        return this.#bondgraphPlugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
     }
 
     styleRules(): string {
