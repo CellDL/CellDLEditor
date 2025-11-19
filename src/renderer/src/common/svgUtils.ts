@@ -18,6 +18,10 @@ limitations under the License.
 
 ******************************************************************************/
 
+import { Buffer } from 'buffer'
+
+//==============================================================================
+
 import { type PointLike } from '@renderer/common//points'
 import { type StringProperties } from '@renderer/common/types'
 import { latexAsSvgDocument } from '@renderer/mathjax/index'
@@ -172,42 +176,42 @@ function getLengthFromOptions(options: LatexMathSvgOptions, key: string): number
 
 //==============================================================================
 
-function latexToSvg(
+function latexToSvgRect(
     latex: string,
     suffix: string,
     options: LatexMathSvgOptions = {},
     includeStyleRules: boolean = false
 ): string {
     let svgDocument = latexAsSvgDocument(latex)
-
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
+
     const svgWidth = lengthToPixels(svgElement.getAttribute('width'))
     const svgHeight = lengthToPixels(svgElement.getAttribute('height'))
     if (svgWidth && svgHeight) {
         let viewBox = getViewbox(svgElement)
         const scale: [number, number] = [viewBox[2] / svgWidth, viewBox[3] / svgHeight]
-        const border = 'border' in options ? getLengthFromOptions(options, 'border-width') : 0
+        const border_width: number = 'border' in options ? getLengthFromOptions(options, 'border-width') : 0
         const padding = getLengthFromOptions(options, 'padding')
-        let width = scale[0] * Math.max(2 * border + 2 * padding + svgWidth, getLengthFromOptions(options, 'min-width'))
+        let width = scale[0] * Math.max(2 * border_width + 2 * padding + svgWidth, getLengthFromOptions(options, 'min-width'))
         const extrawidth = width - scale[0] * svgWidth
         const left = viewBox[0] - extrawidth / 2
         let right = left + width
 
         let height =
-            scale[1] * Math.max(2 * border + 2 * padding + svgHeight, getLengthFromOptions(options, 'min-height'))
+            scale[1] * Math.max(2 * border_width + 2 * padding + svgHeight, getLengthFromOptions(options, 'min-height'))
         const extraHeight = height - scale[1] * svgHeight
         let top = viewBox[1] - extraHeight / 2
         let bottom = top + height
 
-        const rectSize = ` width="${round(width - 2 * border * scale[0])}" height="${round(height - 2 * border * scale[1])}"`
+        const rectSize = ` width="${round(width - 2 * border_width * scale[0])}" height="${round(height - 2 * border_width * scale[1])}"`
         if (suffix !== '') {
             const suffixLatex = suffix !== '' ? `\\;${suffix}` : ''
             svgDocument = latexAsSvgDocument(`${latex}${suffixLatex}`)
             svgElement = (<Element>svgDocument.documentElement) as SVGSVGElement
             viewBox = getViewbox(svgElement)
             right = Math.max(right, viewBox[0] + viewBox[2] + scale[0] * padding)
-            top = Math.min(top, viewBox[1] - scale[1] * (padding + border))
-            bottom = Math.max(bottom, viewBox[1] + viewBox[3] + scale[1] * (padding + border))
+            top = Math.min(top, viewBox[1] - scale[1] * (padding + border_width))
+            bottom = Math.max(bottom, viewBox[1] + viewBox[3] + scale[1] * (padding + border_width))
 
             // We add `data-centre-x` and `data-centre-y` attributes to the root <svg> element,
             // giving the ratios needed to find the centre of the unsuffixed text.
@@ -229,10 +233,8 @@ function latexToSvg(
             const styles = ''
         }
 
-        console.log(svgElement.getAttribute('style'))
         // NB. this overwrites all existing styling whereas we just need to update `vertical-align``
         svgElement.setAttribute('style', `vertical-align: ${pixelsToLength(verticalAlign / scale[1], 'ex')};`)
-        console.log(svgElement.getAttribute('style'))
 
         viewBox[0] = round(left)
         viewBox[1] = round(top)
@@ -244,8 +246,9 @@ function latexToSvg(
 
         const bgRect = svgDocument.createElement('rect')
         bgRect.setAttribute('fill', `${options.background || 'transparent'}`)
-        if (border) {
-            bgRect.setAttribute('stroke', `${options['border']}" stroke-width="${round(scale[0] * border)}`)
+        if (border_width) {
+            bgRect.setAttribute('stroke', options.border!)
+            bgRect.setAttribute('stroke-width', String(round(scale[0] * border_width)))
         }
         const radius = getLengthFromOptions(options, 'corner-radius')
         let cornerRadius = ''
@@ -253,8 +256,8 @@ function latexToSvg(
             cornerRadius = `${round(radius * scale[0])}`
             bgRect.setAttribute('rx', cornerRadius)
         }
-        bgRect.setAttribute('x', `${round(viewBox[0] + border * scale[0])}`)
-        bgRect.setAttribute('y', `${round(viewBox[1] + border * scale[1])}`)
+        bgRect.setAttribute('x', `${round(viewBox[0] + border_width * scale[0])}`)
+        bgRect.setAttribute('y', `${round(viewBox[1] + border_width * scale[1])}`)
         if (options.class) {
             bgRect.setAttribute('class', `"${options['class']}"`)
         }
@@ -265,10 +268,10 @@ function latexToSvg(
         }
         if (suffix !== '') {
             const boundingRect = svgDocument.createElement('rect')
-            boundingRect.setAttribute('x', `${viewBox[0] + border * scale[0]}`)
-            boundingRect.setAttribute('y', `${viewBox[1] + border * scale[1]}`)
-            boundingRect.setAttribute('width', `${width - 2 * border * scale[0]}`)
-            boundingRect.setAttribute('height', `${height - 2 * border * scale[1]}`)
+            boundingRect.setAttribute('x', `${viewBox[0] + border_width * scale[0]}`)
+            boundingRect.setAttribute('y', `${viewBox[1] + border_width * scale[1]}`)
+            boundingRect.setAttribute('width', `${width - 2 * border_width * scale[0]}`)
+            boundingRect.setAttribute('height', `${height - 2 * border_width * scale[1]}`)
             if (cornerRadius !== '') {
                 boundingRect.setAttribute('rx', cornerRadius)
             }
@@ -294,20 +297,27 @@ function latexToSvg(
 
 //==============================================================================
 
-export default class LatexMathSvg {
+export class LatexMathSvg {
     static #svgCache: Map<string, string> = new Map()
 
-    static svg(latex: string, suffix: string = '', options: LatexMathSvgOptions = {}): string {
+    static svgRect(latex: string, suffix: string = '', options: LatexMathSvgOptions = {}): string {
         let svg = ''
         const key = `${latex}${suffix}-${JSON.stringify(options)}`
         if (LatexMathSvg.#svgCache.has(key)) {
             svg = LatexMathSvg.#svgCache.get(key)!
         } else {
-            svg = latexToSvg(latex, suffix, options)
+            svg = latexToSvgRect(latex, suffix, options)
             LatexMathSvg.#svgCache.set(key, svg)
         }
         return svg
     }
+}
+
+
+//==============================================================================
+
+export function base64Svg(svg: string): string {
+    return `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
 }
 
 //==============================================================================
