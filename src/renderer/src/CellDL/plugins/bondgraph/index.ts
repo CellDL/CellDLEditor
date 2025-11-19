@@ -646,9 +646,7 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     #getElementTypeItem(itemTemplate: ItemDetails, template: ObjectElementTemplate): ItemDetails {
-        const discreteItem = <IUiJsonDiscreteInput & {
-            value: string|number
-        }>{...itemTemplate}
+        const discreteItem = <IUiJsonDiscreteInput>{...itemTemplate}
 
         discreteItem.possibleValues = []
         const baseComponent = template.baseComponent
@@ -672,11 +670,15 @@ export class BondgraphPlugin implements PluginInterface {
         const discreteValue = template.elementTemplate
                             ? template.elementTemplate.id
                             : baseComponent.id
-        discreteItem.value = discreteItem.possibleValues.findIndex(v => {
+        const index = discreteItem.possibleValues.findIndex(v => {
             if (String(discreteValue) === String(v.value)) {
                 return true
             }
         })
+        if (index !== undefined) {
+            discreteItem.value = discreteItem.possibleValues[index]!
+        }
+
         return discreteItem as ItemDetails
     }
 

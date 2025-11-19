@@ -75,11 +75,9 @@ const scalarType = value.value !== '' &&
 
 let oldValue = value.value
 
-const discreteValue = vue.computed<number | string | undefined>({
+const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue>({
     get() {
-        return props.possibleValues ? props.possibleValues[<number>value.value] : props.possibleValues[0]
-    },
-    set(_: number | string) {
+        return value.value
     }
 })
 
@@ -90,9 +88,8 @@ const scalarValueString = vue.ref<string>(String(value.value));
 
 function emitChange(newValue: number | string) {
     void vue.nextTick().then(() => {
-        value.value = newValue
-
         if (scalarType && props.possibleValues === undefined) {
+            value.value = newValue
             scalarValue.value = <number>newValue
             scalarValueString.value = String(newValue) // This will properly format the input text.
         }
