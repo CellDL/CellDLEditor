@@ -23,7 +23,6 @@ import * as $rdf from '@editor/metadata/index'
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata/index'
 import { CELLDL, DCT, RDFS, RDF_TYPE } from '@editor/metadata/index'
-import { base64Svg } from '@editor/utils'
 
 import type { PointLike } from '@renderer/common/points'
 import type { Constructor, StringProperties } from '@renderer/common/types'
@@ -145,10 +144,6 @@ export class ComponentTemplate implements ObjectTemplate {
         return this.#description
     }
 
-    get imageUri() {
-        return base64Svg(this.svg)
-    }
-
     get label() {
         return this.#label
     }
@@ -163,10 +158,6 @@ export class ComponentTemplate implements ObjectTemplate {
 
     get name() {
         return this.uri.split('#').at(-1)!
-    }
-
-    get rdfPredicates(): NamedNode[] {
-        return []
     }
 
     get roles() {
