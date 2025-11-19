@@ -68,7 +68,6 @@ import { editGuides } from '@editor/editor/editguides'
 import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
 import type { NewObjectClass, ObjectTemplate } from '@editor/components/index'
-import { LatexStyleRules } from '@editor/mathjax/index'
 
 import { pluginComponents } from '@editor/plugins/index'
 
@@ -287,7 +286,7 @@ export class CellDLDiagram {
     }
 
     #setStylesheet() {
-        const css = `${LatexStyleRules}${CellDLStylesheet}${pluginComponents.styleRules()}`
+        const css = `${CellDLStylesheet}${pluginComponents.styleRules()}`
         let styleElement = this.#svgDiagram.querySelector(
             `defs#${CELLDL_DEFINITIONS_ID} > style#${CELLDL_STYLESHEET_ID}`
         )
