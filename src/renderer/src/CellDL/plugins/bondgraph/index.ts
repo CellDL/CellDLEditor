@@ -86,13 +86,13 @@ import MECHANICAL_TEMPLATE from '/bg-rdf/templates/mechanical.ttl?url&raw'
 
 export class BGBaseComponent {
     #id: string
-    #label: string|undefined
+    #name: string|undefined
     #nodeType: string
     #template: BGComponentLibraryTemplate
 
-    constructor(id: string, label: string, nodeType: string) {
+    constructor(id: string, name: string, nodeType: string) {
         this.#id = id
-        this.#label = label
+        this.#name = name
         this.#nodeType = nodeType
         this.#template = BondgraphComponentTemplates.get(id)!
     }
@@ -101,8 +101,8 @@ export class BGBaseComponent {
         return this.#id
     }
 
-    get label() {
-        return this.#label
+    get name() {
+        return this.#name
     }
 
     get style() {
@@ -607,7 +607,7 @@ export class BondgraphPlugin implements PluginInterface {
 
         // `baseComponent` and `templates` are possible values
         discreteItem.possibleValues.push({
-            name: baseComponent.label || '',
+            name: baseComponent.name || '',
             value: baseComponent.id,
             emphasise: true
         })
