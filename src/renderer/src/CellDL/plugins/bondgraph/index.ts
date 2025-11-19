@@ -20,6 +20,8 @@ limitations under the License.
 
 import * as $oxigraph from '@oxigraph/web'
 
+//==============================================================================
+
 import { arrowMarkerDefinition } from '@renderer/common/styling'
 import { type IUiJsonDiscreteInput, type IUiJsonDiscreteInputPossibleValue } from '@renderer/libopencor/locUIJsonApi'
 
@@ -266,6 +268,8 @@ export class BondgraphPlugin implements PluginInterface {
         pluginComponents.registerPlugin(this)
     }
 
+    //==========================================================================
+
     getObjectTemplate(id: string): ObjectTemplate|undefined {
         const baseComponent = this.#baseComponents.get(id)
         if (baseComponent && baseComponent.template) {
@@ -290,10 +294,11 @@ export class BondgraphPlugin implements PluginInterface {
         }
     }
 
+    //======================================
+
     getPropertyGroups(): PropertyGroup[] {
         return PROPERTY_GROUPS
     }
-
 
     //==========================================================================
 
@@ -707,6 +712,9 @@ export class BondgraphPlugin implements PluginInterface {
         pluginData.template.elementTemplate = this.#elementTemplates.get(value.newValue)
     }
 
+    //==========================================================================
+    //==========================================================================
+
     #query(sparql: string) {
         return this.#rdfStore.query(`${SPARQL_PREFIXES}${sparql}`)
     }
@@ -882,7 +890,6 @@ export class BondgraphPlugin implements PluginInterface {
                     }
                 }
             }
-
         })
     }
 
