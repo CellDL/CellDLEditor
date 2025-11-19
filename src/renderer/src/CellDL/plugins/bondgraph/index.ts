@@ -271,7 +271,7 @@ export class BondgraphPlugin implements PluginInterface {
         if (baseComponent && baseComponent.template) {
             const template = baseComponent.template
             const metadataProperties: MetadataProperty[] = [
-                [ RDF('type'), $rdf.namedNode(baseComponent.uri)],
+                [ RDF('type'), $rdf.namedNode(baseComponent.id)],
                 [ BGF('hasSymbol'), $rdf.literal(baseComponent.template.symbol)]
             ]
             if (!template.noSpeciesLocation) {
