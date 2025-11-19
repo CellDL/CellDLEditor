@@ -616,6 +616,11 @@ export class CellDLSVGElement {
         setInternalIds(this.svgElement, elementId)
         this.#updatedSvgElement()
     }
+
+    setImageData(imageData: string) {
+        this.svgElement.innerHTML = `<image href="${imageData}"/>`
+        this.#updatedSvgElement()
+    }
 }
 
 //==============================================================================
