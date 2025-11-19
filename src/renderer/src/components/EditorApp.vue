@@ -26,28 +26,29 @@
 
 <script setup lang="ts">
 import CellDLEditor from '@renderer/components/CellDLEditor.vue'  // is this import needed??
-import '@renderer/assets/icons.css'
-
-import primeVueAuraTheme from '@primeuix/themes/aura'
-import * as vueusecore from '@vueuse/core'
-
-import 'primeicons/primeicons.css'
-import primeVueConfig from 'primevue/config'
-import primeVueConfirmationService from 'primevue/confirmationservice'
 import * as vue from 'vue'
 
-import type { IEditorProps } from '../..'
+import 'primeicons/primeicons.css'
+import primeVueAuraTheme from '@primeuix/themes/aura'
+import primeVueConfig from 'primevue/config'
+import primeVueConfirmationService from 'primevue/confirmationservice'
 
-import '@renderer/assets/app.css'
-import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants'
+import * as vueusecore from '@vueuse/core'
+
+import type { IEditorProps } from '../../index'
+
+import { SHORT_DELAY } from '@renderer/common/constants'
 import { electronApi } from '@renderer/common/electronApi'
 import * as vueCommon from '@renderer/common/vueCommon'
+
+import '@renderer/assets/app.css'
+import '@renderer/assets/icons.css'
 
 const props = defineProps<IEditorProps>()
 
 const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)
 const mainMenuId = vue.ref('editorMainMenu')
-const files = vue.ref<HTMLElement | null>(null)
+const files = vue.ref<HTMLElement | null>(null);
 const activeInstanceUid = vueCommon.activeInstanceUid()
 
 // Keep track of which instance of the CellDL Editor is currently active.
@@ -98,7 +99,6 @@ const fileData = vue.ref()
 // Open.
 
 async function onOpenMenu() {
-//=========================
     const fileHandles = await window.showOpenFilePicker()
     if (fileHandles.length) {
         const file = await fileHandles[0].getFile()
@@ -119,13 +119,13 @@ console.log('open', fileOrFilePath)   // <<<<<<<<<<<<<
 // Open file(s) dialog.
 
 function onChange(event: Event): void {
-    const files = (event.target as HTMLInputElement).files
+    const files = (event.target as HTMLInputElement).files;
 
     if (files !== null) {
         for (const file of Array.from(files)) {
-            openFile(file)
+            openFile(file);
         }
-  }
+    }
 }
 
 const saveFile = vue.ref()
