@@ -166,12 +166,15 @@ export abstract class BaseStore {
 
     #metadataValue(value: ObjectType): MetadataPropertyValue | null {
         if (isLiteral(value) || isNamedNode(value)) {
+            // @ts-expect-error: `value` is a Literal or NamedNode
             return value
         } else if (isBlankNode(value)) {
             // @ts-expect-error: value is a BlankNode
             if (this.contains(value, RDF_LIST_REST, null)) {
+                // @ts-expect-error: `value` is a BlankNode
                 return this.#listFromCollection(value)
             } else {
+                // @ts-expect-error: `value` is a BlankNode
                 return this.metadataPropertiesForSubject(value)
             }
         }
