@@ -241,7 +241,7 @@ export function svgImage(baseComponent: BGBaseComponent, species: string|undefin
 }
 
 export function definitionToLibraryTemplate(defn: ComponentDefinition): BGComponentLibraryTemplate {
-    const latex = defn.noSpeciesLocation ? defn.symbol : makeLatex(defn.symbol, DEFAULT_LOCATION, DEFAULT_LOCATION)
+    const latex = defn.noSpeciesLocation ? defn.symbol : makeLatex(defn.symbol, DEFAULT_SPECIES, DEFAULT_LOCATION)
 
     return Object.assign({}, defn, {
         image: typeset(latex, defn.style, true)
