@@ -37,7 +37,7 @@ export type ItemDetails = locApi.IUiJsonInput & {
     uri: string
     value?: string|number
     optional?: boolean
-    selector?: string
+    numeric?: boolean
 }
 
 export interface PropertyGroup {

@@ -59,10 +59,7 @@ const props = defineProps<{
     stepValue?: number
 }>()
 
-const scalarType = value.value !== '' &&
-                   value.value !== null &&
-                   value.value !== undefined &&
-                   vue.ref<boolean>(!isNaN(+value.value))
+const scalarType = !!props.numeric
 
 let oldValue = value.value
 

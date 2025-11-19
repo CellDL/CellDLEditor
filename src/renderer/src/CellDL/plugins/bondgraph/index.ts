@@ -214,6 +214,7 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
                 uri: BGF('hasValue').value,
                 name: 'Initial value',
                 defaultValue: 0,
+                numeric: true,
                 optional: true
             }
         ]
@@ -503,7 +504,7 @@ export class BondgraphPlugin implements PluginInterface {
                     name: `${variable.name} (${variable.units})`,
                     minimumValue: 0,
                     defaultValue: 0,
-                    value: 0
+                    numeric: true
                 })
             }
         }
