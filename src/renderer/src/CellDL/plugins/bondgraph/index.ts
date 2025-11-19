@@ -48,8 +48,7 @@ import {
     type BGComponentLibraryTemplate,
     BONDGRAPH_ICON_DEFINITIONS,
     definitionToLibraryTemplate,
-    type ElementStyle,
-    imageData
+    svgImage
 } from './icons'
 
 import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
@@ -557,8 +556,8 @@ export class BondgraphPlugin implements PluginInterface {
                         if (itemId === BG_INPUT.ElementLocation) {
                             pluginData.location = value.newValue
                         }
-                        const svgData = imageData(template.baseComponent, pluginData.species, pluginData.location)
                         celldlObject.celldlSvgElement!.setImageData(svgData)
+                        const svgData = svgImage(template.baseComponent, pluginData.species, pluginData.location)
                     }
                 }
                 break

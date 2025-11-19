@@ -223,20 +223,25 @@ function typeset(latex: string, style: ElementStyle, base64: boolean=false): str
     return base64 ? base64Svg(svg) : svg
 }
 
-export function imageData(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined) {
-    const latex: string[] = [baseComponent.template.symbol]
+function makeLatex(symbol: string, species: string|undefined,  location: string|undefined): string {
+    const latex: string[] = [symbol]
     if (species) {
         latex.push(`^{${species}}`)
     }
     if (location) {
         latex.push(`_{${location}}`)
     }
+    return latex.join('')
+}
 
-    return typeset(latex.join(''), baseComponent.style, true)
+export function svgImage(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined, base64: boolean=true) {
+    const latex = makeLatex(baseComponent.template.symbol, species, location)
+
+    return typeset(latex, baseComponent.style, base64)
 }
 
 export function definitionToLibraryTemplate(defn: ComponentDefinition): BGComponentLibraryTemplate {
-    const latex = defn.noSpeciesLocation ? defn.symbol : `${defn.symbol}^i_j`
+    const latex = defn.noSpeciesLocation ? defn.symbol : makeLatex(defn.symbol, DEFAULT_LOCATION, DEFAULT_LOCATION)
 
     return Object.assign({}, defn, {
         image: typeset(latex, defn.style, true)
