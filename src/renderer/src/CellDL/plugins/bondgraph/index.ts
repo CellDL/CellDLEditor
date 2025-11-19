@@ -298,8 +298,15 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     newDocument(rdfStore: RdfStore) {
-        const bgfGraph = $rdf.namedNode(BONDGRAPH_FRAMEWORK)
 
+        // We are creating a BondgraphModel
+
+        rdfStore.add(rdfStore.documentNode!, RDF('type'), BGF('BondgraphModel'))
+
+        // Add a copy of the BG-RDF framework as a named graph, to use later when
+        // finding BondElements and JunctionStructures
+
+        const bgfGraph = $rdf.namedNode(BONDGRAPH_FRAMEWORK)
         for (const statement of this.#rdfStore.statements()) {
             rdfStore.add(statement.subject, statement.predicate, statement.object, bgfGraph)
         }
@@ -309,11 +316,11 @@ export class BondgraphPlugin implements PluginInterface {
 
     addDocumentMetadata(rdfStore: RdfStore) {
         const statements: string[] = []
-        statements.push(`<${rdfStore.documentUri}> a bgf:BondgraphModel .`)
+
+        // Find the BondElements in the diagram
 
         rdfStore.query(`${SPARQL_PREFIXES}
             PREFIX : <${rdfStore.documentUri}#>
-
             SELECT ?uri
             WHERE {
                 ?uri a ?type .
@@ -322,6 +329,9 @@ export class BondgraphPlugin implements PluginInterface {
         .map((r) => {
             statements.push(`<${rdfStore.documentUri}> bgf:hasBondElement ${r.get('uri')!.toString()} .`)
         })
+
+        // Find the JunctionStructures in the diagram
+
         rdfStore.query(`${SPARQL_PREFIXES}
             PREFIX : <${rdfStore.documentUri}#>
 
@@ -333,6 +343,8 @@ export class BondgraphPlugin implements PluginInterface {
         .map((r) => {
             statements.push(`<${rdfStore.documentUri}> bgf:hasJunctionStructure ${r.get('uri')!.toString()} .`)
         })
+
+        // And add them to the BondgraphModel
 
         rdfStore.update(`${SPARQL_PREFIXES}
             INSERT DATA {
@@ -363,19 +375,6 @@ export class BondgraphPlugin implements PluginInterface {
             DELETE DATA {
                 ${uri} bgf:hasSource ${connection.source!.uri.toString()} .
                 ${uri} bgf:hasTarget ${connection.target!.uri.toString()} .
-            }
-        `)
-    }
-
-    //==========================================================================
-
-    addDocumentMetadata(rdfStore: RdfStore) {
-        const statements: string[] = []
-        statements.push(`<${rdfStore.documentUri}> a bgf:BondgraphModel .`)
-
-        rdfStore.update(`${SPARQL_PREFIXES}
-            INSERT DATA {
-                ${statements.join('\n')}
             }
         `)
     }
