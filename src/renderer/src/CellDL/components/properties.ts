@@ -93,6 +93,8 @@ export function getItemProperty(celldlObject: CellDLObject,
     return item
 }
 
+//==============================================================================
+
 export function updateItemProperty(property: string, value: ValueChange,
                                    celldlObject: CellDLObject, rdfStore: RdfStore) {
     rdfStore.update(`${SPARQL_PREFIXES}
@@ -113,6 +115,8 @@ export function updateItemProperty(property: string, value: ValueChange,
         `)
     }
 }
+
+//==============================================================================
 
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])

@@ -273,7 +273,6 @@ export class LatexMathSvg {
     }
 }
 
-
 //==============================================================================
 
 export function base64Svg(svg: string): string {
