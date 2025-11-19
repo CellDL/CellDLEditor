@@ -212,8 +212,8 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
             {
                 itemId: BG_INPUT.ElementValue,
                 uri: BGF('hasValue').value,
-                name: 'Value',
-                defaultValue: '',
+                name: 'Initial value',
+                defaultValue: 0,
                 optional: true
             }
         ]
@@ -472,19 +472,19 @@ export class BondgraphPlugin implements PluginInterface {
     #setElementValueTemplate(variable: Variable|undefined, group: PropertyGroup) {
         const haveVarItem = (group.items.length > ELEMENT_VALUE_INDEX)
 
+        const itemDefn = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
         if (haveVarItem) {
             const item = group.items[ELEMENT_VALUE_INDEX]!
             if (variable) {
-                item.name = `Value (${variable.units})`
+                item.name = `${itemDefn.name} (${variable.units})`
                 item.optional = false
             } else {
                 item.optional = false
                 item.value = ''
             }
         } else if (variable) {
-            const item = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
-            group.items.push(Object.assign({}, item, {
-                name: `Value (${variable.units})`,
+            group.items.push(Object.assign({}, itemDefn, {
+                name: `${itemDefn.name} (${variable.units})`,
                 optional: false
             }))
         }
