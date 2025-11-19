@@ -321,7 +321,7 @@ export class PathMaker {
 
     #addPoint(point: PointLike, rectilinear: boolean): Point {
         let end = Point.fromPoint(point)
-        const lastPathPoint = this.#pathPoints.at(-1)!
+        const lastPathPoint = this.#pathPoints.at(-1)
         const lastPoint = lastPathPoint.point
         if (this.#rectilinearDirn.toUpperCase().startsWith('H') && lastPoint.x === point.x) {
             end = new Point(lastPoint.x, point.y)
@@ -352,7 +352,7 @@ export class PathMaker {
                 addedPoints = true
             }
         } else {
-            const lastPathPoint = this.#pathPoints.at(-1)!
+            const lastPathPoint = this.#pathPoints.at(-1)
             if (!lastPathPoint.objectContainsPoint(point)) {
                 this.#addPoint(point, rectilinear)
                 addedPoints = true
@@ -376,7 +376,7 @@ export class PathMaker {
                 this.#setCurrentSvgPath([])
             }
         } else {
-            const lastPathPoint = this.#pathPoints.at(-1)!
+            const lastPathPoint = this.#pathPoints.at(-1)
             const lastPoint = lastPathPoint.point
             if (
                 !(
@@ -398,7 +398,7 @@ export class PathMaker {
             this.#setFirstPoints(object, true, rectilinear)
         } else {
             const centroid = object.celldlSvgElement!.centroid
-            const prevPathPoint = this.#pathPoints.at(-1)!
+            const prevPathPoint = this.#pathPoints.at(-1)
             let prevPoint = prevPathPoint.point
             if (rectilinear) {
                 // Adjust previous point to align with endObject
@@ -431,14 +431,14 @@ export class PathMaker {
 
         const lastPoints = this.#pathPoints.slice(-2)
         if (rectilinear) {
-            const delta = PointMath.subtract(lastPoints[1].point, lastPoints[0].point)
+            const delta = PointMath.subtract(lastPoints[1]!.point, lastPoints[0]!.point)
             if (Math.abs(delta.x) > Math.abs(delta.y)) {
                 this.#rectilinearDirn = `H${delta.x > 0 ? '+' : '-'}`
             } else {
                 this.#rectilinearDirn = `V${delta.y > 0 ? '+' : '-'}`
             }
         } else if (this.#style === ConnectionStyle.Linear) {
-            this.#pointBeforeNode = Point.fromPoint(lastPoints[0].point)
+            this.#pointBeforeNode = Point.fromPoint(lastPoints[0]!.point)
         }
         this.#pathPoints = []
         this.#currentSvgPath = null
@@ -454,12 +454,12 @@ export class PathMaker {
         }
 
         // The last path segment has an arrowhead
-        this.#edges[this.#edges.length - 1].svgPath!.classList.add('arrow')
+        this.#edges[this.#edges.length - 1]!.svgPath!.classList.add('arrow')
 
         // When multiple edges we return a SVG group containing the paths
         let svgElement: SVGGraphicsElement
         if (this.#edges.length == 1) {
-            svgElement = this.#edges[0].svgPath!
+            svgElement = this.#edges[0]!.svgPath!
         } else {
             svgElement = document.createElementNS(SVG_URI, 'g') as SVGGraphicsElement
             this.#edges.forEach((edge) => edge.svgPath!.classList.add('parent-id'))
@@ -490,10 +490,10 @@ export class PathMaker {
             this.#setCurrentSvgPath(this.#pathPoints)
         }
         const lastPointIndex = this.#pathPoints.length - 1
-        const connector = celldlDiagram.createUnconnectedPort(this.#pathPoints[lastPointIndex].point)
+        const connector = celldlDiagram.createUnconnectedPort(this.#pathPoints[lastPointIndex]!.point)
         if (connector) {
             const pathEnd = connector.celldlSvgElement!.boundaryIntersections(
-                this.#pathPoints[lastPointIndex - 1].point
+                this.#pathPoints[lastPointIndex - 1]!.point
             )[0]
             if (pathEnd) {
                 this.#pathPoints[lastPointIndex] = new PathPoint(pathEnd)
