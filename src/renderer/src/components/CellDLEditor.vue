@@ -48,7 +48,6 @@ import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 //==============================================================================
 
-const celldlEditor = new CellDLEditor()
 const svgContainer = vue.useTemplateRef('svg-content')
 
 let celldlDiagram: CellDLDiagram | null = null
@@ -81,7 +80,15 @@ function connectionStylePrompt(name: string): string {
 
 import { pluginComponents } from '@editor/plugins/index'
 
-let defaultComponent = pluginComponents.loadComponentLibraries()!
+pluginComponents.loadPlugins()
+
+// Plugins need to be loaded before creating the editor
+
+const celldlEditor = new CellDLEditor()
+
+//==============================================================================
+
+let defaultComponent = pluginComponents.getSelectedTemplate()!
 
 function addComponentPrompt(name: string): string {
     return `Add ${name.toLowerCase()} component`

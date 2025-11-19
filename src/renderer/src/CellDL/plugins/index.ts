@@ -29,17 +29,40 @@ import {
     type ComponentLibraryTemplate,
     type ObjectTemplate,
 } from '@editor/components/index'
-import { type ItemDetails, type PropertyGroup, type ValueChange } from '@editor/components/properties'
+import { type PropertyGroup, type ValueChange } from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
-import { MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
+import { RdfStore } from '@editor/metadata/index'
+
+//==============================================================================
+
+export interface PluginInterface {
+    id: string
+
+    addDocumentMetadata: (rdfStore: RdfStore) => void
+    addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
+    deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
+    getObjectTemplate: (id: string) => ObjectTemplate|undefined
+    getPropertyGroups: () => PropertyGroup[]
+    getComponentProperties: (componentProperties: PropertyGroup[],
+                             celldlObject: CellDLObject, rdfStore: RdfStore) => void
+    updateComponentProperties: (componentProperties: PropertyGroup[],
+                                value: ValueChange, itemId: string,
+                                celldlObject: CellDLObject, rdfStore: RdfStore) => void
+    styleRules: () => string
+    svgDefinitions: () => string
+}
 
 //==============================================================================
 
 export class PluginComponents {
     static #instance: PluginComponents | null = null
 
-    #bondgraphPlugin = new BondgraphPlugin()
-    #componentLibraries = [BondgraphComponents]
+    #registeredPlugins: Map<string, PluginInterface> = new Map()
+
+    // This will eventually go
+    #bondgraphPlugin: PluginInterface|undefined = undefined
+
+    #componentLibraries: ComponentLibrary[] = []
     #componentLibrariesRef = vue.ref<ComponentLibrary[]>(this.#componentLibraries)
 
     private constructor() {
@@ -51,6 +74,35 @@ export class PluginComponents {
 
     static get instance() {
         return PluginComponents.#instance ?? (PluginComponents.#instance = new PluginComponents())
+    }
+
+    get registeredPlugins(): string[] {
+        return [...this.#registeredPlugins.keys()]
+    }
+
+    registerPlugin(plugin: PluginInterface) {
+        this.#registeredPlugins.set(plugin.id, plugin)
+    }
+
+    loadPlugins() {
+        this.#bondgraphPlugin = new BondgraphPlugin()
+        this.#componentLibraries.push(BondgraphComponents)
+        vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
+    }
+
+    getSelectedTemplate(): ComponentLibraryTemplate|undefined {
+        let selectedTemplate: ComponentLibraryTemplate|undefined = undefined
+        if (this.#componentLibraries.length &&
+            // @ts-expect-error: `componentLibraries` is at least 1 long
+            this.#componentLibraries[0].components.length) {
+
+            // Select the default component template
+
+            // @ts-expect-error: `componentLibraries` is at least 1 long
+            selectedTemplate = this.#componentLibraries[0].components[0]
+            selectedTemplate!.selected = true
+        }
+        return selectedTemplate
     }
 
     addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
@@ -82,22 +134,6 @@ export class PluginComponents {
                               value: ValueChange, itemId: string,
                               celldlObject: CellDLObject, rdfStore: RdfStore) {
         return this.#bondgraphPlugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
-    }
-
-    loadComponentLibraries(): ComponentLibraryTemplate|undefined {
-        let selectedTemplate: ComponentLibraryTemplate|undefined = undefined
-        if (this.#componentLibraries.length &&
-            // @ts-expect-error: `componentLibraries` is at least 1 long
-            this.#componentLibraries[0].components.length) {
-
-            // Select the default component template
-
-            // @ts-expect-error: `componentLibraries` is at least 1 long
-            selectedTemplate = this.#componentLibraries[0].components[0]
-            selectedTemplate!.selected = true
-        }
-        vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
-        return selectedTemplate
     }
 
     styleRules(): string {

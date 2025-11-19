@@ -194,8 +194,10 @@ const STATES_GROUP_INDEX = 2
 
 //==============================================================================
 
-export class BondgraphPlugin {
-    #baseComponents: Map<string, BaseComponent> = new Map()
+export class BondgraphPlugin implements PluginInterface {
+    readonly id: string = 'bondgraph-plugin'
+
+    #baseComponents: Map<string, BGBaseComponent> = new Map()
     #baseComponentToTemplates: Map<string, ElementTemplate[]> = new Map()
     #physicalDomains: Map<string, PhysicalDomain> = new Map()
     #elementTemplates: Map<string, ElementTemplate> = new Map()
@@ -217,6 +219,8 @@ export class BondgraphPlugin {
         this.#loadBaseComponents()
         this.#assignTemplates()
         this.#loadTemplateParameters()
+
+        pluginComponents.registerPlugin(this)
     }
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
