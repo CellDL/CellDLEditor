@@ -21,6 +21,8 @@ limitations under the License.
 import { base64Svg, LatexMathSvg } from '@renderer/common/svgUtils'
 import { type ComponentLibraryTemplate } from '@editor/components/index'
 
+import { BGBaseComponent } from './index'
+
 //==============================================================================
 
 const ICON_BORDER= '2px'
@@ -35,7 +37,7 @@ const MIN_BORDER_COLOUR = 'grey'
 
 //==============================================================================
 
-interface ElementColour {
+export interface ElementStyle {
     text: string
     background: string
     border?: string
@@ -43,62 +45,70 @@ interface ElementColour {
 
 interface ComponentDefinition {
     id: string
+    uri: string
     name: string
     base: string
-    colour: ElementColour,
+    style: ElementStyle,
     noSpeciesLocation?: boolean
+}
+
+export type BGComponentLibraryTemplate = ComponentLibraryTemplate & {
+    uri: string
+    base: string
+    noSpeciesLocation?: boolean
+    style: ElementStyle
 }
 
 //==============================================================================
 
-const FLOW_COLOUR: ElementColour = {
+const FLOW_STYLE: ElementStyle = {
     text: '#00B050',
     background: '#E2F0D9'
 }
 
-const POTENTIAL_COLOUR: ElementColour = {
+const POTENTIAL_STYLE: ElementStyle = {
     text: '#FF0909',
     background: '#FBE4D5'
 }
 
-const POTENTIAL_STORAGE_COLOUR: ElementColour = {
+const POTENTIAL_STORAGE_STYLE: ElementStyle = {
     text: '#00B050',
     background: '#E2F0D9'
 }
 
-const KINETIC_STORAGE_COLOUR: ElementColour = {
+const KINETIC_STORAGE_STYLE: ElementStyle = {
     text: 'black',
     background: 'lightgrey'
 }
 
-const REACTION_COLOUR: ElementColour = {
+const REACTION_STYLE: ElementStyle = {
     text: '#72329F',
     background: '#FFD966'
 }
 
-const RESISTANCE_COLOUR: ElementColour = {
+const RESISTANCE_STYLE: ElementStyle = {
     text: '#444',
-    background: REACTION_COLOUR.background
+    background: REACTION_STYLE.background
 }
-const ONE_RESISTANCE_COLOUR: ElementColour = {
-    text: RESISTANCE_COLOUR.text,
-    background: RESISTANCE_COLOUR.background,
+const ONE_RESISTANCE_STYLE: ElementStyle = {
+    text: RESISTANCE_STYLE.text,
+    background: RESISTANCE_STYLE.background,
     border: 'green'
 }
 
-const SCALE_COLOUR: ElementColour = {
+const SCALE_STYLE: ElementStyle = {
     text: '#7030A0',
     background: '#C1C1FA'
 }
 
-const UNITS_COLOUR: ElementColour = {
+const UNITS_STYLE: ElementStyle = {
     text: '#444',
     background: '#DDD'
 }
 
-const ZERO_STORAGE_COLOUR: ElementColour = {
-    text: FLOW_COLOUR.text,
-    background: FLOW_COLOUR.background,
+const ZERO_STORAGE_STYLE: ElementStyle = {
+    text: FLOW_STYLE.text,
+    background: FLOW_STYLE.background,
     border: 'red'
 }
 
@@ -106,102 +116,127 @@ const ZERO_STORAGE_COLOUR: ElementColour = {
 
 export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode",
-        name: "Zero storage node (q)",
+        id: 'ZeroStorageNode_q',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
+        name: 'Zero storage node (q)',
         base: 'q',
-        colour: ZERO_STORAGE_COLOUR
+        style: ZERO_STORAGE_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode",
-        name: "Zero storage node (u)",
+        id: 'ZeroStorageNode_u',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
+        name: 'Zero storage node (u)',
         base: 'u',
-        colour: ZERO_STORAGE_COLOUR
+        style: ZERO_STORAGE_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode",
-        name: "One resistance node",
+        id: 'OneResistanceNode',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
+        name: 'One resistance node',
         base: 'v',
-        colour: ONE_RESISTANCE_COLOUR
+        style: ONE_RESISTANCE_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
-        name: "Static energy store",
+        id: 'QuantityStore',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore',
+        name: 'Static energy store',
         base: 'q',
-        colour: POTENTIAL_STORAGE_COLOUR
+        style: POTENTIAL_STORAGE_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
-        name: "Zero node",
+        id: 'ZeroNode',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode',
+        name: 'Zero node',
         base: 'u',
-        colour: POTENTIAL_COLOUR
+        style: POTENTIAL_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
-        name: "One node",
+        id: 'OneNode',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneNode',
+        name: 'One node',
         base: 'v',
-        colour: FLOW_COLOUR
+        style: FLOW_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator",
-        name: "Dissipative element",
+        id: 'Dissipator',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator',
+        name: 'Dissipative element',
         base: 'R',
-        colour: RESISTANCE_COLOUR
+        style: RESISTANCE_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction",
-        name: "Chemical reaction",
+        id: 'ChemicalReaction',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction',
+        name: 'Chemical reaction',
         base: 'Rx',
-        colour: REACTION_COLOUR
+        style: REACTION_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
-        name: "Transform node",
+        id: 'TransformNode',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode',
+        name: 'Transform node',
         base: 'k',
-        colour: SCALE_COLOUR,
+        style: SCALE_STYLE,
         noSpeciesLocation: true
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
-        name: "Dynamic energy store",
+        id: 'FlowStore',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore',
+        name: 'Dynamic energy store',
         base: 'L',
-        colour: KINETIC_STORAGE_COLOUR
+        style: KINETIC_STORAGE_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
-        name: "Potential source",
+        id: 'PotentialSource',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
+        name: 'Potential source',
         base: 'u',
-        colour: POTENTIAL_COLOUR
+        style: POTENTIAL_STYLE
     },
     {
-        id: "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
-        name: "Flow source",
+        id: 'FlowSource',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
+        name: 'Flow source',
         base: 'v',
-        colour: FLOW_COLOUR
+        style: FLOW_STYLE
     }
 ]
 
 //==============================================================================
 
-export function typeset(latex: string, colour: ElementColour, base64: boolean=false): string {
+function typeset(latex: string, style: ElementStyle, base64: boolean=false): string {
     const svg = LatexMathSvg.svgRect(latex, '', {
             'min-width': ICON_MIN_WIDTH,
             'min-height': ICON_MIN_HEIGHT,
             'vertical-align': ICON_VERTICAL_ALIGN,
-            'border-width': colour.border ? ICON_BORDER : MIN_BORDER,
+            'border-width': style.border ? ICON_BORDER : MIN_BORDER,
             padding: ICON_PADDING,
             'corner-radius': ICON_RADIUS,
-            background: colour.background,
-            border: colour.border || MIN_BORDER_COLOUR,
-            'suffix-background': UNITS_COLOUR.background
+            background: style.background,
+            border: style.border || MIN_BORDER_COLOUR,
+            'suffix-background': UNITS_STYLE.background
         }
     )
     return base64 ? base64Svg(svg) : svg
 }
 
-export function definitionToLibraryTemplate(defn: ComponentDefinition): ComponentLibraryTemplate {
+export function imageData(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined) {
+    const latex: string[] = [baseComponent.template.base]
+    if (species) {
+        latex.push(`^{${species}}`)
+    }
+    if (location) {
+        latex.push(`_{${location}}`)
+    }
+
+    return typeset(latex.join(''), baseComponent.style, true)
+}
+
+export function definitionToLibraryTemplate(defn: ComponentDefinition): BGComponentLibraryTemplate {
     const latex = defn.noSpeciesLocation ? defn.base : `${defn.base}^i_j`
+
     return Object.assign({}, defn, {
-        image: typeset(latex, defn.colour, true)
+        image: typeset(latex, defn.style, true)
     })
 }
 
