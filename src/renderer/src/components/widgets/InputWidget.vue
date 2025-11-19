@@ -30,15 +30,6 @@
                 size="small"
             )
             label {{ name }}
-        Slider(
-            v-model="scalarValue"
-            :min="minimumValue"
-            :max="maximumValue"
-            :step="stepValue"
-            @change="sliderChange"
-            class="w-full mt-3"
-            size="small"
-        )
     .bottom-margin(v-else)
         FloatLabel(variant="on")
             InputText(
@@ -139,14 +130,6 @@ function inputTextFocusOut(event: Event) {
 function inputTextKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
         inputTextChange((event.target as HTMLInputElement).value)
-    }
-}
-
-function sliderChange(newValue: number | number[]) {
-    const valueToEmit = Array.isArray(newValue) ? newValue[0] : newValue
-
-    if (valueToEmit !== oldValue) {
-        emitChange(valueToEmit)
     }
 }
 </script>
