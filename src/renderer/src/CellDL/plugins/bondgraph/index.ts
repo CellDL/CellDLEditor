@@ -391,9 +391,11 @@ export class BondgraphPlugin implements PluginInterface {
         this.#getElementProperties(celldlObject, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
 
         if (template.elementTemplate) {
-            for (const groupIndex of [PARAMS_GROUP_INDEX, STATES_GROUP_INDEX]) {
-                this.#getElementVariables(celldlObject, componentProperties[groupIndex]!, template.elementTemplate, rdfStore)
-            }
+            this.#setVariableTemplates(template.elementTemplate.parameters, componentProperties[PARAMS_GROUP_INDEX]!)
+            this.#getVariableProperties(celldlObject, componentProperties[PARAMS_GROUP_INDEX]!, rdfStore)
+
+            this.#setVariableTemplates(template.elementTemplate.states, componentProperties[STATES_GROUP_INDEX]!)
+            this.#getVariableProperties(celldlObject, componentProperties[STATES_GROUP_INDEX]!, rdfStore)
         }
     }
 
@@ -425,14 +427,6 @@ export class BondgraphPlugin implements PluginInterface {
             }
             group.items.push(...items)
         })
-    }
-
-    #getElementVariables(celldlObject: CellDLObject, group: PropertyGroup,
-                         elementTemplate: ElementTemplate, rdfStore: RdfStore) {
-        this.#setVariableTemplates(elementTemplate.parameters, group)
-        this.#setVariableTemplates(elementTemplate.states, group)
-
-        this.#getVariableProperties(celldlObject, group, rdfStore)
     }
 
     #getVariableProperties(celldlObject: CellDLObject, group: PropertyGroup, rdfStore: RdfStore) {
