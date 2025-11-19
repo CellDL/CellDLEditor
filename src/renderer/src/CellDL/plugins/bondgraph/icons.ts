@@ -37,6 +37,9 @@ const MIN_BORDER_COLOUR = 'grey'
 
 //==============================================================================
 
+const DEFAULT_SPECIES = 'i'
+const DEFAULT_LOCATION = 'j'
+
 export interface ElementStyle {
     text: string
     background: string
@@ -47,14 +50,14 @@ interface ComponentDefinition {
     id: string
     uri: string
     name: string
-    base: string
+    symbol: string
     style: ElementStyle,
     noSpeciesLocation?: boolean
 }
 
 export type BGComponentLibraryTemplate = ComponentLibraryTemplate & {
     uri: string
-    base: string
+    symbol: string
     noSpeciesLocation?: boolean
     style: ElementStyle
 }
@@ -119,63 +122,63 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         id: 'ZeroStorageNode_q',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
         name: 'Zero storage node (q)',
-        base: 'q',
+        symbol: 'q',
         style: ZERO_STORAGE_STYLE
     },
     {
         id: 'ZeroStorageNode_u',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
         name: 'Zero storage node (u)',
-        base: 'u',
+        symbol: 'u',
         style: ZERO_STORAGE_STYLE
     },
     {
         id: 'OneResistanceNode',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
         name: 'One resistance node',
-        base: 'v',
+        symbol: 'v',
         style: ONE_RESISTANCE_STYLE
     },
     {
         id: 'QuantityStore',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore',
         name: 'Static energy store',
-        base: 'q',
+        symbol: 'q',
         style: POTENTIAL_STORAGE_STYLE
     },
     {
         id: 'ZeroNode',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode',
         name: 'Zero node',
-        base: 'u',
+        symbol: 'u',
         style: POTENTIAL_STYLE
     },
     {
         id: 'OneNode',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneNode',
         name: 'One node',
-        base: 'v',
+        symbol: 'v',
         style: FLOW_STYLE
     },
     {
         id: 'Dissipator',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator',
         name: 'Dissipative element',
-        base: 'R',
+        symbol: 'R',
         style: RESISTANCE_STYLE
     },
     {
         id: 'ChemicalReaction',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction',
         name: 'Chemical reaction',
-        base: 'Rx',
+        symbol: 'Rx',
         style: REACTION_STYLE
     },
     {
         id: 'TransformNode',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode',
         name: 'Transform node',
-        base: 'k',
+        symbol: 'k',
         style: SCALE_STYLE,
         noSpeciesLocation: true
     },
@@ -183,21 +186,21 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         id: 'FlowStore',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore',
         name: 'Dynamic energy store',
-        base: 'L',
+        symbol: 'L',
         style: KINETIC_STORAGE_STYLE
     },
     {
         id: 'PotentialSource',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
         name: 'Potential source',
-        base: 'u',
+        symbol: 'u',
         style: POTENTIAL_STYLE
     },
     {
         id: 'FlowSource',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
         name: 'Flow source',
-        base: 'v',
+        symbol: 'v',
         style: FLOW_STYLE
     }
 ]
@@ -221,7 +224,7 @@ function typeset(latex: string, style: ElementStyle, base64: boolean=false): str
 }
 
 export function imageData(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined) {
-    const latex: string[] = [baseComponent.template.base]
+    const latex: string[] = [baseComponent.template.symbol]
     if (species) {
         latex.push(`^{${species}}`)
     }
@@ -233,7 +236,7 @@ export function imageData(baseComponent: BGBaseComponent, species: string|undefi
 }
 
 export function definitionToLibraryTemplate(defn: ComponentDefinition): BGComponentLibraryTemplate {
-    const latex = defn.noSpeciesLocation ? defn.base : `${defn.base}^i_j`
+    const latex = defn.noSpeciesLocation ? defn.symbol : `${defn.symbol}^i_j`
 
     return Object.assign({}, defn, {
         image: typeset(latex, defn.style, true)
