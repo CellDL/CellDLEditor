@@ -45,17 +45,13 @@ import * as $rdf from '@editor/metadata/index'
 import { BGF, RDF, RDFS, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 
+import { BONDGRAPH_ICON_DEFINITIONS, definitionToLibraryTemplate, typeset } from './icons'
+
 //==============================================================================
 
-import BondgraphJsonData from '@renderer/plugins/bondgraph.json'
-
 export const BondgraphComponents: ComponentLibrary = {
-    name: BondgraphJsonData.name,
-    components: BondgraphJsonData.components.filter(c => c.image)
-}
-
-if ('id' in BondgraphJsonData) {
-    BondgraphComponents.id = String(BondgraphJsonData.id)
+    name: 'Bondgraph Elements',
+    components: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
 }
 
 const BondgraphComponentTemplates: Map<string, ComponentLibraryTemplate> = new Map(
