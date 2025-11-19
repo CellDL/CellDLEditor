@@ -20,19 +20,19 @@ limitations under the License.
 
 import { type PointLike } from '@renderer/common/points'
 import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styling'
-import { svgCircleElement, SVG_NAMESPACE_URI, svgRectElement } from '@renderer/common/svgUtils'
+import { svgCircleElement, SVG_URI, svgRectElement } from '@renderer/common/svgUtils'
 import type { Constructor, StringProperties } from '@renderer/common/types'
 
 import * as $rdf from '@editor/metadata/index'
 import {
-    CELLDL_NAMESPACE,
-    CELLDL_NAMESPACE_DECLARATIONS,
+    CELLDL,
+    CELLDL_DECLARATIONS,
     type ContentType,
-    DCT_NAMESPACE,
+    DCT,
     MetadataPropertiesMap,
     type MetadataPropertyValue,
     type NamedNode,
-    OWL_NAMESPACE,
+    OWL,
     RdfStore,
     RDF_TYPE,
     type Statement,
