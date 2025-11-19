@@ -620,9 +620,6 @@ export class BondgraphPlugin implements PluginInterface {
             })
         )
 
-        if (template.elementTemplate) {
-            // this, along with baseComponent, determines selected item
-        }
         const discreteValue = template.elementTemplate
                             ? template.elementTemplate.id
                             : baseComponent.id
