@@ -46,7 +46,7 @@ import * as vue from 'vue'
 
 import type * as locApi from '../../libopencor/locUIJsonApi'
 
-const value = defineModel<number|string>({ required: true })
+const value = defineModel<number|string|locApi.IUiJsonDiscreteInputPossibleValue>({ required: true })
 
 const emits = defineEmits(['change'])
 
@@ -69,6 +69,8 @@ let oldValue = value.value
 const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue>({
     get() {
         return value.value
+    },
+    set(_: number | string) {
     }
 })
 
