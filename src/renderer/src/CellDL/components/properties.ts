@@ -41,6 +41,7 @@ export type ItemDetails = locApi.IUiJsonInput & {
 }
 
 export interface PropertyGroup {
+    groupId: string
     items: ItemDetails[]
     title: string
 }
@@ -53,6 +54,7 @@ export interface ValueChange {
 //==============================================================================
 
 const METADATA_GROUP: PropertyGroup = {
+    groupId: 'cd-metadata',
     title: 'Metadata',
     items: OBJECT_METADATA.map((nameUri: NamedUri) => {
         return {
