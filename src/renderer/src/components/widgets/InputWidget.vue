@@ -61,7 +61,7 @@ const props = defineProps<{
 
 const scalarType = !!props.numeric
 
-let oldValue = value.value
+let oldValue = (props.possibleValues === undefined) ? value.value : value.value.value
 
 const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue>({
     get() {
