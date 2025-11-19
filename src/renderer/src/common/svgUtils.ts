@@ -176,118 +176,78 @@ function getLengthFromOptions(options: LatexMathSvgOptions, key: string): number
 
 //==============================================================================
 
-function latexToSvgRect(
-    latex: string,
-    suffix: string,
-    options: LatexMathSvgOptions = {},
-    includeStyleRules: boolean = false
-): string {
+function latexToSvgRect(latex: string, suffix: string,
+    options: LatexMathSvgOptions={},
+    includeStyleRules:boolean=false): string
+{
     let svgDocument = latexAsSvgDocument(latex)
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
-
     const svgWidth = lengthToPixels(svgElement.getAttribute('width'))
     const svgHeight = lengthToPixels(svgElement.getAttribute('height'))
     if (svgWidth && svgHeight) {
         let viewBox = getViewbox(svgElement)
-        const scale: [number, number] = [viewBox[2] / svgWidth, viewBox[3] / svgHeight]
-        const border_width: number = 'border' in options ? getLengthFromOptions(options, 'border-width') : 0
+        const scale = [viewBox[2]/svgWidth, viewBox[3]/svgHeight]
+        const border = ('border' in options) ? getLengthFromOptions(options, 'border-width') : 0
         const padding = getLengthFromOptions(options, 'padding')
-        let width = scale[0] * Math.max(2 * border_width + 2 * padding + svgWidth, getLengthFromOptions(options, 'min-width'))
-        const extrawidth = width - scale[0] * svgWidth
-        const left = viewBox[0] - extrawidth / 2
+        let width = scale[0]!*Math.max(2*border + 2*padding + svgWidth, getLengthFromOptions(options, 'min-width'))
+        const extrawidth = width - scale[0]!*svgWidth
+        const left = viewBox[0] - extrawidth/2
         let right = left + width
 
-        let height =
-            scale[1] * Math.max(2 * border_width + 2 * padding + svgHeight, getLengthFromOptions(options, 'min-height'))
-        const extraHeight = height - scale[1] * svgHeight
-        let top = viewBox[1] - extraHeight / 2
+        let height = scale[1]!*Math.max(2*border + 2*padding + svgHeight, getLengthFromOptions(options, 'min-height'))
+        const extraHeight = height - scale[1]!*svgHeight
+        let top = viewBox[1] - extraHeight/2
         let bottom = top + height
 
-        const rectSize = ` width="${round(width - 2 * border_width * scale[0])}" height="${round(height - 2 * border_width * scale[1])}"`
+        const rectSize = ` width="${round(width-2*border*scale[0]!)}" height="${round(height-2*border*scale[1]!)}"`
         if (suffix !== '') {
-            const suffixLatex = suffix !== '' ? `\\;${suffix}` : ''
+            const suffixLatex = (suffix !== '') ? `\\;${suffix}` : ''
             svgDocument = latexAsSvgDocument(`${latex}${suffixLatex}`)
             svgElement = (<Element>svgDocument.documentElement) as SVGSVGElement
             viewBox = getViewbox(svgElement)
-            right = Math.max(right, viewBox[0] + viewBox[2] + scale[0] * padding)
-            top = Math.min(top, viewBox[1] - scale[1] * (padding + border_width))
-            bottom = Math.max(bottom, viewBox[1] + viewBox[3] + scale[1] * (padding + border_width))
+            right = Math.max(right, viewBox[0] + viewBox[2] + scale[0]!*padding)
+            top = Math.min(top, viewBox[1] - scale[1]!*(padding + border))
+            bottom = Math.max(bottom, viewBox[1] + viewBox[3] + scale[1]!*(padding + border))
 
             // We add `data-centre-x` and `data-centre-y` attributes to the root <svg> element,
             // giving the ratios needed to find the centre of the unsuffixed text.
-            svgElement.dataset.centreX = `${round((0.5 * width) / (right - left))}`
-            svgElement.dataset.centreY = `${round((0.5 * height) / (bottom - top))}`
+            svgElement.dataset.centreX = `${round(0.5*width/(right - left))}`
+            svgElement.dataset.centreY = `${round(0.5*height/(bottom - top))}`
             width = right - left
             height = bottom - top
         }
-        let verticalAlign = scale[1] * getLengthFromOptions(options, 'vertical-align')
+        let verticalAlign = scale[1]!*getLengthFromOptions(options, 'vertical-align')
         if (verticalAlign) {
             bottom = -verticalAlign
             top = bottom - height
         } else {
             verticalAlign = -bottom
         }
-
-        const styling = svgElement.getAttribute('style')
-        if (styling) {
-            const styles = ''
-        }
-
-        // NB. this overwrites all existing styling whereas we just need to update `vertical-align``
-        svgElement.setAttribute('style', `vertical-align: ${pixelsToLength(verticalAlign / scale[1], 'ex')};`)
-
+        svgElement.style.setProperty('vertical-align', pixelsToLength(verticalAlign/scale[1]!, 'ex'))
         viewBox[0] = round(left)
         viewBox[1] = round(top)
         viewBox[2] = round(width)
         viewBox[3] = round(height)
-        svgElement.setAttribute('viewBox', viewBox.map((n: number) => '' + n).join(' '))
-        svgElement.setAttribute('width', pixelsToLength(width / scale[0], 'ex')!)
-        svgElement.setAttribute('height', pixelsToLength(height / scale[1], 'ex')!)
+        svgElement.setAttribute('viewBox', viewBox.map(n => '' + n).join(' '))
+        svgElement.setAttribute('width', pixelsToLength(width/scale[0]!, 'ex')!)
+        svgElement.setAttribute('height', pixelsToLength(height/scale[1]!, 'ex')!)
 
-        const bgRect = svgDocument.createElement('rect')
-        bgRect.setAttribute('fill', `${options.background || 'transparent'}`)
-        if (border_width) {
-            bgRect.setAttribute('stroke', options.border!)
-            bgRect.setAttribute('stroke-width', String(round(scale[0] * border_width)))
-        }
-        const radius = getLengthFromOptions(options, 'corner-radius')
-        let cornerRadius = ''
-        if (radius) {
-            cornerRadius = `${round(radius * scale[0])}`
-            bgRect.setAttribute('rx', cornerRadius)
-        }
-        bgRect.setAttribute('x', `${round(viewBox[0] + border_width * scale[0])}`)
-        bgRect.setAttribute('y', `${round(viewBox[1] + border_width * scale[1])}`)
-        if (options.class) {
-            bgRect.setAttribute('class', `"${options['class']}"`)
-        }
-        if (svgElement.firstChild) {
-            svgElement.insertBefore(bgRect, svgElement.firstChild.nextSibling)
-        } else {
-            svgElement.appendChild(bgRect)
-        }
+        const fill = ` fill="${options.background || 'transparent'}"`
+        const stroke = border ? ` stroke="${options['border']}" stroke-width="${round(scale[0]!*border)}"` : ''
+        const radius = getLengthFromOptions(options, 'corner-radius');
+        const cornerRadius = radius ? ` rx="${round(radius*scale[0]!)}"` : ''
+        const topLeft = `x="${round(viewBox[0]+border*scale[0]!)}" y="${round(viewBox[1]+border*scale[1]!)}"`
+        const rectClass = options.class ? ` class="${options['class']}"` : ''
+        const bgRect = `<rect ${topLeft}${rectSize}${fill}${stroke}${cornerRadius}${rectClass}></rect>`
+        svgElement.insertAdjacentHTML('afterbegin', bgRect)
+
         if (suffix !== '') {
-            const boundingRect = svgDocument.createElement('rect')
-            boundingRect.setAttribute('x', `${viewBox[0] + border_width * scale[0]}`)
-            boundingRect.setAttribute('y', `${viewBox[1] + border_width * scale[1]}`)
-            boundingRect.setAttribute('width', `${width - 2 * border_width * scale[0]}`)
-            boundingRect.setAttribute('height', `${height - 2 * border_width * scale[1]}`)
-            if (cornerRadius !== '') {
-                boundingRect.setAttribute('rx', cornerRadius)
-            }
-            boundingRect.setAttribute(
-                'fill',
-                `${
-                    'suffix-background' in options && options['suffix-background'] !== ''
-                        ? options['suffix-background']
-                        : 'transparent'
-                }`
-            )
-            if (svgElement.firstChild) {
-                svgElement.insertBefore(boundingRect, svgElement.firstChild.nextSibling)
-            } else {
-                svgElement.appendChild(boundingRect)
-            }
+            const fill = ` fill="${('suffix-background' in options && options['suffix-background'] !== '')
+                            ? options['suffix-background'] : 'transparent'}"`
+            const topLeft = `x="${viewBox[0]+border*scale[0]!}" y="${viewBox[1]+border*scale[1]!}"`;
+            const boundingRect = `<rect ${topLeft}${cornerRadius} width="${width-2*border*scale[0]!}"
+                                                                  height="${height-2*border*scale[1]!}"${fill}></rect>`
+            svgElement.insertAdjacentHTML('afterbegin', boundingRect)
         }
     }
     const svgSerialiser = new XMLSerializer()
