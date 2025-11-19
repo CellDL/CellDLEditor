@@ -38,6 +38,7 @@ import { RdfStore } from '@editor/metadata/index'
 export interface PluginInterface {
     id: string
 
+    newDocument: (rdfStore: RdfStore) => void
     addDocumentMetadata: (rdfStore: RdfStore) => void
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
@@ -106,6 +107,12 @@ export class PluginComponents {
     }
 
     //==========================================================================
+
+    newDocument(rdfStore: RdfStore) {
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.newDocument(rdfStore)
+        }
+    }
 
     addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
         for (const plugin of this.#registeredPlugins.values()) {

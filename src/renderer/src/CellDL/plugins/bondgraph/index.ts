@@ -56,6 +56,10 @@ import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
 
 //==============================================================================
 
+const BONDGRAPH_FRAMEWORK = 'https://bg-rdf.org/ontologies/bondgraph-framework'
+
+//==============================================================================
+
 type BGComponentLibrary = ComponentLibrary & {
     components: BGComponentLibraryTemplate[]
 }
@@ -290,6 +294,52 @@ export class BondgraphPlugin implements PluginInterface {
         return PROPERTY_GROUPS
     }
 
+
+    //==========================================================================
+
+    newDocument(rdfStore: RdfStore) {
+        const bgfGraph = $rdf.namedNode(BONDGRAPH_FRAMEWORK)
+
+        for (const statement of this.#rdfStore.statements()) {
+            rdfStore.add(statement.subject, statement.predicate, statement.object, bgfGraph)
+        }
+    }
+
+    //======================================
+
+    addDocumentMetadata(rdfStore: RdfStore) {
+        const statements: string[] = []
+        statements.push(`<${rdfStore.documentUri}> a bgf:BondgraphModel .`)
+
+        rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            SELECT ?uri
+            WHERE {
+                ?uri a ?type .
+                ?type rdfs:subClassOf* bgf:BondElement
+            }`, true)
+        .map((r) => {
+            statements.push(`<${rdfStore.documentUri}> bgf:hasBondElement ${r.get('uri')!.toString()} .`)
+        })
+        rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            SELECT ?uri
+            WHERE {
+                ?uri a ?type .
+                ?type rdfs:subClassOf* bgf:JunctionStructure
+            }`, true)
+        .map((r) => {
+            statements.push(`<${rdfStore.documentUri}> bgf:hasJunctionStructure ${r.get('uri')!.toString()} .`)
+        })
+
+        rdfStore.update(`${SPARQL_PREFIXES}
+            INSERT DATA {
+                ${statements.join('\n')}
+            }
+        `)
+    }
 
     //==========================================================================
 

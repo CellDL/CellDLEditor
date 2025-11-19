@@ -150,6 +150,7 @@ export class CellDLDiagram {
         this.#setLastIdentifier()
         this.#setupDefines()
         this.#setStylesheet()
+        pluginComponents.newDocument(this.#kb)
     }
 
     finishSetup() {
