@@ -18,15 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { Buffer } from 'buffer'
-
 import type { Pair } from '@renderer/common/types'
-
-//==============================================================================
-
-export function base64Svg(svg: string): string {
-    return `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
-}
 
 //==============================================================================
 
