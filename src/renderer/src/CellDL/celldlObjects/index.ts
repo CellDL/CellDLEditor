@@ -32,6 +32,7 @@ import { type ConnectionStyle } from '@editor/connections/index'
 import { type CellDLDiagram } from '@editor/diagram/index'
 import { SvgConnection } from '@editor/SVGElements/svgconnection'
 import { type CellDLSVGElement } from '@editor/SVGElements/index'
+import { pluginComponents } from '@editor/plugins/index'
 
 import * as $rdf from '@editor/metadata/index'
 import type { MetadataPropertiesMap, MetadataPropertyValue, NamedNode, RdfStore } from '@editor/metadata/index'
@@ -92,6 +93,8 @@ export class CellDLObject {
     #children: Map<string, CellDLObject> = new Map()
     #parents: Map<string, CellDLObject> = new Map()
 
+    #pluginData: Map<string, Object> = new Map()
+
     constructor(
         public readonly uri: NamedNode,
         metadata: MetadataPropertiesMap,
@@ -104,6 +107,9 @@ export class CellDLObject {
         // @ts-expect-error: celldlType is a member of the object's constructor
         this.#celldlType = this.constructor.celldlType
         this.#setMetadataProperties(metadata)
+        for (const pluginId of pluginComponents.registeredPlugins) {
+            this.#pluginData.set(pluginId, {})
+        }
     }
 
     static objectFromTemplate(uri: NamedNode, template: ObjectTemplate, celldlDiagram: CellDLDiagram): CellDLObject {
@@ -204,6 +210,14 @@ export class CellDLObject {
 
     get svgElement() {
         return this.#celldlSvgElement?.svgElement || null
+    }
+
+    pluginData(pluginId: string): Object {
+        return this.#pluginData.get(pluginId)!
+    }
+
+    setPluginData(pluginId: string, data: Object) {
+        this.#pluginData.set(pluginId, data)
     }
 
     activate(active = true) {
