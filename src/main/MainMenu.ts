@@ -149,7 +149,7 @@ export function enableDisableMainMenu(enable: boolean): electron.Menu | null {
             label: 'Save',
             accelerator: 'CmdOrCtrl+S',
             click: () => {
-                application.currentWindow?.send('save')
+                application.currentWindow?.saveFileFromMenu(false)
             },
             enabled: hasFiles
         })
@@ -158,7 +158,7 @@ export function enableDisableMainMenu(enable: boolean): electron.Menu | null {
             label: 'Save',
             accelerator: 'Shift+CmdOrCtrl+S',
             click: () => {
-                application.currentWindow?.send('save-as')
+                application.currentWindow?.saveFileFromMenu(true)
             },
             enabled: hasFiles
         })
@@ -169,7 +169,7 @@ export function enableDisableMainMenu(enable: boolean): electron.Menu | null {
             label: 'Close',
             accelerator: 'CmdOrCtrl+W',
             click: () => {
-                application.currentWindow?.send('close')
+                application.currentWindow?.close()
             },
             enabled: hasFiles
         })
