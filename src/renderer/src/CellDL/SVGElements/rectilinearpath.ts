@@ -333,13 +333,13 @@ export class RectilinearPath extends PathElement {
         }
         const face = component.boundaryFace(splayPoint)
         if (face === 'L') {
-            this.#repositionSplayPoint(splayPoint, index, face, component, { x: cornerDeltas[0].x, y: 0 })
-        } else if (face === 'R') {
             this.#repositionSplayPoint(splayPoint, index, face, component, { x: cornerDeltas[1].x, y: 0 })
+        } else if (face === 'R') {
+            this.#repositionSplayPoint(splayPoint, index, face, component, { x: cornerDeltas[0].x, y: 0 })
         } else if (face === 'T') {
-            this.#repositionSplayPoint(splayPoint, index, face, component, { x: 0, y: cornerDeltas[0].y })
-        } else if (face === 'B') {
             this.#repositionSplayPoint(splayPoint, index, face, component, { x: 0, y: cornerDeltas[1].y })
+        } else if (face === 'B') {
+            this.#repositionSplayPoint(splayPoint, index, face, component, { x: 0, y: cornerDeltas[0].y })
         }
     }
 
