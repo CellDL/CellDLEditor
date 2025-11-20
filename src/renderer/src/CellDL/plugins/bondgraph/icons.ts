@@ -168,9 +168,9 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         style: RESISTANCE_STYLE
     },
     {
-        id: 'ChemicalReaction',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction',
-        name: 'Chemical reaction',
+        id: 'Reaction',
+        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#Reaction',
+        name: 'Reaction',
         symbol: 'Rx',
         style: REACTION_STYLE
     },
