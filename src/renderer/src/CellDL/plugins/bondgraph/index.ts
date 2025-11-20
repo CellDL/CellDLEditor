@@ -768,9 +768,9 @@ export class BondgraphPlugin implements PluginInterface {
             SELECT ?element ?label ?base WHERE {
                 ?element rdfs:subClassOf ?base .
                 OPTIONAL { ?element rdfs:label ?label }
-                { ?base rdfs:subClassOf bg:BondElement }
+                { ?base rdfs:subClassOf* bg:BondElement }
             UNION
-                { ?base rdfs:subClassOf bg:JunctionStructure }
+                { ?base rdfs:subClassOf* bg:JunctionStructure }
             }`
         ).map((r) => {
             const element = r.get('element')!
