@@ -22,19 +22,17 @@ exposeElectronAPI()
 
 
 
+contextBridge.exposeInMainWorld('electronAPI', {
+    // Renderer listening to events from the main process
 
+    onFileAction: (callback) => ipcRenderer.on('FILE_OP', callback),
+    onMenuAction: (callback) => ipcRenderer.on('EDITOR_OP', callback),
 
+    // Renderer sending events to the main process
 
-    sendEditorAction: (action: string, ...args: any) =>
-        ipcRenderer.send('EDITOR_OP', action, ...args),
+    sendEditorAction: (action: string, ...args) => ipcRenderer.invoke('EDITOR_OP', action, ...args),
     sendFileAction: (action: string, path: string, data: string|undefined=undefined) =>
-        ipcRenderer.send('FILE_OP', action, path, data),
-
-
-    onFileAction: (callback: () => void) =>
-        ipcRenderer.on('FILE_OP', callback),
-    onMenuAction: (callback: () => void) =>
-        ipcRenderer.on('EDITOR_OP', callback)
+                                                    ipcRenderer.invoke('FILE_OP', action, path, data)
 })
 
 //==============================================================================
