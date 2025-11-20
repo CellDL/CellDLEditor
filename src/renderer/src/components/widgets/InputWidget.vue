@@ -23,7 +23,7 @@
         FloatLabel(variant="on")
             InputText(
                 v-model="scalarValueString"
-                v-keyfilter="{ pattern: /^[+-]?(\d*(\.\d*)?|\.d*)([eE][+-]?\d*)?$/, validateOnly: true }"
+                v-keyfilter.num
                 v-on:focusout="inputTextFocusOut"
                 v-on:keypress="inputTextKeyPress"
                 class="w-full"
@@ -43,6 +43,9 @@
 
 <script setup lang="ts">
 import * as vue from 'vue'
+
+import KeyFilter from 'primevue/keyfilter';
+//  v-keyfilter="{ pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))([eE][+-]?\d+)?$/, validateOnly: true }"
 
 import type * as locApi from '../../libopencor/locUIJsonApi'
 
