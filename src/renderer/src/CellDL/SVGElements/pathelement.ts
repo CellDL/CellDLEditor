@@ -261,7 +261,7 @@ export class PathElement {
 
     componentBoundingBoxMoved(component: BoundedElement, centroidDelta: Point) {
         for (const index of [0, this.#pathPoints.length - 1]) {
-            if (component === this.#pathPoints[index].component) {
+            if (component === this.#pathPoints[index]!.component) {
                 this.moveComponentBoundingBox(index, component, centroidDelta)
                 return
             }
@@ -270,7 +270,7 @@ export class PathElement {
 
     componentBoundingBoxResisized(component: BoundedElement, cornerDeltas: [Point, Point]) {
         for (const index of [0, this.#pathPoints.length - 1]) {
-            if (component === this.#pathPoints[index].component) {
+            if (component === this.#pathPoints[index]!.component) {
                 this.resizeComponentBoundingBox(index, component, cornerDeltas)
                 return
             }
@@ -279,7 +279,7 @@ export class PathElement {
 
     undoControlMove(moveIndex: number, movePoint: Point | null) {
         if (moveIndex > 0 && moveIndex < this.#pathPoints.length - 1 && movePoint) {
-            const pathPoint = this.#pathPoints[moveIndex]
+            const pathPoint = this.#pathPoints[moveIndex]!
             pathPoint.point = movePoint
             let redraw = false
             this.#pathPoints.forEach((pathPoint) => {

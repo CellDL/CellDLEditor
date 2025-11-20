@@ -26,7 +26,7 @@ import { CONNECTION_SPLAY_PADDING } from '@renderer/common/styling'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
 import { editGuides } from '@editor/editor/editguides'
 
-import { FixedValue, RestrictedValue } from '@editor/geometry'
+import { FixedValue, RestrictedValue } from '@editor/geometry/index'
 import { roundEqual } from '@editor/utils'
 
 import type { BoundedElement } from './boundedelement'
@@ -143,7 +143,7 @@ class PathEdge {
 function getEdges(pathPoints: PathPoint[]) {
     return pathPoints
         .slice(0, -1)
-        .map((cp, i) => new PathEdge([cp, pathPoints[i + 1]], i === 0 || i === pathPoints.length - 2))
+        .map((cp, i) => new PathEdge([cp, pathPoints[i + 1]!], i === 0 || i === pathPoints.length - 2))
 }
 
 /** DEBUGGING
@@ -190,13 +190,13 @@ export class RectilinearPath extends PathElement {
     protected pathFromPathPoints(): NormalArray {
         const points = this.pathPoints
         const nPoints = points.length
-        const firstIndex = PointMath.colinear(points[0], points[1], points[2], true) ? 2 : 1
-        const lastIndex = PointMath.colinear(points[nPoints - 3], points[nPoints - 2], points[nPoints - 1], true)
+        const firstIndex = PointMath.colinear(points[0]!, points[1]!, points[2]!, true) ? 2 : 1
+        const lastIndex = PointMath.colinear(points[nPoints - 3]!, points[nPoints - 2]!, points[nPoints - 1]!, true)
             ? -2
             : -1
-        const path = [points[0], ...points.slice(firstIndex, lastIndex), points[nPoints - 1]]
-        const pathArray = path.map((p) => ['L', p.x, p.y])
-        pathArray[0][0] = 'M'
+        const path: PathPoint[] = [points[0]!, ...points.slice(firstIndex, lastIndex)!, points[nPoints - 1]!]
+        const pathArray = path.map(p => ['L', p.x, p.y])
+        pathArray[0]![0] = 'M'
         return pathArray as NormalArray
     }
 
@@ -225,7 +225,7 @@ export class RectilinearPath extends PathElement {
             let currentPathPoint = new Point(pathArray[1][1], pathArray[1][2])
             const firstPathPoints = RectilinearPath.#elementPathPoints(this.firstElement, currentPathPoint)
             this.pathPoints.push(...firstPathPoints)
-            let prevPathPoint = this.pathPoints[1]
+            let prevPathPoint = this.pathPoints[1]!
             if (!this.firstElement.pointOutside(currentPathPoint, CONNECTION_SPLAY_PADDING)) {
                 pathIndex = 2
                 currentPathPoint = new Point(pathArray[2][1], pathArray[2][2])
@@ -269,8 +269,8 @@ export class RectilinearPath extends PathElement {
 
     #splitPath(dirn: string, firstIndex: number) {
         // Splitting between first at second
-        const firstPoint = this.pathPoints[firstIndex]
-        const secondPoint = this.pathPoints[firstIndex + 1]
+        const firstPoint = this.pathPoints[firstIndex]!
+        const secondPoint = this.pathPoints[firstIndex + 1]!
         let newPoints: PathPoint[] = [] //firstPoint]
         if (dirn === 'H') {
             const midX = new RestrictedValue((firstPoint.x + secondPoint.x) / 2)
@@ -302,16 +302,16 @@ export class RectilinearPath extends PathElement {
         if (nPoints === 4) {
             if (index === 0) {
                 if (
-                    (dirn === 'H' && !roundEqual(splayPoint.y, this.pathPoints[2].y)) || // splayPoint.y !== this.pathPoints[2].y
-                    (dirn === 'V' && !roundEqual(splayPoint.x, this.pathPoints[2].x))
+                    (dirn === 'H' && !roundEqual(splayPoint.y, this.pathPoints[2]!.y)) ||
+                    (dirn === 'V' && !roundEqual(splayPoint.x, this.pathPoints[2]!.x))
                 ) {
                     //splayPoint.x !== this.pathPoints[2].x) {
                     this.#splitPath(dirn, 1)
                 }
             } else {
                 if (
-                    (dirn === 'H' && !roundEqual(splayPoint.y, this.pathPoints[nPoints - 3].y)) || //splayPoint.y !== this.pathPoints[nPoints-3].y
-                    (dirn === 'V' && !roundEqual(splayPoint.x, this.pathPoints[nPoints - 3].x))
+                    (dirn === 'H' && !roundEqual(splayPoint.y, this.pathPoints[nPoints - 3]!.y)) ||
+                    (dirn === 'V' && !roundEqual(splayPoint.x, this.pathPoints[nPoints - 3]!.x))
                 ) {
                     //splayPoint.x !== this.pathPoints[nPoints-3].x) {
                     this.#splitPath(dirn, nPoints - 3)
@@ -325,9 +325,9 @@ export class RectilinearPath extends PathElement {
         const nPoints = this.pathPoints.length
         let splayPoint: PathPoint
         if (index === 0) {
-            splayPoint = this.pathPoints[index + 1]
+            splayPoint = this.pathPoints[index + 1]!
         } else if (index === nPoints - 1) {
-            splayPoint = this.pathPoints[index - 1]
+            splayPoint = this.pathPoints[index - 1]!
         } else {
             return
         }
@@ -347,9 +347,9 @@ export class RectilinearPath extends PathElement {
         const nPoints = this.pathPoints.length
         let splayPoint: PathPoint
         if (index === 0) {
-            splayPoint = this.pathPoints[index + 1]
+            splayPoint = this.pathPoints[index + 1]!
         } else if (index === nPoints - 1) {
-            splayPoint = this.pathPoints[index - 1]
+            splayPoint = this.pathPoints[index - 1]!
         } else {
             return
         }
