@@ -249,8 +249,8 @@ vue.onMounted(() => {
         celldlDiagram = new CellDLDiagram('', '', celldlEditor)
 
         // Listen for events from host when running as an Electron app
-        if ('electronApi' in window) {
-            electronApi?.onFileAction(async (_, action: string, filePath: string, data: string | undefined) => {
+        if ('electronAPI' in window) {
+            window.electronAPI?.onFileAction(async (_: Event, action: string, filePath: string, data: string | undefined) => {
                 if (action === 'IMPORT' || action === 'OPEN') {
                     // Load CellDL file (SVG and metadata)
                     try {
@@ -258,18 +258,18 @@ vue.onMounted(() => {
                     } catch (error) {
                         console.log(error)
                         window.alert((error as Error).toString())
-                        electronApi?.sendFileAction('ERROR', filePath)
                         celldlDiagram = new CellDLDiagram('', '', celldlEditor)
+                        window.electronAPI?.sendFileAction('ERROR', filePath, '')
                     }
                     celldlEditor.editDiagram(celldlDiagram)
                 } else if (action === 'GET_DATA') {
                     const celldlData = await celldlDiagram?.serialise(filePath!)
-                    electronApi?.sendFileAction('WRITE', filePath, celldlData)
+                    window.electronAPI?.sendFileAction('WRITE', filePath, celldlData)
                     undoRedo.clean()
                 }
             })
 
-            electronApi?.onMenuAction((_, action: string, ...args) => {
+            window.electronAPI?.onMenuAction((_: Event, action: string, ...args: any) => {
                 if (action === 'menu-redo') {
                     undoRedo.redo(celldlDiagram!)
                 } else if (action === 'menu-undo') {
@@ -282,7 +282,7 @@ vue.onMounted(() => {
             })
 
             // Let Electron know that the editor's window is ready
-            electronApi?.sendEditorAction('READY')
+            window.electronAPI?.sendEditorAction('READY')
         }
 
         celldlDiagram.edit()
