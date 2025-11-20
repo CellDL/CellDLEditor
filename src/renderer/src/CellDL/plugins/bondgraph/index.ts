@@ -545,28 +545,54 @@ export class BondgraphPlugin implements PluginInterface {
                     this.#updateElementType(item, value, celldlObject, rdfStore)
 
                 } else if (itemId === BG_INPUT.ElementSpecies ||
-                           itemId === BG_INPUT.ElementLocation ||
-                           itemId === BG_INPUT.ElementValue) {
+                           itemId === BG_INPUT.ElementLocation) {
                     updateItemProperty(item.uri, value, celldlObject, rdfStore)
 
-                    if (itemId !== BG_INPUT.ElementValue) {
-                        if (itemId === BG_INPUT.ElementSpecies) {
-                            pluginData.species = value.newValue
-                        }
-                        if (itemId === BG_INPUT.ElementLocation) {
-                            pluginData.location = value.newValue
-                        }
-
-                        // Update and redraw the component's SVG element
-
-                        const svgData = svgImage(template.baseComponent, pluginData.species, pluginData.location)
-                        const celldlSvgElement = celldlObject.celldlSvgElement!
-                        celldlSvgElement.updateSvgElement(svgData)
-                        celldlSvgElement.redraw()
+                    if (itemId === BG_INPUT.ElementSpecies) {
+                        pluginData.species = value.newValue
                     }
+                    if (itemId === BG_INPUT.ElementLocation) {
+                        pluginData.location = value.newValue
+                    }
+
+                    // Update and redraw the component's SVG element
+
+                    const svgData = svgImage(template.baseComponent, pluginData.species, pluginData.location)
+                    const celldlSvgElement = celldlObject.celldlSvgElement!
+                    celldlSvgElement.updateSvgElement(svgData)
+                    celldlSvgElement.redraw()
+
+                } else if (itemId === BG_INPUT.ElementValue) {
+                    this.#updateElementValue(value, celldlObject, rdfStore)
                 }
                 break
             }
+        }
+    }
+
+    #updateElementValue(value: ValueChange, celldlObject: CellDLObject, rdfStore: RdfStore) {
+        const objectUri = celldlObject.uri.toString()
+
+        rdfStore.update(`${SPARQL_PREFIXES}
+            PREFIX : <${rdfStore.documentUri}#>
+
+            DELETE {
+                ${objectUri} bgf:hasValue ?value
+            }
+            WHERE {
+                ${objectUri} bgf:hasValue ?value
+            }`)
+        const newValue = value.newValue.trim()
+        const template = (<PluginData>celldlObject.pluginData(this.id)).template
+        const variable = template.elementTemplate!.value
+        if (newValue) {
+            rdfStore.update(`${SPARQL_PREFIXES}
+                PREFIX : <${rdfStore.documentUri}#>
+
+                INSERT DATA {
+                   ${objectUri} bgf:hasValue "${value.newValue} ${variable!.units}"^^cdt:ucum .
+                }
+            `)
         }
     }
 
