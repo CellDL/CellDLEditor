@@ -4,7 +4,7 @@
 ## Installation
 
 ```sh
-git clone https://github.com/CellDL/CellDLEditor -recurse-submodules
+git clone https://github.com/CellDL/CellDLEditor --recurse-submodules
 cd CellDLEditor
 bun install
 ```
