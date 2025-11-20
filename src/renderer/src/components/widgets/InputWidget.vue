@@ -29,7 +29,7 @@
                 class="w-full"
                 size="small"
             )
-            label {{ name }}
+            label {{ nameUnits }}
     .bottom-margin(v-else)
         FloatLabel(variant="on")
             InputText(
@@ -58,9 +58,13 @@ const props = defineProps<{
     minimumValue?: number
     itemId: string
     name: string
+    units?: string
+    numeric?: boolean
     possibleValues?: locApi.IUiJsonDiscreteInputPossibleValue[]
     stepValue?: number
 }>()
+
+const nameUnits = vue.computed(() => props.units ? `${props.name} (${props.units})` : props.name)
 
 const scalarType = !!props.numeric
 

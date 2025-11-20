@@ -459,6 +459,7 @@ export class BondgraphPlugin implements PluginInterface {
             if (values.has(varName)) {
                 const valueUnits = values.get(varName)!.split(' ')
                 item.value = valueUnits[0]
+                item.units = valueUnits[1]
             }
         })
     }

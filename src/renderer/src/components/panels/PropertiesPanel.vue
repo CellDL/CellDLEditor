@@ -15,6 +15,8 @@
                             v-model="item.value"
                             :itemId="item.itemId"
                             :name="item.name"
+                            :units="item.units"
+                            :numeric="item.numeric"
                             :maximumValue="item.maximumValue"
                             :minimumValue="item.minimumValue"
                             :possibleValues="item.possibleValues"

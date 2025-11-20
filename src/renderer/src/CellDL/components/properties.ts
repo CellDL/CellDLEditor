@@ -36,6 +36,7 @@ export type ItemDetails = locApi.IUiJsonInput & {
     itemId: string
     uri: string
     value?: string|number
+    units?: string
     optional?: boolean
     numeric?: boolean
 }
