@@ -100,21 +100,23 @@ export function getItemProperty(celldlObject: CellDLObject,
 
 export function updateItemProperty(property: string, value: ValueChange,
                                    celldlObject: CellDLObject, rdfStore: RdfStore) {
+    const objectUri = celldlObject.uri.toString()
+
     rdfStore.update(`${SPARQL_PREFIXES}
         PREFIX : <${rdfStore.documentUri}#>
 
         DELETE {
-            ${celldlObject.uri.toString()} <${property}> ?value
+            ${objectUri} <${property}> ?value
         }
         WHERE {
-            ${celldlObject.uri.toString()} <${property}> ?value
+            ${objectUri} <${property}> ?value
         }`)
     const newValue = value.newValue.trim()
     if (newValue) {
         rdfStore.update(`${SPARQL_PREFIXES}
             PREFIX : <${rdfStore.documentUri}#>
 
-            INSERT DATA { ${celldlObject.uri.toString()} <${property}> "${newValue}" }
+            INSERT DATA { ${objectUri} <${property}> "${newValue}" }
         `)
     }
 }
