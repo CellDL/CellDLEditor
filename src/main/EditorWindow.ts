@@ -26,7 +26,6 @@ import { autoUpdater, type ProgressInfo, type UpdateCheckResult } from 'electron
 
 //==============================================================================
 
-import type { ISettings } from '../renderer/src/common/common'
 import { isPackaged } from '../renderer/src/common/electron'
 
 import { application, electronConf } from '.'

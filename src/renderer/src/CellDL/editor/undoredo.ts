@@ -18,8 +18,6 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { electronApi } from '@renderer/common/electronApi'
-
 import type { CellDLDiagram } from '@editor/diagram'
 import type { CellDLObject } from '@editor/celldlObjects'
 import { Point, type PointLike } from '@renderer/common/points'
@@ -161,13 +159,13 @@ class UndoRedo {
     clean() {
         this.#redoStack = []
         this.#undoStack = []
-        electronApi?.sendEditorAction('CLEAN')
+        window.electronAPI?.sendEditorAction('CLEAN')
     }
 
     #clearRedoStack() {
         if (this.#redoStack.length) {
             this.#redoStack = []
-            electronApi?.sendEditorAction('REDONE')
+            window.electronAPI?.sendEditorAction('REDONE')
         }
     }
 
@@ -175,7 +173,7 @@ class UndoRedo {
         if (this.#redoStack.length) {
             const editorAction = this.#redoStack.pop()!
             if (this.#redoStack.length === 0) {
-                electronApi?.sendEditorAction('REDONE')
+                window.electronAPI?.sendEditorAction('REDONE')
             }
             return editorAction
         }
@@ -185,7 +183,7 @@ class UndoRedo {
     #pushRedoStack(redoAction: EditorUndoAction) {
         this.#redoStack.push(redoAction)
         if (this.#redoStack.length === 1) {
-            electronApi?.sendEditorAction('REDO')
+            window.electronAPI?.sendEditorAction('REDO')
         }
     }
 
@@ -193,7 +191,7 @@ class UndoRedo {
         if (this.#undoStack.length) {
             const editorAction = this.#undoStack.pop()!
             if (this.#undoStack.length === 0) {
-                electronApi?.sendEditorAction('CLEAN')
+                window.electronAPI?.sendEditorAction('CLEAN')
             }
             return editorAction
         }

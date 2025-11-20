@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import { electronApi } from '@renderer/common/electronApi'
 import * as vue from 'vue'
 
 import { CellDLDiagram } from '@editor/diagram/index'
@@ -45,6 +44,16 @@ import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue
 import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
+
+//==============================================================================
+
+import type {IElectronAPI} from '../../../preload/index'
+
+interface ElectronWindow extends Window {
+  electronAPI: IElectronAPI
+}
+
+const electronWindow:ElectronWindow = window
 
 //==============================================================================
 

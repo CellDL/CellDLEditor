@@ -103,32 +103,32 @@ export const application = new class Application
                     })
                 }
 
-                electron.ipcMain.on('FILE_OP', (event, action, filePath, data) => {
-                    const currentEditor = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)
-                    if (currentEditor) {
+                electron.ipcMain.handle('FILE_OP', (event, action, filePath, data) => {
+                    const currentEditorWindow = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)
+                    if (currentEditorWindow) {
                         if (action === 'WRITE') {
-                            if (currentEditor.writeFileData(filePath, data)) {
-                                if (currentEditor.closeOnWrite()) {
-                                    currentEditor.close()
+                            if (currentEditorWindow.writeFileData(filePath, data)) {
+                                if (currentEditorWindow.closeOnWrite()) {
+                                    currentEditorWindow.close()
                                 } else {
                                     electron.app.addRecentDocument(filePath)
-                                    if (filePath !== currentEditor.filePath) {
-                                        currentEditor.setFilePath(filePath)
-                                        this.setEditor(currentEditor)
+                                    if (filePath !== currentEditorWindow.filePath) {
+                                        currentEditorWindow.setFilePath(filePath)
+                                        this.setEditorWindow(currentEditorWindow)
                                     }
                                 }
                             }
                         } else if (action === 'ERROR') {
                             this.#filePathToEditor.delete(filePath)
-                            currentEditor.setFilePath('')
+                            currentEditorWindow.setFilePath('')
                         }
                     }
                 })
 
-                electron.ipcMain.on('EDITOR_OP', (event, action, ...args) => {
-                    const currentEditor = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)
-                    if (currentEditor) {
-                        currentEditor.editorAction(action, ...args)
+                electron.ipcMain.handle('EDITOR_OP', (event, action, ...args) => {
+                    const currentEditorWindow = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)
+                    if (currentEditorWindow) {
+                        currentEditorWindow.editorAction(action, ...args)
                     }
                 })
 

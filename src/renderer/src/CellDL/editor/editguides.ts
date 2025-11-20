@@ -18,8 +18,6 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { electronApi } from '@renderer/common/electronApi'
-
 import { Point, type PointLike } from '@renderer/common/points'
 import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
 import type { CellDLDiagram } from '@editor/diagram'
@@ -393,9 +391,9 @@ class EditGuides {
     newDiagram(celldlDiagram: CellDLDiagram, showGrid: boolean) {
         if (showGrid) {
             this.#alignmentGrid = new AlignmentGrid(celldlDiagram)
-            electronApi?.sendEditorAction('SHOWGRID', true)
+            window.electronAPI?.sendEditorAction('SHOWGRID', true)
         } else {
-            electronApi?.sendEditorAction('SHOWGRID', null)
+            window.electronAPI?.sendEditorAction('SHOWGRID', null)
         }
         this.#componentGuides = new ComponentGuides(celldlDiagram)
     }

@@ -3,13 +3,21 @@ import { exposeElectronAPI } from '@electron-toolkit/preload'
 
 //==============================================================================
 
+export interface IElectronAPI {
+  onFileAction: (callback) => Promise<void>,
+  onMenuAction: (callback) => Promise<void>,
+  sendEditorAction: (action: string, ...args) => Promise<void>,
+  sendFileAction: (action: string, path: string, data: string|undefined) => Promise<void>,
+}
 
-//==============================================================================
+declare global {
+  interface Window {
+    electronAPI: IElectronAPI
+  }
+}
+
 
 exposeElectronAPI()
-
-contextBridge.exposeInMainWorld('electronApi', {
-
 
 
 

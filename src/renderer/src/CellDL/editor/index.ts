@@ -18,10 +18,6 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { electronApi } from '@renderer/common/electronApi'
-
-//==============================================================================
-
 import '@renderer/assets/svgContent.css'
 
 import { CellDLObject } from '@editor/celldlObjects/index'
@@ -104,7 +100,7 @@ export enum CONTEXT_MENU {
 //==============================================================================
 
 export function notifyChanges() {
-    electronApi?.sendEditorAction('DIRTY')
+    window.electronAPI?.sendEditorAction('DIRTY')
 }
 
 //==============================================================================
