@@ -173,7 +173,7 @@ export class PathMaker {
                 return new PathNode(<CellDLConnectedObject>celldlObject)
             }
         } else {
-            alert.warn(`${celldlObject.template.name} cannot start a path`)
+            alert.warn('Cannot start a path...') // Need to know template name...
         }
         return null
     }
