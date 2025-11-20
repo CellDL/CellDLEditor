@@ -23,8 +23,8 @@ import { EM_SIZE } from '@editor/geometry/units'
 //==============================================================================
 
 export const CONNECTION_ARROW_SIZE = [8, 8] // [W, H] pixels
-export const CONNECTION_SPLAY_PADDING = 0.5 // If <= 1.0 then fraction of elements width and height else pixels
-export const MAX_CONNECTION_SPLAY_PADDING = 40 // pixels
+export const CONNECTION_SPLAY_PADDING = 16 // If <= 1.0 then fraction of elements width and height else pixels
+export const MAX_CONNECTION_SPLAY_PADDING = 20 // pixels
 export const CONNECTION_WIDTH = 2 // pixels
 
 export const INTERFACE_PORT_RADIUS = 4 // pixels
