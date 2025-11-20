@@ -10,8 +10,15 @@
         @keydown="activateInstance"
         @mousedown="activateInstance"
     )
+        input(
+            ref="files"
+            type="file"
+            multiple style="display: none"
+            @change="onChange"
+        )
         MainMenu(
             :id="mainMenuId"
+            :hasFiles="hasFiles"
             v-if="electronApi === undefined"
             @about="onAboutMenu"
             @open="onOpenMenu"
@@ -93,6 +100,9 @@ if (props.theme !== undefined) {
     vueCommon.useTheme().setTheme(props.theme)
 }
 
+const hasFiles = vue.computed(() => {
+    return true //  WIP ************* contents.value?.hasFiles() ?? false
+})
 
 const fileData = vue.ref()
 
