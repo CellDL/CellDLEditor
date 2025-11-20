@@ -141,7 +141,7 @@ export class EditorWindow extends ApplicationWindow
             this.#filePath = filePath
             this.#fileName = filePath ? filePath.split(path.sep).at(-1)! : 'New file'
             this.title = this.#fileName
-            application?.setEditor(this)
+            application?.setEditorWindow(this)
         }
     }
 

@@ -10,6 +10,8 @@ import { isDevMode, isMacOs, isPackaged } from '../renderer/src/common/electron'
 
 //==============================================================================
 
+import { enableDisableMainMenu } from './MainMenu'
+import { EditorWindow } from './EditorWindow'
 import icon from './assets/icon.png?asset';
 
 //==============================================================================
@@ -137,7 +139,7 @@ export const application = new class Application
 
             // Create an editor window
 
-            this.#createEditor()
+            this.#createEditorWindow()
         })
         .catch((error: unknown) => {
             console.error('Failed to create an editor window:', error)
@@ -168,29 +170,32 @@ export const application = new class Application
     }
 
     newFile() {
-        this.#createEditor()
+        this.#createEditorWindow()
     }
 
     openFile(filePath: string, importSvg: boolean=false) {
         if (filePath) {
-            const browser = this.#filePathToEditor.get(filePath)
-            if (browser) {
-                browser.focus()
+            let editorWindow = this.#filePathToEditor.get(filePath)
+            if (editorWindow) {
+                // An editor window is already open for the file, so
+                // bring it into focus without reloading it
+
+                editorWindow.focus()
             } else {
-                const editor = this.currentWindow
-                if (editor) {
-                    if (editor && editor.filePath === '' && !editor.modified) {
-                        // Reuse the current window if its empty
-                        if (importSvg) {
-                            editor.importSvgFile(filePath)
-                        } else {
-                            editor.openFile(filePath)
-                        }
-                        this.setEditor(editor)
-                        return
-                    }
+                editorWindow = this.currentWindow
+                // Create a new editor window if there is none or if the current one
+                // has been modified or has a file associated with it
+
+                if (!editorWindow || editorWindow.modified || editorWindow.filePath !== '') {
+                    editorWindow = this.#createEditorWindow()
+                } else {
                 }
-                this.#createEditor(filePath, { importSvg })
+                if (importSvg) {
+                    editorWindow.importSvgFile(filePath)
+                } else {
+                    editorWindow.openFile(filePath)
+                }
+                this.setEditorWindow(editorWindow)
             }
         }
     }
@@ -216,17 +221,16 @@ export const application = new class Application
         }
     }
 
-
-    #createEditor(filePath: string='', options={}) {
+    #createEditorWindow(filePath: string='', options={}): EditorWindow {
         let x, y
-        const currentEditor = this.currentWindow
-        if (currentEditor) {
-            [x, y] = currentEditor.getPosition()
+        const currentEditorWindow = this.currentWindow
+        if (currentEditorWindow) {
+            [x, y] = currentEditorWindow.getPosition()
             x += NEW_WINDOW_OFFSET
             y += NEW_WINDOW_OFFSET
         }
 
-        const editor = new EditorWindow(filePath, {
+        const editorWindow = new EditorWindow(filePath, {
             ...options,
             title: 'New file',
             x, y,
@@ -248,47 +252,49 @@ export const application = new class Application
 
         // Set our dock icon (macOS only).
 
-        if (isMacOs()) {
+        if (!isPackaged() && isMacOs()) {
           electron.app.dock?.setIcon(icon);
         }
 
-        this.#editorsById.set(editor.id, editor)
+        this.#editorsById.set(editorWindow.id, editorWindow)
 
-        editor.once('ready-to-show', () => {
+        editorWindow.once('ready-to-show', () => {
             const menu = enableDisableMainMenu(true)
             if (menu) {
-                editor.setMenuItems(menu.items)
+                editorWindow.setMenuItems(menu.items)
             }
-            editor.show()
+            editorWindow.show()
         })
 
-        editor.on('close', event => {
-            if (!editor.okToClose()) {
+        editorWindow.on('close', event => {
+            if (!editorWindow.okToClose()) {
                 event.preventDefault()
             } else {
-                editor.hide()
+                editorWindow.hide()
             }
         })
 
-        editor.on('closed', () => {
-            this.#editorsById.delete(editor.id)
-            if (editor.filePath) {
-                this.#filePathToEditor.delete(editor.filePath)
+        editorWindow.on('closed', () => {
+            this.#editorsById.delete(editorWindow.id)
+            if (editorWindow.filePath) {
+                this.#filePathToEditor.delete(editorWindow.filePath)
             }
         })
 
         // Load the remote URL for development or the local html file for production.
         if (isDevMode() && process.env['ELECTRON_RENDERER_URL']) {
-            editor.loadURL(process.env['ELECTRON_RENDERER_URL'])
+            editorWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
         } else {
-            editor.loadFile(path.resolve(__dirname, '../renderer/index.html'))
+            editorWindow.loadFile(path.resolve(__dirname, '../renderer/index.html'))
         }
+
+        return editorWindow
     }
 
-    setEditor(editor: EditorWindow)
+    setEditorWindow(editorWindow: EditorWindow)
     {
-        if (editor.filePath !== '') {
-            this.#filePathToEditor.set(editor.filePath, editor)
+        if (editorWindow.filePath !== '') {
+            this.#filePathToEditor.set(editorWindow.filePath, editorWindow)
         }
     }
 }
