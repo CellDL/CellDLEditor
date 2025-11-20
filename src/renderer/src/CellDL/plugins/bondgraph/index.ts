@@ -785,20 +785,17 @@ export class BondgraphPlugin implements PluginInterface {
         })
     }
 
-    #getDiffVariable(domainId: string, relation: string): Variable|undefined {
-        const domain = this.#physicalDomains.get(domainId)
-        if (domain) {
-            relation = relation.replace(/\n \s*/g, '')  // Remove blanks and new lines
-            const diffStateVar = relation.match(/<apply><diff\/><bvar><ci>[^\<]*<\/ci><\/bvar><ci>([^\<]*)<\/ci><\/apply>/)
-            if (diffStateVar) {
-                const symbol = diffStateVar[1]
-                if (symbol === domain.quantity.name) {
-                    return domain.quantity
-                } else if (symbol === domain.flow.name) {
-                    return domain.flow
-                } else if (symbol === domain.potential.name) {
-                    return domain.potential
-                }
+    #getDiffVariable(domain: PhysicalDomain, relation: string): Variable|undefined {
+        relation = relation.replace(/\n \s*/g, '')  // Remove blanks and new lines
+        const diffStateVar = relation.match(/<apply><diff\/><bvar><ci>[^\<]*<\/ci><\/bvar><ci>([^\<]*)<\/ci><\/apply>/)
+        if (diffStateVar) {
+            const symbol = diffStateVar[1]
+            if (symbol === domain.quantity.name) {
+                return domain.quantity
+            } else if (symbol === domain.flow.name) {
+                return domain.flow
+            } else if (symbol === domain.potential.name) {
+                return domain.potential
             }
         }
     }
@@ -837,11 +834,20 @@ export class BondgraphPlugin implements PluginInterface {
                     states: new Map(),
                     baseComponentId: component.id
                 }
-                const relation = r.get('relation')
-                if (relation) {
-                    const differentiatedVariable = this.#getDiffVariable(domainId, relation.value)
-                    if (differentiatedVariable) {
-                        template.value = differentiatedVariable
+                const domain = this.#physicalDomains.get(domainId)
+                if (domain) {
+                    if (component.id === BGF('PotentialSource').value) {
+                        template.value = domain.potential
+                    } else if (component.id === BGF('FlowSource').value) {
+                        template.value = domain.flow
+                    } else {
+                        const relation = r.get('relation')
+                        if (relation) {
+                            const differentiatedVariable = this.#getDiffVariable(domain, relation.value)
+                            if (differentiatedVariable) {
+                                template.value = differentiatedVariable
+                            }
+                        }
                     }
                 }
                 this.#elementTemplates.set(template.id, template)
