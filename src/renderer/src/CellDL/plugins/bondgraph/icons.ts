@@ -86,7 +86,8 @@ const KINETIC_STORAGE_STYLE: ElementStyle = {
 
 const REACTION_STYLE: ElementStyle = {
     text: '#72329F',
-    background: '#FFD966'
+    background: '#FFD966',
+    border: 'black'
 }
 
 const RESISTANCE_STYLE: ElementStyle = {
@@ -171,7 +172,7 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         id: 'Reaction',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#Reaction',
         name: 'Reaction',
-        symbol: 'Rx',
+        symbol: 'v',
         style: REACTION_STYLE
     },
     {
@@ -193,15 +194,15 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         id: 'PotentialSource',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
         name: 'Potential source',
-        symbol: 'u',
-        style: POTENTIAL_STYLE
+        symbol: 'Se',
+        style: POTENTIAL_STYLE,
     },
     {
         id: 'FlowSource',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
         name: 'Flow source',
-        symbol: 'v',
-        style: FLOW_STYLE
+        symbol: 'Sf',
+        style: FLOW_STYLE,
     }
 ]
 
