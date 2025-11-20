@@ -30,6 +30,7 @@ interface IUiJsonScalarInput {
   minimumValue: number;
   name: string;
   stepValue?: number;
+  units?: string
   visible?: string;
 }
 
