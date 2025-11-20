@@ -30,7 +30,7 @@ import { isPackaged } from '../renderer/src/common/electron'
 
 import { application, electronConf } from '.'
 import { ApplicationWindow } from './ApplicationWindow'
-import { updateReopenMenu } from './MainMenu'
+import { updateReopenMenu } from './MainMenu';
 
 //==============================================================================
 
@@ -245,7 +245,7 @@ export class EditorWindow extends ApplicationWindow
             if (confirmation === 'Cancel') {
                 return false
             } else if (confirmation === 'Save'
-                    && this.#saveFileFromMenu(false) !== '') {
+                    && this.saveFileFromMenu(false) !== '') {
                 this.#pendingClose = true
                 return false
             }
@@ -294,7 +294,7 @@ export class EditorWindow extends ApplicationWindow
         return false
     }
 
-    #saveFileFromMenu(saveAs: boolean): string {
+    saveFileFromMenu(saveAs: boolean): string {
         const saveFileOptions = {
             title: 'Save file',
             filters: [
@@ -307,13 +307,13 @@ export class EditorWindow extends ApplicationWindow
             saveFileOptions['defaultPath'] = this.#saveFilePath
         }
         if (saveAs) {
-            filePath = electron.dialog.showSaveDialogSync(this, saveFileOptions) || ''   // Save As
+            filePath = electron.dialog.showSaveDialogSync(this, saveFileOptions) // Save As
         } else if (!this.modified) {
             return filePath                        // Do nothing if Save of unmodified file
         } else if (filePath === '') {
-            filePath = electron.dialog.showSaveDialogSync(this, saveFileOptions) || ''   // Save of a new file
+            filePath = electron.dialog.showSaveDialogSync(this, saveFileOptions) // Save
         }
-        if (filePath != '') {                      // Dialog wasn't cancelled
+        if (filePath) {                      // Dialog wasn't cancelled
             this.send('FILE_OP', 'GET_DATA', filePath)
         }
         return filePath
