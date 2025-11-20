@@ -22,7 +22,7 @@
     .bottom-margin(v-else-if="scalarType")
         FloatLabel(variant="on")
             InputText(
-                v-model="scalarValueString"
+                v-model="scalarValue"
                 v-keyfilter.num
                 v-on:focusout="inputTextFocusOut"
                 v-on:keypress="inputTextKeyPress"
