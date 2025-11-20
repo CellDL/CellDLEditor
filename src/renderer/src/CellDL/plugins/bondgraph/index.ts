@@ -556,8 +556,13 @@ export class BondgraphPlugin implements PluginInterface {
                         if (itemId === BG_INPUT.ElementLocation) {
                             pluginData.location = value.newValue
                         }
-                        celldlObject.celldlSvgElement!.setImageData(svgData)
+
+                        // Update and redraw the component's SVG element
+
                         const svgData = svgImage(template.baseComponent, pluginData.species, pluginData.location)
+                        const celldlSvgElement = celldlObject.celldlSvgElement!
+                        celldlSvgElement.updateSvgElement(svgData)
+                        celldlSvgElement.redraw()
                     }
                 }
                 break

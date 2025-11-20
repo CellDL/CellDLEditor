@@ -234,10 +234,10 @@ function makeLatex(symbol: string, species: string|undefined,  location: string|
     return latex.join('')
 }
 
-export function svgImage(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined, base64: boolean=true) {
+export function svgImage(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined) {
     const latex = makeLatex(baseComponent.template.symbol, species, location)
 
-    return typeset(latex, baseComponent.style, base64)
+    return typeset(latex, baseComponent.style)
 }
 
 //==============================================================================
