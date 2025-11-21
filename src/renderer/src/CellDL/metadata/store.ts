@@ -52,16 +52,16 @@ export interface PredicateValue {
 //==============================================================================
 
 export abstract class BaseStore {
-    #documentNode: NamedNode | undefined = undefined
+    #documentNode: NamedNode
     #documentNS: NamespaceType
 
-    constructor(documentUri: string = '') {
-        this.#documentNode = documentUri !== '' ? namedNode(documentUri) : undefined
+    constructor(documentUri: string) {
+        this.#documentNode = namedNode(documentUri)
         this.#documentNS = Namespace(`${documentUri}#`)
     }
 
     get documentUri(): string {
-        return this.#documentNode ? this.#documentNode.uri : ''
+        return this.#documentNode.uri
     }
 
     get documentNode(): NamedNode | undefined {

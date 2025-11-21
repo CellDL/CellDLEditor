@@ -114,7 +114,7 @@ import { BaseStore } from './store'
 export class RdfStore extends BaseStore {
     #rdfStore: $oxigraph.Store
 
-    constructor(documentUri: string = '') {
+    constructor(documentUri: string) {
         super(documentUri)
         this.#rdfStore = new $oxigraph.Store()
     }
