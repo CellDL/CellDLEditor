@@ -36,7 +36,3 @@ src/renderer/public/oxigraph
 # BG-RDF
 src/renderer/src/assets/bg-rdf
 src/renderer/public/bg-rdf
-
-# Pyiode
-##src/renderer/src/assets/pyodide
-src/renderer/public/pyodide
