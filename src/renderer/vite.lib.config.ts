@@ -1,0 +1,61 @@
+import * as primeVueAutoImportResolver from '@primevue/auto-import-resolver'
+import tailwindcssPlugin from '@tailwindcss/vite'
+import vuePlugin from '@vitejs/plugin-vue'
+
+import path from 'node:path'
+import url from 'node:url'
+import vitePlugin from 'unplugin-vue-components/vite'
+import * as vite from 'vite'
+
+const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
+
+export default vite.defineConfig({
+    assetsInclude: ['**/*.ttl'],
+    build: {
+        lib: {
+            entry: './index.ts',
+            fileName: (format) => `celldleditor.${format}.js`,
+            formats: ['es'],
+            name: 'CellDLEditor'
+        },
+        rollupOptions: {
+            external: ['vue'],
+            output: {
+                exports: 'named',
+                globals: {
+                    vue: 'Vue'
+                },
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.names.includes('style.css')) {
+                        return 'dist/celldleditor.css'
+                    }
+
+                    return assetInfo.names[0] ?? 'default-name'
+                }
+            }
+        },
+        target: 'esnext'
+    },
+    optimizeDeps: {
+        esbuildOptions: {
+            target: 'esnext'
+        }
+    },
+    resolve: {
+        alias: {
+            'node-fetch': 'isomorphic-fetch',
+            '@editor': path.resolve(_dirname, 'src/CellDL'),
+            '@oxigraph': path.resolve(_dirname, 'public/oxigraph'),
+            '@renderer': path.resolve(_dirname, 'src')
+        }
+    },
+    plugins: [
+        // Note: this must be in sync with vite.config.ts.
+
+        tailwindcssPlugin(),
+        vuePlugin(),
+        vitePlugin({
+            resolvers: [primeVueAutoImportResolver.PrimeVueResolver()]
+        })
+    ]
+})
