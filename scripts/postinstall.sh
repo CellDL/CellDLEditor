@@ -9,6 +9,6 @@ mkdir -m 755 -p ./src/renderer/public/bg-rdf/templates
 cp ./BG-RDF/templates/*.ttl ./src/renderer/public/bg-rdf/templates
 
 mkdir -m 755 -p ./src/renderer/public/pyodide
-cp ./node_modules/pyodide/* ./src/renderer/pyodide/wheels
-mkdir -m 755 -p ./src/renderer/public/bg-rdf/templates
+cp ./node_modules/pyodide/* ./src/renderer/public/pyodide
+mkdir -m 755 -p ./src/renderer/public/pyodide/wheels
 cp ./python/wheels/*.whl ./src/renderer/public/pyodide/wheels
