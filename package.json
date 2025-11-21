@@ -1,5 +1,6 @@
 {
     "name": "@abi-software/celldl-editor",
+    "version": "0.20251121.0",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
@@ -22,7 +23,6 @@
         "url": "git+https://github.com/CellDL/CellDLEditor.git"
     },
     "type": "module",
-    "version": "0.20251031.0",
     "scripts": {
         "archive:web": "bun src/renderer/scripts/archive.web.js",
         "build": "electron-vite build",

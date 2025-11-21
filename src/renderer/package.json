@@ -1,5 +1,6 @@
 {
     "name": "@abi-software/celldl-editor",
+    "version": "0.20251121.0",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
@@ -35,7 +36,6 @@
         },
         "./style.css": "./dist/CellDLEditor.css"
     },
-    "version": "0.20251031.0",
     "scripts": {
         "build": "vite build",
         "build:lib": "vite build --config vite.lib.config.ts && cp index.d.ts dist/index.d.ts",
