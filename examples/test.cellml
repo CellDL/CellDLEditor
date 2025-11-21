@@ -1,0 +1,102 @@
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" name="BG_">
+  <units name="dim">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="joule_per_coulomb">
+    <unit units="joule" exponent="1"/>
+    <unit units="coulomb" exponent="-1"/>
+  </units>
+  <units name="coulomb_per_second">
+    <unit units="coulomb" exponent="1"/>
+    <unit units="second" exponent="-1"/>
+  </units>
+  <component name="main">
+    <variable name="t" units="second"/>
+    <variable name="C_u" units="farad" initial_value="0.001"/>
+    <variable name="R_v" units="ohm" initial_value="10.0"/>
+    <variable name="u_Se" units="joule_per_coulomb" initial_value="10.0"/>
+    <variable name="v_Se" units="coulomb_per_second"/>
+    <variable name="q_u" units="coulomb" initial_value="0.0"/>
+    <variable name="u" units="joule_per_coulomb"/>
+    <variable name="v_u" units="coulomb_per_second"/>
+    <variable name="v" units="coulomb_per_second"/>
+    <variable name="u_v" units="joule_per_coulomb"/>
+    <!-- Element ODEs-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <apply>
+          <diff/>
+          <bvar>
+            <ci>t</ci>
+          </bvar>
+          <ci>q_u</ci>
+        </apply>
+        <ci>v_u</ci>
+      </apply>
+    </math>
+    <!-- Element algebraics-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u</ci>
+        <apply>
+          <divide/>
+          <ci>q_u</ci>
+          <ci>C_u</ci>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_v</ci>
+        <apply>
+          <minus/>
+          <ci>u_Se</ci>
+          <apply>
+            <divide/>
+            <ci>q_u</ci>
+            <ci>C_u</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v</ci>
+        <apply>
+          <divide/>
+          <ci>u_v</ci>
+          <ci>R_v</ci>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_Se</ci>
+        <apply>
+          <minus/>
+          <apply>
+            <divide/>
+            <ci>u_v</ci>
+            <ci>R_v</ci>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_u</ci>
+        <apply>
+          <divide/>
+          <ci>u_v</ci>
+          <ci>R_v</ci>
+        </apply>
+      </apply>
+    </math>
+  </component>
+</model>
