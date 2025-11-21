@@ -14,7 +14,7 @@ export default vite.defineConfig({
     build: {
         lib: {
             entry: './index.ts',
-            fileName: (format) => `celldleditor.${format}.js`,
+            fileName: (format) => `CellDLEditor.${format}.js`,
             formats: ['es'],
             name: 'CellDLEditor'
         },
@@ -27,7 +27,7 @@ export default vite.defineConfig({
                 },
                 assetFileNames: (assetInfo) => {
                     if (assetInfo.names.includes('style.css')) {
-                        return 'dist/celldleditor.css'
+                        return 'dist/CellDLEditor.css'
                     }
 
                     return assetInfo.names[0] ?? 'default-name'

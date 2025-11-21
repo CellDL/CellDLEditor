@@ -1,4 +1,5 @@
 {
+    "name": "@abi-software/celldl-editor",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
@@ -19,8 +20,7 @@
         "bg-rdf"
     ],
     "license": "Apache-2.0",
-    "module": "dist/celldleditor.es.js",
-    "name": "@celldl/celldleditor",
+    "module": "dist/CellDLEditor.es.js",
     "productName": "CellDLEditor",
     "repository": {
         "type": "git",
@@ -31,9 +31,9 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "import": "./dist/celldleditor.es.js"
+            "import": "./dist/CellDLEditor.es.js"
         },
-        "./style.css": "./dist/celldleditor.css"
+        "./style.css": "./dist/CellDLEditor.css"
     },
     "version": "0.20251031.0",
     "scripts": {
