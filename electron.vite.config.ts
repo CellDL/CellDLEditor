@@ -46,6 +46,7 @@ export default electronVite.defineConfig({
                 'node-fetch': 'isomorphic-fetch',
                 '@editor': path.resolve(_dirname, 'src/renderer/src/CellDL'),
                 '@oxigraph': path.resolve(_dirname, 'src/renderer/public/oxigraph'),
+                '@pyodide': path.resolve(_dirname, 'src/renderer/public/pyodide'),
                 '@renderer': path.resolve(_dirname, 'src/renderer/src')
             }
         },

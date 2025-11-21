@@ -6,6 +6,7 @@
         "paths": {
             "@editor/*": ["./src/renderer/src/CellDL/*"],
             "@oxigraph/*": ["./src/renderer/public/oxigraph/*"],
+            "@pyodide/*": ["./src/renderer/public/pyodide/*"],
             "@renderer/*": ["./src/renderer/src/*"]
         }
     },
