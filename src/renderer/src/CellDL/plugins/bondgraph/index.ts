@@ -19,6 +19,7 @@ limitations under the License.
 ******************************************************************************/
 
 import * as $oxigraph from '@oxigraph/web'
+import { ucum } from '@atomic-ehr/ucum'
 
 //==============================================================================
 
