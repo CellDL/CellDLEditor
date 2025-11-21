@@ -7,6 +7,8 @@ for (const path of [
     'src/main/build',
     'src/renderer/components.d.ts',
     'src/renderer/dist',
+    'src/renderer/public/bg-rdf',
+    'src/renderer/public/oxigraph',
     'src/renderer/node_modules'
 ]) {
     if (fs.existsSync(path)) {

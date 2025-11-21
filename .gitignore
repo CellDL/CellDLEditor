@@ -34,5 +34,4 @@ src/renderer/components.d.ts
 src/renderer/public/oxigraph
 
 # BG-RDF
-src/renderer/src/assets/bg-rdf
 src/renderer/public/bg-rdf
