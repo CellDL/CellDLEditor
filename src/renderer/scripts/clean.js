@@ -9,6 +9,7 @@ for (const path of [
     'src/renderer/dist',
     'src/renderer/public/bg-rdf',
     'src/renderer/public/oxigraph',
+    'src/renderer/public/pyodide',
     'src/renderer/node_modules'
 ]) {
     if (fs.existsSync(path)) {
