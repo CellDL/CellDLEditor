@@ -32,7 +32,6 @@
 </template>
 
 <script setup lang="ts">
-import CellDLEditor from '@renderer/components/CellDLEditor.vue'  // is this import needed??
 import * as vue from 'vue'
 
 import 'primeicons/primeicons.css'
