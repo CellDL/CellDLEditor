@@ -19,8 +19,8 @@
         "bg-rdf"
     ],
     "license": "Apache-2.0",
-    "module": "dist/editor.es.js",
-    "name": "@celldl/editor",
+    "module": "dist/celldleditor.es.js",
+    "name": "@celldl/celldleditor",
     "productName": "CellDLEditor",
     "repository": {
         "type": "git",
@@ -31,9 +31,9 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "import": "./dist/editor.es.js"
+            "import": "./dist/celldleditor.es.js"
         },
-        "./style.css": "./dist/editor.css"
+        "./style.css": "./dist/celldleditor.css"
     },
     "version": "0.20251031.0",
     "scripts": {

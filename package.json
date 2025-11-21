@@ -14,7 +14,7 @@
     "description": "An editor for CellDL.",
     "license": "Apache-2.0",
     "main": "./out/main/index.cjs",
-    "name": "@celldl/editor",
+    "name": "@celldl/celldleditor",
     "private": true,
     "productName": "CellDLEditor",
     "repository": {

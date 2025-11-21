@@ -35,7 +35,7 @@ The Vue component gives access to all of the CellDL Editor's features
 </template>
 
 <script setup lang="ts">
-import Editor from '@celldl/editor';
-import '@celldl/editor/style.css';
+import CellDLEditor from '@celldl/celldleditor';
+import '@celldl/celldleditor/style.css';
 </script>
 ```
