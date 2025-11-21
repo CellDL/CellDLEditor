@@ -67,6 +67,7 @@
         "rbush": "^4.0.1",
         "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers",
         "svg-path-commander": "^2.1.11",
+        "systeminformation": "^5.27.11",
         "transformation-matrix": "^3.1.0",
         "ua-parser-js": "^2.0.6",
         "vue": "3.5.22"
