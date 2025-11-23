@@ -21,6 +21,7 @@
             :hasFiles="hasFiles"
             v-if="electronApi === undefined"
             @about="onAboutMenu"
+            @bg2cellml="runBG2CellML"
             @open="onOpenMenu"
             @save="onSaveMenu"
             @settings="onSettingsMenu"
@@ -49,6 +50,10 @@ import * as vueCommon from '@renderer/common/vueCommon'
 
 import '@renderer/assets/app.css'
 import '@renderer/assets/icons.css'
+
+import { BG2CellML } from '@renderer/bg2cellml'
+
+//==============================================================================
 
 const props = defineProps<IEditorProps>()
 
@@ -155,6 +160,18 @@ async function onSaveMenu() {
         saveFile.value = handle
     }
 }
+
+//==============================================================================
+
+async function runBG2CellML() {
+    const bg2cellml = new BG2CellML()
+
+    await bg2cellml.rdfTest()
+
+    await bg2cellml.bg2cellml()
+}
+
+//==============================================================================
 
 // A few things that can only be done when the component is mounted.
 
