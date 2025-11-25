@@ -23,12 +23,23 @@
                             :stepValue="item.stepValue"
                             @change="updateProperties"
                         )
+                AccordionPanel.group(
+                    key="Styling"
+                    :disabled="disabled"
+                    value="String(groups.length)"
+                )
+                    AccordionHeader Fill style
+                    AccordionContent
+                        ColourWidget(
+                            colour="ff0000"
+                        )
 </template>
 
 <script setup lang="ts">
 import * as vue from 'vue'
 
 import ToolPanel from '../toolbar/ToolPanel.vue'
+import ColourWidget from '../widgets/ColourWidget.vue'
 import InputWidget from '../widgets/InputWidget.vue'
 
 import { type PropertyGroup } from '@editor/components/properties'

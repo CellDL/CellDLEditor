@@ -37,7 +37,7 @@ export const SVG_URI = 'http://www.w3.org/2000/svg'
 //==============================================================================
 
 export interface LatexMathSvgOptions {
-    background?: string
+    background?: string|string[]
     border?: string
     'border-width'?: string
     class?: string
@@ -45,7 +45,6 @@ export interface LatexMathSvgOptions {
     'min-height'?: string
     'min-width'?: string
     padding?: string
-    'suffix-background'?: string
     'vertical-align'?: string
 }
 
@@ -184,6 +183,7 @@ function latexToSvgRect(latex: string, suffix: string,
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
     const svgWidth = lengthToPixels(svgElement.getAttribute('width'))
     const svgHeight = lengthToPixels(svgElement.getAttribute('height'))
+    let gradient: string[] = []
     if (svgWidth && svgHeight) {
         let viewBox = getViewbox(svgElement)
         const scale = [viewBox[2]/svgWidth, viewBox[3]/svgHeight]
@@ -232,26 +232,53 @@ function latexToSvgRect(latex: string, suffix: string,
         svgElement.setAttribute('width', pixelsToLength(width/scale[0]!, 'ex')!)
         svgElement.setAttribute('height', pixelsToLength(height/scale[1]!, 'ex')!)
 
-        const fill = ` fill="${options.background || 'transparent'}"`
+        let fill: string
+        if (!options.background) {
+            fill = "'transparent'"
+        } else if (Array.isArray(options.background)) {
+            const stopColours: string[] = options.background
+            let direction = 'V'
+            if (stopColours.length && ['H', 'V'].includes(stopColours[0]!)) {
+                direction = stopColours.shift()!
+            }
+            if (stopColours.length === 0) {
+                fill = "'transparent'"
+            } else if (stopColours.length === 1) {
+                fill = ` fill="${stopColours[0]}"`
+            } else {
+                const gradientId = 'G-001'
+                const transform = (direction === 'V') ? 'gradientTransform="rotate(90)"' : ''
+                gradient.push(`<linearGradient id="${gradientId}" ${transform}>`)
+                const stops = stopColours.length - 1
+                stopColours.forEach((colour: string, index: number) => {
+                    gradient.push(`<stop stop-color="${colour}" offset="${100*index/stops}%"/>`)
+                })
+                gradient.push('</linearGradient>')
+                fill = `"url(#${gradientId})"`
+            }
+        } else {
+            fill = ` fill="${options.background}"`
+        }
         const stroke = border ? ` stroke="${options['border']}" stroke-width="${round(scale[0]!*border)}"` : ''
         const radius = getLengthFromOptions(options, 'corner-radius');
         const cornerRadius = radius ? ` rx="${round(radius*scale[0]!)}"` : ''
         const topLeft = `x="${round(viewBox[0]+border*scale[0]!)}" y="${round(viewBox[1]+border*scale[1]!)}"`
         const rectClass = options.class ? ` class="${options['class']}"` : ''
-        const bgRect = `<rect ${topLeft}${rectSize}${fill}${stroke}${cornerRadius}${rectClass}></rect>`
+        const bgRect = `<rect ${topLeft}${rectSize} fill=${fill}${stroke}${cornerRadius}${rectClass}></rect>`
         svgElement.insertAdjacentHTML('afterbegin', bgRect)
 
         if (suffix !== '') {
-            const fill = ` fill="${('suffix-background' in options && options['suffix-background'] !== '')
-                            ? options['suffix-background'] : 'transparent'}"`
             const topLeft = `x="${viewBox[0]+border*scale[0]!}" y="${viewBox[1]+border*scale[1]!}"`;
-            const boundingRect = `<rect ${topLeft}${cornerRadius} width="${width-2*border*scale[0]!}"
-                                                                  height="${height-2*border*scale[1]!}"${fill}></rect>`
+            const boundingRect = `<rect ${topLeft} width="${width-2*border*scale[0]!}"
+                                                                  height="${height-2*border*scale[1]!}"></rect>`
             svgElement.insertAdjacentHTML('afterbegin', boundingRect)
         }
     }
     const svgSerialiser = new XMLSerializer()
-    const svg = svgSerialiser.serializeToString(svgDocument)
+    let svg = svgSerialiser.serializeToString(svgDocument)
+    if (gradient.length) {
+        svg = svg.replace(/<defs>/, `<defs>${gradient.join('')}`)
+    }
     return includeStyleRules ? svg.replace(/<defs>/, `<defs><style>${LatexStyleRules}</style>`) : svg
 }
 
