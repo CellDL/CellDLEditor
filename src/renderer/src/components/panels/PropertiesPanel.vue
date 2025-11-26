@@ -30,19 +30,22 @@
                 )
                     AccordionHeader Fill style
                     AccordionContent
-                        ColourWidget(
-                            colour="ff0000"
+                        FillStyle(
+                            :fillStyle="fillStyle"
+                            @change="updateFill"
                         )
 </template>
 
 <script setup lang="ts">
 import * as vue from 'vue'
 
+import { type PropertyGroup } from '@editor/components/properties'
+
 import ToolPanel from '../toolbar/ToolPanel.vue'
-import ColourWidget from '../widgets/ColourWidget.vue'
 import InputWidget from '../widgets/InputWidget.vue'
 
-import { type PropertyGroup } from '@editor/components/properties'
+import FillStyle from './FillStyle.vue'
+import { type IFillStyle } from './FillStyle.vue'
 
 const props = defineProps<{
     toolId: string
@@ -63,12 +66,22 @@ const disabled = vue.computed<boolean>(() => {
     return true
 })
 
+const fillStyle = vue.ref<IFillStyle>({
+    gradientFill: true,
+    colours: ['yellow', 'green'],
+    direction: 'V'
+})
+
 const emit = defineEmits(['panel-event'])
 
 function updateProperties(itemId: string, oldValue: number | string, newValue: number | string) {
     void vue.nextTick().then(() => {
         emit('panel-event', props.toolId, itemId, oldValue, newValue)
     })
+}
+
+function updateFill(fillStyle: IFillStyle) {
+    console.log('updateFill...', fillStyle)
 }
 </script>
 
