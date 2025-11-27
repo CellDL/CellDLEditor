@@ -216,7 +216,6 @@ function styleEvent(toolId: string, fillColours: string[]) {
 //==============================================================================
 //==============================================================================
 
-
 const props = defineProps<{
     fileData: {
         name: string
