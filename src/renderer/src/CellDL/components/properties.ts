@@ -41,9 +41,14 @@ export type ItemDetails = locApi.IUiJsonInput & {
     numeric?: boolean
 }
 
+export interface StyleObject {
+    fillColours: string[]
+}
+
 export interface PropertyGroup {
     groupId: string
     items: ItemDetails[]
+    styling?: StyleObject
     title: string
 }
 
@@ -54,8 +59,10 @@ export interface ValueChange {
 
 //==============================================================================
 
+export const METADATA_GROUP_ID = 'cd-metadata'
+
 const METADATA_GROUP: PropertyGroup = {
-    groupId: 'cd-metadata',
+    groupId: METADATA_GROUP_ID,
     title: 'Metadata',
     items: OBJECT_METADATA.map((nameUri: NamedUri) => {
         return {
@@ -125,11 +132,15 @@ export function updateItemProperty(property: string, value: ValueChange,
 
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])
-    #propertyGroups = [...pluginComponents.getPropertyGroups(), METADATA_GROUP]
-    #metadataIndex: number
+    #propertyGroups = [...pluginComponents.getPropertyGroups(), METADATA_GROUP, pluginComponents.getStylingGroup()]
+    #metadataIndex: number = -1
 
     constructor() {
-        this.#metadataIndex = this.#propertyGroups.length - 1
+        this.#propertyGroups.forEach((group, index) => {
+            if (group.groupId === METADATA_GROUP_ID) {
+                this.#metadataIndex = index
+            }
+        })
         this.#componentProperties.value = structuredClone(this.#propertyGroups)
         for (const group of this.#componentProperties.value) {
             group.items = []
@@ -143,22 +154,26 @@ export class ObjectPropertiesPanel {
         // Clear each group's list of items
         for (const group of this.#componentProperties.value) {
             group.items = []
+            if (group.styling) {
+                group.styling = {}
+            }
         }
         if (celldlObject) {
             // Update component properties with plugin specific values
 
             pluginComponents.getComponentProperties(this.#componentProperties.value, celldlObject, rdfStore)
 
-            // Update component properties in the METADATA_GROUP
+            if (this.#metadataIndex >= 0) {
+                // Update component properties in the METADATA_GROUP
 
-            const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
-            const group = this.#componentProperties.value[this.#metadataIndex]
-            metadataGroup.items.forEach((itemTemplate: ItemDetails) => {
-                const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
-                if (item) {
-                    group.items.push(item)
-                }
-            })
+                const group = this.#componentProperties.value[this.#metadataIndex]
+                group.items.forEach((itemTemplate: ItemDetails) => {
+                    const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
+                    if (item) {
+                        group.items.push(item)
+                    }
+                })
+            }
         }
     }
 
@@ -182,6 +197,14 @@ export class ObjectPropertiesPanel {
             }
         }
     }
+
+    //==================================
+
+     updateObjectStyling(celldlObject: CellDLObject|null, styling: StyleObject) {
+        if (celldlObject) {
+            pluginComponents.updateComponentStyling(celldlObject, styling)
+        }
+     }
 }
 
 //==============================================================================

@@ -16,6 +16,7 @@
                     :is="panelComponent"
                     :toolId="panelToolId"
                     @panel-event="panelEvent"
+                    @style-event="styleEvent"
                 )
         EditorToolbar.editor-bar(
             :buttons="panelButtons"
@@ -44,6 +45,7 @@ import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue
 import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
+import { type IFillStyle } from '@renderer/components/panels/FillStyle.vue'
 
 //==============================================================================
 
@@ -191,6 +193,20 @@ function panelEvent(toolId: string, itemId: string, oldValue: string, newValue: 
                 value: {
                     oldValue,
                     newValue
+                }
+            }
+        })
+    )
+}
+
+function styleEvent(toolId: string, fillColours: string[]) {
+    document.dispatchEvent(
+        new CustomEvent('style-event', {
+            detail: {
+                type: 'value',
+                source: toolId,
+                styling: {
+                    fillColours
                 }
             }
         })

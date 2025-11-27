@@ -31,7 +31,11 @@ import {
     type ComponentLibraryTemplate,
     type ObjectTemplate,
 } from '@editor/components/index'
-import { type PropertyGroup, type ValueChange } from '@editor/components/properties'
+import {
+    type PropertyGroup,
+    type StyleObject,
+    type ValueChange
+} from '@editor/components/properties'
 import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 import { RdfStore } from '@editor/metadata/index'
 
@@ -51,6 +55,8 @@ export interface PluginInterface {
     updateComponentProperties: (componentProperties: PropertyGroup[],
                                 value: ValueChange, itemId: string,
                                 celldlObject: CellDLObject, rdfStore: RdfStore) => void
+    getStylingGroup: () => PropertyGroup
+    updateComponentStyling: (celldlObject: CellDLObject, styling: StyleObject) => void
     styleRules: () => string
     svgDefinitions: () => string
 }
@@ -142,6 +148,12 @@ export class PluginComponents {
         }
     }
 
+    updateComponentStyling(celldlObject: CellDLObject, styling: StyleObject) {
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.updateComponentStyling(celldlObject, styling)
+        }
+    }
+
     //==========================================================================
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
@@ -150,6 +162,10 @@ export class PluginComponents {
 
     getPropertyGroups(): PropertyGroup[] {
         return this.#bondgraphPlugin.getPropertyGroups()
+    }
+
+    getStylingGroup(): PropertyGroup {
+        return this.#bondgraphPlugin!.getStylingGroup()
     }
 
     getComponentProperties(componentProperties: PropertyGroup[],

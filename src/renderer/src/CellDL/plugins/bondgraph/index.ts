@@ -26,6 +26,8 @@ import { ucum } from '@atomic-ehr/ucum'
 import { arrowMarkerDefinition } from '@renderer/common/styling'
 import { type IUiJsonDiscreteInput, type IUiJsonDiscreteInputPossibleValue } from '@renderer/libopencor/locUIJsonApi'
 
+import { getSvgFillStyle } from '@renderer/common/svgUtils'
+
 import {
     CellDLComponent,
     CellDLConnection,
@@ -40,6 +42,7 @@ import {
     getItemProperty,
     type ItemDetails,
     type PropertyGroup,
+    type StyleObject,
     updateItemProperty,
     type ValueChange
 } from '@editor/components/properties'
@@ -165,6 +168,7 @@ interface ObjectElementTemplate {
 }
 
 interface PluginData {
+    fillColours?: string[]
     location?: string
     species?: string
     template: ObjectElementTemplate
@@ -182,7 +186,8 @@ enum BG_INPUT {
 enum BG_GROUP {
     ElementGroup = 'bg-element-group',
     ParameterGroup = 'bg-parameter-group',
-    StateGroup = 'bg-state-group'
+    StateGroup = 'bg-state-group',
+    StylingGroup = 'bg-styling-group'
 }
 
 const PROPERTY_GROUPS: PropertyGroup[] = [
@@ -238,6 +243,17 @@ const STATES_GROUP_INDEX = 2
 
 // Within ELEMENT_GROUP
 const ELEMENT_VALUE_INDEX = 3
+
+//==============================================================================
+
+const STYLING_GROUP = {
+    groupId: BG_GROUP.StylingGroup,
+    title: 'Fill style',
+    items: [],
+    styling: {
+        fillColours: []
+    }
+}
 
 //==============================================================================
 
@@ -300,6 +316,12 @@ export class BondgraphPlugin implements PluginInterface {
 
     getPropertyGroups(): PropertyGroup[] {
         return PROPERTY_GROUPS
+    }
+
+    //======================================
+
+    getStylingGroup(): PropertyGroup {
+        return STYLING_GROUP
     }
 
     //==========================================================================
@@ -395,15 +417,21 @@ export class BondgraphPlugin implements PluginInterface {
         }
         celldlObject.setPluginData(this.id, { template })
 
-        this.#getElementProperties(celldlObject, componentProperties[ELEMENT_GROUP_INDEX]!, rdfStore)
-
-        if (template.elementTemplate) {
-            this.#setVariableTemplates(template.elementTemplate.parameters, componentProperties[PARAMS_GROUP_INDEX]!)
-            this.#getVariableProperties(celldlObject, componentProperties[PARAMS_GROUP_INDEX]!, rdfStore)
-
-            this.#setVariableTemplates(template.elementTemplate.states, componentProperties[STATES_GROUP_INDEX]!)
-            this.#getVariableProperties(celldlObject, componentProperties[STATES_GROUP_INDEX]!, rdfStore)
-        }
+        componentProperties.forEach(group => {
+            if (group.groupId === BG_GROUP.ElementGroup) {
+                this.#getElementProperties(celldlObject, group, rdfStore)
+            } else if (template.elementTemplate) {
+                if (group.groupId === BG_GROUP.ParameterGroup) {
+                    this.#setVariableTemplates(template.elementTemplate.parameters, group)
+                    this.#getVariableProperties(celldlObject, group, rdfStore)
+                } else if (group.groupId === BG_GROUP.StateGroup) {
+                    this.#setVariableTemplates(template.elementTemplate.states, group)
+                    this.#getVariableProperties(celldlObject, group, rdfStore)
+                }
+            } else if (group.groupId === BG_GROUP.StylingGroup) {
+                this.#getElementStyling(celldlObject, group)
+            }
+        })
     }
 
     #getElementProperties(celldlObject: CellDLObject,
@@ -434,6 +462,16 @@ export class BondgraphPlugin implements PluginInterface {
             }
             group.items.push(...items)
         })
+    }
+
+    #getElementStyling(celldlObject: CellDLObject, group: PropertyGroup) {
+        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+        if (!('fillColours' in pluginData)) {
+            pluginData.fillColours = getSvgFillStyle(celldlObject.celldlSvgElement!.svgElement.outerHTML)
+        }
+        group.styling = {
+            fillColours: pluginData.fillColours || []
+        }
     }
 
     #getVariableProperties(celldlObject: CellDLObject, group: PropertyGroup, rdfStore: RdfStore) {
@@ -535,6 +573,19 @@ export class BondgraphPlugin implements PluginInterface {
         }
     }
 
+    //==================================
+
+    updateComponentStyling(celldlObject: CellDLObject, styling: StyleObject) {
+        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+        const fillColours = styling.fillColours || []
+        if (fillColours.toString() !== pluginData.fillColours!.toString()) {
+            pluginData.fillColours = [...fillColours]
+            this.#updateSvgElement(celldlObject)
+        }
+    }
+
+    //==================================
+
     #updateElementProperties(value: ValueChange, itemId: string,
                              celldlObject: CellDLObject, rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
@@ -555,14 +606,7 @@ export class BondgraphPlugin implements PluginInterface {
                     if (itemId === BG_INPUT.ElementLocation) {
                         pluginData.location = value.newValue
                     }
-
-                    // Update and redraw the component's SVG element
-
-                    const svgData = svgImage(template.baseComponent, pluginData.species, pluginData.location)
-                    const celldlSvgElement = celldlObject.celldlSvgElement!
-                    celldlSvgElement.updateSvgElement(svgData)
-                    celldlSvgElement.redraw()
-
+                    this.#updateSvgElement(celldlObject)
                 } else if (itemId === BG_INPUT.ElementValue) {
                     this.#updateElementValue(value, celldlObject, rdfStore)
                 }
@@ -634,6 +678,20 @@ export class BondgraphPlugin implements PluginInterface {
         `)
 // Check units...
 //            ucum.isConvertible(units1: string, units2: string)
+    }
+
+    //==================================
+
+    #updateSvgElement(celldlObject: CellDLObject) {
+        // Update and redraw the component's SVG element
+
+        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+        const svgData = svgImage(pluginData.template.baseComponent,
+                                 pluginData.species, pluginData.location,
+                                 pluginData.fillColours)
+        const celldlSvgElement = celldlObject.celldlSvgElement!
+        celldlSvgElement.updateSvgElement(svgData)
+        celldlSvgElement.redraw()
     }
 
     //==========================================================================

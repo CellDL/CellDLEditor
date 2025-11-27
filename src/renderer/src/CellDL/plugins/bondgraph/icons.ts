@@ -42,7 +42,7 @@ const DEFAULT_LOCATION = 'j'
 
 export interface ElementStyle {
     text: string
-    background: string
+    background: string|string[]
     border?: string
 }
 
@@ -217,8 +217,8 @@ function typeset(latex: string, style: ElementStyle, base64: boolean=false): str
             padding: ICON_PADDING,
             'corner-radius': ICON_RADIUS,
             background: style.background,
-            border: style.border || MIN_BORDER_COLOUR,
-            'suffix-background': UNITS_STYLE.background
+            'middle-colour': 'white',
+            border: style.border || MIN_BORDER_COLOUR
         }
     )
     return base64 ? base64Svg(svg) : svg
@@ -235,10 +235,17 @@ function makeLatex(symbol: string, species: string|undefined,  location: string|
     return latex.join('')
 }
 
-export function svgImage(baseComponent: BGBaseComponent, species: string|undefined,  location: string|undefined) {
-    const latex = makeLatex(baseComponent.template.symbol, species, location)
+//======================================
 
-    return typeset(latex, baseComponent.style)
+export function svgImage(baseComponent: BGBaseComponent,
+                         species: string|undefined,
+                         location: string|undefined,
+                         background: string[]|undefined) {
+    const latex = makeLatex(baseComponent.template.symbol, species, location)
+    const style = (!!background && background.length)
+                ? Object.assign({}, baseComponent.style, { background })
+                : baseComponent.style
+    return typeset(latex, style)
 }
 
 //==============================================================================
