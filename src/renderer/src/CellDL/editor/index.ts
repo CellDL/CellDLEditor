@@ -394,8 +394,7 @@ export class CellDLEditor {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
                 const values = detail.value
                 if (values.oldValue != values.newValue) {
-                    this.#propertiesPanel.updateObjectProperties(detail.value, detail.itemId,
-                                                                 this.#selectedObject,
+                    this.#propertiesPanel.updateObjectProperties(this.#selectedObject, detail.itemId, detail.value,
                                                                  this.#celldlDiagram!.rdfStore)
                     notifyChanges()
                 }
