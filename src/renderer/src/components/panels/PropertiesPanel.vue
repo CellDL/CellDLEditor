@@ -9,7 +9,9 @@
                     :value="String(groupIndex)"
                 )
                     AccordionHeader {{ group.title }}
-                    AccordionContent
+                    AccordionContent(
+                        v-if="groupIndex < (groups.length - 1)"
+                    )
                         InputWidget(
                             v-for="(item, index) in group.items"
                             v-model="item.value"
@@ -23,13 +25,9 @@
                             :stepValue="item.stepValue"
                             @change="updateProperties"
                         )
-                AccordionPanel.group(
-                    key="Styling"
-                    :disabled="disabled"
-                    value="String(groups.length)"
-                )
-                    AccordionHeader Fill style
-                    AccordionContent
+                    AccordionContent(
+                        v-if="groupIndex == (groups.length - 1)"
+                    )
                         FillStyle(
                             :fillStyle="fillStyle"
                             @change="updateFill"
@@ -59,20 +57,41 @@ const openPanel = vue.ref<string>('')
 
 const disabled = vue.computed<boolean>(() => {
     for (const group of groups.value) {
-        if (group.items.length) {
+        if (group.items.length
+         || (group.styling
+          && group.styling.fillColours
+          && group.styling.fillColours.length)) {
             return false
         }
     }
     return true
 })
 
-const fillStyle = vue.ref<IFillStyle>({
-    gradientFill: true,
-    colours: ['yellow', 'green'],
-    direction: 'V'
+const fillStyle = vue.computed<IFillStyle>(() => {
+    const stylingGroup = groups.value.at(-1)
+    const fillColours: string[] = [...(stylingGroup.styling.fillColours || [])]
+    let direction = 'V'
+    const colours: string[] = []
+    if (fillColours.length && ['H', 'V'].includes(fillColours[0]!)) {
+        direction = fillColours.shift()!
+    }
+    if (fillColours.length === 0) {
+        colours.push('pink')
+    } else if (fillColours.length === 1) {
+        colours.push(fillColours[0]!.trim())
+    } else {
+        fillColours.forEach(colour => {
+            colours.push(colour.trim())
+        })
+    }
+    return {
+        gradientFill: colours.length > 1,
+        colours,
+        direction
+    }
 })
 
-const emit = defineEmits(['panel-event'])
+const emit = defineEmits(['panel-event', 'style-event'])
 
 function updateProperties(itemId: string, oldValue: number | string, newValue: number | string) {
     void vue.nextTick().then(() => {
@@ -81,7 +100,14 @@ function updateProperties(itemId: string, oldValue: number | string, newValue: n
 }
 
 function updateFill(fillStyle: IFillStyle) {
-    console.log('updateFill...', fillStyle)
+    void vue.nextTick().then(() => {
+        const fillColours: string[] = []
+        if (fillStyle.gradientFill) {
+            fillColours.push(fillStyle.direction || 'V')
+        }
+        fillColours.push(...fillStyle.colours)
+        emit('style-event', props.toolId, fillColours)
+    })
 }
 </script>
 

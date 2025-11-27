@@ -42,6 +42,7 @@ export interface LatexMathSvgOptions {
     'border-width'?: string
     class?: string
     'corner-radius'?: string
+    'middle-colour'?: string
     'min-height'?: string
     'min-width'?: string
     padding?: string
@@ -233,39 +234,57 @@ function latexToSvgRect(latex: string, suffix: string,
         svgElement.setAttribute('height', pixelsToLength(height/scale[1]!, 'ex')!)
 
         let fill: string
+        let dataFillStyle: string[] = []
         if (!options.background) {
-            fill = "'transparent'"
+            fill = 'transparent'
+            dataFillStyle.push(fill)
         } else if (Array.isArray(options.background)) {
-            const stopColours: string[] = options.background
+            const stopColours: string[] = [...options.background]
             let direction = 'V'
             if (stopColours.length && ['H', 'V'].includes(stopColours[0]!)) {
                 direction = stopColours.shift()!
             }
             if (stopColours.length === 0) {
-                fill = "'transparent'"
+                fill = 'transparent'
+                dataFillStyle.push(fill)
             } else if (stopColours.length === 1) {
-                fill = ` fill="${stopColours[0]}"`
+                fill = stopColours[0]!.trim()
+                dataFillStyle.push(fill)
             } else {
-                const gradientId = 'G-001'
+                dataFillStyle.push(direction)
+                const gradientFillId = 'fill'
                 const transform = (direction === 'V') ? 'gradientTransform="rotate(90)"' : ''
-                gradient.push(`<linearGradient id="${gradientId}" ${transform}>`)
-                const stops = stopColours.length - 1
-                stopColours.forEach((colour: string, index: number) => {
-                    gradient.push(`<stop stop-color="${colour}" offset="${100*index/stops}%"/>`)
-                })
+                gradient.push(`<linearGradient id="${gradientFillId}" ${transform}>`)
+                if (stopColours.length === 2 && options['middle-colour']) {
+                    let colour = stopColours[0]!.trim()
+                    gradient.push(`<stop stop-color="${colour}" offset="0%"/>`)
+                    dataFillStyle.push(colour)
+                    gradient.push(`<stop stop-color="${options['middle-colour']}" offset="50%"/>`)
+                    colour = stopColours[1]!.trim()
+                    gradient.push(`<stop stop-color="${colour}" offset="100%"/>`)
+                    dataFillStyle.push(colour)
+                } else {
+                    const stops = stopColours.length - 1
+                    stopColours.forEach((colour: string, index: number) => {
+                        colour = colour.trim()
+                        gradient.push(`<stop stop-color="${colour}" offset="${100*index/stops}%"/>`)
+                        dataFillStyle.push(colour)
+                    })
+                }
                 gradient.push('</linearGradient>')
-                fill = `"url(#${gradientId})"`
+                fill = `url(#${gradientFillId})`
             }
         } else {
-            fill = ` fill="${options.background}"`
+            fill = options.background.trim()
+            dataFillStyle.push(fill)
         }
         const stroke = border ? ` stroke="${options['border']}" stroke-width="${round(scale[0]!*border)}"` : ''
         const radius = getLengthFromOptions(options, 'corner-radius');
         const cornerRadius = radius ? ` rx="${round(radius*scale[0]!)}"` : ''
         const topLeft = `x="${round(viewBox[0]+border*scale[0]!)}" y="${round(viewBox[1]+border*scale[1]!)}"`
         const rectClass = options.class ? ` class="${options['class']}"` : ''
-        const bgRect = `<rect ${topLeft}${rectSize} fill=${fill}${stroke}${cornerRadius}${rectClass}></rect>`
-        svgElement.insertAdjacentHTML('afterbegin', bgRect)
+        const bgRect = `<rect ${topLeft}${rectSize} fill="${fill}" data-fill-style="${dataFillStyle.join(' ')}"${stroke}${cornerRadius}${rectClass}></rect>`
+        svgElement.firstElementChild!.insertAdjacentHTML('afterend', bgRect)
 
         if (suffix !== '') {
             const topLeft = `x="${viewBox[0]+border*scale[0]!}" y="${viewBox[1]+border*scale[1]!}"`;
@@ -304,6 +323,35 @@ export class LatexMathSvg {
 
 export function base64Svg(svg: string): string {
     return `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
+}
+
+//==============================================================================
+
+export function getSvgImageFromBase64(svgText: string): string|undefined {
+    const re = /<image href="data:image\/svg\+xml;base64,(?<base64>.*)"><\/image>/
+    const base64 = svgText.match(re)
+    if (base64) {
+        return Buffer.from(base64.groups!.base64!, 'base64').toString('utf8')
+    }
+}
+
+//==============================================================================
+
+export function getSvgFillStyle(svgText: string): string[] {
+    const svgData = getSvgImageFromBase64(svgText)
+    if (svgData) {
+        const fillStyle = svgData.match(/ data-fill-style="(?<fillStyle>[^"]*)"/)
+        if (fillStyle) {
+            return fillStyle.groups!.fillStyle!.split(' ')
+        }
+        const fill = svgData.match(/ fill="(?<fill>[^"]*)"/)
+        if (fill && !fill.groups!.fill!.startsWith('url(')) {
+            return fill
+        }
+        // Shouldn't get here...
+        return ['yellow']
+    }
+    return []
 }
 
 //==============================================================================

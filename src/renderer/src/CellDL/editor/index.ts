@@ -174,6 +174,7 @@ export class CellDLEditor {
 
         // Add handler for events from panels
         document.addEventListener('panel-event', this.#panelEvent.bind(this))
+        document.addEventListener('style-event', this.#styleEvent.bind(this))
     }
 
     mount(svgContainer: HTMLElement) {
@@ -398,6 +399,16 @@ export class CellDLEditor {
                                                                  this.#celldlDiagram!.rdfStore)
                     notifyChanges()
                 }
+            }
+        }
+    }
+
+    #styleEvent(event: Event) {
+        const detail = (<CustomEvent>event).detail
+        if (detail.source === this.#openPanelId) {
+            if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
+                this.#propertiesPanel.updateObjectStyling(this.#selectedObject, detail.styling)
+                notifyChanges()
             }
         }
     }
