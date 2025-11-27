@@ -83,16 +83,17 @@ function setStyle(gradientStyle: boolean) {
     }
 }
 
-setStyle(props.fillStyle.gradientFill)
-
 function styleChange(e: Event){
     setStyle(gradientFill.value)
     emitChange()
 }
 
-const colours = vue.ref({
-    start: props.fillStyle.colours[0],
-    stop: props.fillStyle.colours[1] ?? props.fillStyle.colours[0]
+const colours = vue.computed(() => {
+    setStyle(props.fillStyle.gradientFill)
+    return {
+        start: props.fillStyle.colours[0],
+        stop: props.fillStyle.colours[1] ?? props.fillStyle.colours[0]
+    }
 })
 
 const startColour = vue.computed<string>(() => {

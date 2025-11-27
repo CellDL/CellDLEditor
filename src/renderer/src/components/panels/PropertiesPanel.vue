@@ -26,7 +26,7 @@
                             @change="updateProperties"
                         )
                     AccordionContent(
-                        v-if="groupIndex == (groups.length - 1)"
+                        v-if="!disabled && groupIndex == (groups.length - 1)"
                     )
                         FillStyle(
                             :fillStyle="fillStyle"
@@ -75,11 +75,9 @@ const fillStyle = vue.computed<IFillStyle>(() => {
     if (fillColours.length && ['H', 'V'].includes(fillColours[0]!)) {
         direction = fillColours.shift()!
     }
-    if (fillColours.length === 0) {
-        colours.push('pink')
-    } else if (fillColours.length === 1) {
+    if (fillColours.length === 1) {
         colours.push(fillColours[0]!.trim())
-    } else {
+    } else if (fillColours.length) {
         fillColours.forEach(colour => {
             colours.push(colour.trim())
         })
