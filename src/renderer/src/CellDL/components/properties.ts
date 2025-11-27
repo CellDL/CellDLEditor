@@ -161,7 +161,7 @@ export class ObjectPropertiesPanel {
         if (celldlObject) {
             // Update component properties with plugin specific values
 
-            pluginComponents.getComponentProperties(this.#componentProperties.value, celldlObject, rdfStore)
+            pluginComponents.getComponentProperties(celldlObject, this.#componentProperties.value, rdfStore)
 
             if (this.#metadataIndex >= 0) {
                 // Update component properties in the METADATA_GROUP
@@ -177,13 +177,15 @@ export class ObjectPropertiesPanel {
         }
     }
 
-    updateObjectProperties(value: ValueChange, itemId: string,
-                           celldlObject: CellDLObject|null, rdfStore: RdfStore) {
+    //==================================
+
+    updateObjectProperties(celldlObject: CellDLObject|null,
+                           itemId: string, value: ValueChange, rdfStore: RdfStore) {
         if (celldlObject) {
             // Save plugin specific component properties
 
-            pluginComponents.updateComponentProperties(this.#componentProperties.value,
-                                                       value, itemId, celldlObject, rdfStore)
+            pluginComponents.updateComponentProperties(celldlObject, itemId, value,
+                                                       this.#componentProperties.value, rdfStore)
 
             // Save component properties in the METADATA_GROUP
 

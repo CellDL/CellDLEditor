@@ -50,12 +50,11 @@ export interface PluginInterface {
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     getObjectTemplate: (id: string) => ObjectTemplate|undefined
     getPropertyGroups: () => PropertyGroup[]
-    getComponentProperties: (componentProperties: PropertyGroup[],
-                             celldlObject: CellDLObject, rdfStore: RdfStore) => void
-    updateComponentProperties: (componentProperties: PropertyGroup[],
-                                value: ValueChange, itemId: string,
-                                celldlObject: CellDLObject, rdfStore: RdfStore) => void
     getStylingGroup: () => PropertyGroup
+    getComponentProperties: (celldlObject: CellDLObject,
+                             componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
+    updateComponentProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                                componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
     updateComponentStyling: (celldlObject: CellDLObject, styling: StyleObject) => void
     styleRules: () => string
     svgDefinitions: () => string
@@ -140,11 +139,10 @@ export class PluginComponents {
         }
     }
 
-    updateComponentProperties(componentProperties: PropertyGroup[],
-                              value: ValueChange, itemId: string,
-                              celldlObject: CellDLObject, rdfStore: RdfStore) {
+    updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                              componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         for (const plugin of this.#registeredPlugins.values()) {
-            plugin.updateComponentProperties(componentProperties, value, itemId, celldlObject, rdfStore)
+            plugin.updateComponentProperties(celldlObject, itemId, value, componentProperties, rdfStore)
         }
     }
 
@@ -168,9 +166,9 @@ export class PluginComponents {
         return this.#bondgraphPlugin!.getStylingGroup()
     }
 
-    getComponentProperties(componentProperties: PropertyGroup[],
-                           celldlObject: CellDLObject, rdfStore: RdfStore) {
-        return this.#bondgraphPlugin.getComponentProperties(componentProperties, celldlObject, rdfStore)
+    getComponentProperties(celldlObject: CellDLObject,
+                           componentProperties: PropertyGroup[], rdfStore: RdfStore) {
+        return this.#bondgraphPlugin!.getComponentProperties(celldlObject, componentProperties, rdfStore)
     }
 
     styleRules(): string {

@@ -410,7 +410,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    getComponentProperties(componentProperties: PropertyGroup[], celldlObject: CellDLObject, rdfStore: RdfStore) {
+    getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         const template = this.#getObjectElementTemplate(celldlObject, rdfStore)
         if (!template) {
             return
@@ -552,8 +552,8 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    updateComponentProperties(componentProperties: PropertyGroup[], value: ValueChange, itemId: string,
-                              celldlObject: CellDLObject, rdfStore: RdfStore) {
+    updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                              componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
 
         const template = (<PluginData>celldlObject.pluginData(this.id)).template
