@@ -24,7 +24,7 @@ import { ucum } from '@atomic-ehr/ucum'
 //==============================================================================
 
 import { arrowMarkerDefinition } from '@renderer/common/styling'
-import { type IUiJsonDiscreteInput, type IUiJsonDiscreteInputPossibleValue } from '@renderer/libopencor/locUIJsonApi'
+import { type IUiJsonDiscreteInput } from '@renderer/libopencor/locUIJsonApi'
 
 import { getSvgFillStyle } from '@renderer/common/svgUtils'
 
@@ -47,8 +47,9 @@ import {
     type ValueChange
 } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
-import { BGF, RDF, RDFS, SPARQL_PREFIXES } from '@editor/metadata/index'
+import { BGF, RDF, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
+import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
 
 import {
     type BGComponentLibraryTemplate,
@@ -56,8 +57,6 @@ import {
     definitionToLibraryTemplate,
     svgImage
 } from './icons'
-
-import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
 
 //==============================================================================
 
@@ -199,7 +198,6 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
                 itemId: BG_INPUT.ElementType,
                 uri: RDF('type').value,
                 name: 'Bond Element',
-                defaultValue: 0,
                 possibleValues: [],
                 optional: true
             },
@@ -615,6 +613,8 @@ export class BondgraphPlugin implements PluginInterface {
         }
     }
 
+    //==================================
+
     #updateElementValue(value: ValueChange, celldlObject: CellDLObject, rdfStore: RdfStore) {
         const objectUri = celldlObject.uri.toString()
 
@@ -640,6 +640,8 @@ export class BondgraphPlugin implements PluginInterface {
             `)
         }
     }
+
+    //==================================
 
     #updateVariableProperties(value: ValueChange, itemId: string, celldlObject: CellDLObject,
                               elementTemplate: ElementTemplate, rdfStore: RdfStore) {

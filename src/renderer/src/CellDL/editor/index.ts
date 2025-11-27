@@ -163,6 +163,7 @@ export class CellDLEditor {
 
     constructor() {
         CellDLEditor.instance = this
+
         /**
         this.#statusMsg = this.getElementById('status-msg')!
         this.#statusPos = this.getElementById('status-pos')!
@@ -293,6 +294,7 @@ export class CellDLEditor {
 
         // Note the selection group's element so that it's not saved
         celldlDiagram.addEditorElement(this.#editorFrame.svgGroup!)
+
         // Initialise alignment guides and grid
         editGuides.newDiagram(celldlDiagram, true)
 

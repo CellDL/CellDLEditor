@@ -155,11 +155,11 @@ export class PluginComponents {
     //==========================================================================
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
-        return this.#bondgraphPlugin.getObjectTemplate(id)
+        return this.#bondgraphPlugin!.getObjectTemplate(id)
     }
 
     getPropertyGroups(): PropertyGroup[] {
-        return this.#bondgraphPlugin.getPropertyGroups()
+        return this.#bondgraphPlugin!.getPropertyGroups()
     }
 
     getStylingGroup(): PropertyGroup {
@@ -172,11 +172,11 @@ export class PluginComponents {
     }
 
     styleRules(): string {
-        return this.#bondgraphPlugin.styleRules()
+        return this.#bondgraphPlugin!.styleRules()
     }
 
     svgDefinitions(): string {
-        return this.#bondgraphPlugin.svgDefinitions()
+        return this.#bondgraphPlugin!.svgDefinitions()
     }
 }
 

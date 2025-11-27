@@ -150,6 +150,8 @@ export class ObjectPropertiesPanel {
         vue.provide<PropertyGroup[]>('componentProperties', this.#componentProperties)
     }
 
+    //==================================
+
     setObjectProperties(celldlObject: CellDLObject|null, rdfStore: RdfStore) {
         // Clear each group's list of items
         for (const group of this.#componentProperties.value) {
