@@ -19,13 +19,19 @@
         </style>
         <script type="module">
             // Load oxigraph's WASM module
+
             import initOxigraph from '@oxigraph/web.js'
+
+console.log('loading oxigraph...')
             await initOxigraph()
+console.log('oxigraph loaded...')
 
             // Load pyodide's WASM module
 
             import { loadPyodide } from '@pyodide/pyodide.mjs'
+console.log('loading pyodide...')
             globalThis.pyodide = await loadPyodide()
+console.log('pyodide loaded...')
         </script>
     </head>
     <body>

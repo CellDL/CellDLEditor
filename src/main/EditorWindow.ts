@@ -110,6 +110,8 @@ export function clearRecentFiles(): void {
 
 //==============================================================================
 
+// Debugging
+let lastWinNumber: number = 0
 
 export class EditorWindow extends ApplicationWindow
 {
@@ -120,6 +122,7 @@ export class EditorWindow extends ApplicationWindow
     #modified: boolean = false
     #pendingClose: boolean = false
     #saveFilePath: string = ''
+    winNumber: number
 
     constructor(filePath: string, options)
     {
@@ -129,6 +132,9 @@ export class EditorWindow extends ApplicationWindow
         } else {
             this.setFilePath(filePath)
         }
+        lastWinNumber += 1
+        this.winNumber = lastWinNumber
+console.log('Created window number', this.winNumber)
     }
 
     get filePath() {
@@ -137,6 +143,7 @@ export class EditorWindow extends ApplicationWindow
 
     setFilePath(filePath: string) {
         // An empty path means we are creating a new file
+console.log('set file path', filePath, 'was', this.#filePath)
         if (filePath !== this.#filePath) {
             this.#filePath = filePath
             this.#fileName = filePath ? filePath.split(path.sep).at(-1)! : 'New file'
@@ -159,6 +166,7 @@ export class EditorWindow extends ApplicationWindow
     }
 
     send(type: string, ...args: unknown[]) {
+console.log('SEND to browser from win', this.winNumber, type, args[0])
         this.webContents.send(type, ...args)
     }
 
@@ -273,10 +281,12 @@ export class EditorWindow extends ApplicationWindow
 
     openFile(filePath: string) {
         this.setFilePath(filePath)
+console.log('opening', filePath)
         if (this.#filePath) {
             electron.app.addRecentDocument(this.#filePath)
             this.setRepresentedFilename(this.#filePath)
             const data = fs.readFileSync(this.#filePath, 'utf8')
+console.log('sending data:', data.substr(0, 100))
             this.send('FILE_OP', 'OPEN', this.#filePath, data)
         }
     }

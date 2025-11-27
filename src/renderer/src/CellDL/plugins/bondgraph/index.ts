@@ -19,7 +19,7 @@ limitations under the License.
 ******************************************************************************/
 
 import * as $oxigraph from '@oxigraph/web'
-import { ucum } from '@atomic-ehr/ucum'
+//import { ucum } from '@atomic-ehr/ucum'
 
 //==============================================================================
 
@@ -189,6 +189,9 @@ enum BG_GROUP {
     StylingGroup = 'bg-styling-group'
 }
 
+// units handling: https://github.com/atomic-ehr/ucum
+//  ucum.isConvertible(units1: string, units2: string)
+
 const PROPERTY_GROUPS: PropertyGroup[] = [
     {
         groupId: BG_GROUP.ElementGroup,
@@ -271,6 +274,13 @@ export class BondgraphPlugin implements PluginInterface {
 //      const templatesGlob = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', { eager: true })
 
         this.#rdfStore.load(BG_RDF_ONTOLOGY)
+
+/*
+<https://bg-rdf.org/ontologies/bondgraph-framework>
+    a owl:Ontology ;
+    owl:versionInfo "2025-08-13" ;
+*/
+
         this.#rdfStore.load(CHEMICAL_TEMPLATE)
         this.#rdfStore.load(ELECTRICAL_TEMPLATE)
         this.#rdfStore.load(HYDRAULIC_TEMPLATE)
@@ -447,6 +457,8 @@ export class BondgraphPlugin implements PluginInterface {
             } else if (itemTemplate.itemId === BG_INPUT.ElementSpecies ||
                        itemTemplate.itemId === BG_INPUT.ElementLocation ||
                        itemTemplate.itemId === BG_INPUT.ElementValue) {
+
+                // ElementValue with have units
                 const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
                 if (item) {
                     if (itemTemplate.itemId === BG_INPUT.ElementSpecies) {
@@ -467,6 +479,7 @@ export class BondgraphPlugin implements PluginInterface {
         if (!('fillColours' in pluginData)) {
             pluginData.fillColours = getSvgFillStyle(celldlObject.celldlSvgElement!.svgElement.outerHTML)
         }
+console.log('el style', pluginData.fillColours)
         group.styling = {
             fillColours: pluginData.fillColours || []
         }
@@ -497,8 +510,13 @@ export class BondgraphPlugin implements PluginInterface {
                 const valueUnits = values.get(varName)!.split(' ')
                 item.value = valueUnits[0]
                 item.units = valueUnits[1]
+                // And these units, if there are some, should be used in the prompt
+                // Need to save units with item (item.units)
             }
         })
+
+// Check units...
+//            ucum.isConvertible(units1: string, units2: string)
     }
 
     //==========================================================================
@@ -576,6 +594,9 @@ export class BondgraphPlugin implements PluginInterface {
     updateComponentStyling(celldlObject: CellDLObject, styling: StyleObject) {
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
         const fillColours = styling.fillColours || []
+
+console.log('upd style', pluginData.fillColours, '-->', fillColours)
+
         if (fillColours.toString() !== pluginData.fillColours!.toString()) {
             pluginData.fillColours = [...fillColours]
             this.#updateSvgElement(celldlObject)
@@ -606,6 +627,7 @@ export class BondgraphPlugin implements PluginInterface {
                     }
                     this.#updateSvgElement(celldlObject)
                 } else if (itemId === BG_INPUT.ElementValue) {
+                    // Element value has units that need to be set...
                     this.#updateElementValue(value, celldlObject, rdfStore)
                 }
                 break
@@ -628,8 +650,11 @@ export class BondgraphPlugin implements PluginInterface {
                 ${objectUri} bgf:hasValue ?value
             }`)
         const newValue = value.newValue.trim()
+
+
         const template = (<PluginData>celldlObject.pluginData(this.id)).template
         const variable = template.elementTemplate!.value
+
         if (newValue) {
             rdfStore.update(`${SPARQL_PREFIXES}
                 PREFIX : <${rdfStore.documentUri}#>
@@ -930,11 +955,14 @@ export class BondgraphPlugin implements PluginInterface {
                 if (domain) {
                     if (component.id === BGF('PotentialSource').value) {
                         template.value = domain.potential
+                        // But can also be a (predefined) function
                     } else if (component.id === BGF('FlowSource').value) {
                         template.value = domain.flow
+                        // But can also be a (predefined) function
                     } else {
                         const relation = r.get('relation')
                         if (relation) {
+                            // check datatype for MathML...
                             const differentiatedVariable = this.#getDiffVariable(domain, relation.value)
                             if (differentiatedVariable) {
                                 template.value = differentiatedVariable
@@ -1066,4 +1094,70 @@ export class BondgraphPlugin implements PluginInterface {
 }
 
 //==============================================================================
+
+
+/*
+
+template to specify form of  bgf:parameterValue and sub fields
+
+might have hasSymbol
+
+label to be `name (units)` where symbol has precedence over name
+
+
+:C
+    a bgf:MechanicalCapacitor ;
+    bgf:hasValue "1 m"^^cdt:ucum ;    <------  Initial value
+    bgf:parameterValue [
+        bgf:varName "C" ;    ## can reference both params and state vars
+        bgf:hasValue "20 m2.J-1"^^cdt:ucum
+
+        ## if quantity state var then value can be from
+        ## another quantity in model
+
+        ## `quantity state` because units of hasVariable match
+    ] .
+
+
+:v_ptEpi_NKE
+    a bgf:NKETransporterNode ;
+    ## Need to multiply CR by 3
+    bgf:parameterValue [
+        bgf:varName "k_NKE" ;
+        bgf:hasSymbol "k_ptEpi_NKE" ;
+        bgf:hasValue "1e5 mol/s"^^cdt:ucum
+    ], [
+        bgf:varName "u_e";
+        bgf:hasSymbol "u_ptEpi_e" ;
+        bgf:hasValue "-0.040 J/C"^^cdt:ucum
+    ], [
+        bgf:varName "q_H2O_in" ;
+        bgf:hasSymbol "q_ptEpi_W" ;
+        bgf:hasValue "0.5 L"^^cdt:ucum
+    ], [
+        bgf:varName "q_H2O_out" ;
+        bgf:hasValue :q_vc_W      <------------
+    ], [
+        bgf:varName "K_Na" ;
+        bgf:hasSymbol "K_Na" ;
+        bgf:hasValue "1 L/mol"^^cdt:ucum
+    ], [
+        bgf:varName "q_Na_in" ;
+        bgf:hasValue :q_ptEpi_Na   <------------
+    ], [
+        bgf:varName "q_Na_out" ;
+        bgf:hasValue :q_vc_Na     <------------
+    ], [
+
+
+
+
+For a given object with element type, species and location,
+and existing styling information, find the element's base component
+(for default styling) and use this with species and location to
+return an SVG image for the object. Need also to save local
+styling -- a `data-` attribute on the object's SVG element?
+
+*/
+
 //==============================================================================

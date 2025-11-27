@@ -12,6 +12,7 @@
                         :src="component.image"
                         :aria-label="component.name"
                         :title="component.name"
+                        :v-tooltip="{ value: component.name }"
                         draggable="true"
                         @dragstart="dragstart"
                         @mousedown="selected"

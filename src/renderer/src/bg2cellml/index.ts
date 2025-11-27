@@ -18,75 +18,12 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '@editor/metadata'
+import { type PyodideAPI } from '@pyodide/pyodide'
 
 //==============================================================================
 
-const rdfTestPython = `
-import rdf
-
-node = rdf.namedNode('https://celldl.org/example#node')
-
-print('node', node, rdf.isBlankNode(node), rdf.isLiteral(node), rdf.isNamedNode(node))
-print()
-
-#===============================================
-
-ttl = '''@prefix : <#> .
-@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
-@prefix cdt: <https://w3id.org/cdt/> .
-@prefix celldl: <http://celldl.org/ontologies/celldl#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix tpl: <https://bg-rdf.org/templates/> .
-
-<> a celldl:Document, bgf:BondgraphModel ;
-  <http://purl.org/dc/terms/created> "2025-11-20T00:14:00.859Z" ;
-  <http://purl.org/dc/terms/modified> "2025-11-20T01:04:00.446Z" ;
-  owl:versionInfo "1.0" ;
-  bgf:usesTemplate tpl:electrical.ttl ;
-  bgf:hasBondElement :ID-00000001, :ID-00000003, :ID-00000004 .
-
-:ID-00000001 a celldl:Component, bgf:VoltageSource ;
-  bgf:hasLocation "j" ;
-  bgf:hasSpecies "i" ;
-  bgf:hasSymbol "v_in" ;
-  bgf:hasValue "10 V"^^cdt:ucum .
-'''
-
-#===============================================
-
-store = rdf.RdfStore('https://bg-rdf.org/store')
-store.load(ttl)
-
-statements = store.statements()
-print('Statements:')
-for s in statements:
-    print(f'[{s.subject.toString()}, {s.predicate.toString()}, {s.object.toString()}]')
-
-print()
-hasBondElement = rdf.namedNode('https://bg-rdf.org/ontologies/bondgraph-framework#hasBondElement')
-bondElements = store.statementsMatching(None, hasBondElement, None)
-print('Bond elements:')
-for s in bondElements:
-    print(f'[{s.subject.toString()}, {s.predicate.toString()}, {s.object.toString()}]')
-
-`
-
-//==============================================================================
-
-const rdfModule = {
-    blankNode: $rdf.blankNode,
-    literal: $rdf.literal,
-    namedNode: $rdf.namedNode,
-
-    isBlankNode: $rdf.isBlankNode,
-    isLiteral: $rdf.isLiteral,
-    isNamedNode: $rdf.isNamedNode,
-
-    RdfStore: function(documentUri: string): $rdf.RdfStore {
-        return new $rdf.RdfStore(documentUri)
-    }
-}
+import registerRdfModule from './rdfModule'
+import { pythonRdfTest } from './rdfModule'
 
 //==============================================================================
 
@@ -109,7 +46,8 @@ let packagesLoaded = false
 //==============================================================================
 
 export class BG2CellML {
-    #pyodide: Object = globalThis.pyodide
+    // @ts-expect-error:
+    #pyodide: PyodideAPI = globalThis.pyodide as PyodideAPI
 
     async bg2cellml() {
         this.#checkPyodide().then(loaded => {
@@ -123,14 +61,14 @@ export class BG2CellML {
     }
 
     async rdfTest() {
-        this.#checkPyodide().then(loaded => {
+        this.#checkPyodide().then(async loaded => {
             if (loaded) {
-                this.#pyodide.runPythonAsync(rdfTestPython)
+                await pythonRdfTest(this.#pyodide)
             }
         })
     }
 
-    async #checkPyodide(): boolean {
+    async #checkPyodide(): Promise<boolean> {
         if (!this.#pyodide) {
             console.error("Pyodide hasn't loaded...")
             return false
@@ -141,10 +79,10 @@ export class BG2CellML {
         return true
     }
 
-    async #loadPackages() {
-        this.#pyodide.registerJsModule("rdf", rdfModule)
+    async #loadPackages(): Promise<void> {
+        registerRdfModule("rdfstore", this.#pyodide)
         for (const pkg of pythonPackages) {
-            await pyodide.loadPackage(`/pyodide/wheels/${pkg}`)
+            await this.#pyodide.loadPackage(`/pyodide/wheels/${pkg}`)
         }
     }
 }

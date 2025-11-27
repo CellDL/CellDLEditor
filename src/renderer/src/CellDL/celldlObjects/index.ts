@@ -473,6 +473,9 @@ export class CellDLConnection extends CellDLObject {
         celldlDiagram: CellDLDiagram
     ) {
         super(uri, metadata, options, celldlDiagram)
+// Also from plugin ?
+// bgf:hasSource rdfs:subPropertyOf celldl:hasSource
+
         const source = celldlDiagram.getConnector(metadata.getProperty(CELLDL('hasSource')))
         const target = celldlDiagram.getConnector(metadata.getProperty(CELLDL('hasTarget')))
         const intermediates: CellDLConnectedObject[] = metadata

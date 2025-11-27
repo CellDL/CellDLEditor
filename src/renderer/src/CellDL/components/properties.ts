@@ -126,6 +126,7 @@ export function updateItemProperty(property: string, value: ValueChange,
             INSERT DATA { ${objectUri} <${property}> "${newValue}" }
         `)
     }
+//rdfStore.serialise().then(ttl => { console.log(ttl) })
 }
 
 //==============================================================================

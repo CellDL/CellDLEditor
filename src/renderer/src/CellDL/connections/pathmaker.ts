@@ -173,6 +173,7 @@ export class PathMaker {
                 return new PathNode(<CellDLConnectedObject>celldlObject)
             }
         } else {
+            //alert.warn(`${celldlObject.template.name} cannot start a path`)
             alert.warn('Cannot start a path...') // Need to know template name...
         }
         return null
@@ -470,6 +471,7 @@ export class PathMaker {
         // Create a new connection between start and end objects
         const metadataProperties = MetadataPropertiesMap.fromProperties([
             [RDF_TYPE, CELLDL('Connection')], // shouldn't CellDLClass imply this??
+// ex plugin??
             [CELLDL('hasSource'), this.#nodes[0]!.uri],
             [CELLDL('hasTarget'), endNode.uri],
             [CELLDL('hasIntermediate'), this.#nodes.slice(1, -1).map((c) => c.uri)]

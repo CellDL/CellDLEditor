@@ -663,6 +663,7 @@ export class CellDLDiagram {
         }
         // what ComponentPlugin was used to create the object?
         const metadataProperties = MetadataPropertiesMap.fromProperties([
+// from plugin...
             [CELLDL('hasSource'), connectedObjects[0]!.uri],
             [CELLDL('hasTarget'), connectedObjects[connectedObjects.length - 1]!.uri],
             [CELLDL('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]

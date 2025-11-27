@@ -32,6 +32,11 @@
         )
 </template>
 
+<!--
+            :isActive="compIsActive"
+            :uiEnabled="compUiEnabled"
+-->
+
 <script setup lang="ts">
 import * as vue from 'vue'
 

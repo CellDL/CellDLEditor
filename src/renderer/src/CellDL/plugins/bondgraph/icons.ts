@@ -196,6 +196,7 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         name: 'Potential source',
         symbol: 'Se',
         style: POTENTIAL_STYLE,
+//        noSpeciesLocation: true
     },
     {
         id: 'FlowSource',
@@ -203,6 +204,7 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
         name: 'Flow source',
         symbol: 'Sf',
         style: FLOW_STYLE,
+//        noSpeciesLocation: true
     }
 ]
 

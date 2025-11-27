@@ -58,6 +58,7 @@ export function setInternalIds(svgElement: SVGGraphicsElement, previousId: strin
             }
         }
     }
+    // this doesn't convert fill="url(#id)" and fill="url('#id')"
 }
 
 //==============================================================================

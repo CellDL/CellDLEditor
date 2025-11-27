@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { isNamedNode, namedNode, type NamedNode } from './rdfstore'
+import { isNamedNode, namedNode, type NamedNode } from './oxigraphStore'
 
 import { SVG_URI } from '@renderer/common/svgUtils'
 
@@ -26,10 +26,12 @@ import { SVG_URI } from '@renderer/common/svgUtils'
 
 export const CELLDL_URI = 'http://celldl.org/ontologies/celldl#'
 
+// These should come from BG plugin
 export const BG_URI = 'https://bg-rdf.org/ontologies/bondgraph#'
 export const BGF_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
 export const CDT_URI = 'https://w3id.org/cdt/'
 
+// Why a `/`? Check in bg2cellml
 export const TPL_URI = 'https://bg-rdf.org/templates/'
 
 export const DCT_URI = 'http://purl.org/dc/terms/'
@@ -76,6 +78,7 @@ export function Namespace(nsuri: string): NamespaceType {
 
 export const CELLDL = Namespace(CELLDL_URI)
 
+// These should come from BG plugin
 export const BG = Namespace(BG_URI)
 export const BGF = Namespace(BGF_URI)
 export const CDT = Namespace(CDT_URI)

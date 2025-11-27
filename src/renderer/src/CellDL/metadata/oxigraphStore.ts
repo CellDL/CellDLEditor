@@ -30,7 +30,7 @@ export const blankNode = $oxigraph.blankNode
 
 export function isBlankNode(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
-    return !!term.termType && term.termType === 'BlankNode'
+    return !!term && !!term.termType && term.termType === 'BlankNode'
 }
 
 //==============================================================================
@@ -41,7 +41,7 @@ export const literal = $oxigraph.literal
 
 export function isLiteral(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
-    return !!term.termType && term.termType === 'Literal'
+    return !!term && !!term.termType && term.termType === 'Literal'
 }
 
 //==============================================================================
@@ -72,7 +72,7 @@ export function namedNode(value: string): NamedNode {
 
 export function isNamedNode(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
-    return !!term.termType && term.termType === 'NamedNode'
+    return !!term && !!term.termType && term.termType === 'NamedNode'
 }
 
 //==============================================================================
@@ -107,7 +107,7 @@ export const TurtleContentType: ContentType = 'text/turtle'
 //==============================================================================
 //==============================================================================
 
-import { BaseStore } from './store'
+import { BaseStore } from './rdfstore'
 
 //==============================================================================
 

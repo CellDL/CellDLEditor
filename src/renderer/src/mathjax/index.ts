@@ -50,7 +50,9 @@ RegisterHTMLHandler(adaptor)
 const tex = new TeX({
     packages: ['base', 'ams', 'color', 'mhchem'],
     formatError(_: any, error: TexError) {
-        throw Error(`LaTeX: ${error.message}`)
+        // instead of thowing or logging error return error result
+        //  so caller can chenge filed background to indicate latex error
+        //throw Error(`LaTeX: ${error.message}`)
     }
 })
 const svg = new SVG({

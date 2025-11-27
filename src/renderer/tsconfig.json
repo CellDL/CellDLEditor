@@ -4,6 +4,7 @@
         "composite": true,
         "module": "esnext",
         "moduleResolution": "esnext",
+        "target": "esnext",
         "noEmit": false,
         "strictNullChecks": true,
         "resolveJsonModule": true,
@@ -16,5 +17,5 @@
         }
     },
     "extends": "@vue/tsconfig/tsconfig.dom.json",
-    "include": ["**/*.js", "**/*.ts", "**/*.vue", "package.json"]
+    "include": ["**/*.js", "**/*.ts", "**/*.vue", "../preload/*.ts", "package.json"]
 }

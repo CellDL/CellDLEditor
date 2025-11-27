@@ -154,6 +154,9 @@ export class PluginComponents {
 
     //==========================================================================
 
+    // The following all return a value, so how best to map over all plugins?
+    // Or do we return a Map, keyed by plugin.id ??
+
     getObjectTemplate(id: string): ObjectTemplate|undefined {
         return this.#bondgraphPlugin!.getObjectTemplate(id)
     }

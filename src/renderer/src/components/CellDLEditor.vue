@@ -166,6 +166,8 @@ function buttonEvent(toolId: string, active: boolean, newComponent: vue.Raw<vue.
 
 function popoverEvent(toolId: string, data: any) {
     if (toolId === EDITOR_TOOL_IDS.DrawConnectionTool) {
+        // Changing button can, and should, happen in EditorToolbar.vue
+
         toolButtons.value[1]!.prompt = connectionStylePrompt(data.name)
         toolButtons.value[1]!.icon = data.icon
 
@@ -174,6 +176,8 @@ function popoverEvent(toolId: string, data: any) {
         despatchToolbarEvent('value', toolId, data.id)
 
     } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
+        // Changing button can, and should, happen in EditorToolbar.vue
+
         toolButtons.value[2]!.prompt = data.name
         toolButtons.value[2]!.image = data.image
 
@@ -265,7 +269,11 @@ vue.onMounted(() => {
 
         // Listen for events from host when running as an Electron app
         if ('electronAPI' in window) {
+
+console.log('adding electron api handlers...')
+
             window.electronAPI?.onFileAction(async (_: Event, action: string, filePath: string, data: string | undefined) => {
+console.log('get action', action, filePath, data!.substr(0, 100))
                 if (action === 'IMPORT' || action === 'OPEN') {
                     // Load CellDL file (SVG and metadata)
                     try {
@@ -298,6 +306,16 @@ vue.onMounted(() => {
 
             // Let Electron know that the editor's window is ready
             window.electronAPI?.sendEditorAction('READY')
+            /***
+        } else {
+
+// not an Electron app
+            electronWindow.window.electronAPI = electronWindow.window.electronAPI || {
+                sendEditorAction: (action: string) => {
+                    console.log('Action', action)
+                }
+            }
+***/
         }
 
         celldlDiagram.edit()

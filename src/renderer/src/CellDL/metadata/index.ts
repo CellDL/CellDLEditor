@@ -20,35 +20,35 @@ limitations under the License.
 
 export {
     blankNode,
+    type BlankNode,
     isBlankNode,
     literal,
+    type Literal,
     isLiteral,
     namedNode,
+    type NamedNode,
     isNamedNode,
-    TurtleContentType,
-    RdfStore
-} from './rdfstore.ts'
-
-export type {
-    BlankNode,
-    Literal,
-    NamedNode,
-    Statement,
-    SubjectType,
-    PredicateType,
-    ObjectType,
-    ContentType
-} from './rdfstore.ts'
-
-export type { PredicateValue } from './store.ts'
+    type ContentType,
+    type ObjectType,
+    type PredicateType,
+    RdfStore,
+    type Statement,
+    type SubjectType,
+    TurtleContentType
+} from './oxigraphStore'
 
 export * from './namespaces.ts'
 
 //==============================================================================
 
-import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from './rdfstore'
-
-import type { PredicateType } from './rdfstore'
+import {
+    type Literal,
+    isLiteral,
+    type NamedNode,
+    namedNode,
+    isNamedNode,
+    type PredicateType
+} from './oxigraphStore'
 
 import { RDF } from './namespaces'
 

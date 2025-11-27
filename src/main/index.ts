@@ -63,6 +63,8 @@ export const application = new class Application
                 // Note: we do this because some packages rely on the value of process.env.NODE_ENV to determine whether they
                 //       should run in development mode (default) or production mode.
 
+console.log('Electron app READY')
+
                 if (!process.defaultApp) {
                     process.env.NODE_ENV = 'production'
                 }
@@ -107,6 +109,7 @@ export const application = new class Application
 
                 electron.ipcMain.handle('FILE_OP', (event, action, filePath, data) => {
                     const currentEditorWindow = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)
+console.log('FILE_OP from editor window nbr', currentEditorWindow.winNumber, action, filePath)
                     if (currentEditorWindow) {
                         if (action === 'WRITE') {
                             if (currentEditorWindow.writeFileData(filePath, data)) {
@@ -129,6 +132,7 @@ export const application = new class Application
 
                 electron.ipcMain.handle('EDITOR_OP', (event, action, ...args) => {
                     const currentEditorWindow = <EditorWindow>electron.BrowserWindow.fromWebContents(event.sender)
+console.log('EDITOR_OP from editor window nbr', currentEditorWindow.winNumber, action)
                     if (currentEditorWindow) {
                         currentEditorWindow.editorAction(action, ...args)
                     }
@@ -147,6 +151,7 @@ export const application = new class Application
 
         electron.app.on('open-file', (event, filePath) => {
             event.preventDefault()
+console.log('open-file event...')
             this.openFile(filePath)
         })
 
@@ -176,10 +181,14 @@ export const application = new class Application
     openFile(filePath: string, importSvg: boolean=false) {
         if (filePath) {
             let editorWindow = this.#filePathToEditor.get(filePath)
+console.log('main open file', filePath)
             if (editorWindow) {
                 // An editor window is already open for the file, so
                 // bring it into focus without reloading it
 
+                // This is where we could check for modifications and
+                // prompt for reload...
+console.log('Editor window exists for file, set focus...', editorWindow.winNumber)
                 editorWindow.focus()
             } else {
                 editorWindow = this.currentWindow
@@ -188,7 +197,9 @@ export const application = new class Application
 
                 if (!editorWindow || editorWindow.modified || editorWindow.filePath !== '') {
                     editorWindow = this.#createEditorWindow()
+console.log('New editor window used...', editorWindow.winNumber)
                 } else {
+console.log('Blank, unmodified window exists, use it...', editorWindow.winNumber)
                 }
                 if (importSvg) {
                     editorWindow.importSvgFile(filePath)
