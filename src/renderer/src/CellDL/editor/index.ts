@@ -22,6 +22,7 @@ import '@renderer/assets/svgContent.css'
 
 import { CellDLObject } from '@editor/celldlObjects/index'
 import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
+import { getTemplateEventDetails, type TemplateEventDetails }  from '@editor/components/index'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'
 import { pluginComponents } from '@editor/plugins/index'
@@ -149,7 +150,7 @@ export class CellDLEditor {
 
 //    #contextMenu: ContextMenu
 
-    #currentTemplateId: string | null = null
+    #currentTemplateDetails: TemplateEventDetails | null = null
     #drawConnectionSettings: StringProperties = {}
 
     #selectedObject: CellDLObject | null = null
@@ -172,6 +173,9 @@ export class CellDLEditor {
 **/
         // Add a handler for events from toolbar buttons
         document.addEventListener('toolbar-event', this.#toolBarEvent.bind(this))
+        // @ts-expect-error: event passed to handler is a custom event
+        document.addEventListener('component-selected', this.#componentTemplateSelectedEvent.bind(this))
+        document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
 
         // Add handler for events from panels
         document.addEventListener('panel-event', this.#panelEvent.bind(this))
@@ -204,7 +208,6 @@ export class CellDLEditor {
         window.addEventListener('keyup', this.#keyUpEvent.bind(this))
 
         // Add handlers for dropping components on the canvas
-        document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
         this.#container.addEventListener('dragover', this.#appDragOverEvent.bind(this))
         this.#container.addEventListener('drop', this.#appDropEvent.bind(this))
 
@@ -384,8 +387,6 @@ export class CellDLEditor {
                 this.#drawConnectionSettings = {
                     style: detail.value
                 }
-            } else if (detail.source === EDITOR_TOOL_IDS.AddComponentTool) {
-                this.#currentTemplateId = detail.value
             }
         }
     }
@@ -523,13 +524,21 @@ export class CellDLEditor {
         }
     }
 
-    #addComponentTemplate(eventPosition: PointLike, templateId: string) {
-        const zoomScale = this.#panzoom?.scale || 1
-        const topLeft = eventPosition // PointMath.subtract(eventPosition, PointMath.scalarScale(event.centre, zoomScale))
+    #componentTemplateSelectedEvent(event: CustomEvent) {
+        this.#currentTemplateDetails = event.detail
+    }
 
-        const template = pluginComponents.getObjectTemplate(templateId)
+    #addComponentTemplate(eventPosition: PointLike, details: TemplateEventDetails, dragged=false) {
+        // Adjust position by offset at component selection
+        const zoomScale = this.#panzoom?.scale || 1
+        let topLeft = PointMath.subtract(eventPosition, PointMath.scalarScale(details.centre, zoomScale))
+        if (dragged) {
+            topLeft = topLeft.subtract(PointMath.scalarScale(details.offset, zoomScale))
+        }
+
+        const template = pluginComponents.getObjectTemplate(details.id)
         if (!template) {
-            console.error(`Drop of unknown component template '${templateId}'`)
+            console.error(`Drop of unknown component template '${details.id}'`)
             return
         }
         const componentGroup = this.#editorFrame!.addSvgElement(template, this.#domToSvgCoords(topLeft))
@@ -546,7 +555,7 @@ export class CellDLEditor {
             for (const item of event.dataTransfer!.items) {
                 if (item.kind === "string" && item.type.match("^text/plain")) {
                     item.getAsString((s: string) => {
-                        this.#addComponentTemplate(event, JSON.parse(s).id)
+                        this.#addComponentTemplate(event, JSON.parse(s), true)
                     })
                 }
             }
@@ -567,8 +576,8 @@ export class CellDLEditor {
         }
         const clickedObject = this.#celldlDiagram.objectById(getElementId(element))
         if (this.#editorState === EDITOR_STATE.AddComponent && clickedObject === null) {
-            if (this.#currentTemplateId) {
-                this.#addComponentTemplate(event, this.#currentTemplateId)
+            if (this.#currentTemplateDetails) {
+                this.#addComponentTemplate(event, this.#currentTemplateDetails)
             }
             return
         }
