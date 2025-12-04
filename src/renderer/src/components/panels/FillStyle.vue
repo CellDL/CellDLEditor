@@ -34,21 +34,21 @@
             label Direction:
             #directions
                 .flex.items-right.gap-2
-                    label(for="horizontal") V
-                    RadioButton(
-                        v-model="gradientDirn"
-                        inputId="vertical"
-                        name="dirn"
-                        value="V"
-                        @change="emitChange"
-                    )
-                .flex.items-right.gap-2
-                    label(for="vertical") H
+                    label(for="horizontal") H
                     RadioButton(
                         v-model="gradientDirn"
                         inputId="horizontal"
                         name="dirn"
                         value="H"
+                        @change="emitChange"
+                    )
+                .flex.items-right.gap-2
+                    label(for="vertical") V
+                    RadioButton(
+                        v-model="gradientDirn"
+                        inputId="vertical"
+                        name="dirn"
+                        value="V"
                         @change="emitChange"
                     )
 </template>

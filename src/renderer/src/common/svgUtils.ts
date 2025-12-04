@@ -240,7 +240,7 @@ function latexToSvgRect(latex: string, suffix: string,
             dataFillStyle.push(fill)
         } else if (Array.isArray(options.background)) {
             const stopColours: string[] = [...options.background]
-            let direction = 'V'
+            let direction = 'H'
             if (stopColours.length && ['H', 'V'].includes(stopColours[0]!)) {
                 direction = stopColours.shift()!
             }

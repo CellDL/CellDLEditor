@@ -120,7 +120,7 @@ function updateFill(fillStyle: IFillStyle) {
     void vue.nextTick().then(() => {
         const fillColours: string[] = []
         if (fillStyle.gradientFill) {
-            fillColours.push(fillStyle.direction || 'V')
+            fillColours.push(fillStyle.direction || 'H')
         }
         fillColours.push(...fillStyle.colours)
         emit('style-event', props.toolId, fillColours)
