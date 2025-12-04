@@ -1,16 +1,24 @@
 <template lang="pug">
     ToolPanel(:id=toolId)
         template(#content)
-            Accordion(v-model:value="openPanel")
+            div(
+                v-if="disabled"
+            ) Please select an element or path.
+            Accordion(
+                v-if="!disabled"
+                v-model:value="openPanel"
+            )
                 AccordionPanel.group(
                     v-for="(group, groupIndex) in groups"
                     :key="group.title"
                     :disabled="disabled"
                     :value="String(groupIndex)"
                 )
-                    AccordionHeader {{ group.title }}
+                    AccordionHeader(
+                        v-if="hasContent[groupIndex]"
+                    ) {{ group.title }}
                     AccordionContent(
-                        v-if="groupIndex < (groups.length - 1)"
+                        v-if="hasContent[groupIndex] && groupIndex < (groups.length - 1)"
                     )
                         InputWidget(
                             v-for="(item, index) in group.items"
@@ -26,7 +34,7 @@
                             @change="updateProperties"
                         )
                     AccordionContent(
-                        v-if="!disabled && groupIndex == (groups.length - 1)"
+                        v-if="hasContent[groupIndex] && groupIndex == (groups.length - 1)"
                     )
                         FillStyle(
                             :fillStyle="fillStyle"
@@ -65,6 +73,17 @@ const disabled = vue.computed<boolean>(() => {
         }
     }
     return true
+})
+
+const hasContent = vue.computed<boolean[]>(() => {
+    return groups.value.map((group: PropertyGroup) => {
+        return (group.items.length
+         || (group.styling
+          && 'fillColours' in group.styling
+          && group.styling.fillColours
+          && Array.isArray(group.styling.fillColours)
+          && group.styling.fillColours.length))
+    })
 })
 
 const fillStyle = vue.computed<IFillStyle>(() => {
