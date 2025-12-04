@@ -496,6 +496,7 @@ export class CellDLEditor {
         this.#unsetSelectedObject() // This will depend upon multi-selection
         if (selectedObject !== null) {
             selectedObject.select(true)
+            selectedObject.drawControlHandles()
             this.#selectedObject = selectedObject
             this.#propertiesPanel.setObjectProperties(selectedObject, this.#celldlDiagram!.rdfStore)
             this.enableContextMenuItem(CONTEXT_MENU.DELETE, true)
@@ -506,6 +507,7 @@ export class CellDLEditor {
     #unsetSelectedObject() {
         if (this.#selectedObject) {
             this.#selectedObject.select(false)
+            this.#selectedObject.clearControlHandles()
             this.#selectedObject = null
             this.#propertiesPanel.setObjectProperties(null, this.#celldlDiagram!.rdfStore)
             this.enableContextMenuItem(CONTEXT_MENU.DELETE, false)
