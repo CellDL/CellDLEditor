@@ -78,6 +78,18 @@ const BondgraphComponentTemplates: Map<string, BGComponentLibraryTemplate> = new
 )
 
 //==============================================================================
+
+export interface INodeStyle {
+    gradientFill: boolean
+    colours: string[]
+    direction?: string
+}
+
+export interface IPathStyle {
+    colour: string
+    width: number
+    dashed: boolean
+}
 //==============================================================================
 
 // Temp workaround until `import.meta.glob` is correctly configured...
@@ -246,11 +258,9 @@ const ELEMENT_VALUE_INDEX = 3
 
 const STYLING_GROUP = {
     groupId: BG_GROUP.StylingGroup,
-    title: 'Fill style',
+    title: 'Style',
     items: [],
-    styling: {
-        fillColours: []
-    }
+    styling: {}
 }
 
 //==============================================================================
@@ -573,12 +583,16 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    updateComponentStyling(celldlObject: CellDLObject, styling: StyleObject) {
+    updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const fillColours = styling.fillColours || []
-        if (fillColours.toString() !== pluginData.fillColours!.toString()) {
-            pluginData.fillColours = [...fillColours]
-            this.#updateSvgElement(celldlObject)
+        if (objectType === 'node' && 'fillColours' in styling) {
+            const fillColours = styling.fillColours as string[] || []
+            if (fillColours.toString() !== pluginData.fillColours!.toString()) {
+                pluginData.fillColours = [...fillColours]
+                this.#updateSvgElement(celldlObject)
+            }
+        } else if (objectType === 'path' && 'pathStyle' in styling) {
+            // WIP
         }
     }
 

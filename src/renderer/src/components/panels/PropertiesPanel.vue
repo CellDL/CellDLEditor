@@ -37,8 +37,14 @@
                         v-if="hasContent[groupIndex] && groupIndex == (groups.length - 1)"
                     )
                         FillStyle(
-                            :fillStyle="fillStyle"
-                            @change="updateFill"
+                            v-if="objectType === 'node'"
+                            :fillStyle="objectStyle"
+                            @change="updateNodeStyle"
+                        )
+                        PathStyle(
+                            v-if="objectType === 'path'"
+                            :pathStyle="objectStyle"
+                            @change="updatePathStyle"
                         )
 </template>
 
@@ -51,7 +57,8 @@ import ToolPanel from '../toolbar/ToolPanel.vue'
 import InputWidget from '../widgets/InputWidget.vue'
 
 import FillStyle from './FillStyle.vue'
-import { type IFillStyle } from './FillStyle.vue'
+import PathStyle from './PathStyle.vue'
+import { type INodeStyle, type IPathStyle } from '@editor/plugins/bondgraph/index'
 
 const props = defineProps<{
     toolId: string
@@ -86,26 +93,40 @@ const hasContent = vue.computed<boolean[]>(() => {
     })
 })
 
-const fillStyle = vue.computed<IFillStyle>(() => {
+const objectStyle = vue.computed<INodeStyle|IPathStyle>(() => {
     const stylingGroup = groups.value.at(-1)
-    const fillColours: string[] = [...(stylingGroup.styling.fillColours || [])]
-    let direction = 'V'
-    const colours: string[] = []
-    if (fillColours.length && ['H', 'V'].includes(fillColours[0]!)) {
-        direction = fillColours.shift()!
+    if ('fillColours' in stylingGroup.styling) {
+        const fillColours: string[] = [...(stylingGroup.styling.fillColours || [])]
+        let direction = 'H'
+        const colours: string[] = []
+        if (fillColours.length && ['H', 'V'].includes(fillColours[0]!)) {
+            direction = fillColours.shift()!
+        }
+        if (fillColours.length === 1) {
+            colours.push(fillColours[0]!.trim())
+        } else if (fillColours.length) {
+            fillColours.forEach(colour => {
+                colours.push(colour.trim())
+            })
+        }
+        return {
+            gradientFill: colours.length > 1,
+            colours,
+            direction
+        }
+    } else if ('pathStyle' in stylingGroup.styling) {
+        return stylingGroup.styling.pathStyle
     }
-    if (fillColours.length === 1) {
-        colours.push(fillColours[0]!.trim())
-    } else if (fillColours.length) {
-        fillColours.forEach(colour => {
-            colours.push(colour.trim())
-        })
+})
+
+const objectType = vue.computed<string>(() => {
+    const stylingGroup = groups.value.at(-1)
+    if ('fillColours' in stylingGroup.styling) {
+        return 'node'
+    } else if ('pathStyle' in stylingGroup.styling) {
+        return 'path'
     }
-    return {
-        gradientFill: colours.length > 1,
-        colours,
-        direction
-    }
+    return ''
 })
 
 const emit = defineEmits(['panel-event', 'style-event'])
@@ -116,14 +137,20 @@ function updateProperties(itemId: string, oldValue: number | string, newValue: n
     })
 }
 
-function updateFill(fillStyle: IFillStyle) {
+function updateNodeStyle(fillStyle: INodeStyle) {
     void vue.nextTick().then(() => {
         const fillColours: string[] = []
         if (fillStyle.gradientFill) {
             fillColours.push(fillStyle.direction || 'H')
         }
         fillColours.push(...fillStyle.colours)
-        emit('style-event', props.toolId, fillColours)
+        emit('style-event', props.toolId, 'node', { fillColours })
+    })
+}
+
+function updatePathStyle(pathStyle: IPathStyle) {
+    void vue.nextTick().then(() => {
+        emit('style-event', props.toolId, 'path', { pathStyle })
     })
 }
 </script>

@@ -409,7 +409,7 @@ export class CellDLEditor {
         const detail = (<CustomEvent>event).detail
         if (detail.source === this.#openPanelId) {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
-                this.#propertiesPanel.updateObjectStyling(this.#selectedObject, detail.styling)
+                this.#propertiesPanel.updateObjectStyling(this.#selectedObject, detail.object, detail.styling)
                 notifyChanges()
             }
         }

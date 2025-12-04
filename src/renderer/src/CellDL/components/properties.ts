@@ -41,9 +41,7 @@ export type ItemDetails = locApi.IUiJsonInput & {
     numeric?: boolean
 }
 
-export interface StyleObject {
-    fillColours: string[]
-}
+export type StyleObject = Object
 
 export interface PropertyGroup {
     groupId: string
@@ -204,9 +202,9 @@ export class ObjectPropertiesPanel {
 
     //==================================
 
-     updateObjectStyling(celldlObject: CellDLObject|null, styling: StyleObject) {
+     updateObjectStyling(celldlObject: CellDLObject|null, objectType: string, styling: StyleObject) {
         if (celldlObject) {
-            pluginComponents.updateComponentStyling(celldlObject, styling)
+            pluginComponents.updateComponentStyling(celldlObject, objectType, styling)
         }
      }
 }

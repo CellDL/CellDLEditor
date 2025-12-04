@@ -53,20 +53,14 @@
                     )
 </template>
 
-<script lang="ts">
-export interface IFillStyle {
-    gradientFill: boolean
-    colours: string[]
-    direction?: string
-}
-</script>
-
 <script setup lang="ts">
 import * as vue from 'vue'
 import { TinyColor } from '@ctrl/tinycolor'
 
+import { type INodeStyle } from '@editor/plugins/bondgraph/index'
+
 const props = defineProps<{
-    fillStyle: IFillStyle
+    fillStyle: INodeStyle
 }>()
 
 const startPrompt = vue.ref(props.fillStyle.gradient ? 'Start colour' : 'Fill colour')

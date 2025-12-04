@@ -55,7 +55,7 @@ export interface PluginInterface {
                              componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
     updateComponentProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
                                 componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
-    updateComponentStyling: (celldlObject: CellDLObject, styling: StyleObject) => void
+    updateComponentStyling: (celldlObject: CellDLObject, objectType: string, styling: StyleObject) => void
     styleRules: () => string
     svgDefinitions: () => string
 }
@@ -146,9 +146,9 @@ export class PluginComponents {
         }
     }
 
-    updateComponentStyling(celldlObject: CellDLObject, styling: StyleObject) {
+    updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
         for (const plugin of this.#registeredPlugins.values()) {
-            plugin.updateComponentStyling(celldlObject, styling)
+            plugin.updateComponentStyling(celldlObject, objectType, styling)
         }
     }
 
