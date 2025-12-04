@@ -95,7 +95,7 @@ export class ControlPoint extends RestrictedPoint {
         }
         this.#style = style
         this.#svgElement = editorFrame.addElementAsString(svg) as SVGGraphicsElement
-        this.#svgElement.classList.add('control-point', 'selected')
+        this.#svgElement.classList.add('control-point', 'active')
         return this.#svgElement
     }
 

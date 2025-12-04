@@ -110,11 +110,11 @@ export class SvgConnection extends CellDLSVGElement {
     }
 
     clearControlHandles() {
-        this.#pathElements.forEach((element) => element.clearControlHandles())
+        this.#pathElements.forEach((element) => element.clearControlHandles(this.selected))
     }
 
     drawControlHandles() {
-        this.#pathElements.forEach((element) => element.drawControlHandles())
+        this.#pathElements.forEach((element) => element.drawControlHandles(this.selected))
     }
 
     endMove() {

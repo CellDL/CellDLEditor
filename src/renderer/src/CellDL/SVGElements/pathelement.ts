@@ -158,27 +158,32 @@ export class PathElement {
         this.#validPath = valid
     }
 
-    clearControlHandles() {
+    clearControlHandles(selected: boolean) {
         // This only removes handles we know about which is why simplifyPathPoints()
         // needs to remove handles for the points it deletes
         for (let index = 1; index < this.#pathPoints.length - 1; ++index) {
-            this.#pathPoints[index].removeSvgElement()
+            if (!selected) {
+                this.#pathPoints[index]!.removeSvgElement()
+            }
         }
     }
 
-    drawControlHandles() {
+    drawControlHandles(selected: boolean) {
         for (let index = 1; index < this.#pathPoints.length - 1; ++index) {
             const pathPoint = this.#pathPoints[index]
-            const svgElement = pathPoint.createSvgElement(this.#editorFrame)
+            const svgElement = pathPoint!.createSvgElement(this.#editorFrame)
             svgElement.id = `${this.#svgParentId}-cp-${index}`
             svgElement.dataset.parentId = this.#svgParentId
             svgElement.dataset.controlIndex = `${this.id}${ID_PART_SEPARATOR}${index}`
+            if (selected) {
+                svgElement.classList.add('selected')
+            }
         }
         this.#movePoint = null
     }
 
     endMove() {
-        this.clearControlHandles()
+        this.clearControlHandles(false)
         const newPoints = this.simplifyPathPoints()
         if (newPoints) {
             this.#pathPoints = newPoints
