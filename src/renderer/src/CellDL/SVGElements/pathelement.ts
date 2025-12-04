@@ -23,11 +23,11 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import type { CellDLDiagram } from '@editor/diagram'
+import type { CellDLDiagram } from '@editor/diagram/index'
 import type { EditorFrame } from '@editor/editor/editorframe'
 import { Point, type PointLike } from '@renderer/common/points'
 import { svgPathElement } from '@renderer/common/svgUtils'
-import { type FixedValue, type RestrictedValue } from '@editor/geometry'
+import { type FixedValue, type RestrictedValue } from '@editor/geometry/index'
 import { ControlPoint } from '@editor/geometry/controls'
 import type { FoundPoint } from '@editor/geometry/pathutils'
 
@@ -190,8 +190,8 @@ export class PathElement {
     isMoveable(index: number): boolean {
         if (index > 0 && index < this.#pathPoints.length - 1) {
             const pathPoint = this.#pathPoints[index]
-            if (!pathPoint.fixed) {
-                this.#movePoint = pathPoint
+            if (!pathPoint!.fixed) {
+                this.#movePoint = pathPoint!
                 this.#moveIndex = index
                 return true
             }
@@ -214,7 +214,7 @@ export class PathElement {
 
     protected pathFromPathPoints(): NormalArray {
         const normalArray = this.pathPoints.map((p) => ['L', p.x, p.y])
-        normalArray[0][0] = 'M'
+        normalArray[0]![0] = 'M'
         return normalArray as NormalArray
     }
 
@@ -233,11 +233,10 @@ export class PathElement {
 
     splitPath(splitPoint: FoundPoint, interfaceElement: BoundedElement): SVGPathElement {
         const point = splitPoint.point
-        // @ts-expect-error: this.#pathArray has required element at position 0
         const headArray: NormalArray = this.#pathArray.slice(0, splitPoint.segment! + 1)
         headArray.push(['L', point.x, point.y])
 
-        const tailPoints = this.#pathArray.slice(splitPoint.segment! + 1).map((p) => {
+        const tailPoints = this.#pathArray.slice(splitPoint.segment! + 1).map((p: number[]) => {
             return { x: p[1]!, y: p[2]! }
         })
         tailPoints.splice(0, 0, point)

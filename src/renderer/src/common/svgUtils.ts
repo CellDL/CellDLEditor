@@ -182,8 +182,8 @@ function latexToSvgRect(latex: string, suffix: string,
 {
     let svgDocument = latexAsSvgDocument(latex)
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
-    const svgWidth = lengthToPixels(svgElement.getAttribute('width'))
-    const svgHeight = lengthToPixels(svgElement.getAttribute('height'))
+    const svgWidth = lengthToPixels(svgElement.getAttribute('width')) || 0
+    const svgHeight = lengthToPixels(svgElement.getAttribute('height')) || 0
     let gradient: string[] = []
     if (svgWidth && svgHeight) {
         let viewBox = getViewbox(svgElement)
