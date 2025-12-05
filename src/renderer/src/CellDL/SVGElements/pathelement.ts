@@ -184,8 +184,8 @@ export class PathElement {
         this.#movePoint = null
     }
 
-    endMove() {
-        this.clearControlHandles(false)
+    endMove(selected: boolean=false) {
+        this.clearControlHandles(selected)
         const newPoints = this.simplifyPathPoints()
         if (newPoints) {
             this.#pathPoints = newPoints

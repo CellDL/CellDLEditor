@@ -137,6 +137,7 @@ export class CellDLEditor {
     #pointerMoved: boolean = false
     #pointerPosition: DOMPoint | null = null
     #moving: boolean = false
+    #moved: boolean = false
 
     #editorState: EDITOR_STATE = DEFAULT_EDITOR_STATE
     #activeObject: CellDLObject | null = null
@@ -750,6 +751,7 @@ export class CellDLEditor {
             // EDITOR_STATE.Selecting or EDITOR_STATE.AddComponent
             this.#activeObject.startMove(svgPoint)
             this.#moving = true
+            this.#moved = false
         } else if (this.#editorState === EDITOR_STATE.Selecting) {
             if (this.#selectionBox) {
                 this.#selectionBox.pointerEvent(event, svgPoint)
@@ -776,6 +778,7 @@ export class CellDLEditor {
             }
         } else if (this.#activeObject && this.#moving) {
             // EDITOR_STATE.Selecting or EDITOR_STATE.AddComponent
+            this.#moved = true
             this.#activeObject!.move(svgPoint)
             this.#celldlDiagram!.objectMoved(this.#activeObject!)
             if (this.#selectionBox) {
@@ -813,14 +816,13 @@ export class CellDLEditor {
 
         if (this.#editorState !== EDITOR_STATE.DrawPath) {
             if (this.#activeObject && this.#moving) {
-                this.#activeObject!.endMove()
                 this.#moving = false
-                if (currentObject !== this.#activeObject) {
-                    this.#activeObject!.finaliseMove()
-                    if (this.#activeObject === this.#selectedObject) {
-                        this.#unsetSelectedObject()
+                if (this.#moved) {
+                    this.#activeObject!.endMove()
+                    if (currentObject !== this.#activeObject) {
+                        this.#activeObject!.finaliseMove()
+                        this.#unsetActiveObject()
                     }
-                    this.#unsetActiveObject()
                 }
             } else if (this.#editorState === EDITOR_STATE.Selecting) {
                 if (this.#selectionBox && !this.#selectionBox.pointerEvent(event, domPoint)) {
@@ -859,8 +861,13 @@ export class CellDLEditor {
     }
 
     #keyDownEvent(event: KeyboardEvent) {
-        if (this.#haveFocus && event.key === 'Backspace') {
-            this.#deleteSelectedObjects()
+        if (event.key === 'Backspace') {
+            if (this.#haveFocus) {
+                this.#deleteSelectedObjects()
+            } else if (event.target === document.body) {
+                // Prevent the default browser action (navigating back)
+                event.preventDefault()
+            }
         } else if (this.#editorState === EDITOR_STATE.DrawPath && event.key === 'Escape') {
             if (this.#pathMaker) {
                 // Remove any partial path

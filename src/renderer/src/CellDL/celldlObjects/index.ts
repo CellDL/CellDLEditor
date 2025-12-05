@@ -378,6 +378,22 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
         this.#connections.delete(connection.id)
     }
 
+    startMove(svgPoint: PointLike) {
+        super.startMove(svgPoint)
+        // Remove control handles from selected connections
+        this.#connections.forEach(connection => {
+            connection.clearSelectedHandles()
+        })
+    }
+
+    endMove() {
+        super.endMove()
+        // Add control handles to selected connections
+        this.#connections.forEach(connection => {
+            connection.drawSelectedHandles()
+        })
+    }
+
     redraw() {
         super.redraw()
         // Redraw connections that depend on our position
@@ -464,6 +480,7 @@ export class CellDLConnection extends CellDLObject {
     static celldlType = CELLDL('Connection')
 
     #connectedObjects: CellDLConnectedObject[] = []
+    #svgConnection: SvgConnection|null = null
 
     constructor(
         uri: NamedNode,
@@ -517,7 +534,19 @@ export class CellDLConnection extends CellDLObject {
     }
 
     assignSvgElement(svgElement: SVGGraphicsElement) {
-        new SvgConnection(this, svgElement, this.options.style as ConnectionStyle)
+        this.#svgConnection = new SvgConnection(this, svgElement, this.options.style as ConnectionStyle)
+    }
+
+    clearSelectedHandles() {
+        if (this.#svgConnection) {
+            this.#svgConnection.clearSelectedHandles()
+        }
+    }
+
+    drawSelectedHandles() {
+        if (this.#svgConnection) {
+            this.#svgConnection.drawSelectedHandles()
+        }
     }
 }
 
