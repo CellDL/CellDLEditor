@@ -110,7 +110,7 @@ function selectChange(event: ISelectChangeEvent) {
 }
 
 function inputTextChange(newValueString: string) {
-    if (scalarType.value && newValueString === '') {
+    if (scalarType && newValueString === '') {
         newValueString = String(props.minimumValue)
     }
 
@@ -122,7 +122,7 @@ function inputTextChange(newValueString: string) {
         newValueString = String(props.maximumValue)
     }
 
-    const newValue = scalarType.value ? Number(newValueString) : newValueString
+    const newValue = scalarType ? Number(newValueString) : newValueString
 
     if (newValue !== oldValue) {
         emitChange(newValue)
