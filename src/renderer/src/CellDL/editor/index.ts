@@ -395,25 +395,25 @@ export class CellDLEditor {
         }
     }
 
-    #panelEvent(event: Event) {
+    async #panelEvent(event: Event) {
         const detail = (<CustomEvent>event).detail
         if (detail.source === this.#openPanelId) {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
                 const values = detail.value
                 if (values.oldValue != values.newValue) {
-                    this.#propertiesPanel.updateObjectProperties(this.#selectedObject, detail.itemId, detail.value,
-                                                                 this.#celldlDiagram!.rdfStore)
+                    await this.#propertiesPanel.updateObjectProperties(this.#selectedObject, detail.itemId, detail.value,
+                                                                       this.#celldlDiagram!.rdfStore)
                     notifyChanges()
                 }
             }
         }
     }
 
-    #styleEvent(event: Event) {
+    async #styleEvent(event: Event) {
         const detail = (<CustomEvent>event).detail
         if (detail.source === this.#openPanelId) {
             if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
-                this.#propertiesPanel.updateObjectStyling(this.#selectedObject, detail.object, detail.styling)
+                await this.#propertiesPanel.updateObjectStyling(this.#selectedObject, detail.object, detail.styling)
                 notifyChanges()
             }
         }

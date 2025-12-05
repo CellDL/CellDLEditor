@@ -569,9 +569,9 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
-                              componentProperties: PropertyGroup[], rdfStore: RdfStore) {
-        this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
+    async updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                                    componentProperties: PropertyGroup[], rdfStore: RdfStore) {
+        await this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
 
         const template = (<PluginData>celldlObject.pluginData(this.id)).template
         if (template.elementTemplate) {
@@ -592,13 +592,13 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
+    async updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
         if (objectType === 'node' && 'fillColours' in styling) {
             const fillColours = styling.fillColours as string[] || []
             if (fillColours.toString() !== pluginData.fillColours!.toString()) {
                 pluginData.fillColours = [...fillColours]
-                this.#updateSvgElement(celldlObject)
+                await this.#updateSvgElement(celldlObject)
             }
         } else if (objectType === 'path' && 'pathStyle' in styling) {
             setSvgPathStyle(celldlObject.celldlSvgElement!.svgElement, styling.pathStyle as IPathStyle)
@@ -607,7 +607,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    #updateElementProperties(value: ValueChange, itemId: string,
+    async #updateElementProperties(value: ValueChange, itemId: string,
                              celldlObject: CellDLObject, rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
@@ -627,7 +627,7 @@ export class BondgraphPlugin implements PluginInterface {
                     if (itemId === BG_INPUT.ElementLocation) {
                         pluginData.location = value.newValue
                     }
-                    this.#updateSvgElement(celldlObject)
+                    await this.#updateSvgElement(celldlObject)
                 } else if (itemId === BG_INPUT.ElementValue) {
                     this.#updateElementValue(value, celldlObject, rdfStore)
                 }
@@ -707,7 +707,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    #updateSvgElement(celldlObject: CellDLObject) {
+    async #updateSvgElement(celldlObject: CellDLObject) {
         // Update and redraw the component's SVG element
 
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
@@ -715,7 +715,7 @@ export class BondgraphPlugin implements PluginInterface {
                                  pluginData.species, pluginData.location,
                                  pluginData.fillColours)
         const celldlSvgElement = celldlObject.celldlSvgElement!
-        celldlSvgElement.updateSvgElement(svgData)
+        await celldlSvgElement.updateSvgElement(svgData)
         celldlSvgElement.redraw()
     }
 

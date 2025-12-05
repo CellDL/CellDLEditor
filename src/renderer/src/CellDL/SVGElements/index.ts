@@ -18,10 +18,12 @@ limitations under the License.
 
 ******************************************************************************/
 
+import * as vue from 'vue'
+
 import { CONNECTION_SPLAY_PADDING, MAX_CONNECTION_SPLAY_PADDING } from '@renderer/common/styling'
 import { CONNECTION_WIDTH, SELECTION_STROKE_WIDTH } from '@renderer/common/styling'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
-import { svgCircle } from '@renderer/common/svgUtils'
+import { base64Svg, svgCircle } from '@renderer/common/svgUtils'
 import type { UndoMovePosition } from '@editor/editor/undoredo'
 
 import { CELLDL_CLASS, type CellDLObject } from '@editor/celldlObjects/index'
@@ -608,18 +610,13 @@ export class CellDLSVGElement {
     /**
      * Update the SVG of the element with new SVG.
      *
-     * Called when an element's properties have been edited.
+     * Called when an element's properties have been changed.
      */
     updateSvgElement(svg: string) {
-        const elementId = this.svgElement.id
-        this.svgElement.innerHTML = svg
-        setInternalIds(this.svgElement, elementId)
-        this.#updatedSvgElement()
-    }
-
-    setImageData(imageData: string) {
-        this.svgElement.innerHTML = `<image href="${imageData}"/>`
-        this.#updatedSvgElement()
+        this.svgElement.innerHTML = `<image href="${base64Svg(svg)}"/>`
+        vue.nextTick().then(() => {
+            this.#updatedSvgElement()
+        })
     }
 }
 

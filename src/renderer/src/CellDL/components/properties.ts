@@ -179,13 +179,13 @@ export class ObjectPropertiesPanel {
 
     //==================================
 
-    updateObjectProperties(celldlObject: CellDLObject|null,
-                           itemId: string, value: ValueChange, rdfStore: RdfStore) {
+    async updateObjectProperties(celldlObject: CellDLObject|null,
+                                 itemId: string, value: ValueChange, rdfStore: RdfStore) {
         if (celldlObject) {
             // Save plugin specific component properties
 
-            pluginComponents.updateComponentProperties(celldlObject, itemId, value,
-                                                       this.#componentProperties.value, rdfStore)
+            await pluginComponents.updateComponentProperties(celldlObject, itemId, value,
+                                                             this.#componentProperties.value, rdfStore)
 
             // Save component properties in the METADATA_GROUP
 
@@ -202,11 +202,11 @@ export class ObjectPropertiesPanel {
 
     //==================================
 
-     updateObjectStyling(celldlObject: CellDLObject|null, objectType: string, styling: StyleObject) {
+    async updateObjectStyling(celldlObject: CellDLObject|null, objectType: string, styling: StyleObject) {
         if (celldlObject) {
-            pluginComponents.updateComponentStyling(celldlObject, objectType, styling)
+            await pluginComponents.updateComponentStyling(celldlObject, objectType, styling)
         }
-     }
+    }
 }
 
 //==============================================================================
