@@ -167,7 +167,7 @@ export class ObjectPropertiesPanel {
                 // Update component properties in the METADATA_GROUP
 
                 const group = this.#componentProperties.value[this.#metadataIndex]
-                group.items.forEach((itemTemplate: ItemDetails) => {
+                METADATA_GROUP.items.forEach((itemTemplate: ItemDetails) => {
                     const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
                     if (item) {
                         group.items.push(item)
