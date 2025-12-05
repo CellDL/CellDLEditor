@@ -568,7 +568,6 @@ export class CellDLEditor {
         }
     }
 
-    // Should we be calling event.preventDefault() ????
     #objectClickEvent(event: Event) {
         const detail = (<CustomEvent>event).detail
         const clickedObject: CellDLObject = detail.clickedObject

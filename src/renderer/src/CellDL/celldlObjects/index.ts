@@ -397,7 +397,9 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     redraw() {
         super.redraw()
         // Redraw connections that depend on our position
-        this.#connections.forEach((cn) => cn.redraw())
+        this.#connections.forEach(connection => {
+            connection.redraw()
+        })
     }
 }
 

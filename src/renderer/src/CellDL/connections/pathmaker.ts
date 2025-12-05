@@ -193,7 +193,7 @@ export class PathMaker {
             return null
         } else if (this.#currentSvgPath === null) {
             return null
-        } else if (celldlObject.id == this.#nodes[0].id) {
+        } else if (celldlObject.id == this.#nodes[0]!.id) {
             if (this.#nodes.length < 2) {
                 alert.warn('Path cannot directly loop to start object')
                 return null
