@@ -31,6 +31,7 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
+import { type StyleObject } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'
 
 import { CellDLEditor } from '@editor/editor/index'
@@ -45,7 +46,6 @@ import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue
 import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
-import { type IFillStyle } from '@renderer/components/panels/FillStyle.vue'
 
 //==============================================================================
 
