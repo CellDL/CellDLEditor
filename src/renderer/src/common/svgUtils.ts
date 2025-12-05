@@ -22,7 +22,8 @@ import { Buffer } from 'buffer'
 
 //==============================================================================
 
-import { type PointLike } from '@renderer/common//points'
+import { type PointLike } from '@renderer/common/points'
+import { CONNECTION_COLOUR, CONNECTION_WIDTH, CONNECTION_DASH } from '@renderer/common/styling'
 import { type StringProperties } from '@renderer/common/types'
 import { latexAsSvgDocument } from '@renderer/mathjax/index'
 
@@ -33,6 +34,14 @@ import { round } from '@editor/utils'
 //==============================================================================
 
 export const SVG_URI = 'http://www.w3.org/2000/svg'
+
+//==============================================================================
+
+export interface IPathStyle {
+    colour: string   // defaut is CONNECTION_COLOUR (with opacity of 0.7)
+    width: number    // default is CONNECTION_WIDTH (but +2 when selected)
+    dashed: boolean  // set `dashed` class`
+}
 
 //==============================================================================
 
@@ -352,6 +361,26 @@ export function getSvgFillStyle(svgText: string): string[] {
         return ['yellow']
     }
     return []
+}
+
+//==============================================================================
+
+export function getSvgPathStyle(svgElement: SVGGraphicsElement): IPathStyle {
+    return {
+        colour: svgElement.getAttribute('stroke') || CONNECTION_COLOUR,
+        width: lengthToPixels(svgElement.getAttribute('stroke-width')) || CONNECTION_WIDTH,
+        dashed: svgElement.hasAttribute('stroke-dasharray')
+    }
+}
+
+export function setSvgPathStyle(svgElement: SVGGraphicsElement, pathStyle: IPathStyle) {
+    svgElement.setAttribute('stroke', pathStyle.colour)
+    svgElement.setAttribute('stroke-width', String(pathStyle.width))
+    if (pathStyle.dashed) {
+        svgElement.setAttribute('stroke-dasharray', String(CONNECTION_DASH*pathStyle.width))
+    } else {
+        svgElement.removeAttribute('stroke-dasharray')
+    }
 }
 
 //==============================================================================

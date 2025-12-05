@@ -9,42 +9,52 @@
             )
         .spacer
         FloatLabel(variant="on")
-            InputText(
+            InputText(v-model.number="width")
+            Slider(
                 v-model="width"
-                v-keyfilter.num
-                v-on:focusout="emitChange"
-                v-on:keypress="emitChange"
-                class="w-full"
-                size="small"
+                :min="minWidth"
+                :max="maxWidth"
+                :step="widthStep"
+                @change="emitChange"
             )
-            label {{ nameUnits }}
+            label Width (px)
+        .spacer
         .flexPrompt
-            label(for="gradient") Width:
+            label(for="dashed") Dashed:
             Checkbox#gradientCheckbox(
                 v-model="dashed"
                 binary
-            )
-        .flexPrompt
-            label(for="gradient") Dashed:
-            Checkbox#gradientCheckbox(
-                v-model="dashed"
-                binary
+                @change="emitChange"
             )
 </template>
 
 <script setup lang="ts">
 import * as vue from 'vue'
+import Slider from 'primevue/slider'
 import { TinyColor } from '@ctrl/tinycolor'
 
-import { type IPathStyle } from '@editor/plugins/bondgraph/index'
+import { type IPathStyle } from '@renderer/common/svgUtils'
 
 const props = defineProps<{
     pathStyle: IPathStyle
 }>()
 
 const colour = vue.ref(props.pathStyle.colour)
-const dashed = vue.ref(props.dashed.colour)
-const width = vue.ref(props.width.colour)
+const dashed = vue.ref(props.pathStyle.dashed)
+const width = vue.ref(props.pathStyle.width)
+
+const minWidth = vue.ref<number>(0.5)
+const maxWidth = vue.ref<number>(10)
+const widthStep = vue.ref<number>(0.5)
+
+vue.watch(
+    () => props.pathStyle,
+    () => {
+        colour.value = props.pathStyle.colour
+        dashed.value = props.pathStyle.dashed
+        width.value = props.pathStyle.width
+    }
+)
 
 const pathColour = vue.computed<string>(() => {
     return new TinyColor(colour.value).toHexString()

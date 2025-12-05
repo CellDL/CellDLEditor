@@ -26,7 +26,7 @@ import { ucum } from '@atomic-ehr/ucum'
 import { arrowMarkerDefinition } from '@renderer/common/styling'
 import { type IUiJsonDiscreteInput } from '@renderer/libopencor/locUIJsonApi'
 
-import { getSvgFillStyle } from '@renderer/common/svgUtils'
+import { getSvgFillStyle, getSvgPathStyle, setSvgPathStyle, type IPathStyle } from '@renderer/common/svgUtils'
 
 import {
     CellDLComponent,
@@ -85,11 +85,6 @@ export interface INodeStyle {
     direction?: string
 }
 
-export interface IPathStyle {
-    colour: string
-    width: number
-    dashed: boolean
-}
 //==============================================================================
 
 // Temp workaround until `import.meta.glob` is correctly configured...
@@ -419,27 +414,35 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
-        const template = this.#getObjectElementTemplate(celldlObject, rdfStore)
-        if (!template) {
-            return
-        }
-        celldlObject.setPluginData(this.id, { template })
-
-        componentProperties.forEach(group => {
-            if (group.groupId === BG_GROUP.ElementGroup) {
-                this.#getElementProperties(celldlObject, group, rdfStore)
-            } else if (template.elementTemplate) {
-                if (group.groupId === BG_GROUP.ParameterGroup) {
-                    this.#setVariableTemplates(template.elementTemplate.parameters, group)
-                    this.#getVariableProperties(celldlObject, group, rdfStore)
-                } else if (group.groupId === BG_GROUP.StateGroup) {
-                    this.#setVariableTemplates(template.elementTemplate.states, group)
-                    this.#getVariableProperties(celldlObject, group, rdfStore)
+        if (celldlObject.isConnection) {
+            componentProperties.forEach(group => {
+                if (group.groupId === BG_GROUP.StylingGroup) {
+                    this.#getElementStyling(celldlObject, group, true)
                 }
-            } else if (group.groupId === BG_GROUP.StylingGroup) {
-                this.#getElementStyling(celldlObject, group)
+            })
+        } else {
+            const template = this.#getObjectElementTemplate(celldlObject, rdfStore)
+            if (!template) {
+                return
             }
-        })
+            celldlObject.setPluginData(this.id, { template })
+
+            componentProperties.forEach(group => {
+                if (group.groupId === BG_GROUP.ElementGroup) {
+                    this.#getElementProperties(celldlObject, group, rdfStore)
+                } else if (template.elementTemplate) {
+                    if (group.groupId === BG_GROUP.ParameterGroup) {
+                        this.#setVariableTemplates(template.elementTemplate.parameters, group)
+                        this.#getVariableProperties(celldlObject, group, rdfStore)
+                    } else if (group.groupId === BG_GROUP.StateGroup) {
+                        this.#setVariableTemplates(template.elementTemplate.states, group)
+                        this.#getVariableProperties(celldlObject, group, rdfStore)
+                    }
+                } else if (group.groupId === BG_GROUP.StylingGroup) {
+                    this.#getElementStyling(celldlObject, group, false)
+                }
+            })
+        }
     }
 
     #getElementProperties(celldlObject: CellDLObject,
@@ -472,13 +475,19 @@ export class BondgraphPlugin implements PluginInterface {
         })
     }
 
-    #getElementStyling(celldlObject: CellDLObject, group: PropertyGroup) {
-        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        if (!('fillColours' in pluginData)) {
-            pluginData.fillColours = getSvgFillStyle(celldlObject.celldlSvgElement!.svgElement.outerHTML)
-        }
-        group.styling = {
-            fillColours: pluginData.fillColours || []
+    #getElementStyling(celldlObject: CellDLObject, group: PropertyGroup, connection: boolean) {
+        if (connection) {
+            group.styling = {
+                pathStyle: getSvgPathStyle(celldlObject.celldlSvgElement!.svgElement)
+            }
+        } else {
+            const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+            if (!('fillColours' in pluginData)) {
+                pluginData.fillColours = getSvgFillStyle(celldlObject.celldlSvgElement!.svgElement.outerHTML)
+            }
+            group.styling = {
+                fillColours: pluginData.fillColours || []
+            }
         }
     }
 
@@ -592,7 +601,7 @@ export class BondgraphPlugin implements PluginInterface {
                 this.#updateSvgElement(celldlObject)
             }
         } else if (objectType === 'path' && 'pathStyle' in styling) {
-            // WIP
+            setSvgPathStyle(celldlObject.celldlSvgElement!.svgElement, styling.pathStyle as IPathStyle)
         }
     }
 

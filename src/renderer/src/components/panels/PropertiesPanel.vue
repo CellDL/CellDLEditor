@@ -58,7 +58,8 @@ import InputWidget from '../widgets/InputWidget.vue'
 
 import FillStyle from './FillStyle.vue'
 import PathStyle from './PathStyle.vue'
-import { type INodeStyle, type IPathStyle } from '@editor/plugins/bondgraph/index'
+import { type INodeStyle } from '@editor/plugins/bondgraph/index'
+import { type IPathStyle } from '@renderer/common/svgUtils'
 
 const props = defineProps<{
     toolId: string
@@ -89,7 +90,10 @@ const hasContent = vue.computed<boolean[]>(() => {
           && 'fillColours' in group.styling
           && group.styling.fillColours
           && Array.isArray(group.styling.fillColours)
-          && group.styling.fillColours.length))
+          && group.styling.fillColours.length)
+         || (group.styling
+          && 'pathStyle' in group.styling)
+        )
     })
 })
 

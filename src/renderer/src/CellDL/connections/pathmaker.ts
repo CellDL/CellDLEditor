@@ -20,6 +20,7 @@ limitations under the License.
 
 import { SVG_URI } from '@renderer/common/svgUtils'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { CONNECTION_COLOUR, CONNECTION_WIDTH } from '@renderer/common/styling'
 import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
 import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
