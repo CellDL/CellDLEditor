@@ -84,7 +84,7 @@ export class SvgConnection extends CellDLSVGElement {
                     // @ts-expect-error: `n < svgPaths.length` and so `svgPath` is defined
                     style === ConnectionStyle.Rectilinear || svgPath.classList.contains('rectilinear')
                         ? new RectilinearPath(
-                              connection.celldlDiagram!,
+                              connection,
                               pathId,
                               // @ts-expect-error
                               svgPath,
@@ -92,7 +92,7 @@ export class SvgConnection extends CellDLSVGElement {
                               connectorElements[n + 1]
                           )
                         : new LinearPath(
-                              connection.celldlDiagram!,
+                              connection,
                               pathId,
                               // @ts-expect-error
                               svgPath,

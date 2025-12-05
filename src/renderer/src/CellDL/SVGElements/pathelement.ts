@@ -23,7 +23,7 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import type { CellDLDiagram } from '@editor/diagram/index'
+import type { CellDLConnection } from '@editor/celldlObjects/index'
 import type { EditorFrame } from '@editor/editor/editorframe'
 import { Point, type PointLike } from '@renderer/common/points'
 import { svgPathElement } from '@renderer/common/svgUtils'
@@ -83,6 +83,7 @@ export class FixedPathPoint extends PathPoint {
 //==============================================================================
 
 export class PathElement {
+    #connection: CellDLConnection
     #pathPoints: PathPoint[] = []
     #editorFrame: EditorFrame
     #firstElement: BoundedElement
@@ -95,13 +96,14 @@ export class PathElement {
     #validPath: boolean = false
 
     constructor(
-        celldlDiagram: CellDLDiagram,
+        connection: CellDLConnection,
         readonly id: string,
         svgElement: SVGPathElement,
         firstElement: BoundedElement,
         lastElement: BoundedElement
     ) {
-        this.#editorFrame = celldlDiagram.editorFrame!
+        this.#connection = connection
+        this.#editorFrame = connection.celldlDiagram.editorFrame!
         this.#svgElement = svgElement
         this.#svgParentId = id.split(ID_PART_SEPARATOR).slice(0, -1).join(ID_PART_SEPARATOR)
         this.#firstElement = firstElement
@@ -171,7 +173,7 @@ export class PathElement {
     drawControlHandles(selected: boolean) {
         for (let index = 1; index < this.#pathPoints.length - 1; ++index) {
             const pathPoint = this.#pathPoints[index]
-            const svgElement = pathPoint!.createSvgElement(this.#editorFrame)
+            const svgElement = pathPoint!.createSvgElement(this.#editorFrame, '', this.#connection)
             svgElement.id = `${this.#svgParentId}-cp-${index}`
             svgElement.dataset.parentId = this.#svgParentId
             svgElement.dataset.controlIndex = `${this.id}${ID_PART_SEPARATOR}${index}`

@@ -180,6 +180,9 @@ export class CellDLEditor {
         // Add handler for events from panels
         document.addEventListener('panel-event', this.#panelEvent.bind(this))
         document.addEventListener('style-event', this.#styleEvent.bind(this))
+
+        // Handle click events on control points
+        document.addEventListener('select-object', this.#objectClickEvent.bind(this))
     }
 
     mount(svgContainer: HTMLElement) {
@@ -565,6 +568,11 @@ export class CellDLEditor {
     }
 
     // Should we be calling event.preventDefault() ????
+    #objectClickEvent(event: Event) {
+        const detail = (<CustomEvent>event).detail
+        const clickedObject: CellDLObject = detail.clickedObject
+        this.#selectionClickEvent(detail.event, clickedObject.svgElement!, clickedObject)
+    }
 
     #pointerClickEvent(event: MouseEvent) {
         const element = event.target as SVGGraphicsElement
@@ -583,6 +591,10 @@ export class CellDLEditor {
             }
             return
         }
+        this.#selectionClickEvent(event, element, clickedObject)
+    }
+
+    #selectionClickEvent(event: MouseEvent, element: SVGGraphicsElement, clickedObject: CellDLObject|null) {
         let deselected = false
         if (this.#selectedObject !== null) {
             if (this.#editorFrame!.contains(element)) {

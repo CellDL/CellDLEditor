@@ -18,6 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
+import { CellDLConnection, CellDLObject } from '@editor/celldlObjects/index'
 import type { EditorFrame } from '@editor/editor/editorframe'
 import { editGuides } from '@editor/editor/editguides'
 import type { BoundedElement } from '@editor/SVGElements/boundedelement'
@@ -45,15 +46,23 @@ const GRIPPER_OFFSETS = {
 //==============================================================================
 
 export class ControlPoint extends RestrictedPoint {
+    #celldlObject: CellDLObject | null = null
+    #clickHandler: (e: MouseEvent) => void
     #style: string = ''
     #svgElement: SVGGraphicsElement | null = null
 
     constructor(
         xValue: RestrictedValue,
         yValue: RestrictedValue,
-        readonly component: BoundedElement | null = null
+        celldlObject: CellDLObject | null = null
     ) {
         super(xValue, yValue)
+        this.#celldlObject = celldlObject
+        this.#clickHandler = this.#pointerClickEvent.bind(this)
+    }
+
+    get celldlObject() {
+        return this.#celldlObject
     }
 
     get fixed() {
@@ -61,7 +70,7 @@ export class ControlPoint extends RestrictedPoint {
     }
 
     get isConduit() {
-        return this.component !== null && this.component.celldlObject.isConduit
+        return this.celldlObject !== null && this.celldlObject.isConduit
     }
 
     static fromPoint(point: PointLike): ControlPoint {
@@ -77,10 +86,11 @@ export class ControlPoint extends RestrictedPoint {
     }
 
     copy(): ControlPoint {
-        return new ControlPoint(this.xValue, this.yValue, this.component)
+        return new ControlPoint(this.xValue, this.yValue, this.celldlObject)
     }
 
-    createSvgElement(editorFrame: EditorFrame, style: string = ''): SVGGraphicsElement {
+    createSvgElement(editorFrame: EditorFrame, style: string = '', connection: CellDLConnection|null=null): SVGGraphicsElement {
+        this.#celldlObject = connection
         let svg = ''
         if (style in GRIPPER_OFFSETS) {
             const offsets = GRIPPER_OFFSETS[style as GRIPPER_STYLES]
@@ -96,11 +106,27 @@ export class ControlPoint extends RestrictedPoint {
         this.#style = style
         this.#svgElement = editorFrame.addElementAsString(svg) as SVGGraphicsElement
         this.#svgElement.classList.add('control-point', 'active')
+        this.#svgElement.addEventListener('click', this.#clickHandler)
         return this.#svgElement
+    }
+
+    #pointerClickEvent(event: MouseEvent) {
+        if (this.#celldlObject) {
+            event.stopPropagation()
+            document.dispatchEvent(
+                new CustomEvent('select-object', {
+                    detail: {
+                        event: event,
+                        clickedObject: this.#celldlObject
+                    }
+                })
+            )
+        }
     }
 
     removeSvgElement() {
         if (this.#svgElement) {
+            this.#svgElement.removeEventListener('click', this.#clickHandler)
             this.#svgElement.remove()
             this.#svgElement = null
         }
@@ -128,7 +154,7 @@ export class ControlPoint extends RestrictedPoint {
     }
 
     toString(): string {
-        return `CP${this.component ? ` ${this.component.id}` : ''}: (${this.xValue.toString()}, ${this.yValue.toString()})`
+        return `CP${this.celldlObject ? ` ${this.celldlObject.id}` : ''}: (${this.xValue.toString()}, ${this.yValue.toString()})`
     }
 }
 
@@ -138,17 +164,17 @@ export class FixedControlPoint extends ControlPoint {
     constructor(
         xValue: FixedValue,
         yValue: FixedValue,
-        readonly component: BoundedElement | null = null
+        readonly celldlObject: CellDLObject | null = null
     ) {
-        super(xValue, yValue, component)
+        super(xValue, yValue, celldlObject)
     }
 
     copy(): FixedControlPoint {
-        return new FixedControlPoint(this.xValue, this.yValue, this.component)
+        return new FixedControlPoint(this.xValue, this.yValue, this.celldlObject)
     }
 
     toString(): string {
-        return `FP${this.component ? ` ${this.component.id}` : ''}: (${this.xValue.toString()}, ${this.yValue.toString()})`
+        return `FP${this.celldlObject ? ` ${this.celldlObject.id}` : ''}: (${this.xValue.toString()}, ${this.yValue.toString()})`
     }
 }
 
