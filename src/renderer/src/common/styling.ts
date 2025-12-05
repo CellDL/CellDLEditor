@@ -22,7 +22,7 @@ import { EM_SIZE } from '@editor/geometry/units'
 
 //==============================================================================
 
-export const CONNECTION_ARROW_SIZE = [8, 8] // [W, H] pixels
+export const CONNECTION_ARROW_SIZE = [4, 4] // [W, H] pixels
 export const CONNECTION_SPLAY_PADDING = 16 // If <= 1.0 then fraction of elements width and height else pixels
 export const MAX_CONNECTION_SPLAY_PADDING = 20 // pixels
 export const CONNECTION_WIDTH = 2 // pixels
@@ -38,11 +38,11 @@ export const CELLDL_BACKGROUND_CLASS = 'celldl-background'
 
 export function arrowMarkerDefinition(markerId: string, markerType: string): string {
     // see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker
-    const W = CONNECTION_WIDTH
+    const W = 1
     return `<marker id="${markerId}" viewBox="0 0 ${5.5 * W} ${5 * W}" class="${markerType}"
-        refX="${5 * W}" refY="${2.5 * W}" orient="auto-start-reverse" markerUnits="userSpaceOnUse"
+        refX="${5 * W}" refY="${2.5 * W}" orient="auto-start-reverse" markerUnits="strokeWidth"
         markerWidth="${CONNECTION_ARROW_SIZE[0]}" markerHeight="${CONNECTION_ARROW_SIZE[1]}">
-            <path fill="currentcolor" stroke="currentcolor" d="M0,0 L${5.05 * W},${2.2 * W} L${5.05 * W},${2.8 * W} L0,${5 * W} L${W},${2.5 * W} z" />
+            <path fill="context-stroke" stroke="context-stroke" d="M0,0 L${5.05 * W},${2.2 * W} L${5.05 * W},${2.8 * W} L0,${5 * W} L${W},${2.5 * W} z" />
         </marker>`
 }
 
