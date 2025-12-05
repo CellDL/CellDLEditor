@@ -526,7 +526,11 @@ export class PathMaker {
         } else if (this.#currentSvgPath === null) {
             this.#currentSvgPath = <SVGPathElement>(
                 this.#editorFrame.addElementAsString(
-                    svgPath(points, { class: `celldl-Connection bondgraph ${this.#style}` })
+                    svgPath(points, {
+                        class: `celldl-Connection bondgraph ${this.#style}`,
+                        stroke: CONNECTION_COLOUR,
+                        'stroke-width': String(CONNECTION_WIDTH)
+                    })
                 )
             )
         } else {

@@ -25,7 +25,10 @@ import { EM_SIZE } from '@editor/geometry/units'
 export const CONNECTION_ARROW_SIZE = [4, 4] // [W, H] pixels
 export const CONNECTION_SPLAY_PADDING = 16 // If <= 1.0 then fraction of elements width and height else pixels
 export const MAX_CONNECTION_SPLAY_PADDING = 20 // pixels
+
+export const CONNECTION_COLOUR = '#334155'
 export const CONNECTION_WIDTH = 2 // pixels
+export const CONNECTION_DASH = 2  // * width
 
 export const INTERFACE_PORT_RADIUS = 4 // pixels
 export const SELECTION_STROKE_WIDTH = 3 // pixels
@@ -66,8 +69,7 @@ export const CellDLStylesheet = [
     /* Conduits */
     '.celldl-Conduit{z-index:9999}',
     /* Connections */
-    `.celldl-Connection{stroke-width:${CONNECTION_WIDTH};stroke-linecap:round;stroke-linejoin:round;opacity:0.7;fill:none;stroke:currentcolor}`,
-    '.celldl-Connection.dashed{stroke-dasharray:5}',
+    `.celldl-Connection{stroke-linejoin:round;fill:none}`,
     /* Compartments */
     '.celldl-Compartment>rect.compartment{fill:#CCC;opacity:0.6;stroke:#444;rx:10px;ry:10px}',
     /* Interfaces */
