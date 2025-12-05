@@ -199,15 +199,14 @@ function panelEvent(toolId: string, itemId: string, oldValue: string, newValue: 
     )
 }
 
-function styleEvent(toolId: string, fillColours: string[]) {
+function styleEvent(toolId: string, object: string, styling: StyleObject) {
     document.dispatchEvent(
         new CustomEvent('style-event', {
             detail: {
                 type: 'value',
                 source: toolId,
-                styling: {
-                    fillColours
-                }
+                object,
+                styling
             }
         })
     )
