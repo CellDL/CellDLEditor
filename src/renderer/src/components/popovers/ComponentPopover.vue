@@ -60,6 +60,8 @@ vue.onMounted(() => {
     }
 })
 
+const emit = defineEmits(['popover-event'])
+
 function selected(e: MouseEvent) {
     const target = e.target as HTMLImageElement
     const component = idToComponent.get(target.id)
@@ -76,6 +78,8 @@ function selected(e: MouseEvent) {
             detail: getTemplateEventDetails(target.id, target, e)
         })
     )
+    // Tell the toolbar what component template has been selected
+    emit('popover-event', props.toolId, component)
 }
 
 function dragstart(e: DragEvent) {
