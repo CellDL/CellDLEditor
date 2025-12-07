@@ -24,7 +24,6 @@ import * as vue from 'vue'
 import {
     type ComponentLibrary,
     type ComponentLibraryTemplate,
-    type ComponentTemplate,
     getTemplateEventDetails
 } from '@editor/components/index'
 
