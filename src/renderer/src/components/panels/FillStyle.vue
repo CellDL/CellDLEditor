@@ -1,14 +1,15 @@
 <template lang="pug">
     .card
         .flexPrompt
-            label(for="gradient") Gradient fill:
+            label(for="gradientCheckbox") Gradient fill:
             Checkbox#gradientCheckbox(
-                v-model="gradientFill"
+                v-model="fillStyle.gradientFill"
+                @change="styleChange"
                 binary
             )
         Divider
         .flexPrompt
-            label(for="start") {{ startPrompt }}:
+            label(for="startInput") {{ startPrompt }}:
             input.colour#startInput(
                 type="color"
                 :value="startColour"
@@ -19,23 +20,23 @@
             variant="text"
             aria-label="Swap colours"
             size="small"
-            :class="{ hidden: !gradientStyle }"
+            :class="{ hidden: !fillStyle.gradientFill }"
             @click="swapColours"
         )
-        .flexPrompt#stopColour(:class="{ hidden: !gradientStyle }")
-            label(for="stop") Stop colour:
+        .flexPrompt#stopColour(:class="{ hidden: !fillStyle.gradientFill }")
+            label(for="stopInput") Stop colour:
             input.colour#stopInput(
                 type="color"
                 :value="stopColour"
                 @input="colourChange"
             )
         .spacer
-        .flexPrompt#stopColour(:class="{ hidden: !gradientStyle }")
+        .flexPrompt#stopColour(:class="{ hidden: !fillStyle.gradientFill }")
             label Direction:
             #directions
                 .flex.items-right.gap-2
                     label(for="horizontal") H
-                    RadioButton(
+                    RadioButton#horizontal(
                         v-model="gradientDirn"
                         inputId="horizontal"
                         name="dirn"
@@ -44,7 +45,7 @@
                     )
                 .flex.items-right.gap-2
                     label(for="vertical") V
-                    RadioButton(
+                    RadioButton#vertical(
                         v-model="gradientDirn"
                         inputId="vertical"
                         name="dirn"
@@ -63,42 +64,36 @@ const props = defineProps<{
     fillStyle: INodeStyle
 }>()
 
-const startPrompt = vue.ref(props.fillStyle.gradient ? 'Start colour' : 'Fill colour')
+const startPrompt = vue.ref(props.fillStyle.gradientFill ? 'Start colour' : 'Fill colour')
 
-const gradientFill = vue.computed<boolean>({
-    get() {
-        return props.fillStyle.gradient
-    },
-    set(gradient: boolean) {
-        if (gradient) {
-            startPrompt.value = 'Start colour'
-            gradientStyle.value = true
-        } else {
-            startPrompt.value = 'Fill colour'
-            gradientStyle.value = false
-        }
-    emitChange()
+function styleChange(e: Event) {
+    const target = e.target as HTMLInputElement
+    if (target.checked) {
+        startPrompt.value = 'Start colour'
+        props.fillStyle.gradientFill = true
+    } else {
+        startPrompt.value = 'Fill colour'
+        props.fillStyle.gradientFill = false
     }
-})
-
-const gradientStyle = vue.ref<boolean>(props.fillStyle.gradient)
+    emitChange()
+}
 
 vue.watch(
     () => props.fillStyle,
     () => {
-        startPrompt.value = props.fillStyle.gradient ? 'Start colour' : 'Fill colour'
-        gradientStyle.value = props.fillStyle.gradient
-        colours.value = {
-            start: props.fillStyle.colours[0],
-            stop: props.fillStyle.colours[1] ?? props.fillStyle.colours[0]
-        }
+        startPrompt.value = props.fillStyle.gradientFill ? 'Start colour' : 'Fill colour'
         gradientDirn.value = props.fillStyle.direction ?? 'H'
     }
 )
 
-const colours = vue.ref({
-    start: props.fillStyle.colours[0],
-    stop: props.fillStyle.colours[1] ?? props.fillStyle.colours[0]
+const colours = vue.computed<{
+    start: string
+    stop: string
+}>(() => {
+    return {
+        start: props.fillStyle.colours[0],
+        stop: props.fillStyle.colours[1] ?? props.fillStyle.colours[0]
+    }
 })
 
 const startColour = vue.computed<string>(() => {
@@ -106,10 +101,8 @@ const startColour = vue.computed<string>(() => {
 })
 
 const stopColour = vue.computed<string>(() => {
-    if (!colours.value.stop) {
-        colours.value.stop = colours.value.start
-    }
-    return new TinyColor(colours.value.stop).toHexString()
+    const stopColour = colours.value.stop || colours.value.start
+    return new TinyColor(stopColour).toHexString()
 })
 
 const gradientDirn = vue.ref<string>(props.fillStyle.direction ?? 'H')
@@ -134,7 +127,7 @@ function swapColours(e: Event) {
 const emit = defineEmits(['change'])
 
 function emitChange() {
-    if (gradientStyle.value) {
+    if (props.fillStyle.gradientFill) {
         emit('change', {
             gradientFill: true,
             colours: [colours.value.start, colours.value.stop],
@@ -147,7 +140,6 @@ function emitChange() {
         })
     }
 }
-
 </script>
 
 <style>
