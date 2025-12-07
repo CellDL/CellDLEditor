@@ -415,6 +415,8 @@ export class BondgraphPlugin implements PluginInterface {
 
     getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         if (celldlObject.isConnection) {
+            const template = {}
+            celldlObject.setPluginData(this.id, { template })
             componentProperties.forEach(group => {
                 if (group.groupId === BG_GROUP.StylingGroup) {
                     this.#getElementStyling(celldlObject, group, true)
