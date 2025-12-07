@@ -337,8 +337,7 @@ export function base64Svg(svg: string): string {
 //==============================================================================
 
 export function getSvgImageFromBase64(svgText: string): string|undefined {
-    const re = /<image href="data:image\/svg\+xml;base64,(?<base64>.*)"><\/image>/
-    const base64 = svgText.match(re)
+    const base64 = svgText.match(/data:image\/svg\+xml;base64,(?<base64>.*)/)
     if (base64) {
         return Buffer.from(base64.groups!.base64!, 'base64').toString('utf8')
     }
@@ -347,7 +346,11 @@ export function getSvgImageFromBase64(svgText: string): string|undefined {
 //==============================================================================
 
 export function getSvgFillStyle(svgText: string): string[] {
-    const svgData = getSvgImageFromBase64(svgText)
+    const dataUrl = svgText.match(/<image href="(?<dataUrl>.*)"><\/image>/)
+    if (!dataUrl) {
+        return []
+    }
+    const svgData =  getSvgImageFromBase64(dataUrl.groups!.dataUrl!)
     if (svgData) {
         const fillStyle = svgData.match(/ data-fill-style="(?<fillStyle>[^"]*)"/)
         if (fillStyle) {
