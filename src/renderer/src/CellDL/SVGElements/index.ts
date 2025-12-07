@@ -612,11 +612,10 @@ export class CellDLSVGElement {
      *
      * Called when an element's properties have been changed.
      */
-    updateSvgElement(svg: string) {
+    async updateSvgElement(svg: string) {
         this.svgElement.innerHTML = `<image href="${base64Svg(svg)}"/>`
-        vue.nextTick().then(() => {
-            this.#updatedSvgElement()
-        })
+        await vue.nextTick()            // Wait for image to render
+        this.#updatedSvgElement()
     }
 }
 

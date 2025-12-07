@@ -165,9 +165,9 @@ export class BoundedElement extends CellDLSVGElement {
         }
     }
 
-    updateSvgElement(svg: string) {
+    async updateSvgElement(svg: string) {
         const savedCorners = this.corners.map((point) => Point.fromPoint(point))
-        super.updateSvgElement(svg)
+        await super.updateSvgElement(svg)
         this.#controlRect.setCentroidOffset(this.centroidOffset)
         this.#controlRect.setCornerPositions(
             RestrictedPoint.fromPoint(this.topLeft),
