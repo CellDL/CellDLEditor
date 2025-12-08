@@ -122,11 +122,9 @@ export class CellDLEditor {
     static instance: CellDLEditor | null = null
 
     #container: HTMLElement | null = null
-    /**
-    #statusMsg: HTMLElement
-    #statusPos: HTMLElement
+    #statusMsg: HTMLElement | null = null
+    #statusPos: HTMLElement | null = null
     #statusStyle: string = ''
-**/
 
     #celldlDiagram: CellDLDiagram | null = null
     #svgDiagram: SVGSVGElement | null = null
@@ -188,6 +186,8 @@ export class CellDLEditor {
 
     mount(svgContainer: HTMLElement) {
         this.#container = svgContainer
+        this.#statusMsg = document.getElementById('status-msg')
+        this.#statusPos = document.getElementById('status-pos')
 
         // Create a panzoom handler
         this.#panzoom = new PanZoom(this.#container)
@@ -260,14 +260,12 @@ export class CellDLEditor {
         return this.#editorFrame
     }
 
-/**
     get status(): string {
-        return this.#statusMsg.innerText || ''
+        return this.#statusMsg ? this.#statusMsg.innerText : ''
     }
     set status(text: string) {
         this.showMessage(text)
     }
-**/
 
     get windowSize(): [number, number] {
         if (this.#container) {
@@ -420,16 +418,16 @@ export class CellDLEditor {
     }
 
     showMessage(msg: string, style: string = '') {
-/**
-        this.#statusMsg.innerText = msg
-        if (this.#statusStyle !== '') {
-            this.#statusMsg.classList.remove(this.#statusStyle)
+        if (this.#statusMsg) {
+            this.#statusMsg.innerText = msg
+            if (this.#statusStyle !== '') {
+                this.#statusMsg.classList.remove(this.#statusStyle)
+            }
+            if (style !== '') {
+                this.#statusMsg.classList.add(style)
+                this.#statusStyle = style
+            }
         }
-        if (style !== '') {
-            this.#statusMsg.classList.add(style)
-            this.#statusStyle = style
-        }
-**/
     }
 
     showTooltip(msg: string, style: string = '') {
@@ -439,7 +437,9 @@ export class CellDLEditor {
     }
 
     #showPos(pos: PointLike) {
-//        this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+        if (this.#statusPos) {
+            this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+        }
     }
 
     #showTooltip(context: DOMPoint | DOMRect | Element, content: string, type: string = 'hint') {
@@ -658,7 +658,7 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-//            this.status = ''
+            this.status = ''
             this.#closeTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()

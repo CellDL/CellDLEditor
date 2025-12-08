@@ -23,24 +23,30 @@ import { CellDLEditor } from '@editor/editor'
 //==============================================================================
 
 export namespace alert {
+    export function clear() {
+        if (CellDLEditor.instance) {
+            CellDLEditor.instance.showMessage('')
+        }
+    }
+
     export function error(msg: string) {
         console.error(msg)
         if (CellDLEditor.instance) {
-            CellDLEditor.instance.showTooltip(msg, 'error')
+            CellDLEditor.instance.showMessage(msg, 'error')
         }
     }
 
     export function info(msg: string) {
         console.log(msg)
         if (CellDLEditor.instance) {
-            CellDLEditor.instance.showTooltip(msg, 'info')
+            CellDLEditor.instance.showMessage(msg, 'info')
         }
     }
 
     export function warn(msg: string) {
         console.warn(msg)
         if (CellDLEditor.instance) {
-            CellDLEditor.instance.showTooltip(msg, 'warn')
+            CellDLEditor.instance.showMessage(msg, 'warn')
         }
     }
 
