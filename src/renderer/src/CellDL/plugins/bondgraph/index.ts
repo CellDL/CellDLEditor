@@ -28,6 +28,7 @@ import { type IUiJsonDiscreteInput } from '@renderer/libopencor/locUIJsonApi'
 
 import { getSvgFillStyle, getSvgPathStyle, setSvgPathStyle, type IPathStyle } from '@renderer/common/svgUtils'
 
+import { alert } from '@editor/editor/alerts'
 import {
     CellDLComponent,
     CellDLConnection,
@@ -414,6 +415,7 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
+        alert.clear()
         if (celldlObject.isConnection) {
             const template = {}
             celldlObject.setPluginData(this.id, { template })
@@ -600,7 +602,7 @@ export class BondgraphPlugin implements PluginInterface {
             const fillColours = styling.fillColours as string[] || []
             if (fillColours.toString() !== pluginData.fillColours!.toString()) {
                 pluginData.fillColours = [...fillColours]
-                await this.#updateSvgElement(celldlObject)
+                await this.#updateSvgElement(celldlObject, pluginData.species, pluginData.location)
             }
         } else if (objectType === 'path' && 'pathStyle' in styling) {
             setSvgPathStyle(celldlObject.celldlSvgElement!.svgElement, styling.pathStyle as IPathStyle)
@@ -616,20 +618,27 @@ export class BondgraphPlugin implements PluginInterface {
         const template = pluginData.template
         for (const item of propertyTemplates.items) {
             if (itemId === item.itemId) {
+                alert.clear()
                 if (itemId === BG_INPUT.ElementType) {
                     this.#updateElementType(item, value, celldlObject, rdfStore)
 
-                } else if (itemId === BG_INPUT.ElementSpecies ||
-                           itemId === BG_INPUT.ElementLocation) {
-                    updateItemProperty(item.uri, value, celldlObject, rdfStore)
-
-                    if (itemId === BG_INPUT.ElementSpecies) {
+                } else if (itemId === BG_INPUT.ElementSpecies) {
+                    const errorMsg = await this.#updateSvgElement(celldlObject, value.newValue, pluginData.location)
+                    if (errorMsg === '') {
+                        updateItemProperty(item.uri, value, celldlObject, rdfStore)
                         pluginData.species = value.newValue
+                    } else {
+                        alert.error(errorMsg)
                     }
-                    if (itemId === BG_INPUT.ElementLocation) {
+                } else if (itemId === BG_INPUT.ElementLocation) {
+                    pluginData.location = value.newValue
+                    const errorMsg = await this.#updateSvgElement(celldlObject, pluginData.species, value.newValue)
+                    if (errorMsg === '') {
+                        updateItemProperty(item.uri, value, celldlObject, rdfStore)
                         pluginData.location = value.newValue
+                    } else {
+                        alert.error(errorMsg)
                     }
-                    await this.#updateSvgElement(celldlObject)
                 } else if (itemId === BG_INPUT.ElementValue) {
                     this.#updateElementValue(value, celldlObject, rdfStore)
                 }
@@ -709,16 +718,25 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    async #updateSvgElement(celldlObject: CellDLObject) {
+    async #updateSvgElement(celldlObject: CellDLObject,
+                            species: string|undefined, location: string|undefined): Promise<string> {
         // Update and redraw the component's SVG element
 
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const svgData = svgImage(pluginData.template.baseComponent,
-                                 pluginData.species, pluginData.location,
-                                 pluginData.fillColours)
-        const celldlSvgElement = celldlObject.celldlSvgElement!
-        await celldlSvgElement.updateSvgElement(svgData)
-        celldlSvgElement.redraw()
+        let svgData = ''
+        try {
+            svgData = svgImage(pluginData.template.baseComponent,
+                                     species, location,
+                                     pluginData.fillColours)
+        } catch (error: any) {
+            return (error as Error).message
+        }
+        if (svgData) {
+            const celldlSvgElement = celldlObject.celldlSvgElement!
+            await celldlSvgElement.updateSvgElement(svgData)
+            celldlSvgElement.redraw()
+        }
+        return ''
     }
 
     //==========================================================================
