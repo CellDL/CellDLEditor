@@ -31,6 +31,7 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
+import { type StyleObject } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'
 
 import { CellDLEditor } from '@editor/editor/index'
@@ -199,15 +200,14 @@ function panelEvent(toolId: string, itemId: string, oldValue: string, newValue: 
     )
 }
 
-function styleEvent(toolId: string, fillColours: string[]) {
+function styleEvent(toolId: string, object: string, styling: StyleObject) {
     document.dispatchEvent(
         new CustomEvent('style-event', {
             detail: {
                 type: 'value',
                 source: toolId,
-                styling: {
-                    fillColours
-                }
+                object,
+                styling
             }
         })
     )

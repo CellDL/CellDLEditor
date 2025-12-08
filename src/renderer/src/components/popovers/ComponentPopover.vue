@@ -21,7 +21,11 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import { type ComponentLibrary, type ComponentTemplate } from '@editor/plugins/index'
+import {
+    type ComponentLibrary,
+    type ComponentLibraryTemplate,
+    getTemplateEventDetails
+} from '@editor/components/index'
 
 import ToolPopover from '../toolbar/ToolPopover.vue'
 
@@ -31,44 +35,61 @@ const props = defineProps<{
     toolId: string
 }>()
 
-const idToComponent: Map<string, ComponentTemplate> = new Map()
+const idToComponent: Map<string, ComponentLibraryTemplate> = new Map()
 let selectedId: string | undefined = undefined
 
 vue.onMounted(() => {
     libraries!.value.forEach((library: ComponentLibrary) => {
-        library.components.forEach((component: ComponentTemplate) => {
+        library.components.forEach((component: ComponentLibraryTemplate) => {
             idToComponent.set(component.id, component)
             if (component.selected) {
                 selectedId = component.id
             }
         })
     })
+    if (selectedId) {
+        const selectedElement = document.getElementById(selectedId) as HTMLImageElement
+        if (selectedElement) {
+            document.dispatchEvent(
+                new CustomEvent('component-selected', {
+                    detail: getTemplateEventDetails(selectedId, selectedElement, null)
+                })
+            )
+        }
+    }
 })
 
 const emit = defineEmits(['popover-event'])
 
 function selected(e: MouseEvent) {
-    const componentId = (<HTMLElement>e.target).id
-    const component = idToComponent.get(componentId)
-    if (componentId && component) {
+    const target = e.target as HTMLImageElement
+    const component = idToComponent.get(target.id)
+    if (target.id && component) {
         if (selectedId) {
             idToComponent.get(selectedId)!.selected = false
         }
         component.selected = true
-        selectedId = componentId
+        selectedId = target.id
     }
+    // Tell the editor what template has been selected
+    document.dispatchEvent(
+        new CustomEvent('component-selected', {
+            detail: getTemplateEventDetails(target.id, target, e)
+        })
+    )
+    // Tell the toolbar what component template has been selected
     emit('popover-event', props.toolId, component)
 }
 
 function dragstart(e: DragEvent) {
-    const componentId = (<HTMLElement>e.target).id
-    e.dataTransfer!.items.add(JSON.stringify({id: componentId}), 'text/plain')
+    const target = e.target as HTMLImageElement
+    e.dataTransfer!.items.add(JSON.stringify(getTemplateEventDetails(target.id, target, e)), 'text/plain')
     document.dispatchEvent(
         new CustomEvent('component-drag', {
             detail: {
                 type: 'dragstart',
                 source: props.toolId,
-                value: componentId
+                value: target.id
             }
         })
     )

@@ -89,17 +89,18 @@ export interface TemplateProperties {
 
 //==============================================================================
 
-export type TemplateEvent = {
-    uri: string
+export type TemplateEventDetails = {
+    id: string,
     centre: PointLike
     offset: PointLike
 }
 
 //==============================================================================
 
-export function templateImageEvent(target: HTMLImageElement, event: MouseEvent | null = null): TemplateEvent {
+export function getTemplateEventDetails(id: string, target: HTMLImageElement,
+                                        event: DragEvent|MouseEvent|null): TemplateEventDetails {
     const details = {
-        uri: target.id,
+        id: id,
         // Centre of target.x/y wrt image top left
         centre: {
             x: target.naturalWidth / 2,

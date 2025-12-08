@@ -22,7 +22,8 @@ import { Buffer } from 'buffer'
 
 //==============================================================================
 
-import { type PointLike } from '@renderer/common//points'
+import { type PointLike } from '@renderer/common/points'
+import { CONNECTION_COLOUR, CONNECTION_WIDTH, CONNECTION_DASH } from '@renderer/common/styling'
 import { type StringProperties } from '@renderer/common/types'
 import { latexAsSvgDocument } from '@renderer/mathjax/index'
 
@@ -33,6 +34,14 @@ import { round } from '@editor/utils'
 //==============================================================================
 
 export const SVG_URI = 'http://www.w3.org/2000/svg'
+
+//==============================================================================
+
+export interface IPathStyle {
+    colour: string   // defaut is CONNECTION_COLOUR (with opacity of 0.7)
+    width: number    // default is CONNECTION_WIDTH (but +2 when selected)
+    dashed: boolean  // set `dashed` class`
+}
 
 //==============================================================================
 
@@ -182,8 +191,8 @@ function latexToSvgRect(latex: string, suffix: string,
 {
     let svgDocument = latexAsSvgDocument(latex)
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
-    const svgWidth = lengthToPixels(svgElement.getAttribute('width'))
-    const svgHeight = lengthToPixels(svgElement.getAttribute('height'))
+    const svgWidth = lengthToPixels(svgElement.getAttribute('width')) || 0
+    const svgHeight = lengthToPixels(svgElement.getAttribute('height')) || 0
     let gradient: string[] = []
     if (svgWidth && svgHeight) {
         let viewBox = getViewbox(svgElement)
@@ -240,7 +249,7 @@ function latexToSvgRect(latex: string, suffix: string,
             dataFillStyle.push(fill)
         } else if (Array.isArray(options.background)) {
             const stopColours: string[] = [...options.background]
-            let direction = 'V'
+            let direction = 'H'
             if (stopColours.length && ['H', 'V'].includes(stopColours[0]!)) {
                 direction = stopColours.shift()!
             }
@@ -328,8 +337,7 @@ export function base64Svg(svg: string): string {
 //==============================================================================
 
 export function getSvgImageFromBase64(svgText: string): string|undefined {
-    const re = /<image href="data:image\/svg\+xml;base64,(?<base64>.*)"><\/image>/
-    const base64 = svgText.match(re)
+    const base64 = svgText.match(/data:image\/svg\+xml;base64,(?<base64>.*)/)
     if (base64) {
         return Buffer.from(base64.groups!.base64!, 'base64').toString('utf8')
     }
@@ -338,7 +346,11 @@ export function getSvgImageFromBase64(svgText: string): string|undefined {
 //==============================================================================
 
 export function getSvgFillStyle(svgText: string): string[] {
-    const svgData = getSvgImageFromBase64(svgText)
+    const dataUrl = svgText.match(/<image href="(?<dataUrl>.*)"><\/image>/)
+    if (!dataUrl) {
+        return []
+    }
+    const svgData =  getSvgImageFromBase64(dataUrl.groups!.dataUrl!)
     if (svgData) {
         const fillStyle = svgData.match(/ data-fill-style="(?<fillStyle>[^"]*)"/)
         if (fillStyle) {
@@ -352,6 +364,26 @@ export function getSvgFillStyle(svgText: string): string[] {
         return ['yellow']
     }
     return []
+}
+
+//==============================================================================
+
+export function getSvgPathStyle(svgElement: SVGGraphicsElement): IPathStyle {
+    return {
+        colour: svgElement.getAttribute('stroke') || CONNECTION_COLOUR,
+        width: lengthToPixels(svgElement.getAttribute('stroke-width')) || CONNECTION_WIDTH,
+        dashed: svgElement.hasAttribute('stroke-dasharray')
+    }
+}
+
+export function setSvgPathStyle(svgElement: SVGGraphicsElement, pathStyle: IPathStyle) {
+    svgElement.setAttribute('stroke', pathStyle.colour)
+    svgElement.setAttribute('stroke-width', String(pathStyle.width))
+    if (pathStyle.dashed) {
+        svgElement.setAttribute('stroke-dasharray', String(CONNECTION_DASH*pathStyle.width))
+    } else {
+        svgElement.removeAttribute('stroke-dasharray')
+    }
 }
 
 //==============================================================================

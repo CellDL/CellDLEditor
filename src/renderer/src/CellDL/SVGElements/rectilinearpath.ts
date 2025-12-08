@@ -386,22 +386,22 @@ export class RectilinearPath extends PathElement {
         const nPoints = this.pathPoints.length
         if (this.moveIndex === 1) {
             // first splay point
-            this.#moveSplayPoint(pathPoint, this.pathPoints[this.moveIndex - 1], position)
-            const dirn = direction(startPosition, this.pathPoints[2])
+            this.#moveSplayPoint(pathPoint, this.pathPoints[this.moveIndex - 1]!, position)
+            const dirn = direction(startPosition, this.pathPoints[2]!)
             if (
-                (dirn === 'H' && !roundEqual(pathPoint.y, this.pathPoints[2].y)) || //pathPoint.y !== this.pathPoints[2].y
-                (dirn === 'V' && !roundEqual(pathPoint.x, this.pathPoints[2].x))
+                (dirn === 'H' && !roundEqual(pathPoint.y, this.pathPoints[2]!.y)) || //pathPoint.y !== this.pathPoints[2].y
+                (dirn === 'V' && !roundEqual(pathPoint.x, this.pathPoints[2]!.x))
             ) {
                 //pathPoint.x !== this.pathPoints[2].x) {
                 this.#splitPath(dirn, 1)
             }
         } else if (this.moveIndex === nPoints - 2) {
             // last splay point
-            this.#moveSplayPoint(pathPoint, this.pathPoints[this.moveIndex + 1], position)
-            const dirn = direction(startPosition, this.pathPoints[nPoints - 3])
+            this.#moveSplayPoint(pathPoint, this.pathPoints[this.moveIndex + 1]!, position)
+            const dirn = direction(startPosition, this.pathPoints[nPoints - 3]!)
             if (
-                (dirn === 'H' && !roundEqual(pathPoint.y, this.pathPoints[nPoints - 3].y)) || //pathPoint.y !== this.pathPoints[nPoints-3].y
-                (dirn === 'V' && !roundEqual(pathPoint.x, this.pathPoints[nPoints - 3].x))
+                (dirn === 'H' && !roundEqual(pathPoint.y, this.pathPoints[nPoints - 3]!.y)) || //pathPoint.y !== this.pathPoints[nPoints-3].y
+                (dirn === 'V' && !roundEqual(pathPoint.x, this.pathPoints[nPoints - 3]!.x))
             ) {
                 //pathPoint.x !== this.pathPoints[nPoints-3].x) {
                 this.#splitPath(dirn, nPoints - 3)
@@ -409,39 +409,39 @@ export class RectilinearPath extends PathElement {
         } else {
             let alignedPosition = editGuides.gridAlign(pathPoint.offsetPoint(position))
             if (this.moveIndex === 2) {
-                const dirn = direction(this.pathPoints[1], this.pathPoints[2])
+                const dirn = direction(this.pathPoints[1]!, this.pathPoints[2]!)
                 if (this.firstElement.containsPoint(alignedPosition, CONNECTION_SPLAY_PADDING)) {
                     if (dirn === 'H') {
-                        alignedPosition = new Point(this.pathPoints[1].x, alignedPosition.y)
+                        alignedPosition = new Point(this.pathPoints[1]!.x, alignedPosition.y)
                     } else {
-                        alignedPosition = new Point(alignedPosition.x, this.pathPoints[1].y)
+                        alignedPosition = new Point(alignedPosition.x, this.pathPoints[1]!.y)
                     }
                 } else {
                     if (dirn === 'H') {
-                        alignedPosition = alignedPosition.snapTo(new Point(this.pathPoints[1].x, alignedPosition.y))
+                        alignedPosition = alignedPosition.snapTo(new Point(this.pathPoints[1]!.x, alignedPosition.y))
                     } else {
-                        alignedPosition = alignedPosition.snapTo(new Point(alignedPosition.x, this.pathPoints[1].y))
+                        alignedPosition = alignedPosition.snapTo(new Point(alignedPosition.x, this.pathPoints[1]!.y))
                     }
                 }
             } else if (
                 this.moveIndex === nPoints - 3 &&
                 this.lastElement.containsPoint(alignedPosition, CONNECTION_SPLAY_PADDING)
             ) {
-                const dirn = direction(this.pathPoints[this.moveIndex], this.pathPoints[this.moveIndex + 1])
+                const dirn = direction(this.pathPoints[this.moveIndex]!, this.pathPoints[this.moveIndex + 1]!)
                 if (this.lastElement.containsPoint(alignedPosition, CONNECTION_SPLAY_PADDING)) {
                     if (dirn === 'H') {
-                        alignedPosition = new Point(this.pathPoints[this.moveIndex + 1].x, alignedPosition.y)
+                        alignedPosition = new Point(this.pathPoints[this.moveIndex + 1]!.x, alignedPosition.y)
                     } else {
-                        alignedPosition = new Point(alignedPosition.x, this.pathPoints[this.moveIndex + 1].y)
+                        alignedPosition = new Point(alignedPosition.x, this.pathPoints[this.moveIndex + 1]!.y)
                     }
                 } else {
                     if (dirn === 'H') {
                         alignedPosition = alignedPosition.snapTo(
-                            new Point(this.pathPoints[this.moveIndex + 1].x, alignedPosition.y)
+                            new Point(this.pathPoints[this.moveIndex + 1]!.x, alignedPosition.y)
                         )
                     } else {
                         alignedPosition = alignedPosition.snapTo(
-                            new Point(alignedPosition.x, this.pathPoints[this.moveIndex + 1].y)
+                            new Point(alignedPosition.x, this.pathPoints[this.moveIndex + 1]!.y)
                         )
                     }
                 }
@@ -451,15 +451,15 @@ export class RectilinearPath extends PathElement {
                 if (this.moveIndex === 2) {
                     // point after first splay point
                     this.#updateComponentBoundaryPoint(
-                        this.pathPoints[this.moveIndex - 2],
-                        this.pathPoints[this.moveIndex - 1].point
+                        this.pathPoints[this.moveIndex - 2]!,
+                        this.pathPoints[this.moveIndex - 1]!.point
                     )
                 }
                 if (this.moveIndex === nPoints - 3) {
                     // point befor last splay point
                     this.#updateComponentBoundaryPoint(
-                        this.pathPoints[this.moveIndex + 2],
-                        this.pathPoints[this.moveIndex + 1].point
+                        this.pathPoints[this.moveIndex + 2]!,
+                        this.pathPoints[this.moveIndex + 1]!.point
                     )
                 }
             }
@@ -496,17 +496,17 @@ export class RectilinearPath extends PathElement {
             } else {
                 if (roundEqual(edge.length, 0)) {
                     // remove index
-                    if (edges[index - 1].direction === 'S') {
-                        edge.pathPoints[1].removeSvgElement()
-                        edges[index + 1].pathPoints[0] = edge.pathPoints[0]
-                    } else if (edges[index + 1].direction === 'S') {
+                    if (edges[index - 1]!.direction === 'S') {
+                        edge.pathPoints[1]!.removeSvgElement()
+                        edges[index + 1]!.pathPoints[0] = edge.pathPoints[0]
+                    } else if (edges[index + 1]!.direction === 'S') {
                         edge.pathPoints[0].removeSvgElement()
-                        edges[index - 1].pathPoints[1] = edge.pathPoints[1]
+                        edges[index - 1]!.pathPoints[1] = edge.pathPoints[1]
                     } else {
                         edge.pathPoints[0].removeSvgElement()
                         edge.pathPoints[1].removeSvgElement()
-                        edges[index + 1].pathPoints[0] = edge.pathPoints[0]
-                        edges[index - 1].pathPoints[1] = edge.pathPoints[1]
+                        edges[index + 1]!.pathPoints[0] = edge.pathPoints[0]
+                        edges[index - 1]!.pathPoints[1] = edge.pathPoints[1]
                     }
                 } else {
                     cleanEdges.push(edge)
@@ -518,13 +518,13 @@ export class RectilinearPath extends PathElement {
         index = 0
         const newEdges: PathEdge[] = []
         while (index < cleanEdges.length) {
-            const edge = cleanEdges[index]
+            const edge = cleanEdges[index]!
             if (edge.direction === 'S') {
                 newEdges.push(edge)
             } else {
                 let combinedEdge = edge
-                while (index < cleanEdges.length - 1 && edge.direction === cleanEdges[index + 1].direction) {
-                    const newEdge = combinedEdge.combine(cleanEdges[index + 1])
+                while (index < cleanEdges.length - 1 && edge.direction === cleanEdges[index + 1]!.direction) {
+                    const newEdge = combinedEdge.combine(cleanEdges[index + 1]!)
                     if (newEdge) {
                         combinedEdge = newEdge
                     } else {
@@ -537,7 +537,7 @@ export class RectilinearPath extends PathElement {
             index += 1
         }
         const newPoints = newEdges.map((edge) => edge.pathPoints[0])
-        newPoints.push(newEdges[newEdges.length - 1].pathPoints[1])
+        newPoints.push(newEdges[newEdges.length - 1]!.pathPoints[1])
         if (newPoints.length === nPoints) {
             return null
         }

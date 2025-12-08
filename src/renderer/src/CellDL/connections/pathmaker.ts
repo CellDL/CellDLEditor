@@ -20,6 +20,7 @@ limitations under the License.
 
 import { SVG_URI } from '@renderer/common/svgUtils'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { CONNECTION_COLOUR, CONNECTION_WIDTH } from '@renderer/common/styling'
 import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
 import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
@@ -193,7 +194,7 @@ export class PathMaker {
             return null
         } else if (this.#currentSvgPath === null) {
             return null
-        } else if (celldlObject.id == this.#nodes[0].id) {
+        } else if (celldlObject.id == this.#nodes[0]!.id) {
             if (this.#nodes.length < 2) {
                 alert.warn('Path cannot directly loop to start object')
                 return null
@@ -526,7 +527,11 @@ export class PathMaker {
         } else if (this.#currentSvgPath === null) {
             this.#currentSvgPath = <SVGPathElement>(
                 this.#editorFrame.addElementAsString(
-                    svgPath(points, { class: `celldl-Connection bondgraph ${this.#style}` })
+                    svgPath(points, {
+                        class: `celldl-Connection bondgraph ${this.#style}`,
+                        stroke: CONNECTION_COLOUR,
+                        'stroke-width': String(CONNECTION_WIDTH)
+                    })
                 )
             )
         } else {

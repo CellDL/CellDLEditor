@@ -73,7 +73,7 @@ export class LinearPath extends PathElement {
             // have moved first point after start point)
             const boundaryPoint = firstElement!.boundaryIntersections(this.pathPoints[1])[0]
             if (boundaryPoint) {
-                this.pathPoints[0].reassignPosition(boundaryPoint)
+                this.pathPoints[0]!.reassignPosition(boundaryPoint)
             }
         }
         if ([2, 3].includes(this.pathPoints.length - this.moveIndex)) {
@@ -151,12 +151,12 @@ export class LinearPath extends PathElement {
             return null
         }
         const newPoints: PathPoint[] = []
-        newPoints.push(this.pathPoints[0])
+        newPoints.push(this.pathPoints[0]!)
         let index = 1
         while (index < nPoints - 1) {
-            const prevPoint = this.pathPoints[index - 1]
-            const pathPoint = this.pathPoints[index]
-            const nextPoint = this.pathPoints[index + 1]
+            const prevPoint = this.pathPoints[index - 1]!
+            const pathPoint = this.pathPoints[index]!
+            const nextPoint = this.pathPoints[index + 1]!
 
             if (pathPoint.isConduit) {
                 newPoints.push(pathPoint)
@@ -172,7 +172,7 @@ export class LinearPath extends PathElement {
             index += 1
         }
         // Add last point
-        newPoints.push(this.pathPoints[nPoints - 1])
+        newPoints.push(this.pathPoints[nPoints - 1]!)
         if (newPoints.length === nPoints) {
             return null
         }

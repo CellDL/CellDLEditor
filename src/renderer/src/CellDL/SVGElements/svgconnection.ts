@@ -84,7 +84,7 @@ export class SvgConnection extends CellDLSVGElement {
                     // @ts-expect-error: `n < svgPaths.length` and so `svgPath` is defined
                     style === ConnectionStyle.Rectilinear || svgPath.classList.contains('rectilinear')
                         ? new RectilinearPath(
-                              connection.celldlDiagram!,
+                              connection,
                               pathId,
                               // @ts-expect-error
                               svgPath,
@@ -92,7 +92,7 @@ export class SvgConnection extends CellDLSVGElement {
                               connectorElements[n + 1]
                           )
                         : new LinearPath(
-                              connection.celldlDiagram!,
+                              connection,
                               pathId,
                               // @ts-expect-error
                               svgPath,
@@ -110,16 +110,28 @@ export class SvgConnection extends CellDLSVGElement {
     }
 
     clearControlHandles() {
-        this.#pathElements.forEach((element) => element.clearControlHandles())
+        this.#pathElements.forEach((element) => element.clearControlHandles(this.selected))
     }
 
     drawControlHandles() {
-        this.#pathElements.forEach((element) => element.drawControlHandles())
+        this.#pathElements.forEach((element) => element.drawControlHandles(this.selected))
+    }
+
+    clearSelectedHandles() {
+        if (this.selected) {
+            this.#pathElements.forEach((element) => element.clearControlHandles(false))
+        }
+    }
+
+    drawSelectedHandles() {
+        if (this.selected) {
+            this.#pathElements.forEach((element) => element.drawControlHandles(true))
+        }
     }
 
     endMove() {
         if (this.#moveableElement) {
-            this.#moveableElement.endMove()
+            this.#moveableElement.endMove(this.selected)
             this.#moveableElement = null
             this.#undoMoveAction = null
         }

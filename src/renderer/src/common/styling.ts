@@ -22,10 +22,13 @@ import { EM_SIZE } from '@editor/geometry/units'
 
 //==============================================================================
 
-export const CONNECTION_ARROW_SIZE = [8, 8] // [W, H] pixels
+export const CONNECTION_ARROW_SIZE = [4, 4] // [W, H] pixels
 export const CONNECTION_SPLAY_PADDING = 16 // If <= 1.0 then fraction of elements width and height else pixels
 export const MAX_CONNECTION_SPLAY_PADDING = 20 // pixels
+
+export const CONNECTION_COLOUR = '#334155'
 export const CONNECTION_WIDTH = 2 // pixels
+export const CONNECTION_DASH = 2  // * width
 
 export const INTERFACE_PORT_RADIUS = 4 // pixels
 export const SELECTION_STROKE_WIDTH = 3 // pixels
@@ -38,11 +41,11 @@ export const CELLDL_BACKGROUND_CLASS = 'celldl-background'
 
 export function arrowMarkerDefinition(markerId: string, markerType: string): string {
     // see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker
-    const W = CONNECTION_WIDTH
+    const W = 1
     return `<marker id="${markerId}" viewBox="0 0 ${5.5 * W} ${5 * W}" class="${markerType}"
-        refX="${5 * W}" refY="${2.5 * W}" orient="auto-start-reverse" markerUnits="userSpaceOnUse"
+        refX="${5 * W}" refY="${2.5 * W}" orient="auto-start-reverse" markerUnits="strokeWidth"
         markerWidth="${CONNECTION_ARROW_SIZE[0]}" markerHeight="${CONNECTION_ARROW_SIZE[1]}">
-            <path fill="currentcolor" stroke="currentcolor" d="M0,0 L${5.05 * W},${2.2 * W} L${5.05 * W},${2.8 * W} L0,${5 * W} L${W},${2.5 * W} z" />
+            <path fill="context-stroke" stroke="context-stroke" d="M0,0 L${5.05 * W},${2.2 * W} L${5.05 * W},${2.8 * W} L0,${5 * W} L${W},${2.5 * W} z" />
         </marker>`
 }
 
@@ -66,8 +69,7 @@ export const CellDLStylesheet = [
     /* Conduits */
     '.celldl-Conduit{z-index:9999}',
     /* Connections */
-    `.celldl-Connection{stroke-width:${CONNECTION_WIDTH};stroke-linecap:round;stroke-linejoin:round;opacity:0.7;fill:none;stroke:currentcolor}`,
-    '.celldl-Connection.dashed{stroke-dasharray:5}',
+    `.celldl-Connection{stroke-linejoin:round;fill:none}`,
     /* Compartments */
     '.celldl-Compartment>rect.compartment{fill:#CCC;opacity:0.6;stroke:#444;rx:10px;ry:10px}',
     /* Interfaces */

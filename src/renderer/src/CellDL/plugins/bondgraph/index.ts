@@ -26,8 +26,9 @@ import { ucum } from '@atomic-ehr/ucum'
 import { arrowMarkerDefinition } from '@renderer/common/styling'
 import { type IUiJsonDiscreteInput } from '@renderer/libopencor/locUIJsonApi'
 
-import { getSvgFillStyle } from '@renderer/common/svgUtils'
+import { getSvgFillStyle, getSvgPathStyle, setSvgPathStyle, type IPathStyle } from '@renderer/common/svgUtils'
 
+import { alert } from '@editor/editor/alerts'
 import {
     CellDLComponent,
     CellDLConnection,
@@ -78,6 +79,13 @@ const BondgraphComponentTemplates: Map<string, BGComponentLibraryTemplate> = new
 )
 
 //==============================================================================
+
+export interface INodeStyle {
+    gradientFill: boolean
+    colours: string[]
+    direction?: string
+}
+
 //==============================================================================
 
 // Temp workaround until `import.meta.glob` is correctly configured...
@@ -246,11 +254,9 @@ const ELEMENT_VALUE_INDEX = 3
 
 const STYLING_GROUP = {
     groupId: BG_GROUP.StylingGroup,
-    title: 'Fill style',
+    title: 'Style',
     items: [],
-    styling: {
-        fillColours: []
-    }
+    styling: {}
 }
 
 //==============================================================================
@@ -409,27 +415,38 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
-        const template = this.#getObjectElementTemplate(celldlObject, rdfStore)
-        if (!template) {
-            return
-        }
-        celldlObject.setPluginData(this.id, { template })
-
-        componentProperties.forEach(group => {
-            if (group.groupId === BG_GROUP.ElementGroup) {
-                this.#getElementProperties(celldlObject, group, rdfStore)
-            } else if (template.elementTemplate) {
-                if (group.groupId === BG_GROUP.ParameterGroup) {
-                    this.#setVariableTemplates(template.elementTemplate.parameters, group)
-                    this.#getVariableProperties(celldlObject, group, rdfStore)
-                } else if (group.groupId === BG_GROUP.StateGroup) {
-                    this.#setVariableTemplates(template.elementTemplate.states, group)
-                    this.#getVariableProperties(celldlObject, group, rdfStore)
+        alert.clear()
+        if (celldlObject.isConnection) {
+            const template = {}
+            celldlObject.setPluginData(this.id, { template })
+            componentProperties.forEach(group => {
+                if (group.groupId === BG_GROUP.StylingGroup) {
+                    this.#getElementStyling(celldlObject, group, true)
                 }
-            } else if (group.groupId === BG_GROUP.StylingGroup) {
-                this.#getElementStyling(celldlObject, group)
+            })
+        } else {
+            const template = this.#getObjectElementTemplate(celldlObject, rdfStore)
+            if (!template) {
+                return
             }
-        })
+            celldlObject.setPluginData(this.id, { template })
+
+            componentProperties.forEach(group => {
+                if (group.groupId === BG_GROUP.ElementGroup) {
+                    this.#getElementProperties(celldlObject, group, rdfStore)
+                } else if (template.elementTemplate) {
+                    if (group.groupId === BG_GROUP.ParameterGroup) {
+                        this.#setVariableTemplates(template.elementTemplate.parameters, group)
+                        this.#getVariableProperties(celldlObject, group, rdfStore)
+                    } else if (group.groupId === BG_GROUP.StateGroup) {
+                        this.#setVariableTemplates(template.elementTemplate.states, group)
+                        this.#getVariableProperties(celldlObject, group, rdfStore)
+                    }
+                } else if (group.groupId === BG_GROUP.StylingGroup) {
+                    this.#getElementStyling(celldlObject, group, false)
+                }
+            })
+        }
     }
 
     #getElementProperties(celldlObject: CellDLObject,
@@ -462,13 +479,19 @@ export class BondgraphPlugin implements PluginInterface {
         })
     }
 
-    #getElementStyling(celldlObject: CellDLObject, group: PropertyGroup) {
-        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        if (!('fillColours' in pluginData)) {
-            pluginData.fillColours = getSvgFillStyle(celldlObject.celldlSvgElement!.svgElement.outerHTML)
-        }
-        group.styling = {
-            fillColours: pluginData.fillColours || []
+    #getElementStyling(celldlObject: CellDLObject, group: PropertyGroup, connection: boolean) {
+        if (connection) {
+            group.styling = {
+                pathStyle: getSvgPathStyle(celldlObject.celldlSvgElement!.svgElement)
+            }
+        } else {
+            const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+            if (!('fillColours' in pluginData)) {
+                pluginData.fillColours = getSvgFillStyle(celldlObject.celldlSvgElement!.svgElement.outerHTML)
+            }
+            group.styling = {
+                fillColours: pluginData.fillColours || []
+            }
         }
     }
 
@@ -550,9 +573,9 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
-                              componentProperties: PropertyGroup[], rdfStore: RdfStore) {
-        this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
+    async updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                                    componentProperties: PropertyGroup[], rdfStore: RdfStore) {
+        await this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
 
         const template = (<PluginData>celldlObject.pluginData(this.id)).template
         if (template.elementTemplate) {
@@ -573,38 +596,49 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    updateComponentStyling(celldlObject: CellDLObject, styling: StyleObject) {
+    async updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const fillColours = styling.fillColours || []
-        if (fillColours.toString() !== pluginData.fillColours!.toString()) {
-            pluginData.fillColours = [...fillColours]
-            this.#updateSvgElement(celldlObject)
+        if (objectType === 'node' && 'fillColours' in styling) {
+            const fillColours = styling.fillColours as string[] || []
+            if (fillColours.toString() !== pluginData.fillColours!.toString()) {
+                pluginData.fillColours = [...fillColours]
+                await this.#updateSvgElement(celldlObject, pluginData.species, pluginData.location)
+            }
+        } else if (objectType === 'path' && 'pathStyle' in styling) {
+            setSvgPathStyle(celldlObject.celldlSvgElement!.svgElement, styling.pathStyle as IPathStyle)
         }
     }
 
     //==================================
 
-    #updateElementProperties(value: ValueChange, itemId: string,
+    async #updateElementProperties(value: ValueChange, itemId: string,
                              celldlObject: CellDLObject, rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
         const template = pluginData.template
         for (const item of propertyTemplates.items) {
             if (itemId === item.itemId) {
+                alert.clear()
                 if (itemId === BG_INPUT.ElementType) {
                     this.#updateElementType(item, value, celldlObject, rdfStore)
 
-                } else if (itemId === BG_INPUT.ElementSpecies ||
-                           itemId === BG_INPUT.ElementLocation) {
-                    updateItemProperty(item.uri, value, celldlObject, rdfStore)
-
-                    if (itemId === BG_INPUT.ElementSpecies) {
+                } else if (itemId === BG_INPUT.ElementSpecies) {
+                    const errorMsg = await this.#updateSvgElement(celldlObject, value.newValue, pluginData.location)
+                    if (errorMsg === '') {
+                        updateItemProperty(item.uri, value, celldlObject, rdfStore)
                         pluginData.species = value.newValue
+                    } else {
+                        alert.error(errorMsg)
                     }
-                    if (itemId === BG_INPUT.ElementLocation) {
+                } else if (itemId === BG_INPUT.ElementLocation) {
+                    pluginData.location = value.newValue
+                    const errorMsg = await this.#updateSvgElement(celldlObject, pluginData.species, value.newValue)
+                    if (errorMsg === '') {
+                        updateItemProperty(item.uri, value, celldlObject, rdfStore)
                         pluginData.location = value.newValue
+                    } else {
+                        alert.error(errorMsg)
                     }
-                    this.#updateSvgElement(celldlObject)
                 } else if (itemId === BG_INPUT.ElementValue) {
                     this.#updateElementValue(value, celldlObject, rdfStore)
                 }
@@ -684,16 +718,25 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==================================
 
-    #updateSvgElement(celldlObject: CellDLObject) {
+    async #updateSvgElement(celldlObject: CellDLObject,
+                            species: string|undefined, location: string|undefined): Promise<string> {
         // Update and redraw the component's SVG element
 
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const svgData = svgImage(pluginData.template.baseComponent,
-                                 pluginData.species, pluginData.location,
-                                 pluginData.fillColours)
-        const celldlSvgElement = celldlObject.celldlSvgElement!
-        celldlSvgElement.updateSvgElement(svgData)
-        celldlSvgElement.redraw()
+        let svgData = ''
+        try {
+            svgData = svgImage(pluginData.template.baseComponent,
+                                     species, location,
+                                     pluginData.fillColours)
+        } catch (error: any) {
+            return (error as Error).message
+        }
+        if (svgData) {
+            const celldlSvgElement = celldlObject.celldlSvgElement!
+            await celldlSvgElement.updateSvgElement(svgData)
+            celldlSvgElement.redraw()
+        }
+        return ''
     }
 
     //==========================================================================

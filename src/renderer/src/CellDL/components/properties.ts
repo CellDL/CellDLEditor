@@ -41,9 +41,7 @@ export type ItemDetails = locApi.IUiJsonInput & {
     numeric?: boolean
 }
 
-export interface StyleObject {
-    fillColours: string[]
-}
+export type StyleObject = Object
 
 export interface PropertyGroup {
     groupId: string
@@ -123,7 +121,7 @@ export function updateItemProperty(property: string, value: ValueChange,
         rdfStore.update(`${SPARQL_PREFIXES}
             PREFIX : <${rdfStore.documentUri}#>
 
-            INSERT DATA { ${objectUri} <${property}> "${newValue}" }
+            INSERT DATA { ${objectUri} <${property}> """${newValue.replace('\\', '\\\\')}""" }
         `)
     }
 }
@@ -169,7 +167,7 @@ export class ObjectPropertiesPanel {
                 // Update component properties in the METADATA_GROUP
 
                 const group = this.#componentProperties.value[this.#metadataIndex]
-                group.items.forEach((itemTemplate: ItemDetails) => {
+                METADATA_GROUP.items.forEach((itemTemplate: ItemDetails) => {
                     const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
                     if (item) {
                         group.items.push(item)
@@ -181,13 +179,13 @@ export class ObjectPropertiesPanel {
 
     //==================================
 
-    updateObjectProperties(celldlObject: CellDLObject|null,
-                           itemId: string, value: ValueChange, rdfStore: RdfStore) {
+    async updateObjectProperties(celldlObject: CellDLObject|null,
+                                 itemId: string, value: ValueChange, rdfStore: RdfStore) {
         if (celldlObject) {
             // Save plugin specific component properties
 
-            pluginComponents.updateComponentProperties(celldlObject, itemId, value,
-                                                       this.#componentProperties.value, rdfStore)
+            await pluginComponents.updateComponentProperties(celldlObject, itemId, value,
+                                                             this.#componentProperties.value, rdfStore)
 
             // Save component properties in the METADATA_GROUP
 
@@ -204,11 +202,11 @@ export class ObjectPropertiesPanel {
 
     //==================================
 
-     updateObjectStyling(celldlObject: CellDLObject|null, styling: StyleObject) {
+    async updateObjectStyling(celldlObject: CellDLObject|null, objectType: string, styling: StyleObject) {
         if (celldlObject) {
-            pluginComponents.updateComponentStyling(celldlObject, styling)
+            await pluginComponents.updateComponentStyling(celldlObject, objectType, styling)
         }
-     }
+    }
 }
 
 //==============================================================================

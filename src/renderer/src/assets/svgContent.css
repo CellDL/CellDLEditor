@@ -115,10 +115,7 @@ svg {
 .celldl-Connection.active,
 .celldl-Connection.highlight,
 .celldl-Connection.selected {
-    stroke-width: 4;
-}
-.celldl-Connection.active.selected {
-    stroke-width: 5;
+    opacity: 0.7;
 }
 
 .error {
