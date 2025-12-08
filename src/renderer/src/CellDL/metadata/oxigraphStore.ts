@@ -24,6 +24,10 @@ import { write as prettyTurtle } from '@jeswr/pretty-turtle'
 
 //==============================================================================
 
+import { WEB_DECLARATIONS } from './namespaces'
+
+//==============================================================================
+
 export type BlankNode = $oxigraph.BlankNode
 
 export const blankNode = $oxigraph.blankNode
@@ -171,7 +175,7 @@ export class RdfStore extends BaseStore {
             const quads = this.#rdfStore.match(null, null, null, graph || $oxigraph.defaultGraph())
             const turtle = await prettyTurtle(quads, {
                 format: 'text/turtle',
-                prefixes: Object.assign({ '': `${this.documentUri}#` }, namespaces),
+                prefixes: Object.assign({ '': `${this.documentUri}#` }, WEB_DECLARATIONS, namespaces),
                 baseIri: this.documentUri,
                 explicitBaseIRI: true,
                 compact: false,
