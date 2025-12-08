@@ -121,7 +121,7 @@ export function updateItemProperty(property: string, value: ValueChange,
         rdfStore.update(`${SPARQL_PREFIXES}
             PREFIX : <${rdfStore.documentUri}#>
 
-            INSERT DATA { ${objectUri} <${property}> "${newValue}" }
+            INSERT DATA { ${objectUri} <${property}> """${newValue.replace('\\', '\\\\')}""" }
         `)
     }
 }
