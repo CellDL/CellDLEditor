@@ -266,10 +266,11 @@ export class BondgraphPlugin implements PluginInterface {
 
     #baseComponents: Map<string, BGBaseComponent> = new Map()
     #baseComponentToTemplates: Map<string, ElementTemplate[]> = new Map()
+    #currentDocumentUri: string = ''
     #physicalDomains: Map<string, PhysicalDomain> = new Map()
     #elementTemplates: Map<string, ElementTemplate> = new Map()
 
-    #rdfStore: RdfStore = new RdfStore('https://bg-rdf.org/ontologies/bondgraph-framework')
+    #rdfStore: RdfStore = new RdfStore()
 
     constructor() {
 
@@ -330,11 +331,12 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    newDocument(rdfStore: RdfStore) {
+    newDocument(uri: string, rdfStore: RdfStore) {
 
         // We are creating a BondgraphModel
 
-        rdfStore.add(rdfStore.documentNode!, RDF('type'), BGF('BondgraphModel'))
+        rdfStore.add($rdf.namedNode(uri), RDF('type'), BGF('BondgraphModel'))
+        this.#currentDocumentUri = uri
 
         // Add a copy of the BG-RDF framework as a named graph, to use later when
         // finding BondElements and JunctionStructures
@@ -353,20 +355,20 @@ export class BondgraphPlugin implements PluginInterface {
         // Find the BondElements in the diagram
 
         rdfStore.query(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
             SELECT ?uri
             WHERE {
                 ?uri a ?type .
                 ?type rdfs:subClassOf* bgf:BondElement
             }`, true)
         .map((r) => {
-            statements.push(`<${rdfStore.documentUri}> bgf:hasBondElement ${r.get('uri')!.toString()} .`)
+            statements.push(`<${this.#currentDocumentUri}> bgf:hasBondElement ${r.get('uri')!.toString()} .`)
         })
 
         // Find the JunctionStructures in the diagram
 
         rdfStore.query(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             SELECT ?uri
             WHERE {
@@ -374,7 +376,7 @@ export class BondgraphPlugin implements PluginInterface {
                 ?type rdfs:subClassOf* bgf:JunctionStructure
             }`, true)
         .map((r) => {
-            statements.push(`<${rdfStore.documentUri}> bgf:hasJunctionStructure ${r.get('uri')!.toString()} .`)
+            statements.push(`<${this.#currentDocumentUri}> bgf:hasJunctionStructure ${r.get('uri')!.toString()} .`)
         })
 
         // And add them to the BondgraphModel
@@ -391,7 +393,7 @@ export class BondgraphPlugin implements PluginInterface {
     addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
         const uri = connection.uri.toString()
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             INSERT DATA {
                 ${uri} bgf:hasSource ${connection.source!.uri.toString()} .
@@ -403,7 +405,7 @@ export class BondgraphPlugin implements PluginInterface {
     deleteConnection(connection: CellDLConnection, rdfStore: RdfStore) {
         const uri = connection.uri.toString()
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             DELETE DATA {
                 ${uri} bgf:hasSource ${connection.source!.uri.toString()} .
@@ -500,7 +502,7 @@ export class BondgraphPlugin implements PluginInterface {
 
         const values: Map<string, string> = new Map()
         rdfStore.query(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             SELECT ?name ?value
             WHERE {
@@ -653,7 +655,7 @@ export class BondgraphPlugin implements PluginInterface {
         const objectUri = celldlObject.uri.toString()
 
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             DELETE {
                 ${objectUri} bgf:hasValue ?value
@@ -666,7 +668,7 @@ export class BondgraphPlugin implements PluginInterface {
         const variable = template.elementTemplate!.value
         if (newValue) {
             rdfStore.update(`${SPARQL_PREFIXES}
-                PREFIX : <${rdfStore.documentUri}#>
+                PREFIX : <${this.#currentDocumentUri}#>
 
                 INSERT DATA {
                    ${objectUri} bgf:hasValue "${value.newValue} ${variable!.units}"^^cdt:ucum .
@@ -690,7 +692,7 @@ export class BondgraphPlugin implements PluginInterface {
         const varName = itemVariable[1]!
         const objectUri = celldlObject.uri.toString()
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             DELETE WHERE {
                 ${objectUri} bgf:parameterValue ?pv .
@@ -704,7 +706,7 @@ export class BondgraphPlugin implements PluginInterface {
             return
         }
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             INSERT DATA {
                 ${objectUri} bgf:parameterValue _:pv .
@@ -755,7 +757,7 @@ export class BondgraphPlugin implements PluginInterface {
         let baseComponentId: string|undefined = undefined
         let elementTemplate: ElementTemplate|undefined = undefined
         rdfStore.query(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             SELECT ?type WHERE {
                 ${celldlObject.uri.toString()} a ?type
@@ -835,14 +837,14 @@ export class BondgraphPlugin implements PluginInterface {
             deleteTriples.push(`${objectUri} a <${value.oldValue}>`)
         }
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             DELETE DATA {
                 ${deleteTriples.join('\n')}
             }`)
 
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${this.#currentDocumentUri}#>
 
             INSERT DATA { ${objectUri} a <${value.newValue}> }
         `)
