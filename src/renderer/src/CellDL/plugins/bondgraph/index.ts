@@ -292,7 +292,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     constructor() {
         for (const [uri, source] of BG_RDF_SOURCES.entries()) {
-            this.#rdfStore.load(source, uri)
+            this.#rdfStore.load(uri, source)
         }
         this.#loadDomains()
         this.#loadBaseComponents()

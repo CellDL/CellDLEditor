@@ -420,7 +420,7 @@ export class CellDLDiagram {
         ) {
             for (const childNode of metadataElement.childNodes) {
                 if (childNode.nodeName === '#cdata-section') {
-                    this.#kb.load((<CDATASection>childNode).data, TurtleContentType)
+                    this.#kb.load(this.#documentNode.uri, (<CDATASection>childNode).data, TurtleContentType)
                     break
                 }
             }

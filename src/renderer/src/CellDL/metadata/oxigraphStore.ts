@@ -142,7 +142,7 @@ export class RdfStore extends BaseStore {
         return this.#rdfStore.match(s, p, o, g || $oxigraph.defaultGraph()).length > 0
     }
 
-    load(rdf: string, baseIri: string|null=null, contentType: ContentType=TurtleContentType, graph: NamedNode|null=null) {
+    load(baseIri: string|null=null, rdf: string, contentType: ContentType=TurtleContentType, graph: NamedNode|null=null) {
         try {
             this.#rdfStore.load(rdf, {
                 format: contentType,

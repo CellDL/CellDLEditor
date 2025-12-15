@@ -60,7 +60,7 @@ export abstract class BaseStore {
         g: NamedNode | null
     ): boolean
 
-    abstract load(rdf: string, baseIri: string|null, contentType: ContentType, graph: NamedNode|null): void
+    abstract load(baseIri: string|null, rdf: string, contentType: ContentType, graph: NamedNode|null): void
 
     abstract removeStatements(
         s: SubjectType | null,
