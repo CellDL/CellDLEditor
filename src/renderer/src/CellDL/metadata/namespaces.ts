@@ -36,7 +36,7 @@ export const DCT_URI = 'http://purl.org/dc/terms/'
 export const OWL_URI = 'http://www.w3.org/2002/07/owl#'
 export const RDF_URI = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 export const RDFS_URI = 'http://www.w3.org/2000/01/rdf-schema#'
-export const XS_URI = 'http://www.w3.org/2001/XMLSchema#'
+export const XSD_URI = 'http://www.w3.org/2001/XMLSchema#'
 
 //==============================================================================
 
@@ -56,7 +56,7 @@ export const WEB_DECLARATIONS = {
     rdf: RDF_URI,
     rdfs: RDFS_URI,
     svg: `${SVG_URI}/`,
-    xsd: XS_URI
+    xsd: XSD_URI
 }
 
 const declaredNamespaces = Object.assign({}, CELLDL_DECLARATIONS, WEB_DECLARATIONS)
@@ -85,7 +85,7 @@ export const DCT = Namespace(DCT_URI)
 export const OWL = Namespace(OWL_URI)
 export const RDF = Namespace(RDF_URI)
 export const RDFS = Namespace(RDFS_URI)
-export const XS = Namespace(XS_URI)
+export const XSD = Namespace(XSD_URI)
 
 //==============================================================================
 
