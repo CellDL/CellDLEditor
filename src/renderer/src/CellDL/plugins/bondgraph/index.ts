@@ -90,13 +90,31 @@ export interface INodeStyle {
 
 // Temp workaround until `import.meta.glob` is correctly configured...
 // Files are in /public
+//      const ontologySource = import.meta.glob('@renderer/assets/bg-rdf/ontology.ttl', { eager: true })
+//      const templatesGlob = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', { eager: true })
 
-import BG_RDF_ONTOLOGY from '/bg-rdf/ontology.ttl?url&raw'
+import BG_RDF_ONTOLOGY_SOURCE from '/bg-rdf/ontology.ttl?url&raw'
 
-import CHEMICAL_TEMPLATE from '/bg-rdf/templates/chemical.ttl?url&raw'
-import ELECTRICAL_TEMPLATE from '/bg-rdf/templates/electrical.ttl?url&raw'
-import HYDRAULIC_TEMPLATE from '/bg-rdf/templates/hydraulic.ttl?url&raw'
-import MECHANICAL_TEMPLATE from '/bg-rdf/templates/mechanical.ttl?url&raw'
+import CHEMICAL_TEMPLATE_SOURCE from '/bg-rdf/templates/chemical.ttl?url&raw'
+import ELECTRICAL_TEMPLATE_SOURCE from '/bg-rdf/templates/electrical.ttl?url&raw'
+import HYDRAULIC_TEMPLATE_SOURCE from '/bg-rdf/templates/hydraulic.ttl?url&raw'
+import MECHANICAL_TEMPLATE_SOURCE from '/bg-rdf/templates/mechanical.ttl?url&raw'
+
+const BGF_ONTOLOGY_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework'
+
+const CHEMICAL_TEMPLATE_URI = 'https://bg-rdf.org/templates/chemical.ttl'
+const ELECTRICAL_TEMPLATE_URI = 'https://bg-rdf.org/templates/electrical.ttl'
+const HYDRAULIC_TEMPLATE_URI = 'https://bg-rdf.org/templates/hydraulic.ttl'
+const MECHANICAL_TEMPLATE_URI = 'https://bg-rdf.org/templates/mechanical.ttl'
+
+const BG_RDF_SOURCES: Map<string, string> = new Map([
+    [BGF_ONTOLOGY_URI, BG_RDF_ONTOLOGY_SOURCE],
+    [CHEMICAL_TEMPLATE_URI, CHEMICAL_TEMPLATE_SOURCE],
+    [ELECTRICAL_TEMPLATE_URI, ELECTRICAL_TEMPLATE_SOURCE],
+    [HYDRAULIC_TEMPLATE_URI, HYDRAULIC_TEMPLATE_SOURCE],
+    [MECHANICAL_TEMPLATE_URI, MECHANICAL_TEMPLATE_SOURCE],
+
+])
 
 //==============================================================================
 
@@ -273,16 +291,9 @@ export class BondgraphPlugin implements PluginInterface {
     #rdfStore: RdfStore = new RdfStore()
 
     constructor() {
-
-//      const ontologySource = import.meta.glob('@renderer/assets/bg-rdf/ontology.ttl', { eager: true })
-//      const templatesGlob = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', { eager: true })
-
-        this.#rdfStore.load(BG_RDF_ONTOLOGY)
-        this.#rdfStore.load(CHEMICAL_TEMPLATE)
-        this.#rdfStore.load(ELECTRICAL_TEMPLATE)
-        this.#rdfStore.load(HYDRAULIC_TEMPLATE)
-        this.#rdfStore.load(MECHANICAL_TEMPLATE)
-
+        for (const [uri, source] of BG_RDF_SOURCES.entries()) {
+            this.#rdfStore.load(source, uri)
+        }
         this.#loadDomains()
         this.#loadBaseComponents()
         this.#assignTemplates()
