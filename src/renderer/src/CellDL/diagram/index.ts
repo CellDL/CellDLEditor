@@ -210,6 +210,10 @@ export class CellDLDiagram {
         return this.#svgDiagram
     }
 
+    get uri(): string {
+        return this.#documentNode.value
+    }
+
     domToSvgCoords(domCoords: PointLike): DOMPoint {
         // Transform from screen coordinates to SVG coordinates
         const dom_to_svg_transform: DOMMatrix | undefined = this.#svgDiagram?.getScreenCTM()?.inverse()
