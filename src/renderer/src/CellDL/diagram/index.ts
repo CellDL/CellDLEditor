@@ -765,7 +765,7 @@ export class CellDLDiagram {
         const interfacePorts: CellDLInterface[] = []
         const connectors = connection.connectedObjects
         const pathElements = (<SvgConnection>connection.celldlSvgElement!).pathElements
-        const pathStart = connectors[0]
+        const pathStart = connectors[0]!
         const newConnectors: CellDLConnectedObject[] = []
         newConnectors.push(pathStart)
         const newElements: SVGPathElement[] = []
@@ -776,8 +776,8 @@ export class CellDLDiagram {
         let currentPathInside = objectIds.has(pathStart.id)
         let pathEnd: CellDLConnectedObject
         for (let pathElementIndex = 0; pathElementIndex < pathElements.length; pathElementIndex += 1) {
-            const pathElement = pathElements[pathElementIndex]
-            pathEnd = connectors[pathElementIndex + 1]
+            const pathElement = pathElements[pathElementIndex]!
+            pathEnd = connectors[pathElementIndex + 1]!
             if (
                 (currentPathInside && objectIds.has(pathEnd.id)) ||
                 (!currentPathInside && !objectIds.has(pathEnd.id))
