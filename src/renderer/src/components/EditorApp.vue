@@ -113,7 +113,18 @@ const fileData = vue.ref()
 // Open.
 
 async function onOpenMenu() {
-    const fileHandles = await window.showOpenFilePicker()
+    const options = {
+        excludeAcceptAllOption: true,
+        types: [
+            {
+                description: 'CellDL files',
+                accept: {
+                    'image/svg+xml': ['.celldl', '.svg'],
+                }
+            }
+        ]
+    }
+    const fileHandles = await window.showOpenFilePicker(options)
     if (fileHandles.length) {
         const file = await fileHandles[0].getFile()
         const contents = await file.text()
@@ -150,7 +161,7 @@ async function onSaveMenu() {
             {
                 description: 'CellDL files',
                 accept: {
-                    'text/plain': ['.celldl', '.svg'],
+                    'image/svg+xml': ['.svg', '.celldl'],
                 }
             }
         ]
