@@ -118,8 +118,8 @@ import { BaseStore } from './store'
 export class RdfStore extends BaseStore {
     #rdfStore: $oxigraph.Store
 
-    constructor(documentUri: string) {
-        super(documentUri)
+    constructor() {
+        super()
         this.#rdfStore = new $oxigraph.Store()
     }
 
@@ -142,11 +142,11 @@ export class RdfStore extends BaseStore {
         return this.#rdfStore.match(s, p, o, g || $oxigraph.defaultGraph()).length > 0
     }
 
-    load(rdf: string, contentType: ContentType = TurtleContentType, graph: NamedNode | null = null) {
+    load(baseIri: string|null=null, rdf: string, contentType: ContentType=TurtleContentType, graph: NamedNode|null=null) {
         try {
             this.#rdfStore.load(rdf, {
                 format: contentType,
-                base_iri: this.documentUri,
+                base_iri: baseIri || undefined,
                 to_graph_name: graph || $oxigraph.defaultGraph()
             })
         } catch (error) {
@@ -167,6 +167,7 @@ export class RdfStore extends BaseStore {
     }
 
     async serialise(
+        baseIri: string,
         contentType: ContentType = TurtleContentType,
         namespaces: Record<string, string> = {},
         graph: NamedNode | null = null
@@ -175,13 +176,13 @@ export class RdfStore extends BaseStore {
             const quads = this.#rdfStore.match(null, null, null, graph || $oxigraph.defaultGraph())
             const turtle = await prettyTurtle(quads, {
                 format: 'text/turtle',
-                prefixes: Object.assign({ '': `${this.documentUri}#` }, WEB_DECLARATIONS, namespaces),
-                baseIri: this.documentUri,
+                prefixes: Object.assign({ '': `${baseIri}#` }, WEB_DECLARATIONS, namespaces),
+                baseIri: baseIri,
                 explicitBaseIRI: true,
                 compact: false,
                 ordered: true
             })
-            return turtle.replaceAll(this.documentUri, '')
+            return turtle.replaceAll(baseIri, '')
         } else {
             return this.#rdfStore.dump({
                 format: contentType,

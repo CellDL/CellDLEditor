@@ -21,6 +21,12 @@
             // Load oxigraph's WASM module
             import initOxigraph from '@oxigraph/web.js'
             await initOxigraph()
+
+            // Load pyodide's WASM module
+
+            import { loadPyodide } from '@pyodide/pyodide.mjs'
+            globalThis.pyodideInitialised = false
+            globalThis.pyodide = await loadPyodide()
         </script>
     </head>
     <body>

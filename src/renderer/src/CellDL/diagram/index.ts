@@ -31,7 +31,10 @@ import {
     DCT,
     MetadataPropertiesMap,
     type MetadataPropertyValue,
+    namedNode,
     type NamedNode,
+    Namespace,
+    type NamespaceType,
     OWL,
     RdfStore,
     RDF_TYPE,
@@ -93,7 +96,7 @@ const NEW_DIAGRAM_URI = 'file:///tmp/new_file.celldl'
 //==============================================================================
 
 const CELLDL_DEFINITIONS_ID = 'celldl-svg-definitions'
-const CELLDL_METADATA_ID = 'celldl-rdf-metadata'
+export const CELLDL_METADATA_ID = 'celldl-rdf-metadata'
 const CELLDL_STYLESHEET_ID = 'celldl-svg-stylesheet'
 
 const DIAGRAM_MARGIN = 20
@@ -111,6 +114,9 @@ export class CellDLDiagram {
 
     #kb: RdfStore
     #celldlEditor: CellDLEditor
+
+    #documentNode: NamedNode
+    #documentNS: NamespaceType
     #filePath: string
     #diagramProperties: StringProperties = {}
 
@@ -135,11 +141,15 @@ export class CellDLDiagram {
             ) {
                 documentUri = `file://${documentUri}`
             }
-            this.#kb = new RdfStore(documentUri)
+            this.#documentNode = namedNode(documentUri)
+            this.#documentNS = Namespace(`${documentUri}#`)
+            this.#kb = new RdfStore()
             this.#loadCellDL(celldlData)
             this.#loadMetadata()
         } else {
-            this.#kb = new RdfStore(NEW_DIAGRAM_URI)
+            this.#documentNode = namedNode(NEW_DIAGRAM_URI)
+            this.#documentNS = Namespace(`${NEW_DIAGRAM_URI}#`)
+            this.#kb = new RdfStore()
             if (importSvg) {
                 this.#importSvg(celldlData)
             } else {
@@ -150,7 +160,7 @@ export class CellDLDiagram {
         this.#setLastIdentifier()
         this.#setupDefines()
         this.#setStylesheet()
-        pluginComponents.newDocument(this.#kb)
+        pluginComponents.newDocument(this.#documentNode.uri, this.#kb)
     }
 
     finishSetup() {
@@ -200,6 +210,10 @@ export class CellDLDiagram {
         return this.#svgDiagram
     }
 
+    get uri(): string {
+        return this.#documentNode.value
+    }
+
     domToSvgCoords(domCoords: PointLike): DOMPoint {
         // Transform from screen coordinates to SVG coordinates
         const dom_to_svg_transform: DOMMatrix | undefined = this.#svgDiagram?.getScreenCTM()?.inverse()
@@ -213,7 +227,7 @@ export class CellDLDiagram {
     }
 
     makeUri(id: string): NamedNode {
-        return this.#kb.documentNS(id)
+        return this.#documentNS(id)
     }
 
     #nextIdentifier(): string {
@@ -235,7 +249,7 @@ export class CellDLDiagram {
 
     #loadDiagramProperties() {
         for (const [key, property] of Object.entries(DiagramProperties)) {
-            for (const stmt of this.#kb.statementsMatching(this.#kb.documentNode, property, null)) {
+            for (const stmt of this.#kb.statementsMatching(this.#documentNode, property, null)) {
                 this.#diagramProperties[key] = stmt.object.value
                 break
             }
@@ -249,11 +263,11 @@ export class CellDLDiagram {
             this.#diagramProperties['modified'] = new Date(Date.now()).toISOString()
         }
         for (const [key, property] of Object.entries(DiagramProperties)) {
-            this.#kb.removeStatements(this.#kb.documentNode, property, null)
+            this.#kb.removeStatements(this.#documentNode, property, null)
             if (key in this.#diagramProperties) {
                 const value = this.#diagramProperties[key]
-                if (value && this.#kb.documentNode) {
-                    this.#kb.add(this.#kb.documentNode, property, $rdf.literal(value))
+                if (value && this.#documentNode) {
+                    this.#kb.add(this.#documentNode, property, $rdf.literal(value))
                 }
             }
         }
@@ -398,9 +412,7 @@ export class CellDLDiagram {
     }
 
     #initaliseMetadata() {
-        if (this.#kb.documentNode) {
-            this.#kb.add(this.#kb.documentNode, RDF_TYPE, CELLDL('Document'))
-        }
+        this.#kb.add(this.#documentNode, RDF_TYPE, CELLDL('Document'))
         this.#diagramProperties['celldlVersion'] = CELLDL_VERSION
     }
 
@@ -412,12 +424,12 @@ export class CellDLDiagram {
         ) {
             for (const childNode of metadataElement.childNodes) {
                 if (childNode.nodeName === '#cdata-section') {
-                    this.#kb.load((<CDATASection>childNode).data, TurtleContentType)
+                    this.#kb.load(this.#documentNode.uri, (<CDATASection>childNode).data, TurtleContentType)
                     break
                 }
             }
         }
-        if (!this.#kb.contains(this.#kb.documentNode, RDF_TYPE, CELLDL('Document'))) {
+        if (!this.#kb.contains(this.#documentNode, RDF_TYPE, CELLDL('Document'))) {
             throw new Error(`${this.#filePath} metadata doesn't describe a valid CellDL document`)
         }
         this.#loadDiagramProperties()
@@ -511,7 +523,7 @@ export class CellDLDiagram {
     async #serialiseMetadata(metadataFormat: ContentType): Promise<string> {
         let metadata: string = ''
         try {
-            metadata = await this.#kb.serialise(metadataFormat, CELLDL_DECLARATIONS)
+            metadata = await this.#kb.serialise(this.#documentNode.uri, metadataFormat, CELLDL_DECLARATIONS)
         } catch (err) {
             console.log(err)
         }
@@ -757,7 +769,7 @@ export class CellDLDiagram {
         const interfacePorts: CellDLInterface[] = []
         const connectors = connection.connectedObjects
         const pathElements = (<SvgConnection>connection.celldlSvgElement!).pathElements
-        const pathStart = connectors[0]
+        const pathStart = connectors[0]!
         const newConnectors: CellDLConnectedObject[] = []
         newConnectors.push(pathStart)
         const newElements: SVGPathElement[] = []
@@ -768,8 +780,8 @@ export class CellDLDiagram {
         let currentPathInside = objectIds.has(pathStart.id)
         let pathEnd: CellDLConnectedObject
         for (let pathElementIndex = 0; pathElementIndex < pathElements.length; pathElementIndex += 1) {
-            const pathElement = pathElements[pathElementIndex]
-            pathEnd = connectors[pathElementIndex + 1]
+            const pathElement = pathElements[pathElementIndex]!
+            pathEnd = connectors[pathElementIndex + 1]!
             if (
                 (currentPathInside && objectIds.has(pathEnd.id)) ||
                 (!currentPathInside && !objectIds.has(pathEnd.id))
@@ -896,7 +908,7 @@ export class CellDLDiagram {
     }
 
     #subjectsOfType(parentType: NamedNode): [SubjectType, NamedNode][] {
-        return this.#kb.subjectsOfType(parentType).filter((st) => st[0].value.startsWith(this.#kb.documentUri))
+        return this.#kb.subjectsOfType(parentType).filter((st) => st[0].value.startsWith(this.#documentNode.value))
     }
 
     #loadObject<T extends CellDLObject>(type: NamedNode, CellDLClass: Constructor<T>) {
@@ -929,7 +941,7 @@ export class CellDLDiagram {
 
     getConnector(connectorNode: MetadataPropertyValue | null): CellDLConnectedObject | null {
         // @ts-expect-error: `value` property exists on a NamedNode
-        if (connectorNode && $rdf.isNamedNode(connectorNode) && connectorNode.value.startsWith(this.#kb.documentUri)) {
+        if (connectorNode && $rdf.isNamedNode(connectorNode) && connectorNode.value.startsWith(this.#documentNode.value)) {
             const connectorId = (<NamedNode>connectorNode).id()
             const connector = this.#objects.get(connectorId) as CellDLConnectedObject
             return connector && connector.isConnectable ? connector : null

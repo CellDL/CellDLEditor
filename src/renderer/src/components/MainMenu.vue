@@ -24,7 +24,7 @@ const props = defineProps<{
     hasFiles: boolean
 }>()
 
-const emit = defineEmits(['about', 'close', 'closeAll', 'open', 'save', 'settings'])
+const emit = defineEmits(['about', 'close', 'closeAll', 'bg2cellml', 'open', 'save', 'settings'])
 const isWindowsOrLinux = common.isWindows() || common.isLinux()
 const isMacOs = common.isMacOs()
 
@@ -63,6 +63,13 @@ const items = [
                     emit('closeAll')
                 },
                 disabled: () => !props.hasFiles
+            },
+            { separator: true },
+            {
+                label: 'Run bg2cellml...',
+                command: () => {
+                    emit('bg2cellml')
+                },
             }
         ]
     },

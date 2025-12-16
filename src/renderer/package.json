@@ -53,7 +53,7 @@
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
         "@jeswr/pretty-turtle": "^1.8.2",
-        "@mathjax/src": "^4.0.0",
+        "@mathjax/src": "^4.1.0",
         "@primeuix/themes": "^1.2.5",
         "@primevue/auto-import-resolver": "4.4.1",
         "@vueuse/core": "14.0.0",
@@ -64,6 +64,7 @@
         "oxigraph": "^0.5.2",
         "primeicons": "^7.0.0",
         "primevue": "4.4.1",
+        "pyodide": "^0.29.0",
         "rbush": "^4.0.1",
         "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers",
         "svg-path-commander": "^2.1.11",

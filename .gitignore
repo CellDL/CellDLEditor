@@ -35,3 +35,6 @@ src/renderer/public/oxigraph
 
 # BG-RDF
 src/renderer/public/bg-rdf
+
+# Pyodide
+src/renderer/public/pyodide

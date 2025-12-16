@@ -20,7 +20,6 @@ limitations under the License.
 
 import {
     blankNode,
-    namedNode,
     isBlankNode,
     isLiteral,
     isNamedNode,
@@ -28,11 +27,10 @@ import {
     type MetadataPropertyValue,
     type ContentType,
     type NamedNode,
-    Namespace,
     type Statement
 } from './index'
 
-import type { SubjectType, PredicateType, ObjectType, NamespaceType } from './index'
+import type { SubjectType, PredicateType, ObjectType } from './index'
 
 //==============================================================================
 
@@ -52,25 +50,6 @@ export interface PredicateValue {
 //==============================================================================
 
 export abstract class BaseStore {
-    #documentNode: NamedNode
-    #documentNS: NamespaceType
-
-    constructor(documentUri: string) {
-        this.#documentNode = namedNode(documentUri)
-        this.#documentNS = Namespace(`${documentUri}#`)
-    }
-
-    get documentUri(): string {
-        return this.#documentNode.uri
-    }
-
-    get documentNode(): NamedNode | undefined {
-        return this.#documentNode
-    }
-
-    documentNS(suffix: string): NamedNode {
-        return this.#documentNS(suffix)
-    }
 
     abstract add(s: SubjectType, p: PredicateType, o: ObjectType, g: NamedNode | null): Statement
 
@@ -81,7 +60,7 @@ export abstract class BaseStore {
         g: NamedNode | null
     ): boolean
 
-    abstract load(rdf: string, contentType: ContentType, graph: NamedNode | null): void
+    abstract load(baseIri: string|null, rdf: string, contentType: ContentType, graph: NamedNode|null): void
 
     abstract removeStatements(
         s: SubjectType | null,
@@ -91,6 +70,7 @@ export abstract class BaseStore {
     ): void
 
     abstract serialise(
+        baseIri: string,
         contentType: ContentType,
         namespaces: Record<string, string>,
         graph: NamedNode | null

@@ -80,7 +80,7 @@ export function getItemProperty(celldlObject: CellDLObject,
     let item: ItemDetails|undefined = undefined
 
     rdfStore.query(`${SPARQL_PREFIXES}
-        PREFIX : <${rdfStore.documentUri}#>
+        PREFIX : <${celldlObject.celldlDiagram.uri}#>
 
         SELECT ?value WHERE {
             ${celldlObject.uri.toString()} <${itemTemplate.uri}> ?value
@@ -108,7 +108,7 @@ export function updateItemProperty(property: string, value: ValueChange,
     const objectUri = celldlObject.uri.toString()
 
     rdfStore.update(`${SPARQL_PREFIXES}
-        PREFIX : <${rdfStore.documentUri}#>
+        PREFIX : <${celldlObject.celldlDiagram.uri}#>
 
         DELETE {
             ${objectUri} <${property}> ?value
@@ -119,7 +119,7 @@ export function updateItemProperty(property: string, value: ValueChange,
     const newValue = value.newValue.trim()
     if (newValue) {
         rdfStore.update(`${SPARQL_PREFIXES}
-            PREFIX : <${rdfStore.documentUri}#>
+            PREFIX : <${celldlObject.celldlDiagram.uri}#>
 
             INSERT DATA { ${objectUri} <${property}> """${newValue.replace('\\', '\\\\')}""" }
         `)
