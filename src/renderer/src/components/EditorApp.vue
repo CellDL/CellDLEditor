@@ -51,7 +51,7 @@ import * as vueCommon from '@renderer/common/vueCommon'
 import '@renderer/assets/app.css'
 import '@renderer/assets/icons.css'
 
-import { bg2cellml, rdfTest } from '@renderer/bg2cellml'
+import { rdfTest, testBg2cellml } from '@renderer/bg2cellml'
 
 //==============================================================================
 
@@ -167,7 +167,7 @@ async function runBG2CellML() {
 
 //    await rdfTest()
 
-    await bg2cellml()
+    await testBg2cellml()
 }
 
 //==============================================================================
