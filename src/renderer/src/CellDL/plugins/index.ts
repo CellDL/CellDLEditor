@@ -36,7 +36,7 @@ import {
     type StyleObject,
     type ValueChange
 } from '@editor/components/properties'
-import { BondgraphComponents, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
+import { BONDGRAPH_COMPONENTS, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 import { RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
@@ -94,7 +94,7 @@ export class PluginComponents {
 
     loadPlugins() {
         this.#bondgraphPlugin = new BondgraphPlugin()
-        this.#componentLibraries.push(BondgraphComponents)
+        this.#componentLibraries.push(BONDGRAPH_COMPONENTS)
         vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
     }
 

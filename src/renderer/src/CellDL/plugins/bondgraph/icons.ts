@@ -19,10 +19,15 @@ limitations under the License.
 ******************************************************************************/
 
 import { base64Svg, LatexMathSvg } from '@renderer/common/svgUtils'
-import { type ComponentLibraryTemplate } from '@editor/components/index'
 
 import { BGBaseComponent } from './index'
+import {
+    type BGComponentDefinition,
+    type BGComponentLibraryTemplate,
+    type BGElementStyle
+} from './utils'
 
+//==============================================================================
 //==============================================================================
 
 const ICON_BORDER= '2px'
@@ -40,77 +45,56 @@ const MIN_BORDER_COLOUR = 'grey'
 const DEFAULT_SPECIES = 'i'
 const DEFAULT_LOCATION = 'j'
 
-export interface ElementStyle {
-    text: string
-    background: string|string[]
-    border?: string
-}
-
-interface ComponentDefinition {
-    id: string
-    uri: string
-    name: string
-    symbol: string
-    style: ElementStyle,
-    noSpeciesLocation?: boolean
-}
-
-export type BGComponentLibraryTemplate = ComponentLibraryTemplate & {
-    uri: string
-    symbol: string
-    noSpeciesLocation?: boolean
-    style: ElementStyle
-}
-
+//==============================================================================
 //==============================================================================
 
-const FLOW_STYLE: ElementStyle = {
+const FLOW_STYLE: BGElementStyle = {
     text: '#00B050',
     background: '#E2F0D9'
 }
 
-const POTENTIAL_STYLE: ElementStyle = {
+const POTENTIAL_STYLE: BGElementStyle = {
     text: '#FF0909',
     background: '#FBE4D5'
 }
 
-const POTENTIAL_STORAGE_STYLE: ElementStyle = {
+const POTENTIAL_STORAGE_STYLE: BGElementStyle = {
     text: '#00B050',
     background: '#E2F0D9'
 }
 
-const KINETIC_STORAGE_STYLE: ElementStyle = {
+const KINETIC_STORAGE_STYLE: BGElementStyle = {
     text: 'black',
     background: 'lightgrey'
 }
 
-const REACTION_STYLE: ElementStyle = {
+const REACTION_STYLE: BGElementStyle = {
     text: '#72329F',
     background: '#FFD966',
     border: 'black'
 }
 
-const RESISTANCE_STYLE: ElementStyle = {
+const RESISTANCE_STYLE: BGElementStyle = {
     text: '#444',
     background: REACTION_STYLE.background
 }
-const ONE_RESISTANCE_STYLE: ElementStyle = {
+const ONE_RESISTANCE_STYLE: BGElementStyle = {
     text: RESISTANCE_STYLE.text,
     background: RESISTANCE_STYLE.background,
     border: 'green'
 }
 
-const SCALE_STYLE: ElementStyle = {
+const SCALE_STYLE: BGElementStyle = {
     text: '#7030A0',
     background: '#C1C1FA'
 }
 
-const UNITS_STYLE: ElementStyle = {
+const UNITS_STYLE: BGElementStyle = {
     text: '#444',
     background: '#DDD'
 }
 
-const ZERO_STORAGE_STYLE: ElementStyle = {
+const ZERO_STORAGE_STYLE: BGElementStyle = {
     text: FLOW_STYLE.text,
     background: FLOW_STYLE.background,
     border: 'red'
@@ -118,7 +102,7 @@ const ZERO_STORAGE_STYLE: ElementStyle = {
 
 //==============================================================================
 
-export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
+export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'ZeroStorageNode_q',
         uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
@@ -207,8 +191,9 @@ export const BONDGRAPH_ICON_DEFINITIONS: ComponentDefinition[] = [
 ]
 
 //==============================================================================
+//==============================================================================
 
-function typeset(latex: string, style: ElementStyle, base64: boolean=false): string {
+function typeset(latex: string, style: BGElementStyle, base64: boolean=false): string {
     const svg = LatexMathSvg.svgRect(latex, '', {
             'min-width': ICON_MIN_WIDTH,
             'min-height': ICON_MIN_HEIGHT,
@@ -250,7 +235,7 @@ export function svgImage(baseComponent: BGBaseComponent,
 
 //==============================================================================
 
-export function definitionToLibraryTemplate(defn: ComponentDefinition): BGComponentLibraryTemplate {
+export function definitionToLibraryTemplate(defn: BGComponentDefinition): BGComponentLibraryTemplate {
     const latex = defn.noSpeciesLocation ? defn.symbol : makeLatex(defn.symbol, DEFAULT_SPECIES, DEFAULT_LOCATION)
 
     return Object.assign({}, defn, {

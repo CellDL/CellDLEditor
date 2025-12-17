@@ -53,11 +53,14 @@ import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from
 import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
 
 import {
-    type BGComponentLibraryTemplate,
     BONDGRAPH_ICON_DEFINITIONS,
     definitionToLibraryTemplate,
     svgImage
 } from './icons'
+import {
+    type BGComponentLibrary,
+    type BGComponentLibraryTemplate
+} from './utils'
 
 //==============================================================================
 
@@ -65,17 +68,13 @@ const BONDGRAPH_FRAMEWORK = 'https://bg-rdf.org/ontologies/bondgraph-framework'
 
 //==============================================================================
 
-type BGComponentLibrary = ComponentLibrary & {
-    components: BGComponentLibraryTemplate[]
-}
-
-export const BondgraphComponents: BGComponentLibrary = {
+export const BONDGRAPH_COMPONENTS: BGComponentLibrary = {
     name: 'Bondgraph Elements',
     components: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
 }
 
-const BondgraphComponentTemplates: Map<string, BGComponentLibraryTemplate> = new Map(
-    BondgraphComponents.components.map((c: BGComponentLibraryTemplate) => [c.id, c])
+const BONDGRAPH_COMPONENT_TEMPLATES: Map<string, BGComponentLibraryTemplate> = new Map(
+    BONDGRAPH_COMPONENTS.components.map((c: BGComponentLibraryTemplate) => [c.id, c])
 )
 
 //==============================================================================
@@ -128,7 +127,7 @@ export class BGBaseComponent {
         this.#id = id
         this.#name = name
         this.#nodeType = nodeType
-        this.#template = BondgraphComponentTemplates.get(id)!
+        this.#template = BONDGRAPH_COMPONENT_TEMPLATES.get(id)!
     }
 
     get id() {
@@ -924,7 +923,7 @@ export class BondgraphPlugin implements PluginInterface {
             const element = r.get('element')!
             const label = r.get('label')
             const base = r.get('base')!
-            if (BondgraphComponentTemplates.has(element.value)) {
+            if (BONDGRAPH_COMPONENT_TEMPLATES.has(element.value)) {
                 const component = new BGBaseComponent(element.value,
                                             label ? label.value : getCurie(element.value),
                                             base.value)
