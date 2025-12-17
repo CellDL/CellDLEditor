@@ -31,7 +31,7 @@ import type { Constructor, StringProperties } from '@renderer/common/types'
 
 export interface NewObjectClass {
     CellDLClass: Constructor<CellDLObject>
-    uri: string
+    type: string
 }
 
 export interface ObjectTemplate extends NewObjectClass {
@@ -65,19 +65,19 @@ export interface ElementIdName {
 
 //==============================================================================
 
-export interface NamedUri {
+export interface NamedProperty {
     name: string
-    uri: string
+    property: string
 }
 
-export const OBJECT_METADATA: NamedUri[] = [
+export const OBJECT_METADATA: NamedProperty[] = [
     {
         name: 'Label',
-        uri: RDFS('label').value
+        property: RDFS('label').value
     },
     {
         name: 'Description',
-        uri: DCT('description').value
+        property: DCT('description').value
     }
 ]
 

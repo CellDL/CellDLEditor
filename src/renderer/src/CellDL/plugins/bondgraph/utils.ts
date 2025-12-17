@@ -33,7 +33,7 @@ export interface BGElementStyle {
 
 export interface BGComponentDefinition {
     id: string   // do we need `id`? Or is `uri + symbol`` sufficient?
-    uri: string
+    type: string
     name: string
     symbol: string
     style: BGElementStyle,
@@ -41,7 +41,7 @@ export interface BGComponentDefinition {
 }
 
 export type BGComponentLibraryTemplate = ComponentLibraryTemplate & {
-    uri: string
+    type: string
     symbol: string
     noSpeciesLocation?: boolean
     style: BGElementStyle

@@ -105,63 +105,63 @@ const ZERO_STORAGE_STYLE: BGElementStyle = {
 export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'ZeroStorageNode_q',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
         name: 'Zero storage node (q)',
         symbol: 'q',
         style: ZERO_STORAGE_STYLE
     },
     {
         id: 'ZeroStorageNode_u',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
         name: 'Zero storage node (u)',
         symbol: 'u',
         style: ZERO_STORAGE_STYLE
     },
     {
         id: 'OneResistanceNode',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
         name: 'One resistance node',
         symbol: 'v',
         style: ONE_RESISTANCE_STYLE
     },
     {
         id: 'QuantityStore',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore',
         name: 'Static energy store',
         symbol: 'q',
         style: POTENTIAL_STORAGE_STYLE
     },
     {
         id: 'ZeroNode',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode',
         name: 'Zero node',
         symbol: 'u',
         style: POTENTIAL_STYLE
     },
     {
         id: 'OneNode',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneNode',
         name: 'One node',
         symbol: 'v',
         style: FLOW_STYLE
     },
     {
         id: 'Dissipator',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator',
         name: 'Dissipative element',
         symbol: 'R',
         style: RESISTANCE_STYLE
     },
     {
         id: 'Reaction',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#Reaction',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Reaction',
         name: 'Reaction',
         symbol: 'v',
         style: REACTION_STYLE
     },
     {
         id: 'TransformNode',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode',
         name: 'Transform node',
         symbol: 'k',
         style: SCALE_STYLE,
@@ -169,21 +169,21 @@ export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     },
     {
         id: 'FlowStore',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore',
         name: 'Dynamic energy store',
         symbol: 'L',
         style: KINETIC_STORAGE_STYLE
     },
     {
         id: 'PotentialSource',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
         name: 'Potential source',
         symbol: 'Se',
         style: POTENTIAL_STYLE,
     },
     {
         id: 'FlowSource',
-        uri: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
         name: 'Flow source',
         symbol: 'Sf',
         style: FLOW_STYLE,

@@ -641,7 +641,7 @@ export class CellDLDiagram {
             compartmentGroup,
             {
                 CellDLClass: CellDLCompartment,
-                uri: CellDLCompartment.celldlType.uri,
+                type: CellDLCompartment.celldlType.uri,
                 metadataProperties: MetadataPropertiesMap.fromProperties([
                     [CELLDL('hasInterface'), interfacePorts.map((p) => p.uri)]
                 ])
@@ -683,7 +683,7 @@ export class CellDLDiagram {
             svgElement,
             {
                 CellDLClass: CellDLConnection,
-                uri: CellDLConnection.celldlType.uri,
+                type: CellDLConnection.celldlType.uri,
                 metadataProperties
             },
             false
@@ -713,7 +713,7 @@ export class CellDLDiagram {
         return this.#createPort<CellDLInterface>(
             {
                 CellDLClass: CellDLInterface,
-                uri: CellDLInterface.celldlType.uri
+                type: CellDLInterface.celldlType.uri
             },
             point
         )
@@ -723,7 +723,7 @@ export class CellDLDiagram {
         return this.#createPort<CellDLUnconnectedPort>(
             {
                 CellDLClass: CellDLUnconnectedPort,
-                uri: CellDLUnconnectedPort.celldlType.uri
+                type: CellDLUnconnectedPort.celldlType.uri
             },
             point
         )

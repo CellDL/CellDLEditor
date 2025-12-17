@@ -24,8 +24,8 @@ import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
 import type { PropertiesType } from '@renderer/common/types'
 
-import { type NamedUri, OBJECT_METADATA } from '@editor/components/index'
 import type { CellDLObject } from '@editor/celldlObjects/index'
+import { type NamedProperty, OBJECT_METADATA } from '@editor/components/index'
 import * as $rdf from '@editor/metadata/index'
 import { MetadataPropertiesMap, type RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { pluginComponents } from '@editor/plugins/index'
@@ -34,7 +34,7 @@ import { pluginComponents } from '@editor/plugins/index'
 
 export type ItemDetails = locApi.IUiJsonInput & {
     itemId: string
-    uri: string
+    property: string
     value?: string|number
     units?: string
     optional?: boolean
@@ -62,10 +62,10 @@ export const METADATA_GROUP_ID = 'cd-metadata'
 const METADATA_GROUP: PropertyGroup = {
     groupId: METADATA_GROUP_ID,
     title: 'Metadata',
-    items: OBJECT_METADATA.map((nameUri: NamedUri) => {
+    items: OBJECT_METADATA.map((nameUri: NamedProperty) => {
         return {
-            itemId: nameUri.uri,
-            uri: nameUri.uri,
+            itemId: nameUri.property,
+            property: nameUri.property,
             name: nameUri.name,
             defaultValue: ''
         }
@@ -83,7 +83,7 @@ export function getItemProperty(celldlObject: CellDLObject,
         PREFIX : <${celldlObject.celldlDiagram.uri}#>
 
         SELECT ?value WHERE {
-            ${celldlObject.uri.toString()} <${itemTemplate.uri}> ?value
+            ${celldlObject.uri.toString()} <${itemTemplate.property}> ?value
         }`
     ).forEach((r) => {
         const value = r.get('value')!.value
@@ -193,7 +193,7 @@ export class ObjectPropertiesPanel {
             const group = this.#componentProperties.value[this.#metadataIndex]
             for (const itemTemplate of metadataGroup.items) {
                 if (itemId === itemTemplate.itemId) {
-                    updateItemProperty(itemTemplate.uri, value, celldlObject, rdfStore)
+                    updateItemProperty(itemTemplate.property, value, celldlObject, rdfStore)
                     break
                 }
             }

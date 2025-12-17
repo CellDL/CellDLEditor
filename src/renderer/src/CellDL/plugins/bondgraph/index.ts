@@ -222,26 +222,26 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
         items: [
             {
                 itemId: BG_INPUT.ElementType,
-                uri: RDF('type').value,
+                property: RDF('type').value,
                 name: 'Bond Element',
                 possibleValues: [],
                 optional: true
             },
             {
                 itemId: BG_INPUT.ElementSpecies,
-                uri: BGF('hasSpecies').value,
+                property: BGF('hasSpecies').value,
                 name: 'Species',
                 defaultValue: ''
             },
             {
                 itemId: BG_INPUT.ElementLocation,
-                uri: BGF('hasLocation').value,
+                property: BGF('hasLocation').value,
                 name: 'Location',
                 defaultValue: ''
             },
             {
                 itemId: BG_INPUT.ElementValue,
-                uri: BGF('hasValue').value,
+                property: BGF('hasValue').value,
                 name: 'Initial value',
                 defaultValue: 0,
                 numeric: true,
@@ -319,7 +319,7 @@ export class BondgraphPlugin implements PluginInterface {
                 )
             }
             return {
-                uri: template.uri,
+                type: template.type,
                 CellDLClass: CellDLComponent,
                 name: template.name,
                 image: template.image,
@@ -541,7 +541,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     #deleteElementValue(celldlObject: CellDLObject, rdfStore: RdfStore) {
         const item = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
-        updateItemProperty(item.uri, { newValue: '', oldValue: ''}, celldlObject, rdfStore)
+        updateItemProperty(item.property, { newValue: '', oldValue: ''}, celldlObject, rdfStore)
     }
 
     #setElementValueTemplate(variable: Variable|undefined, group: PropertyGroup) {
@@ -574,7 +574,7 @@ export class BondgraphPlugin implements PluginInterface {
                 // @ts-expect-error: WIP
                 group.items.push({
                     itemId: `${group.groupId}/${variable.name}`,
-                    uri: BGF('parameterValue').value,
+                    property: BGF('parameterValue').value,
                     name: `${variable.name} (${variable.units})`,
                     minimumValue: 0,
                     defaultValue: 0,
@@ -638,7 +638,7 @@ export class BondgraphPlugin implements PluginInterface {
                 } else if (itemId === BG_INPUT.ElementSpecies) {
                     const errorMsg = await this.#updateSvgElement(celldlObject, value.newValue, pluginData.location)
                     if (errorMsg === '') {
-                        updateItemProperty(item.uri, value, celldlObject, rdfStore)
+                        updateItemProperty(item.property, value, celldlObject, rdfStore)
                         pluginData.species = value.newValue
                     } else {
                         alert.error(errorMsg)
@@ -647,7 +647,7 @@ export class BondgraphPlugin implements PluginInterface {
                     pluginData.location = value.newValue
                     const errorMsg = await this.#updateSvgElement(celldlObject, pluginData.species, value.newValue)
                     if (errorMsg === '') {
-                        updateItemProperty(item.uri, value, celldlObject, rdfStore)
+                        updateItemProperty(item.property, value, celldlObject, rdfStore)
                         pluginData.location = value.newValue
                     } else {
                         alert.error(errorMsg)
