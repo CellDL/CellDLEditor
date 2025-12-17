@@ -372,7 +372,7 @@ export class BondgraphPlugin implements PluginInterface {
                 ?uri a ?type .
                 ?type rdfs:subClassOf* bgf:BondElement
             }`, true)
-        .map((r) => {
+        .forEach((r) => {
             statements.push(`<${this.#currentDocumentUri}> bgf:hasBondElement ${r.get('uri')!.toString()} .`)
         })
 
@@ -386,7 +386,7 @@ export class BondgraphPlugin implements PluginInterface {
                 ?uri a ?type .
                 ?type rdfs:subClassOf* bgf:JunctionStructure
             }`, true)
-        .map((r) => {
+        .forEach((r) => {
             statements.push(`<${this.#currentDocumentUri}> bgf:hasJunctionStructure ${r.get('uri')!.toString()} .`)
         })
 
@@ -522,7 +522,7 @@ export class BondgraphPlugin implements PluginInterface {
                     bgf:hasValue ?value
                 ]
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             values.set(r.get('name')!.value, r.get('value')!.value)
         })
 
@@ -773,7 +773,7 @@ export class BondgraphPlugin implements PluginInterface {
             SELECT ?type WHERE {
                 ${celldlObject.uri.toString()} a ?type
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             const rdfType = r.get('type')!.value
             if (this.#baseComponents.has(rdfType)) {
                 baseComponentId = rdfType
@@ -890,7 +890,7 @@ export class BondgraphPlugin implements PluginInterface {
                     bgf:hasUnits ?quantityUnits
                 ] .
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             const domain = r.get('domain')!
             this.#physicalDomains.set(domain.value, {
                 id: domain.value,
@@ -920,7 +920,7 @@ export class BondgraphPlugin implements PluginInterface {
             UNION
                 { ?base rdfs:subClassOf* bg:JunctionStructure }
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             const element = r.get('element')!
             const label = r.get('label')
             const base = r.get('base')!
@@ -965,7 +965,7 @@ export class BondgraphPlugin implements PluginInterface {
                     { ?element a bgf:CompositeElement }
                 }
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             const component = this.#baseComponents.get(r.get('base')!.value)
             if (component) {
                 if (!this.#baseComponentToTemplates.has(component.id)) {
@@ -1019,7 +1019,7 @@ export class BondgraphPlugin implements PluginInterface {
                     rdfs:subClassOf* bgf:OneResistanceNode
                 }
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             const base = r.get('base')!
             if ([BGF('ZeroStorageNode').value, BGF('OneResistanceNode').value]
                     .includes(base.value)) {
@@ -1090,7 +1090,7 @@ export class BondgraphPlugin implements PluginInterface {
                     ]
                 }
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             this.#saveParametersAndStates(r)
         })
         // Find parameters and variables for Composite templates
@@ -1115,7 +1115,7 @@ export class BondgraphPlugin implements PluginInterface {
                     ]
                 }
             }`
-        ).map((r) => {
+        ).forEach((r) => {
             this.#saveParametersAndStates(r)
         })
     }

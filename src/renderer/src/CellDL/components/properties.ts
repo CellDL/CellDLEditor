@@ -85,7 +85,7 @@ export function getItemProperty(celldlObject: CellDLObject,
         SELECT ?value WHERE {
             ${celldlObject.uri.toString()} <${itemTemplate.uri}> ?value
         }`
-    ).map((r) => {
+    ).forEach((r) => {
         const value = r.get('value')!.value
         item = {
             value: value,
