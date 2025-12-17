@@ -239,7 +239,6 @@ export function definitionToLibraryTemplate(defn: BGComponentDefinition): BGComp
     const latex = defn.noSpeciesLocation ? defn.symbol : makeLatex(defn.symbol, DEFAULT_SPECIES, DEFAULT_LOCATION)
 
     return Object.assign({}, defn, {
-        id: defn.uri,
         image: typeset(latex, defn.style, true)
     })
 }
