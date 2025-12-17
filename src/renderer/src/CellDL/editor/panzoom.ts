@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { type Extent } from '@editor/geometry'
+import type { Extent } from '@editor/geometry'
 
 import { getViewbox } from '@renderer/common/svgUtils'
 import { Point } from '@renderer/common/points'

@@ -17,27 +17,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ******************************************************************************/
+/** biome-ignore-all lint/style/noNonNullAssertion: <keys exist in Map> */
 
-import * as $oxigraph from '@oxigraph/web'
+import type * as $oxigraph from '@oxigraph/web'
 import { ucum } from '@atomic-ehr/ucum'
 
 //==============================================================================
 
 import { arrowMarkerDefinition } from '@renderer/common/styling'
-import { type IUiJsonDiscreteInput } from '@renderer/libopencor/locUIJsonApi'
+import type { IUiJsonDiscreteInput } from '@renderer/libopencor/locUIJsonApi'
 
 import { getSvgFillStyle, getSvgPathStyle, setSvgPathStyle, type IPathStyle } from '@renderer/common/svgUtils'
 
 import { alert } from '@editor/editor/alerts'
 import {
     CellDLComponent,
-    CellDLConnection,
-    CellDLObject
+    type CellDLConnection,
+    type CellDLObject
 } from '@editor/celldlObjects/index'
-import {
-    type ComponentLibrary,
-    type ElementIdName,
-    type ObjectTemplate
+import type {
+    ComponentLibrary,
+    ElementIdName,
+    ObjectTemplate
 } from '@editor/components/index'
 import {
     getItemProperty,

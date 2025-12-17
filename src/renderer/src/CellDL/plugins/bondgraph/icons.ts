@@ -20,11 +20,11 @@ limitations under the License.
 
 import { base64Svg, LatexMathSvg } from '@renderer/common/svgUtils'
 
-import { BGBaseComponent } from './index'
-import {
-    type BGComponentDefinition,
-    type BGComponentLibraryTemplate,
-    type BGElementStyle
+import type { BGBaseComponent } from './index'
+import type {
+    BGComponentDefinition,
+    BGComponentLibraryTemplate,
+    BGElementStyle
 } from './utils'
 
 //==============================================================================

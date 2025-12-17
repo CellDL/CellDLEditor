@@ -18,9 +18,9 @@ limitations under the License.
 
 ******************************************************************************/
 
-import {
-    type ComponentLibrary,
-    type ComponentLibraryTemplate
+import type {
+    ComponentLibrary,
+    ComponentLibraryTemplate
 } from '@editor/components/index'
 
 //==============================================================================

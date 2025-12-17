@@ -22,12 +22,12 @@ import * as vue from 'vue'
 
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
-import { type PropertiesType } from '@renderer/common/types'
+import type { PropertiesType } from '@renderer/common/types'
 
-import { CellDLObject } from '@editor/celldlObjects/index'
 import { type NamedUri, OBJECT_METADATA } from '@editor/components/index'
+import type { CellDLObject } from '@editor/celldlObjects/index'
 import * as $rdf from '@editor/metadata/index'
-import { MetadataPropertiesMap, RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
+import { MetadataPropertiesMap, type RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
 import { pluginComponents } from '@editor/plugins/index'
 
 //==============================================================================
@@ -77,7 +77,7 @@ const METADATA_GROUP: PropertyGroup = {
 
 export function getItemProperty(celldlObject: CellDLObject,
                                 itemTemplate: ItemDetails, rdfStore: RdfStore): ItemDetails|undefined {
-    let item: ItemDetails|undefined = undefined
+    let item: ItemDetails|undefined
 
     rdfStore.query(`${SPARQL_PREFIXES}
         PREFIX : <${celldlObject.celldlDiagram.uri}#>

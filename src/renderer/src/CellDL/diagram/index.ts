@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { type PointLike } from '@renderer/common/points'
+import type { PointLike } from '@renderer/common/points'
 import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styling'
 import { svgCircleElement, SVG_URI, svgRectElement } from '@renderer/common/svgUtils'
 import type { Constructor, StringProperties } from '@renderer/common/types'
@@ -43,7 +43,7 @@ import {
     TurtleContentType
 } from '@editor/metadata/index'
 
-import { type Bounds, type Extent } from '@editor/geometry/index'
+import type { Bounds, Extent } from '@editor/geometry/index'
 import { ShapeIntersections } from '@editor/geometry/intersections'
 import { CellDLSpatialIndex } from '@editor/geometry/spatialindex'
 import type { ContainedObject } from '@editor/geometry/spatialindex'

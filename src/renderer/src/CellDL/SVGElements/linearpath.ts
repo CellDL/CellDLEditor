@@ -22,7 +22,7 @@ import type { NormalArray } from 'svg-path-commander'
 
 //==============================================================================
 
-import { Point, type PointLike, PointMath } from '@renderer/common/points'
+import { type Point, type PointLike, PointMath } from '@renderer/common/points'
 import { FixedValue, RestrictedValue } from '@editor/geometry'
 
 import type { BoundedElement } from './boundedelement'

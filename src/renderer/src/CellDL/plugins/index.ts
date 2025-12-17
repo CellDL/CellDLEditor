@@ -22,22 +22,22 @@ import * as vue from 'vue'
 
 //==============================================================================
 
-import {
+import type {
     CellDLConnection,
     CellDLObject
 } from '@editor/celldlObjects/index'
-import {
-    type ComponentLibrary,
-    type ComponentLibraryTemplate,
-    type ObjectTemplate,
+import type {
+    ComponentLibrary,
+    ComponentLibraryTemplate,
+    ObjectTemplate,
 } from '@editor/components/index'
-import {
-    type PropertyGroup,
-    type StyleObject,
-    type ValueChange
+import type {
+    PropertyGroup,
+    StyleObject,
+    ValueChange
 } from '@editor/components/properties'
 import { BONDGRAPH_COMPONENTS, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
-import { RdfStore } from '@editor/metadata/index'
+import type { RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
 
@@ -99,7 +99,7 @@ export class PluginComponents {
     }
 
     getSelectedTemplate(): ComponentLibraryTemplate|undefined {
-        let selectedTemplate: ComponentLibraryTemplate|undefined = undefined
+        let selectedTemplate: ComponentLibraryTemplate|undefined 
         if (this.#componentLibraries.length &&
             // @ts-expect-error: `componentLibraries` is at least 1 long
             this.#componentLibraries[0].components.length) {

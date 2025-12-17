@@ -1,6 +1,6 @@
 //==============================================================================
 
-import * as vue from 'vue'
+import type * as vue from 'vue'
 
 export interface EditorToolButton {
     toolId: string

@@ -22,12 +22,12 @@ import { Buffer } from 'buffer'
 
 //==============================================================================
 
-import { type PointLike } from '@renderer/common/points'
+import type { PointLike } from '@renderer/common/points'
 import { CONNECTION_COLOUR, CONNECTION_WIDTH, CONNECTION_DASH } from '@renderer/common/styling'
-import { type StringProperties } from '@renderer/common/types'
+import type { StringProperties } from '@renderer/common/types'
 import { latexAsSvgDocument } from '@renderer/mathjax/index'
 
-import { type Extent } from '@editor/geometry/index'
+import type { Extent } from '@editor/geometry/index'
 import { lengthToPixels, pixelsToLength } from '@editor/geometry/units'
 import { round } from '@editor/utils'
 
@@ -193,7 +193,7 @@ function latexToSvgRect(latex: string, suffix: string,
     let svgElement: SVGSVGElement = (<Element>svgDocument.documentElement) as SVGSVGElement
     const svgWidth = lengthToPixels(svgElement.getAttribute('width')) || 0
     const svgHeight = lengthToPixels(svgElement.getAttribute('height')) || 0
-    let gradient: string[] = []
+    const gradient: string[] = []
     if (svgWidth && svgHeight) {
         let viewBox = getViewbox(svgElement)
         const scale = [viewBox[2]/svgWidth, viewBox[3]/svgHeight]
@@ -243,7 +243,7 @@ function latexToSvgRect(latex: string, suffix: string,
         svgElement.setAttribute('height', pixelsToLength(height/scale[1]!, 'ex')!)
 
         let fill: string
-        let dataFillStyle: string[] = []
+        const dataFillStyle: string[] = []
         if (!options.background) {
             fill = 'transparent'
             dataFillStyle.push(fill)

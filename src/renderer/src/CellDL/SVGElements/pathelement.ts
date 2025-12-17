@@ -25,9 +25,9 @@ import type { NormalArray } from 'svg-path-commander'
 
 import type { CellDLConnection } from '@editor/celldlObjects/index'
 import type { EditorFrame } from '@editor/editor/editorframe'
-import { Point, type PointLike } from '@renderer/common/points'
+import type { Point, PointLike } from '@renderer/common/points'
 import { svgPathElement } from '@renderer/common/svgUtils'
-import { type FixedValue, type RestrictedValue } from '@editor/geometry/index'
+import type { FixedValue, RestrictedValue } from '@editor/geometry/index'
 import { ControlPoint } from '@editor/geometry/controls'
 import type { FoundPoint } from '@editor/geometry/pathutils'
 

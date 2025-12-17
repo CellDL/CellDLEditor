@@ -22,7 +22,7 @@ import { Point, type PointLike } from '@renderer/common/points'
 import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
 import type { CellDLDiagram } from '@editor/diagram'
 import type { CellDLMoveableObject } from '@editor/celldlObjects'
-import { type Extent } from '@editor/geometry'
+import type { Extent } from '@editor/geometry'
 import { range } from '@editor/utils'
 
 //==============================================================================

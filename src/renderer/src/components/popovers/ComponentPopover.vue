@@ -36,7 +36,7 @@ const props = defineProps<{
 }>()
 
 const idToComponent: Map<string, ComponentLibraryTemplate> = new Map()
-let selectedId: string | undefined = undefined
+let selectedId: string | undefined 
 
 vue.onMounted(() => {
     libraries!.value.forEach((library: ComponentLibrary) => {

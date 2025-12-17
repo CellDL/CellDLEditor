@@ -20,11 +20,11 @@ limitations under the License.
 
 import '@renderer/assets/svgContent.css'
 
-import { CellDLObject } from '@editor/celldlObjects/index'
+import type { CellDLObject } from '@editor/celldlObjects/index'
 import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
 import { getTemplateEventDetails, type TemplateEventDetails }  from '@editor/components/index'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
-import { CellDLDiagram } from '@editor/diagram/index'
+import type { CellDLDiagram } from '@editor/diagram/index'
 import { pluginComponents } from '@editor/plugins/index'
 import { round } from '@editor/utils'
 

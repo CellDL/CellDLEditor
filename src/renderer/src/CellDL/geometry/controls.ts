@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { CellDLConnection, CellDLObject } from '@editor/celldlObjects/index'
+import type { CellDLConnection, CellDLObject } from '@editor/celldlObjects/index'
 import type { EditorFrame } from '@editor/editor/editorframe'
 import { editGuides } from '@editor/editor/editguides'
 import type { BoundedElement } from '@editor/SVGElements/boundedelement'
