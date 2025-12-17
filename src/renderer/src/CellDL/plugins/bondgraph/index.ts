@@ -306,7 +306,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
         const baseComponent = this.#baseComponents.get(id)
-        if (baseComponent && baseComponent.template) {
+        if (baseComponent?.template) {
             const template = baseComponent.template
             const metadataProperties: MetadataProperty[] = [
                 [ RDF('type'), $rdf.namedNode(baseComponent.id)],
@@ -765,8 +765,8 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     #getObjectElementTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectElementTemplate|undefined {
-        let baseComponentId: string|undefined = undefined
-        let elementTemplate: ElementTemplate|undefined = undefined
+        let baseComponentId: string|undefined
+        let elementTemplate: ElementTemplate|undefined
         rdfStore.query(`${SPARQL_PREFIXES}
             PREFIX : <${this.#currentDocumentUri}#>
 
@@ -785,7 +785,7 @@ export class BondgraphPlugin implements PluginInterface {
         if (baseComponentId) {
             return {
                 baseComponent: this.#baseComponents.get(baseComponentId)!,
-                elementTemplate
+                elementTemplate: elementTemplate
             }
         } else {
             console.error(`Cannot find base component for ${celldlObject.uri}`)
@@ -799,7 +799,7 @@ export class BondgraphPlugin implements PluginInterface {
 
         discreteItem.possibleValues = []
         const baseComponent = template.baseComponent
-        const templates = this.#baseComponentToTemplates.get(baseComponent.id)! || []
+        const templates = this.#baseComponentToTemplates.get(baseComponent.id) || []
 
         // `baseComponent` and `templates` are possible values
         discreteItem.possibleValues.push({
@@ -819,13 +819,9 @@ export class BondgraphPlugin implements PluginInterface {
         const discreteValue = template.elementTemplate
                             ? template.elementTemplate.id
                             : baseComponent.id
-        const index = discreteItem.possibleValues.findIndex(v => {
-            if (String(discreteValue) === String(v.value)) {
-                return true
-            }
-        })
-        if (index !== undefined) {
-            discreteItem.value = discreteItem.possibleValues[index]!
+        const index = discreteItem.possibleValues.findIndex(v => String(discreteValue) === String(v.value))
+        if (index >= 0) {
+            discreteItem.value = discreteItem.possibleValues[index]
         }
 
         return discreteItem as ItemDetails
@@ -935,7 +931,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     #getDiffVariable(domain: PhysicalDomain, relation: string): Variable|undefined {
         relation = relation.replace(/\n \s*/g, '')  // Remove blanks and new lines
-        const diffStateVar = relation.match(/<apply><diff\/><bvar><ci>[^\<]*<\/ci><\/bvar><ci>([^\<]*)<\/ci><\/apply>/)
+        const diffStateVar = relation.match(/<apply><diff\/><bvar><ci>[^<]*<\/ci><\/bvar><ci>([^<]*)<\/ci><\/apply>/)
         if (diffStateVar) {
             const symbol = diffStateVar[1]
             if (symbol === domain.quantity.name) {
