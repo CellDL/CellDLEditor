@@ -193,7 +193,7 @@ export class CellDLDiagram {
     set metadata(data: StringProperties) {
         Object.keys(data)
             .filter((key) => key in DiagramProperties)
-            .map((key) => {
+            .forEach((key) => {
                 // @ts-expect-error: `key` is a valid key for `data`
                 this.#diagramProperties[key] = data[key]
             })
@@ -399,7 +399,7 @@ export class CellDLDiagram {
             this.#layers.set(layerId, newLayer)
             this.#orderedLayerIds.push(layerId)
         }
-        return (this.#currentLayer = newLayer)
+        return (this.#currentLayer === newLayer)
     }
 
     #findLayers() {
