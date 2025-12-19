@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ******************************************************************************/
+/** biome-ignore-all lint/style/noNonNullAssertion: <keys exist in Map> */
 
 import * as vue from 'vue'
 

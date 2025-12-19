@@ -88,6 +88,7 @@ export function getItemProperty(celldlObject: CellDLObject,
     ).forEach((r) => {
         const value = r.get('value')!.value
         item = {
+            // @ts-expect-error:
             value: value,
             ...itemTemplate
         }

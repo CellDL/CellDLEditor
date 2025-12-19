@@ -245,6 +245,7 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
                 name: 'Location',
                 defaultValue: ''
             },
+            // @ts-expect-error:
             {
                 itemId: BG_INPUT.ElementValue,
                 property: BGF('hasValue').value,
@@ -779,6 +780,7 @@ export class BondgraphPlugin implements PluginInterface {
         try {
             svgData = svgImage(symbol, species, location,
                                baseComponent.style, pluginData.fillColours)
+        // biome-ignore lint/suspicious/noExplicitAny: <>
         } catch (error: any) {
             return (error as Error).message
         }

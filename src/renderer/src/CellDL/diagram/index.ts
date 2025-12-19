@@ -112,7 +112,7 @@ const ID_PREFIX = 'ID-'
 export class CellDLDiagram {
     #svgDiagram!: SVGSVGElement
 
-    #kb: RdfStore
+    #kb: RdfStore = new RdfStore()
     #celldlEditor: CellDLEditor
 
     #documentNode: NamedNode
@@ -143,13 +143,11 @@ export class CellDLDiagram {
             }
             this.#documentNode = namedNode(documentUri)
             this.#documentNS = Namespace(`${documentUri}#`)
-            this.#kb = new RdfStore()
             this.#loadCellDL(celldlData)
             this.#loadMetadata()
         } else {
             this.#documentNode = namedNode(NEW_DIAGRAM_URI)
             this.#documentNS = Namespace(`${NEW_DIAGRAM_URI}#`)
-            this.#kb = new RdfStore()
             if (importSvg) {
                 this.#importSvg(celldlData)
             } else {
@@ -413,7 +411,7 @@ export class CellDLDiagram {
 
     #initaliseMetadata() {
         this.#kb.add(this.#documentNode, RDF_TYPE, CELLDL('Document'))
-        this.#diagramProperties['celldlVersion'] = CELLDL_VERSION
+        this.#diagramProperties.celldlVersion = CELLDL_VERSION
     }
 
     #loadMetadata() {
@@ -434,13 +432,13 @@ export class CellDLDiagram {
         }
         this.#loadDiagramProperties()
         if ('celldlVersion' in this.#diagramProperties) {
-            if (this.#diagramProperties['celldlVersion'] !== CELLDL_VERSION) {
+            if (this.#diagramProperties.celldlVersion !== CELLDL_VERSION) {
                 throw new Error(
-                    `${this.#filePath} metadata version ${this.#diagramProperties['celldlVersion']} is not compatible with editor`
+                    `${this.#filePath} metadata version ${this.#diagramProperties.celldlVersion} is not compatible with editor`
                 )
             }
         } else {
-            this.#diagramProperties['celldlVersion'] = CELLDL_VERSION
+            this.#diagramProperties.celldlVersion = CELLDL_VERSION
         }
     }
 
