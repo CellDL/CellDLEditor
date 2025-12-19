@@ -1059,6 +1059,7 @@ export class BondgraphPlugin implements PluginInterface {
                                     baseTemplates.filter(t => (t.id !== element.value)))
                             }
                         }
+WIP */
                         elementTemplate.baseComponentType = component.type
                         this.#baseComponentToElementTemplates.get(component.type)!.push(elementTemplate)
                     }
