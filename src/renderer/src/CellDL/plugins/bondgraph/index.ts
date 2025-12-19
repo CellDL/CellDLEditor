@@ -666,13 +666,12 @@ export class BondgraphPlugin implements PluginInterface {
                              celldlObject: CellDLObject, rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const template = pluginData.template
+
         for (const item of propertyTemplates.items) {
             if (itemId === item.itemId) {
                 alert.clear()
                 if (itemId === BG_INPUT.ElementType) {
                     this.#updateElementType(item, value, celldlObject, rdfStore)
-
                 } else if (itemId === BG_INPUT.ElementSpecies) {
                     const errorMsg = await this.#updateSvgElement(celldlObject, value.newValue, pluginData.location)
                     if (errorMsg === '') {
@@ -919,7 +918,7 @@ export class BondgraphPlugin implements PluginInterface {
     }
 
     #loadBaseComponents() {
-        // Get information about the components showing in the add component tool
+        // Get information about the components in the add component tool
         this.#query(`
             SELECT ?element ?label ?base WHERE {
                 ?element rdfs:subClassOf ?base .
