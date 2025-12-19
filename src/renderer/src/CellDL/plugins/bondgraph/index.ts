@@ -36,8 +36,7 @@ import {
     type CellDLObject
 } from '@editor/celldlObjects/index'
 import type {
-    ComponentLibrary,
-    ElementIdName,
+    ElementTypeName,
     ObjectTemplate
 } from '@editor/components/index'
 import {
@@ -55,12 +54,15 @@ import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
 
 import {
     BONDGRAPH_ICON_DEFINITIONS,
+    DEFAULT_LOCATION,
+    DEFAULT_SPECIES,
     definitionToLibraryTemplate,
     svgImage
 } from './icons'
-import {
-    type BGComponentLibrary,
-    type BGComponentLibraryTemplate
+import type {
+    BGComponentLibrary,
+    BGLibraryComponentTemplate,
+    BGElementStyle
 } from './utils'
 
 //==============================================================================
@@ -69,14 +71,17 @@ const BONDGRAPH_FRAMEWORK = 'https://bg-rdf.org/ontologies/bondgraph-framework'
 
 //==============================================================================
 
-export const BONDGRAPH_COMPONENTS: BGComponentLibrary = {
+export const BONDGRAPH_COMPONENT_LIBRARY: BGComponentLibrary = {
     name: 'Bondgraph Elements',
-    components: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
+    templates: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
 }
 
-const BONDGRAPH_COMPONENT_TEMPLATES: Map<string, BGComponentLibraryTemplate> = new Map(
-    BONDGRAPH_COMPONENTS.components.map((c: BGComponentLibraryTemplate) => [c.id, c])
+const BONDGRAPH_COMPONENT_TEMPLATES: Map<string, BGLibraryComponentTemplate> = new Map(
+    BONDGRAPH_COMPONENT_LIBRARY.templates.map((c: BGLibraryComponentTemplate) => [c.id, c])
 )
+
+const BONDGRAPH_TEMPLATE_TYPES
+    = new Set([...BONDGRAPH_COMPONENT_LIBRARY.templates.map((c: BGLibraryComponentTemplate) => c.type)])
 
 //==============================================================================
 
@@ -119,32 +124,22 @@ const BG_RDF_SOURCES: Map<string, string> = new Map([
 //==============================================================================
 
 export class BGBaseComponent {
-    #id: string
+    #defaultSymbol: string
     #name: string|undefined
     #nodeType: string
-    #template: BGComponentLibraryTemplate
+    #style: BGElementStyle
+    #type: string
 
-    constructor(id: string, name: string, nodeType: string) {
-        this.#id = id
+    constructor(template: BGLibraryComponentTemplate, name: string, nodeType: string) {
         this.#name = name
         this.#nodeType = nodeType
-        this.#template = BONDGRAPH_COMPONENT_TEMPLATES.get(id)!
+        this.#defaultSymbol = template.symbol
+        this.#style = template.style
+        this.#type = template.type
     }
 
-    get id() {
-        return this.#id
-    }
-
-    get name() {
-        return this.#name
-    }
-
-    get style() {
-        return this.#template.style
-    }
-
-    get template() {
-        return this.#template
+    get defaultSymbol() {
+        return this.#defaultSymbol
     }
 
     get isBondElement() {
@@ -153,6 +148,18 @@ export class BGBaseComponent {
 
     get isJunctionStructure() {
         return this.#nodeType === BGF('JunctionStructure').value
+    }
+
+    get name() {
+        return this.#name
+    }
+
+    get style() {
+        return this.#style
+    }
+
+    get type() {
+        return this.#type
     }
 }
 
@@ -177,26 +184,25 @@ interface PhysicalDomain {
 
 //==============================================================================
 
-type ElementTemplate = ElementIdName & {
+type ElementTemplate = ElementTypeName & {
     domain: string
     value?: Variable
     parameters: IdVariableMap
     states: IdVariableMap
-    baseComponentId?: string
+    defaultStyle: BGElementStyle
+    defaultSymbol: string
+    baseComponentType: string
 }
 
 //==============================================================================
 
-interface ObjectElementTemplate {
-    baseComponent: BGBaseComponent
-    elementTemplate?: ElementTemplate
-}
-
 interface PluginData {
+    baseComponentType: string
+    elementTemplate?: ElementTemplate
     fillColours?: string[]
+    symbol?: string
     location?: string
     species?: string
-    template: ObjectElementTemplate
 }
 
 //==============================================================================
@@ -282,12 +288,12 @@ const STYLING_GROUP = {
 export class BondgraphPlugin implements PluginInterface {
     readonly id: string = 'bondgraph-plugin'
 
-    #baseComponents: Map<string, BGBaseComponent> = new Map()
-    #baseComponentToTemplates: Map<string, ElementTemplate[]> = new Map()
+    #baseComponents: Map<string, BGBaseComponent> = new Map()                       // Indexed by component.type
+    #baseComponentToElementTemplates: Map<string, ElementTemplate[]> = new Map()    // Indexed by component.type
+    #elementTemplates: Map<string, ElementTemplate> = new Map()                     // Indexed by element.type
+
     #currentDocumentUri: string = ''
     #physicalDomains: Map<string, PhysicalDomain> = new Map()
-    #elementTemplates: Map<string, ElementTemplate> = new Map()
-
     #rdfStore: RdfStore = new RdfStore()
 
     constructor() {
@@ -305,17 +311,16 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
-        const baseComponent = this.#baseComponents.get(id)
-        if (baseComponent?.template) {
-            const template = baseComponent.template
+        const template = BONDGRAPH_COMPONENT_TEMPLATES.get(id)
+        if (template) {
             const metadataProperties: MetadataProperty[] = [
-                [ RDF('type'), $rdf.namedNode(baseComponent.id)],
-                [ BGF('hasSymbol'), $rdf.literal(baseComponent.template.symbol)]
+                [ RDF('type'), $rdf.namedNode(template.type)],
+                [ BGF('hasSymbol'), $rdf.literal(template.symbol)]
             ]
             if (!template.noSpeciesLocation) {
                 metadataProperties.push(
-                    [ BGF('hasSpecies'), $rdf.literal('i')],
-                    [ BGF('hasLocation'), $rdf.literal('j')]
+                    [ BGF('hasSpecies'), $rdf.literal(DEFAULT_SPECIES)],
+                    [ BGF('hasLocation'), $rdf.literal(DEFAULT_LOCATION)]
                 )
             }
             return {
@@ -430,29 +435,26 @@ export class BondgraphPlugin implements PluginInterface {
     getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         alert.clear()
         if (celldlObject.isConnection) {
-            const template = {}
-            celldlObject.setPluginData(this.id, { template })
+            celldlObject.setPluginData(this.id, { baseComponent: {} })
             componentProperties.forEach(group => {
                 if (group.groupId === BG_GROUP.StylingGroup) {
                     this.#getElementStyling(celldlObject, group, true)
                 }
             })
         } else {
-            const template = this.#getObjectElementTemplate(celldlObject, rdfStore)
-            if (!template) {
+            const pluginData = this.#setPluginData(celldlObject, rdfStore)
+            if (!pluginData) {
                 return
             }
-            celldlObject.setPluginData(this.id, { template })
-
             componentProperties.forEach(group => {
                 if (group.groupId === BG_GROUP.ElementGroup) {
                     this.#getElementProperties(celldlObject, group, rdfStore)
-                } else if (template.elementTemplate) {
+                } else if (pluginData.elementTemplate) {
                     if (group.groupId === BG_GROUP.ParameterGroup) {
-                        this.#setVariableTemplates(template.elementTemplate.parameters, group)
+                        this.#setVariableTemplates(pluginData.elementTemplate.parameters, group)
                         this.#getVariableProperties(celldlObject, group, rdfStore)
                     } else if (group.groupId === BG_GROUP.StateGroup) {
-                        this.#setVariableTemplates(template.elementTemplate.states, group)
+                        this.#setVariableTemplates(pluginData.elementTemplate.states, group)
                         this.#getVariableProperties(celldlObject, group, rdfStore)
                     }
                 } else if (group.groupId === BG_GROUP.StylingGroup) {
@@ -462,18 +464,53 @@ export class BondgraphPlugin implements PluginInterface {
         }
     }
 
+    #setPluginData(celldlObject: CellDLObject, rdfStore: RdfStore): PluginData|undefined {
+        const rows = rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${this.#currentDocumentUri}#>
+
+            SELECT ?type ?symbol WHERE {
+                ${celldlObject.uri.toString()} a ?type
+                OPTIONAL { ${celldlObject.uri.toString()} bgf:hasSymbol ?symbol }
+            }`
+        )
+        let pluginData: PluginData|undefined
+        for (const r of rows) {
+            const rdfType = r.get('type')!.value
+            const symbol = r.get('symbol')
+            const baseComponent = this.#baseComponents.get(rdfType)
+            if (baseComponent) {
+                pluginData = { baseComponentType: rdfType }
+            } else if (this.#elementTemplates.has(rdfType)) {
+                const elementTemplate = this.#elementTemplates.get(rdfType)!
+                if (pluginData) {
+                    pluginData.elementTemplate = elementTemplate
+                } else {
+                    pluginData = {
+                        baseComponentType: elementTemplate.baseComponentType,
+                        elementTemplate: elementTemplate
+                    }
+                }
+            }
+            if (symbol && pluginData) {
+                pluginData.symbol = symbol.value
+            }
+        }
+        if (pluginData) {
+            celldlObject.setPluginData(this.id, pluginData)
+            return pluginData
+        }
+        console.error(`Cannot find base component for ${celldlObject.uri}`)
+    }
+
     #getElementProperties(celldlObject: CellDLObject,
                           group: PropertyGroup,  rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const template = pluginData.template
         propertyTemplates.items.forEach((itemTemplate: ItemDetails) => {
             const items: ItemDetails[] = []
             if (itemTemplate.itemId === BG_INPUT.ElementType) {
-                if (template) {
-                    const discreteItem = this.#getElementTypeItem(itemTemplate, template)
-                    items.push(discreteItem)
-                }
+                const discreteItem = this.#getElementTypeItem(itemTemplate, pluginData)
+                items.push(discreteItem)
             } else if (itemTemplate.itemId === BG_INPUT.ElementSpecies ||
                        itemTemplate.itemId === BG_INPUT.ElementLocation ||
                        itemTemplate.itemId === BG_INPUT.ElementValue) {
@@ -590,20 +627,20 @@ export class BondgraphPlugin implements PluginInterface {
                                     componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         await this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
 
-        const template = (<PluginData>celldlObject.pluginData(this.id)).template
-        if (template.elementTemplate) {
+        const elementTemplate = (<PluginData>celldlObject.pluginData(this.id)).elementTemplate
+        if (elementTemplate) {
             if (itemId === BG_INPUT.ElementType && value.newValue !== value.oldValue) {
-                    this.#setElementValueTemplate(template.elementTemplate.value,
-                                                  componentProperties[ELEMENT_GROUP_INDEX]!)
-                    if (!template.elementTemplate.value) {
-                        this.#deleteElementValue(celldlObject, rdfStore)
-                    }
-                    this.#setVariableTemplates(template.elementTemplate.parameters,
-                                               componentProperties[PARAMS_GROUP_INDEX]!, true)
-                    this.#setVariableTemplates(template.elementTemplate.states,
-                                               componentProperties[STATES_GROUP_INDEX]!, true)
+                this.#setElementValueTemplate(elementTemplate.value,
+                                              componentProperties[ELEMENT_GROUP_INDEX]!)
+                if (!elementTemplate.value) {
+                    this.#deleteElementValue(celldlObject, rdfStore)
                 }
-            this.#updateVariableProperties(value, itemId, celldlObject, template.elementTemplate, rdfStore)
+                this.#setVariableTemplates(elementTemplate.parameters,
+                                           componentProperties[PARAMS_GROUP_INDEX]!, true)
+                this.#setVariableTemplates(elementTemplate.states,
+                                           componentProperties[STATES_GROUP_INDEX]!, true)
+            }
+            this.#updateVariableProperties(value, itemId, celldlObject, elementTemplate, rdfStore)
         }
     }
 
@@ -675,8 +712,8 @@ export class BondgraphPlugin implements PluginInterface {
                 ${objectUri} bgf:hasValue ?value
             }`)
         const newValue = value.newValue.trim()
-        const template = (<PluginData>celldlObject.pluginData(this.id)).template
-        const variable = template.elementTemplate!.value
+        const elementTemplate = (<PluginData>celldlObject.pluginData(this.id)).elementTemplate
+        const variable = elementTemplate!.value
         if (newValue) {
             rdfStore.update(`${SPARQL_PREFIXES}
                 PREFIX : <${this.#currentDocumentUri}#>
@@ -736,11 +773,12 @@ export class BondgraphPlugin implements PluginInterface {
         // Update and redraw the component's SVG element
 
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
+        const symbol = pluginData?.symbol ?? baseComponent.defaultSymbol
         let svgData = ''
         try {
-            svgData = svgImage(pluginData.template.baseComponent,
-                                     species, location,
-                                     pluginData.fillColours)
+            svgData = svgImage(symbol, species, location,
+                               baseComponent.style, pluginData.fillColours)
         } catch (error: any) {
             return (error as Error).message
         }
@@ -764,61 +802,31 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    #getObjectElementTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectElementTemplate|undefined {
-        let baseComponentId: string|undefined
-        let elementTemplate: ElementTemplate|undefined
-        rdfStore.query(`${SPARQL_PREFIXES}
-            PREFIX : <${this.#currentDocumentUri}#>
-
-            SELECT ?type WHERE {
-                ${celldlObject.uri.toString()} a ?type
-            }`
-        ).forEach((r) => {
-            const rdfType = r.get('type')!.value
-            if (this.#baseComponents.has(rdfType)) {
-                baseComponentId = rdfType
-            } else if (this.#elementTemplates.has(rdfType)) {
-                elementTemplate = this.#elementTemplates.get(rdfType)!
-                baseComponentId = elementTemplate.baseComponentId
-            }
-        })
-        if (baseComponentId) {
-            return {
-                baseComponent: this.#baseComponents.get(baseComponentId)!,
-                elementTemplate: elementTemplate
-            }
-        } else {
-            console.error(`Cannot find base component for ${celldlObject.uri}`)
-        }
-    }
-
-    //==========================================================================
-
-    #getElementTypeItem(itemTemplate: ItemDetails, template: ObjectElementTemplate): ItemDetails {
+    #getElementTypeItem(itemTemplate: ItemDetails, pluginData: PluginData): ItemDetails {
         const discreteItem = <IUiJsonDiscreteInput>{...itemTemplate}
 
         discreteItem.possibleValues = []
-        const baseComponent = template.baseComponent
-        const templates = this.#baseComponentToTemplates.get(baseComponent.id) || []
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
+        const elementTemplates = this.#baseComponentToElementTemplates.get(baseComponent.type) || []
 
         // `baseComponent` and `templates` are possible values
         discreteItem.possibleValues.push({
             name: baseComponent.name || '',
-            value: baseComponent.id,
+            value: baseComponent.type,
             emphasise: true
         })
         discreteItem.possibleValues.push(
-            ...templates.map(t => {
+            ...elementTemplates.map(t => {
                 return {
                     name: t.name,
-                    value: t.id
+                    value: t.type
                 }
             })
         )
 
-        const discreteValue = template.elementTemplate
-                            ? template.elementTemplate.id
-                            : baseComponent.id
+        const discreteValue = pluginData.elementTemplate
+                            ? pluginData.elementTemplate.type
+                            : baseComponent.type
         const index = discreteItem.possibleValues.findIndex(v => String(discreteValue) === String(v.value))
         if (index >= 0) {
             discreteItem.value = discreteItem.possibleValues[index]
@@ -829,17 +837,17 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    #updateElementType(itemTemplate: ItemDetails, value: ValueChange,
+    #updateElementType(_itemTemplate: ItemDetails, value: ValueChange,
                        celldlObject: CellDLObject, rdfStore: RdfStore) {
         const objectUri = celldlObject.uri.toString()
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const baseComponent = pluginData.template.baseComponent
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
 
         const deleteTriples: string[] = []
         if (this.#elementTemplates.has(value.oldValue)) {
             deleteTriples.push(`${objectUri} a <${value.oldValue}>`)
-            const baseComponentId = this.#elementTemplates.get(value.oldValue)!.baseComponentId
-            deleteTriples.push(`${objectUri} a <${baseComponent.id}>`)
+            deleteTriples.push(`${objectUri} a <${baseComponent.type}>`)
+            delete pluginData.elementTemplate
         } else if (this.#baseComponents.has(value.oldValue)) {
             deleteTriples.push(`${objectUri} a <${value.oldValue}>`)
         }
@@ -855,7 +863,9 @@ export class BondgraphPlugin implements PluginInterface {
 
             INSERT DATA { ${objectUri} a <${value.newValue}> }
         `)
-        pluginData.template.elementTemplate = this.#elementTemplates.get(value.newValue)
+        if (this.#elementTemplates.has(value.newValue)) {
+           pluginData.elementTemplate = this.#elementTemplates.get(value.newValue)!
+       }
     }
 
     //==========================================================================
@@ -920,11 +930,17 @@ export class BondgraphPlugin implements PluginInterface {
             const element = r.get('element')!
             const label = r.get('label')
             const base = r.get('base')!
-            if (BONDGRAPH_COMPONENT_TEMPLATES.has(element.value)) {
-                const component = new BGBaseComponent(element.value,
-                                            label ? label.value : getCurie(element.value),
-                                            base.value)
-                this.#baseComponents.set(element.value, component)
+            for (const template of BONDGRAPH_COMPONENT_TEMPLATES.values()) {
+                if (template.type === element.value) {
+                    let component = this.#baseComponents.get(template.type)
+                    if (!component) {
+                        component = new BGBaseComponent(template,
+                                        label ? label.value : getCurie(element.value),
+                                        base.value)
+                        this.#baseComponents.set(template.type, component)
+                    }
+                    template.component = component
+                }
             }
         })
     }
@@ -962,44 +978,47 @@ export class BondgraphPlugin implements PluginInterface {
                 }
             }`
         ).forEach((r) => {
-            const component = this.#baseComponents.get(r.get('base')!.value)
+            const base = r.get('base')!
+            const element = r.get('element')!
+            const component = this.#baseComponents.get(base.value)
             if (component) {
-                if (!this.#baseComponentToTemplates.has(component.id)) {
-                    this.#baseComponentToTemplates.set(component.id, [])
+                if (!this.#baseComponentToElementTemplates.has(component.type)) {
+                    this.#baseComponentToElementTemplates.set(component.type, [])
                 }
-                const element = r.get('element')!
                 const label = r.get('label')
                 const domainId = r.get('domain')!.value
-                const template: ElementTemplate = {
-                    id: element.value,
+                const elementTemplate: ElementTemplate = {
+                    type: element.value,
                     domain: domainId,
                     name: label ? label.value : getCurie(element.value),
                     parameters: new Map(),
                     states: new Map(),
-                    baseComponentId: component.id
+                    defaultStyle: component.style,
+                    defaultSymbol: component.defaultSymbol,
+                    baseComponentType: component.type,
                 }
                 const domain = this.#physicalDomains.get(domainId)
                 if (domain) {
-                    if (component.id === BGF('PotentialSource').value) {
-                        template.value = domain.potential
-                    } else if (component.id === BGF('FlowSource').value) {
-                        template.value = domain.flow
+                    if (component.type === BGF('PotentialSource').value) {
+                        elementTemplate.value = domain.potential
+                    } else if (component.type === BGF('FlowSource').value) {
+                        elementTemplate.value = domain.flow
                     } else {
                         const relation = r.get('relation')
                         if (relation) {
                             const differentiatedVariable = this.#getDiffVariable(domain, relation.value)
                             if (differentiatedVariable) {
-                                template.value = differentiatedVariable
+                                elementTemplate.value = differentiatedVariable
                             }
                         }
                     }
                 }
-                this.#elementTemplates.set(template.id, template)
-                this.#baseComponentToTemplates.get(component.id)!.push(template)
+                this.#elementTemplates.set(elementTemplate.type, elementTemplate)
+                this.#baseComponentToElementTemplates.get(component.type)!.push(elementTemplate)
             }
         })
 
-        // Composite element templates are incorrectly inserted into `baseComponentToTemplates`
+        // Composite element templates are incorrectly inserted into `baseComponentToElementTemplates`
         // above, so now correct their entries
         this.#query(`
             SELECT ?element ?base WHERE {
@@ -1022,23 +1041,24 @@ export class BondgraphPlugin implements PluginInterface {
                 const component = this.#baseComponents.get(r.get('base')!.value)
                 if (component) {
                     const element = r.get('element')!
-                    const template = this.#elementTemplates.get(element.value)
-                    if (template) {
-                        if (!this.#baseComponentToTemplates.has(component.id)) {
-                            this.#baseComponentToTemplates.set(component.id, [])
+                    const elementTemplate = this.#elementTemplates.get(element.value)
+                    if (elementTemplate) {
+                        if (!this.#baseComponentToElementTemplates.has(component.type)) {
+                            this.#baseComponentToElementTemplates.set(component.type, [])
                         }
-                        const templates = this.#baseComponentToTemplates.get(component.id)!
-                        if (template.baseComponentId) {
+/* WIP
+                        const elementTemplates = this.#baseComponentToElementTemplates.get(component.templateId)!
+                        if (elementTemplate.baseComponentType) {
                             // Remove from list assigned above
-                            const baseTemplates = this.#baseComponentToTemplates.get(template.baseComponentId)
+                            const baseTemplates = this.#baseComponentToElementTemplates.get(elementTemplate.baseComponentType)
                             if (baseTemplates) {
                                 const filtered =
-                                this.#baseComponentToTemplates.set(template.baseComponentId,
+                                this.#baseComponentToElementTemplates.set(elementTemplate.baseComponentType,
                                     baseTemplates.filter(t => (t.id !== element.value)))
                             }
                         }
-                        template.baseComponentId = component.id
-                        this.#baseComponentToTemplates.get(component.id)!.push(template)
+                        elementTemplate.baseComponentType = component.type
+                        this.#baseComponentToElementTemplates.get(component.type)!.push(elementTemplate)
                     }
                 }
             }

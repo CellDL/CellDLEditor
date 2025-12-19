@@ -5,13 +5,13 @@
                 .library-title {{ library.name }}
                 .library-icons
                     img.library-icon(
-                        v-for="component in library.components"
-                        :class="{ selected: component.selected }"
+                        v-for="template in library.templates"
+                        :class="{ selected: template.selected }"
                         :library="library.id"
-                        :id="component.id"
-                        :src="component.image"
-                        :aria-label="component.name"
-                        :title="component.name"
+                        :id="template.id"
+                        :src="template.image"
+                        :aria-label="template.name"
+                        :title="template.name"
                         draggable="true"
                         @dragstart="dragstart"
                         @mousedown="selected"
@@ -23,7 +23,7 @@ import * as vue from 'vue'
 
 import {
     type ComponentLibrary,
-    type ComponentLibraryTemplate,
+    type LibraryComponentTemplate,
     getTemplateEventDetails
 } from '@editor/components/index'
 
@@ -35,15 +35,15 @@ const props = defineProps<{
     toolId: string
 }>()
 
-const idToComponent: Map<string, ComponentLibraryTemplate> = new Map()
+const idToComponent: Map<string, LibraryComponentTemplate> = new Map()
 let selectedId: string | undefined 
 
 vue.onMounted(() => {
     libraries!.value.forEach((library: ComponentLibrary) => {
-        library.components.forEach((component: ComponentLibraryTemplate) => {
-            idToComponent.set(component.id, component)
-            if (component.selected) {
-                selectedId = component.id
+        library.templates.forEach((template: LibraryComponentTemplate) => {
+            idToComponent.set(template.id, template)
+            if (template.selected) {
+                selectedId = template.id
             }
         })
     })

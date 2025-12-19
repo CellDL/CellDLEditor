@@ -28,7 +28,7 @@ import type {
 } from '@editor/celldlObjects/index'
 import type {
     ComponentLibrary,
-    ComponentLibraryTemplate,
+    LibraryComponentTemplate,
     ObjectTemplate,
 } from '@editor/components/index'
 import type {
@@ -36,7 +36,7 @@ import type {
     StyleObject,
     ValueChange
 } from '@editor/components/properties'
-import { BONDGRAPH_COMPONENTS, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
+import { BONDGRAPH_COMPONENT_LIBRARY, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
 import type { RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
@@ -81,7 +81,10 @@ export class PluginComponents {
     }
 
     static get instance() {
-        return PluginComponents.#instance ?? (PluginComponents.#instance = new PluginComponents())
+        if (!PluginComponents.#instance) {
+            PluginComponents.#instance = new PluginComponents()
+        }
+        return PluginComponents.#instance
     }
 
     get registeredPlugins(): string[] {
@@ -94,21 +97,23 @@ export class PluginComponents {
 
     loadPlugins() {
         this.#bondgraphPlugin = new BondgraphPlugin()
-        this.#componentLibraries.push(BONDGRAPH_COMPONENTS)
+        this.#componentLibraries.push(BONDGRAPH_COMPONENT_LIBRARY)
         vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
     }
 
-    getSelectedTemplate(): ComponentLibraryTemplate|undefined {
-        let selectedTemplate: ComponentLibraryTemplate|undefined 
+    getSelectedTemplate(): LibraryComponentTemplate|undefined {
+        let selectedTemplate: LibraryComponentTemplate|undefined
         if (this.#componentLibraries.length &&
             // @ts-expect-error: `componentLibraries` is at least 1 long
-            this.#componentLibraries[0].components.length) {
+            this.#componentLibraries[0].templates.length) {
 
             // Select the default component template
 
             // @ts-expect-error: `componentLibraries` is at least 1 long
-            selectedTemplate = this.#componentLibraries[0].components[0]
-            selectedTemplate!.selected = true
+            selectedTemplate = this.#componentLibraries[0].templates[0]
+            if (selectedTemplate) {
+                selectedTemplate.selected = true
+            }
         }
         return selectedTemplate
     }

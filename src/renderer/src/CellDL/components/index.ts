@@ -45,7 +45,7 @@ export interface ObjectTemplate extends NewObjectClass {
 
 //==============================================================================
 
-export interface ComponentLibraryTemplate {
+export interface LibraryComponentTemplate {
     id: string
     name: string
     image: string
@@ -55,11 +55,11 @@ export interface ComponentLibraryTemplate {
 export interface ComponentLibrary {
     id?: string
     name: string
-    components: ComponentLibraryTemplate[]
+    templates: LibraryComponentTemplate[]
 }
 
-export interface ElementIdName {
-    id: string
+export interface ElementTypeName {
+    type: string
     name: string
 }
 
@@ -132,9 +132,9 @@ export class ComponentTemplate implements ObjectTemplate {
 
     constructor(
         readonly CellDLClass: Constructor<CellDLObject>,
-        readonly uri: string
+        readonly type: string
     ) {
-        this.rdfType = $rdf.namedNode(uri)
+        this.rdfType = $rdf.namedNode(type)
     }
 
     get constraints() {
@@ -158,7 +158,7 @@ export class ComponentTemplate implements ObjectTemplate {
     }
 
     get name() {
-        return this.uri.split('#').at(-1)!
+        return this.type.split('#').at(-1)!
     }
 
     get roles() {
@@ -179,7 +179,7 @@ export class ComponentTemplate implements ObjectTemplate {
     }
 
     copy(): ComponentTemplate {
-        const copy = new ComponentTemplate(this.CellDLClass, this.uri)
+        const copy = new ComponentTemplate(this.CellDLClass, this.type)
         copy.assign(this)
         return copy
     }

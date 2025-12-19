@@ -20,10 +20,9 @@ limitations under the License.
 
 import { base64Svg, LatexMathSvg } from '@renderer/common/svgUtils'
 
-import type { BGBaseComponent } from './index'
 import type {
     BGComponentDefinition,
-    BGComponentLibraryTemplate,
+    BGLibraryComponentTemplate,
     BGElementStyle
 } from './utils'
 
@@ -42,8 +41,8 @@ const MIN_BORDER_COLOUR = 'grey'
 
 //==============================================================================
 
-const DEFAULT_SPECIES = 'i'
-const DEFAULT_LOCATION = 'j'
+export const DEFAULT_SPECIES = 'i'
+export const DEFAULT_LOCATION = 'j'
 
 //==============================================================================
 //==============================================================================
@@ -222,20 +221,21 @@ function makeLatex(symbol: string, species: string|undefined,  location: string|
 
 //======================================
 
-export function svgImage(baseComponent: BGBaseComponent,
+export function svgImage(symbol: string,
                          species: string|undefined,
                          location: string|undefined,
+                         elementStyle: BGElementStyle,
                          background: string[]|undefined) {
-    const latex = makeLatex(baseComponent.template.symbol, species, location)
+    const latex = makeLatex(symbol, species, location)
     const style = (!!background && background.length)
-                ? Object.assign({}, baseComponent.style, { background })
-                : baseComponent.style
+                ? Object.assign({}, elementStyle, { background })
+                : elementStyle
     return typeset(latex, style)
 }
 
 //==============================================================================
 
-export function definitionToLibraryTemplate(defn: BGComponentDefinition): BGComponentLibraryTemplate {
+export function definitionToLibraryTemplate(defn: BGComponentDefinition): BGLibraryComponentTemplate {
     const latex = defn.noSpeciesLocation ? defn.symbol : makeLatex(defn.symbol, DEFAULT_SPECIES, DEFAULT_LOCATION)
 
     return Object.assign({}, defn, {

@@ -20,8 +20,10 @@ limitations under the License.
 
 import type {
     ComponentLibrary,
-    ComponentLibraryTemplate
+    LibraryComponentTemplate
 } from '@editor/components/index'
+
+import type { BGBaseComponent } from './index'
 
 //==============================================================================
 
@@ -32,7 +34,7 @@ export interface BGElementStyle {
 }
 
 export interface BGComponentDefinition {
-    id: string   // do we need `id`? Or is `uri + symbol`` sufficient?
+    id: string
     type: string
     name: string
     symbol: string
@@ -40,15 +42,16 @@ export interface BGComponentDefinition {
     noSpeciesLocation?: boolean
 }
 
-export type BGComponentLibraryTemplate = ComponentLibraryTemplate & {
+export type BGLibraryComponentTemplate = LibraryComponentTemplate & {
     type: string
     symbol: string
     noSpeciesLocation?: boolean
     style: BGElementStyle
+    component?: BGBaseComponent
 }
 
 export type BGComponentLibrary = ComponentLibrary & {
-    components: BGComponentLibraryTemplate[]
+    templates: BGLibraryComponentTemplate[]
 }
 
 //==============================================================================
