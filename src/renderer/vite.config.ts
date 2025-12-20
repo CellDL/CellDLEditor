@@ -56,7 +56,7 @@ export default vite.defineConfig({
     },
     server: {
         fs: {
-            allow: [path.join(import.meta.dirname, '../..')]
+            allow: [path.join(_dirname, '../..')]
         }
     }
 })
