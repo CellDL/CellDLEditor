@@ -99,7 +99,7 @@ function dragstart(e: DragEvent) {
 <style scoped>
 .component-library
 {
-    width: 160px;
+    width: 150px;
     display: flex;
     flex-direction: column;
     border: var(--p-accordion-header-border-width) solid var(--p-content-border-color);
@@ -116,9 +116,9 @@ function dragstart(e: DragEvent) {
     flex-wrap: wrap;
     align-items: start;
     justify-content: space-between;
-    gap: 5px;
+    gap: 3px;
     overflow-y: auto;
-    margin: 2px;
+    margin: 1px;
 }
 .library-icon
 {
