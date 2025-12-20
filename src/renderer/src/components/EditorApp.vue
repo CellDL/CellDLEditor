@@ -55,6 +55,17 @@ import { rdfTest, testBg2cellml } from '@renderer/bg2cellml'
 
 //==============================================================================
 
+import { loadPyodide } from '@pyodide/pyodide.mjs'
+import type { PyodideAPI } from '@pyodide/pyodide'
+import { initialisePyodide } from '@renderer/bg2cellml/index'
+
+// Load Pyodide's WASM module
+
+loadPyodide({ indexURL: '/pyodide/' }).then(async (pyodide: PyodideAPI) => {
+    // Then initialise our Python packages and `bg2cellml` conversion
+    await initialisePyodide(pyodide)
+})
+
 const props = defineProps<IEditorProps>()
 
 const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)

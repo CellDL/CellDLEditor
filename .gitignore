@@ -38,3 +38,6 @@ src/renderer/public/bg-rdf
 
 # Pyodide
 src/renderer/public/pyodide
+
+# Python
+src/renderer/public/python
