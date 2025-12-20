@@ -15,21 +15,28 @@
             type="file"
             multiple style="display: none"
             @change="onChange"
+        BackgroundComponent(
+            v-show="loadingMessage !== ''"
         )
-        MainMenu(
-            :id="mainMenuId"
-            :hasFiles="hasFiles"
-            v-if="electronApi === undefined"
-            @about="onAboutMenu"
-            @bg2cellml="runBG2CellML"
-            @open="onOpenMenu"
-            @save="onSaveMenu"
-            @settings="onSettingsMenu"
+        BlockingMessageComponent(
+            :message="loadingMessage"
+            v-show="loadingMessage !== ''"
         )
-        CellDLEditor(
-            :fileData="fileData"
-            :saveFile="saveFile"
-        )
+        div.editor-window
+            MainMenu(
+                :id="mainMenuId"
+                :hasFiles="hasFiles"
+                v-if="electronApi === undefined"
+                @about="onAboutMenu"
+                @bg2cellml="runBG2CellML"
+                @open="onOpenMenu"
+                @save="onSaveMenu"
+                @settings="onSettingsMenu"
+            )
+            CellDLEditor(
+                :fileData="fileData"
+                :saveFile="saveFile"
+            )
 </template>
 
 <script setup lang="ts">
@@ -59,11 +66,13 @@ import { loadPyodide } from '@pyodide/pyodide.mjs'
 import type { PyodideAPI } from '@pyodide/pyodide'
 import { initialisePyodide } from '@renderer/bg2cellml/index'
 
+const loadingMessage = vue.ref<string>('Loading CellDL editor...')
+
 // Load Pyodide's WASM module
 
 loadPyodide({ indexURL: '/pyodide/' }).then(async (pyodide: PyodideAPI) => {
     // Then initialise our Python packages and `bg2cellml` conversion
-    await initialisePyodide(pyodide)
+    await initialisePyodide(pyodide, loadingMessage)
 })
 
 const props = defineProps<IEditorProps>()
