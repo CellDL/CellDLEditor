@@ -10,11 +10,6 @@
         @keydown="activateInstance"
         @mousedown="activateInstance"
     )
-        input(
-            ref="files"
-            type="file"
-            multiple style="display: none"
-            @change="onChange"
         BackgroundComponent(
             v-show="loadingMessage !== ''"
         )
@@ -79,7 +74,6 @@ const props = defineProps<IEditorProps>()
 
 const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)
 const mainMenuId = vue.ref('editorMainMenu')
-const files = vue.ref<HTMLElement | null>(null);
 const activeInstanceUid = vueCommon.activeInstanceUid()
 
 // Keep track of which instance of the CellDL Editor is currently active.
@@ -155,23 +149,6 @@ async function onOpenMenu() {
     }
 }
 
-// Open a file
-
-function openFile(fileOrFilePath: string | File): void {
-console.log('open', fileOrFilePath)   // <<<<<<<<<<<<<
-}
-
-// Open file(s) dialog.
-
-function onChange(event: Event): void {
-    const files = (event.target as HTMLInputElement).files;
-
-    if (files !== null) {
-        for (const file of Array.from(files)) {
-            openFile(file);
-        }
-    }
-}
 
 const saveFile = vue.ref()
 

@@ -39,8 +39,6 @@ import PanZoom from '@editor/editor/panzoom'
 import { SelectionBox } from '@editor/editor/selectionbox'
 import { undoRedo } from '@editor/editor/undoredo'
 
-//import { componentProperties } from '@editor/components/properties'
-
 //==============================================================================
 
 /****  WIP
@@ -77,11 +75,6 @@ const TOOL_TO_STATE: Map<EDITOR_TOOL_IDS, EDITOR_STATE> = new Map([
 ])
 
 const DEFAULT_EDITOR_STATE = TOOL_TO_STATE.get(DEFAULT_EDITOR_TOOL_ID)!
-
-const POPOVER_TO_TOOL = {
-    'draw-connection-popover': 'draw-connection-tool',
-    'add-component-popover': 'add-component-tool'
-}
 
 //==============================================================================
 
@@ -165,8 +158,6 @@ export class CellDLEditor {
         CellDLEditor.instance = this
 
         /**
-        this.#statusMsg = this.getElementById('status-msg')!
-        this.#statusPos = this.getElementById('status-pos')!
         this.#contextMenu = this.getElementById('context-menu') as ContextMenu
         this.status = 'new editor'
 **/
