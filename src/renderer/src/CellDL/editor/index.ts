@@ -17,12 +17,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ******************************************************************************/
+/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 
 import '@renderer/assets/svgContent.css'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
-import { getTemplateEventDetails, type TemplateEventDetails }  from '@editor/components/index'
+import type { TemplateEventDetails } from '@editor/components/index'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
 import type { CellDLDiagram } from '@editor/diagram/index'
 import { pluginComponents } from '@editor/plugins/index'
@@ -349,7 +350,7 @@ export class CellDLEditor {
         }
     }
 
-    enableContextMenuItem(itemId: string, enable: boolean = true) {
+    enableContextMenuItem(_itemId: string, _enable: boolean = true) {
 //        this.#contextMenu.enableItem(itemId, enable)
     }
 
@@ -432,7 +433,7 @@ export class CellDLEditor {
         }
     }
 
-    #showTooltip(context: DOMPoint | DOMRect | Element, content: string, type: string = 'hint') {
+    #showTooltip(_context: DOMPoint | DOMRect | Element, _content: string, _type: string = 'hint') {
 /**
         if (this.#currentTooltip && content.trim() !== '') {
             this.#currentTooltip.innerHTML = `<x-message>${content}</x-message>`
@@ -654,7 +655,7 @@ export class CellDLEditor {
                 this.#unsetActiveObject()
             }
             return
-        } else if (this.#selectionBox && this.#selectionBox.pointerEvent(event, this.#domToSvgCoords(event))) {
+        } else if (this.#selectionBox?.pointerEvent(event, this.#domToSvgCoords(event))) {
             return
         }
 
