@@ -37,7 +37,8 @@ export type {
     SubjectType,
     PredicateType,
     ObjectType,
-    ContentType
+    ContentType,
+    Term
 } from './rdfstore.ts'
 
 export type { PredicateValue } from './store.ts'

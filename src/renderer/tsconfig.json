@@ -10,7 +10,6 @@
         "types": ["vite/client"],
         "paths": {
             "@editor/*": ["./src/CellDL/*"],
-            "@oxigraph/*": ["./public/oxigraph/*"],
             "@pyodide/*": ["./public/pyodide/*"],
             "@renderer/*": ["./src/*"]
         }

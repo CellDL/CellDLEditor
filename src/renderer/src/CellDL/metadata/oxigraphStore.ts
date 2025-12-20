@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $oxigraph from '@oxigraph/web'
+import * as $oxigraph from '@renderer/assets/oxigraph/web'
 
 import { write as prettyTurtle } from '@jeswr/pretty-turtle'
 
@@ -78,6 +78,10 @@ export function isNamedNode(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
     return !!term.termType && term.termType === 'NamedNode'
 }
+
+//==============================================================================
+
+export type Term = $oxigraph.Term
 
 //==============================================================================
 

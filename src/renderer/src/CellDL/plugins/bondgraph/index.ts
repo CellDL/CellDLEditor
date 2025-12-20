@@ -19,7 +19,6 @@ limitations under the License.
 ******************************************************************************/
 /** biome-ignore-all lint/style/noNonNullAssertion: <keys exist in Map> */
 
-import type * as $oxigraph from '@oxigraph/web'
 import { ucum } from '@atomic-ehr/ucum'
 
 //==============================================================================
@@ -48,7 +47,7 @@ import {
     type ValueChange
 } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
-import { BGF, RDF, SPARQL_PREFIXES } from '@editor/metadata/index'
+import { BGF, RDF, SPARQL_PREFIXES, type Term } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
 import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
 
@@ -1067,7 +1066,7 @@ WIP */
         })
     }
 
-    #saveParametersAndStates(r: Map<string, $oxigraph.Term>) {
+    #saveParametersAndStates(r: Map<string, Term>) {
         const element = r.get('element')!
         const template = this.#elementTemplates.get(element.value)
         if (!template) return ;

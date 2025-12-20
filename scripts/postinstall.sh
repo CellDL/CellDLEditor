@@ -1,7 +1,8 @@
 #!bin/sh
 
-mkdir -m 755 -p ./src/renderer/public/oxigraph
-cp -p ./node_modules/oxigraph/web* ./src/renderer/public/oxigraph
+# Copy oxigraph into assets
+mkdir -m 755 -p ./src/renderer/src/assets/oxigraph
+cp -p ./node_modules/oxigraph/web* ./src/renderer/src/assets/oxigraph
 
 # Copy pyodide into public
 mkdir -m 755 -p ./src/renderer/public/pyodide
