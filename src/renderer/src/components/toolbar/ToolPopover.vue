@@ -33,11 +33,6 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
 </style>
 
 <style scoped>
-/* What does `md.w-56` do?? */
-.p-card {
-    width: 210px !important;
-}
-
 .left-popover {
     position: absolute;
     margin-left: 36px;
