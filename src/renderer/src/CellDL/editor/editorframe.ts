@@ -85,14 +85,6 @@ export class EditorFrame {
         return this.#frameGroupElement.contains(feature)
     }
 
-    highlight(highlight = true) {
-        if (highlight) {
-            this.#frameGroupElement?.classList.add('highlight')
-        } else {
-            this.#frameGroupElement?.classList.remove('highlight')
-        }
-    }
-
     removeElement(element: SVGGraphicsElement | null) {
         if (element && this.#frameGroupElement.contains(element)) {
             this.#frameGroupElement.removeChild(element)

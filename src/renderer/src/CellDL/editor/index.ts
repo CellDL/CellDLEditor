@@ -467,7 +467,7 @@ export class CellDLEditor {
             this.#highlightAssociatedObjects(object, active)
         }
         if (object.selected) {
-            this.#editorFrame!.highlight(active)
+            object.highlight(active)
         }
     }
 
@@ -585,17 +585,12 @@ export class CellDLEditor {
         this.#selectionClickEvent(event, element, clickedObject)
     }
 
-    #selectionClickEvent(event: MouseEvent, element: SVGGraphicsElement, clickedObject: CellDLObject|null) {
+    #selectionClickEvent(event: MouseEvent, _element: SVGGraphicsElement, clickedObject: CellDLObject|null) {
         let deselected = false
         if (this.#selectedObject !== null) {
-            if (this.#editorFrame!.contains(element)) {
-                // Send click on a selected object's frame to the object
-                return
-            } else {
-                // Deselect
-                deselected = clickedObject === this.#selectedObject
-                this.#unsetSelectedObject()
-            }
+            // Deselect
+            deselected = clickedObject === this.#selectedObject
+            this.#unsetSelectedObject()
         }
         if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker) {
