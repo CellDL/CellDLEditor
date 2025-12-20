@@ -10,7 +10,10 @@ import * as vite from 'vite'
 const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default vite.defineConfig({
-    assetsInclude: ['**/*.ttl'],
+    assetsInclude: [
+        'pyodide/*',
+        '**/*.ttl'
+    ],
     base: './',
     build: {
         chunkSizeWarningLimit: 2048,
@@ -19,7 +22,10 @@ export default vite.defineConfig({
                 entryFileNames: `assets/[name].js`,
                 chunkFileNames: `assets/[name].js`,
                 assetFileNames: `assets/[name].[ext]`
-            }
+            },
+            external: [
+                '**/pyodide/*'
+            ]
         },
         target: 'esnext'
     },
@@ -44,6 +50,7 @@ export default vite.defineConfig({
         alias: {
             'node-fetch': 'isomorphic-fetch',
             '@editor': path.resolve(_dirname, 'src/CellDL'),
+            '@pyodide': path.resolve(_dirname, 'public/pyodide'),
             '@renderer': path.resolve(_dirname, 'src')
         }
     },
