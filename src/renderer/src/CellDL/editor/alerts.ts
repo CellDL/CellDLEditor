@@ -37,7 +37,6 @@ export namespace alert {
     }
 
     export function info(msg: string) {
-        console.log(msg)
         if (CellDLEditor.instance) {
             CellDLEditor.instance.showMessage(msg, 'info')
         }
