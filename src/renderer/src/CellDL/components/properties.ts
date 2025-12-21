@@ -77,29 +77,41 @@ const METADATA_GROUP: PropertyGroup = {
 
 export function getItemProperty(celldlObject: CellDLObject,
                                 itemTemplate: ItemDetails, rdfStore: RdfStore): ItemDetails|undefined {
-    let item: ItemDetails|undefined
+    const objectUri = celldlObject.uri.toString()
+    let value: string|undefined
 
     rdfStore.query(`${SPARQL_PREFIXES}
         PREFIX : <${celldlObject.celldlDiagram.uri}#>
 
         SELECT ?value WHERE {
-            ${celldlObject.uri.toString()} <${itemTemplate.property}> ?value
+            ${objectUri} <${itemTemplate.property}> ?value
         }`
     ).forEach((r) => {
-        const value = r.get('value')!.value
-        item = {
-            // @ts-expect-error:
-            value: value,
+        value = r.get('value')?.value
+    })
+
+    let item: ItemDetails|undefined
+    if (value === undefined) {
+        if (!itemTemplate.optional) {
+            return Object.assign({
+                value: itemTemplate.defaultValue || '',
+                ...itemTemplate
+            })
+        }
+        return undefined
+    }
+    if (itemTemplate.numeric) {
+        const valueUnits = value!.split(' ')
+        return {
+            value:  Number(valueUnits[0]),
+            units: valueUnits[1],
             ...itemTemplate
         }
-    })
-    if (!itemTemplate.optional && item === undefined) {
-        item = Object.assign({
-            value: itemTemplate.defaultValue || '',
-            ...itemTemplate
-        })
     }
-    return item
+    return {
+        value: value,
+        ...itemTemplate
+    }
 }
 
 //==============================================================================
