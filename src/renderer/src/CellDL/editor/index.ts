@@ -315,9 +315,6 @@ export class CellDLEditor {
         this.#activeObject = null
         this.#pointerMoved = false
         this.#selectedObject = null
-
-        // We are good to go
-//        this.status = 'Editor ready...'
     }
 
     closeDiagram() {

@@ -36,11 +36,9 @@ export interface NewObjectClass {
 
 export interface ObjectTemplate extends NewObjectClass {
     description?: string
-    label?: string
     metadataProperties: MetadataPropertiesMap
     name?: string
     image?: string
-    svg?: string
 }
 
 //==============================================================================
@@ -128,7 +126,6 @@ export class ComponentTemplate implements ObjectTemplate {
     #label?: string
     #maxConnections: number = Infinity
     #roles: MetadataPropertiesMap | null = null
-    #svg: string = ''
 
     constructor(
         readonly CellDLClass: Constructor<CellDLObject>,
@@ -157,16 +154,8 @@ export class ComponentTemplate implements ObjectTemplate {
         return MetadataPropertiesMap.fromProperties([[RDF_TYPE, this.rdfType]])
     }
 
-    get name() {
-        return this.type.split('#').at(-1)!
-    }
-
     get roles() {
         return this.#roles
-    }
-
-    get svg() {
-        return this.#svg
     }
 
     get templateProperties(): TemplateProperties {
@@ -208,16 +197,6 @@ export class ComponentTemplate implements ObjectTemplate {
         if (roles instanceof MetadataPropertiesMap) {
             this.#roles = roles
         }
-    }
-
-    /*
-     * Sets the SVG text that represents the component.
-     *
-     * @param      {string}  svg
-     *
-     */
-    setSvg(svg: string) {
-        this.#svg = svg
     }
 
     updateTemplateProperties(_properties: TemplateProperties): boolean {

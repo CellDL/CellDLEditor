@@ -191,7 +191,6 @@ export class ObjectPropertiesPanel {
             // Save component properties in the METADATA_GROUP
 
             const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
-            const group = this.#componentProperties.value[this.#metadataIndex]
             for (const itemTemplate of metadataGroup.items) {
                 if (itemId === itemTemplate.itemId) {
                     updateItemProperty(itemTemplate.property, value, celldlObject, rdfStore)

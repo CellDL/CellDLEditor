@@ -79,9 +79,6 @@ const BONDGRAPH_COMPONENT_TEMPLATES: Map<string, BGLibraryComponentTemplate> = n
     BONDGRAPH_COMPONENT_LIBRARY.templates.map((c: BGLibraryComponentTemplate) => [c.id, c])
 )
 
-const BONDGRAPH_TEMPLATE_TYPES
-    = new Set([...BONDGRAPH_COMPONENT_LIBRARY.templates.map((c: BGLibraryComponentTemplate) => c.type)])
-
 //==============================================================================
 
 export interface INodeStyle {

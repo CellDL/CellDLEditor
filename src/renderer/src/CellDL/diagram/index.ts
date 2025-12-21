@@ -656,7 +656,6 @@ export class CellDLDiagram {
         let svgElement: SVGGraphicsElement
         if (svgElements.length === 0) {
             console.log('No SVG elements to connect...')
-            debugger
         }
         if (svgElements.length > 1) {
             svgElement = document.createElementNS(SVG_URI, 'g')
@@ -900,7 +899,6 @@ export class CellDLDiagram {
 
     #celldlObjectFromRdf<T extends CellDLObject>(CellDLClass: Constructor<T>, subject: SubjectType, options = {}): T {
         const metadata = this.#kb.metadataPropertiesForSubject(subject)
-        // need to call object from template...
         const celldlObject = new CellDLClass(subject, metadata, options, this)
         const objectTemplate = pluginComponents.getObjectTemplate(celldlObject, this.rdfStore)
         if (objectTemplate) {
