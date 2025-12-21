@@ -83,6 +83,7 @@ export class CellDLObject {
     #celldlType: NamedNode
 
     #label: string | null = null
+    #name: string = ''
     #moveable: boolean = false
 
     #metadataProperties!: MetadataPropertiesMap
@@ -113,7 +114,7 @@ export class CellDLObject {
 
     static objectFromTemplate(uri: NamedNode, objectTemplate: ObjectTemplate, celldlDiagram: CellDLDiagram): CellDLObject {
         const object = new objectTemplate.CellDLClass(uri, objectTemplate.metadataProperties, {}, celldlDiagram)
-        object.#objectTemplate = objectTemplate
+        object.setObjectTemplate(objectTemplate)
         return object
     }
 
@@ -199,6 +200,10 @@ export class CellDLObject {
         return this.#moveable
     }
 
+    get name() {
+        return this.#name
+    }
+
     get objectTemplate() {
         return this.#objectTemplate
     }
@@ -276,8 +281,13 @@ export class CellDLObject {
         this.#celldlSvgElement?.select(selected)
     }
 
+    setName(name: string) {
+        this.#name = name
+    }
+
     setObjectTemplate(objectTemplate: ObjectTemplate) {
         this.#objectTemplate = objectTemplate
+        this.#name = objectTemplate?.name || ''
     }
 
     assignSvgElement(_svgElement: SVGGraphicsElement) {

@@ -310,6 +310,16 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
+    #getName(type: string): string {
+        if (this.#elementTemplates.has(type)) {
+            return this.#elementTemplates.get(type)!.name
+        }
+        if (this.#baseComponents.has(type)) {
+            return this.#baseComponents.get(type)!.name || ''
+        }
+        return ''
+    }
+
     getObjectTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectTemplate|undefined {
         let baseComponent: BGBaseComponent|undefined
         let elementTemplate: ElementTemplate|undefined
@@ -366,7 +376,7 @@ export class BondgraphPlugin implements PluginInterface {
                 CellDLClass: CellDLComponent,
                 image: componentTemplate.image,
                 metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties),
-                name: componentTemplate.name
+                name: this.#getName(componentTemplate.type)
             }
         }
     }
@@ -904,6 +914,7 @@ export class BondgraphPlugin implements PluginInterface {
         if (this.#elementTemplates.has(value.newValue)) {
            pluginData.elementTemplate = this.#elementTemplates.get(value.newValue)!
        }
+        celldlObject.setName(this.#getName(value.newValue))
     }
 
     //==========================================================================

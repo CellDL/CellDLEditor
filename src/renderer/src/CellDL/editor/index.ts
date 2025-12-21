@@ -654,8 +654,8 @@ export class CellDLEditor {
             return
         }
 
-        if (currentObject) {
-//            this.status = `${currentObject.template.name} ${currentObject.id}`
+        if (currentObject?.name) {
+            this.status = currentObject.name
         }
 
         if (this.#editorState === EDITOR_STATE.DrawPath) {
