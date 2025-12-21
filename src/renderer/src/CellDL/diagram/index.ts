@@ -399,7 +399,7 @@ export class CellDLDiagram {
             this.#layers.set(layerId, newLayer)
             this.#orderedLayerIds.push(layerId)
         }
-        return (this.#currentLayer === newLayer)
+        this.#currentLayer = newLayer
     }
 
     #findLayers() {
