@@ -61,13 +61,14 @@ import { loadPyodide } from '@pyodide/pyodide.mjs'
 import type { PyodideAPI } from '@pyodide/pyodide'
 import { initialisePyodide } from '@renderer/bg2cellml/index'
 
-const loadingMessage = vue.ref<string>('Loading CellDL editor...')
+const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
 // Load Pyodide's WASM module
 
 loadPyodide({ indexURL: '/pyodide/' }).then(async (pyodide: PyodideAPI) => {
     // Then initialise our Python packages and `bg2cellml` conversion
     await initialisePyodide(pyodide, loadingMessage)
+    loadingMessage.value = ''
 })
 
 const props = defineProps<IEditorProps>()

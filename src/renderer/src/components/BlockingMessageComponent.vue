@@ -1,6 +1,6 @@
 <template lang="pug">
-    Message.absolute.opaque(
-        class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[1rem] pt-[1.2rem] pb-[0.75rem] z-[99999]"
+    Message.absolute(
+        class="bg-transparent! outline-none! top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[1rem] pt-[1.2rem] pb-[0.75rem] z-[99999]"
         severity="secondary"
     )
         i.pi.pi-cog.pi-spin(
@@ -13,15 +13,9 @@
 </template>
 
 <script setup lang="ts">
-// This is from BlockingMessageComponent.vue in OpenCOR's web app.
+// This is based on BlockingMessageComponent.vue in OpenCOR's web app.
 
 defineProps<{
     message: string
 }>()
 </script>
-
-<style scoped>
-.opaque {
-    background-color: rgba(196, 196, 196, 0.4);
-}
-</style>
