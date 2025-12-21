@@ -489,6 +489,7 @@ export class CellDLDiagram {
         if (this.#svgDiagram !== null) {
             // Remove active/selected class from elements
             this.#celldlEditor.resetObjectStates()
+
             // Clone our diagram and remove editor specific elements from the SVG
             const svgDiagram = this.#svgDiagram.cloneNode(true) as SVGSVGElement
             svgDiagram.removeAttribute('style')
@@ -511,6 +512,8 @@ export class CellDLDiagram {
             if (metadata !== '') {
                 this.#saveMetadata(svgDiagram, metadata)
             }
+
+            // Serialise the actual diagram
             const svgSerializer = new XMLSerializer()
             const svgData = svgSerializer.serializeToString(svgDiagram)
             return svgData

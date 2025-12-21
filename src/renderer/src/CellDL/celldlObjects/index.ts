@@ -107,6 +107,7 @@ export class CellDLObject {
         // @ts-expect-error: celldlType is a member of the object's constructor
         this.#celldlType = this.constructor.celldlType
         this.#setMetadataProperties(metadata)
+
         for (const pluginId of pluginComponents.registeredPlugins) {
             this.#pluginData.set(pluginId, {})
         }
@@ -186,11 +187,6 @@ export class CellDLObject {
         return this.#label
     }
 
-    attach(parent: CellDLObject) {
-        this.#parents.set(parent.id, parent)
-        parent.#children.set(this.id, this)
-    }
-
     // Additional metadata about sub-classed instances
     get metadataProperties() {
         return this.#metadataProperties
@@ -226,6 +222,11 @@ export class CellDLObject {
 
     activate(active = true) {
         this.#celldlSvgElement?.activate(active)
+    }
+
+    attach(parent: CellDLObject) {
+        this.#parents.set(parent.id, parent)
+        parent.#children.set(this.id, this)
     }
 
     containsPoint(point: PointLike): boolean {

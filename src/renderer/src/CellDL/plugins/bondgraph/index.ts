@@ -393,7 +393,6 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     newDocument(uri: string, rdfStore: RdfStore) {
-
         // We are creating a BondgraphModel
 
         rdfStore.add($rdf.namedNode(uri), RDF('type'), BGF('BondgraphModel'))
@@ -910,7 +909,7 @@ export class BondgraphPlugin implements PluginInterface {
         `)
         if (this.#elementTemplates.has(value.newValue)) {
            pluginData.elementTemplate = this.#elementTemplates.get(value.newValue)!
-       }
+        }
         celldlObject.setName(this.#getName(value.newValue))
     }
 

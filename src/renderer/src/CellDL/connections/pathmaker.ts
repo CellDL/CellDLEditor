@@ -163,7 +163,7 @@ export class PathMaker {
         //  An object needs the name of its template/type
         //
         //
-        //alert.warn(`${celldlObject.template.name} already has maximum number of connections`)
+        //alert.warn(`${celldlObject.name} already has maximum number of connections`)
         //return false
     }
 
@@ -174,6 +174,7 @@ export class PathMaker {
                 return new PathNode(<CellDLConnectedObject>celldlObject)
             }
         } else {
+            //alert.warn(`${celldlObject.name} cannot start a path`)
             alert.warn('Cannot start a path...') // Need to know template name...
         }
         return null

@@ -36,9 +36,9 @@ export interface NewObjectClass {
 
 export interface ObjectTemplate extends NewObjectClass {
     description?: string
+    image?: string
     metadataProperties: MetadataPropertiesMap
     name?: string
-    image?: string
 }
 
 //==============================================================================
