@@ -31,8 +31,8 @@
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
             CellDLEditor(
-                :fileData="fileData"
-                :saveFile="saveFile"
+                :loadCellDL="fileData"
+                :saveCellDL="saveFile"
                 :saveCellML="cellmlFile"
             )
 </template>
@@ -144,7 +144,7 @@ const hasFiles = vue.computed(() => {
 
 const fileData = vue.ref()
 
-// Open.
+// Open
 
 async function onOpenMenu() {
     const options = {
@@ -170,6 +170,7 @@ async function onOpenMenu() {
     }
 }
 
+// Save
 
 const saveFile = vue.ref()
 
@@ -186,7 +187,9 @@ async function onSaveMenu() {
     }
     const handle = await window.showSaveFilePicker(options).catch(() => {})
     if (handle) {
-        saveFile.value = handle
+        saveFile.value = {
+            fileHandle: handle
+        }
         windowTitle.value = handle.name
     }
 }

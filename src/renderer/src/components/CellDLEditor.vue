@@ -46,7 +46,6 @@ import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue
 import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
-import { type IFillStyle } from '@renderer/components/panels/FillStyle.vue'
 
 import { celldl2cellml } from '@renderer/bg2cellml'
 
@@ -62,7 +61,7 @@ const electronWindow:ElectronWindow = window
 
 //==============================================================================
 
-const svgContainer = vue.useTemplateRef('svg-content')
+const svgContainer = vue.useTemplateRef<HTMLElement>('svg-content')
 
 let celldlDiagram: CellDLDiagram | null = null
 
@@ -219,11 +218,13 @@ function styleEvent(toolId: string, object: string, styling: StyleObject) {
 //==============================================================================
 
 const props = defineProps<{
-    fileData: {
+    loadCellDL: {
         name: string
         contents: string
     },
-    saveFile: FileSystemHandle,
+    saveCellDL: {
+        fileHandle: FileSystemHandle
+    },
     saveCellML: {
         uri: string
         fileHandle: FileSystemHandle
@@ -231,10 +232,10 @@ const props = defineProps<{
 }>()
 
 vue.watch(
-    () => props.fileData,
+    () => props.loadCellDL,
     () => {
-        if (props.fileData) {
-            const fileData = props.fileData
+        if (props.loadCellDL) {
+            const fileData = props.loadCellDL
             if (fileData.contents) {
                 celldlDiagram = new CellDLDiagram(fileData.name, fileData.contents, celldlEditor)
                 celldlEditor.editDiagram(celldlDiagram)
@@ -244,12 +245,12 @@ vue.watch(
 )
 
 vue.watch(
-    () => props.saveFile,
+    () => props.saveCellDL,
     async () => {
-        if (props.saveFile) {
-            const saveFile = props.saveFile
-            const celldlData = await celldlDiagram?.serialise(saveFile.name)
-            const writable = await saveFile.createWritable()
+        if (props.saveCellDL) {
+            const data = props.saveCellDL
+            const celldlData = await celldlDiagram?.serialise()
+            const writable = await data.fileHandle.createWritable()
             await writable.write(celldlData)
             await writable.close()
             undoRedo.clean()

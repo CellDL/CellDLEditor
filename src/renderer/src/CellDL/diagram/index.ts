@@ -485,7 +485,7 @@ export class CellDLDiagram {
         }
     }
 
-    async serialise(_filePath: string): Promise<string> {
+    async serialise(): Promise<string> {
         if (this.#svgDiagram !== null) {
             // Remove active/selected class from elements
             this.#celldlEditor.resetObjectStates()
@@ -501,7 +501,7 @@ export class CellDLDiagram {
                 svgDiagram.setAttribute('viewBox', trimmedViewbox.map((n) => String(n)).join(' '))
             }
 
-            // Add statements about the document fron plugins
+            // Add statements about the document from plugins
             pluginComponents.addDocumentMetadata(this.rdfStore)
 
             // Make sure metadata is up-to-date
@@ -663,9 +663,9 @@ export class CellDLDiagram {
         if (svgElements.length > 1) {
             svgElement = document.createElementNS(SVG_URI, 'g')
             svgElement.classList.add(CELLDL_CLASS.Connection)
-            svgElements.forEach((element) => element.classList.add('parent-id'))
-            svgElements.forEach((element) => element.classList.remove('selected'))
-            svgElements.forEach((element) => svgElement.appendChild(element))
+            svgElements.forEach((element) => { element.classList.add('parent-id') })
+            svgElements.forEach((element) => { element.classList.remove('selected') })
+            svgElements.forEach((element) => { svgElement.appendChild(element) })
         } else {
             svgElement = svgElements[0]!
             svgElement.classList.remove('parent-id', 'selected')
