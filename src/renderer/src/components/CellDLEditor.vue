@@ -48,6 +48,8 @@ import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStyl
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 import { type IFillStyle } from '@renderer/components/panels/FillStyle.vue'
 
+import { celldl2cellml } from '@renderer/bg2cellml'
+
 //==============================================================================
 
 import type {IElectronAPI} from '../../../preload/index'
@@ -221,7 +223,11 @@ const props = defineProps<{
         name: string
         contents: string
     },
-    saveFile: FileSystemHandle
+    saveFile: FileSystemHandle,
+    saveCellML: {
+        uri: string
+        fileHandle: FileSystemHandle
+    }
 }>()
 
 vue.watch(
@@ -247,6 +253,28 @@ vue.watch(
             await writable.write(celldlData)
             await writable.close()
             undoRedo.clean()
+        }
+    }
+)
+
+vue.watch(
+    () => props.saveCellML,
+    async () => {
+        if (props.saveCellML) {
+            const data = props.saveCellML
+            const celldlData = await celldlDiagram?.serialise()
+            if (celldlData) {
+                const cellmlObject = celldl2cellml(data.uri, celldlData)
+                if (cellmlObject.cellml) {
+                    const writable = await data.fileHandle.createWritable()
+                    await writable.write(cellmlObject.cellml)
+                    await writable.close()
+                } else if (cellmlObject.issues) {
+                    alert(cellmlObject.issues.join('\n'))
+                }
+            } else {
+                alert('Cannot get CellDL...')
+            }
         }
     }
 )

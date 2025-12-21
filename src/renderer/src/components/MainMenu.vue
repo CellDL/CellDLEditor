@@ -66,7 +66,7 @@ const items = [
             },
             { separator: true },
             {
-                label: 'Run bg2cellml...',
+                label: 'Save CellML...',
                 command: () => {
                     emit('bg2cellml')
                 },

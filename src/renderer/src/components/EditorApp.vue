@@ -24,7 +24,7 @@
                     :hasFiles="hasFiles"
                     v-if="electronApi === undefined"
                     @about="onAboutMenu"
-                    @bg2cellml="runBG2CellML"
+                    @bg2cellml="saveCellML"
                     @open="onOpenMenu"
                     @save="onSaveMenu"
                     @settings="onSettingsMenu"
@@ -33,6 +33,7 @@
             CellDLEditor(
                 :fileData="fileData"
                 :saveFile="saveFile"
+                :saveCellML="cellmlFile"
             )
 </template>
 
@@ -192,7 +193,29 @@ async function onSaveMenu() {
 
 //==============================================================================
 
-async function runBG2CellML() {
+const cellmlFile = vue.ref()
+
+async function saveCellML() {
+    const options = {
+        types: [
+            {
+                description: 'CellML files',
+                accept: {
+                    'application/cellml+xml': ['.cellml'],
+                }
+            }
+        ]
+    }
+    const handle = await window.showSaveFilePicker(options).catch(() => {})
+    if (handle) {
+        cellmlFile.value = {
+            uri: `https://celldl.org/cellml/${handle.name}`,
+            fileHandle: handle
+        }
+    }
+}
+
+async function testCellML() {
 
 //    await rdfTest()
 
