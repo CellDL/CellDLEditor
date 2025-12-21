@@ -87,7 +87,7 @@ export class CellDLObject {
 
     #metadataProperties!: MetadataPropertiesMap
 
-    #template!: ObjectTemplate
+    #objectTemplate: ObjectTemplate|undefined
 
     #children: Map<string, CellDLObject> = new Map()
     #parents: Map<string, CellDLObject> = new Map()
@@ -111,9 +111,9 @@ export class CellDLObject {
         }
     }
 
-    static objectFromTemplate(uri: NamedNode, template: ObjectTemplate, celldlDiagram: CellDLDiagram): CellDLObject {
-        const object = new template.CellDLClass(uri, template.metadataProperties, {}, celldlDiagram)
-        object.#template = template
+    static objectFromTemplate(uri: NamedNode, objectTemplate: ObjectTemplate, celldlDiagram: CellDLDiagram): CellDLObject {
+        const object = new objectTemplate.CellDLClass(uri, objectTemplate.metadataProperties, {}, celldlDiagram)
+        object.#objectTemplate = objectTemplate
         return object
     }
 
@@ -185,10 +185,6 @@ export class CellDLObject {
         return this.#label
     }
 
-    get template() {
-        return this.#template
-    }
-
     attach(parent: CellDLObject) {
         this.#parents.set(parent.id, parent)
         parent.#children.set(this.id, this)
@@ -201,6 +197,10 @@ export class CellDLObject {
 
     get moveable() {
         return this.#moveable
+    }
+
+    get objectTemplate() {
+        return this.#objectTemplate
     }
 
     get selected() {
@@ -352,7 +352,7 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     }
 
     get maxConnections(): number {
-        return this.template?.maxConnections || Infinity
+        return this.objectTemplate?.maxConnections || Infinity
     }
 
     get numConnections(): number {

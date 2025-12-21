@@ -311,24 +311,24 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     getObjectTemplate(id: string): ObjectTemplate|undefined {
-        const template = BONDGRAPH_COMPONENT_TEMPLATES.get(id)
-        if (template) {
+        const componentTemplate = BONDGRAPH_COMPONENT_TEMPLATES.get(id)
+        if (componentTemplate) {
             const metadataProperties: MetadataProperty[] = [
-                [ RDF('type'), $rdf.namedNode(template.type)],
-                [ BGF('hasSymbol'), $rdf.literal(template.symbol)]
+                [ RDF('type'), $rdf.namedNode(componentTemplate.type)],
+                [ BGF('hasSymbol'), $rdf.literal(componentTemplate.symbol)]
             ]
-            if (!template.noSpeciesLocation) {
+            if (!componentTemplate.noSpeciesLocation) {
                 metadataProperties.push(
                     [ BGF('hasSpecies'), $rdf.literal(DEFAULT_SPECIES)],
                     [ BGF('hasLocation'), $rdf.literal(DEFAULT_LOCATION)]
                 )
             }
             return {
-                type: template.type,
+                type: componentTemplate.type,
                 CellDLClass: CellDLComponent,
-                name: template.name,
-                image: template.image,
+                image: componentTemplate.image,
                 metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties),
+                name: componentTemplate.name
             }
         }
     }
@@ -930,16 +930,16 @@ export class BondgraphPlugin implements PluginInterface {
             const element = r.get('element')!
             const label = r.get('label')
             const base = r.get('base')!
-            for (const template of BONDGRAPH_COMPONENT_TEMPLATES.values()) {
-                if (template.type === element.value) {
-                    let component = this.#baseComponents.get(template.type)
+            for (const componentTemplate of BONDGRAPH_COMPONENT_TEMPLATES.values()) {
+                if (componentTemplate.type === element.value) {
+                    let component = this.#baseComponents.get(componentTemplate.type)
                     if (!component) {
-                        component = new BGBaseComponent(template,
+                        component = new BGBaseComponent(componentTemplate,
                                         label ? label.value : getCurie(element.value),
                                         base.value)
-                        this.#baseComponents.set(template.type, component)
+                        this.#baseComponents.set(componentTemplate.type, component)
                     }
-                    template.component = component
+                    componentTemplate.component = component
                 }
             }
         })
