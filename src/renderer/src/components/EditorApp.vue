@@ -123,7 +123,20 @@ if (props.theme !== undefined) {
     vueCommon.useTheme().setTheme(props.theme)
 }
 
+//==============================================================================
+
 const windowTitle = vue.ref<string>('New file')
+
+import { useEventListener } from '@vueuse/core'
+
+useEventListener(document, 'file-edited', (event) => {
+    if (!windowTitle.value.endsWith(' *')) {
+        windowTitle.value += ' *'
+    }
+})
+
+//==============================================================================
+
 const hasFiles = vue.computed(() => {
     return true //  WIP ************* contents.value?.hasFiles() ?? false
 })

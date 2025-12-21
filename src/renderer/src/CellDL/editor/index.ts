@@ -95,7 +95,7 @@ export enum CONTEXT_MENU {
 //==============================================================================
 
 export function notifyChanges() {
-    window.electronAPI?.sendEditorAction('DIRTY')
+    document.dispatchEvent(new CustomEvent('file-edited'))
 }
 
 //==============================================================================
