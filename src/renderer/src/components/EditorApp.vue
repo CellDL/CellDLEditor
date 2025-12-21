@@ -186,6 +186,7 @@ async function onSaveMenu() {
     const handle = await window.showSaveFilePicker(options).catch(() => {})
     if (handle) {
         saveFile.value = handle
+        windowTitle.value = handle.name
     }
 }
 
