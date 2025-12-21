@@ -276,6 +276,10 @@ export class CellDLObject {
         this.#celldlSvgElement?.select(selected)
     }
 
+    setObjectTemplate(objectTemplate: ObjectTemplate) {
+        this.#objectTemplate = objectTemplate
+    }
+
     assignSvgElement(_svgElement: SVGGraphicsElement) {
     }
 

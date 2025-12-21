@@ -49,7 +49,8 @@ export interface PluginInterface {
     addDocumentMetadata: (rdfStore: RdfStore) => void
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
-    getObjectTemplate: (id: string) => ObjectTemplate|undefined
+    getObjectTemplate: (celldlObject: CellDLObject, rdfStore: RdfStore) => ObjectTemplate|undefined
+    getObjectTemplateById: (id: string) => ObjectTemplate|undefined
     getPropertyGroups: () => PropertyGroup[]
     getStylingGroup: () => PropertyGroup
     getComponentProperties: (celldlObject: CellDLObject,
@@ -160,8 +161,12 @@ export class PluginComponents {
 
     //==========================================================================
 
-    getObjectTemplate(id: string): ObjectTemplate|undefined {
-        return this.#bondgraphPlugin!.getObjectTemplate(id)
+    getObjectTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectTemplate|undefined {
+        return this.#bondgraphPlugin!.getObjectTemplate(celldlObject, rdfStore)
+    }
+
+    getObjectTemplateById(id: string): ObjectTemplate|undefined {
+        return this.#bondgraphPlugin!.getObjectTemplateById(id)
     }
 
     getPropertyGroups(): PropertyGroup[] {

@@ -533,7 +533,7 @@ export class CellDLEditor {
             topLeft = topLeft.subtract(PointMath.scalarScale(details.offset, zoomScale))
         }
 
-        const template = pluginComponents.getObjectTemplate(details.id)
+        const template = pluginComponents.getObjectTemplateById(details.id)
         if (!template) {
             console.error(`Drop of unknown component template '${details.id}'`)
             return

@@ -902,6 +902,10 @@ export class CellDLDiagram {
         const metadata = this.#kb.metadataPropertiesForSubject(subject)
         // need to call object from template...
         const celldlObject = new CellDLClass(subject, metadata, options, this)
+        const objectTemplate = pluginComponents.getObjectTemplate(celldlObject, this.rdfStore)
+        if (objectTemplate) {
+            celldlObject.setObjectTemplate(objectTemplate)
+        }
         return celldlObject
     }
 

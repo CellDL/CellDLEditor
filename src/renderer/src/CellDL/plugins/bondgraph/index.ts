@@ -310,7 +310,45 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    getObjectTemplate(id: string): ObjectTemplate|undefined {
+    getObjectTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectTemplate|undefined {
+        let baseComponent: BGBaseComponent|undefined
+        let elementTemplate: ElementTemplate|undefined
+
+        const rows = rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${this.#currentDocumentUri}#>
+
+            SELECT ?type WHERE {
+                ${celldlObject.uri.toString()} a ?type
+            }`
+        )
+        for (const r of rows) {
+            const rdfType = r.get('type')!.value
+            if (!elementTemplate) {
+                elementTemplate = this.#elementTemplates.get(rdfType)
+            }
+            if (!elementTemplate && !baseComponent) {
+                baseComponent = this.#baseComponents.get(rdfType)
+            }
+        }
+        if (elementTemplate) {
+            return {
+                type: elementTemplate.type,
+                CellDLClass: CellDLComponent,
+                name: elementTemplate.name,
+                metadataProperties: celldlObject.metadataProperties
+            }
+        }
+        if (baseComponent) {
+            return {
+                type: baseComponent.type,
+                CellDLClass: CellDLComponent,
+                name: baseComponent.name,
+                metadataProperties: celldlObject.metadataProperties
+            }
+        }
+    }
+
+    getObjectTemplateById(id: string): ObjectTemplate|undefined {
         const componentTemplate = BONDGRAPH_COMPONENT_TEMPLATES.get(id)
         if (componentTemplate) {
             const metadataProperties: MetadataProperty[] = [
