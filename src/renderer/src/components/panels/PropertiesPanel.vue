@@ -58,24 +58,26 @@ import InputWidget from '../widgets/InputWidget.vue'
 
 import FillStyle from './FillStyle.vue'
 import PathStyle from './PathStyle.vue'
-import { type INodeStyle } from '@editor/plugins/bondgraph/index'
-import { type IPathStyle } from '@renderer/common/svgUtils'
+import type { INodeStyle } from '@editor/plugins/bondgraph/index'
+import type { IPathStyle } from '@renderer/common/svgUtils'
 
 const props = defineProps<{
     toolId: string
 }>()
 
-const groups = vue.inject<PropertyGroup[]>('componentProperties')
+const groups = vue.inject<vue.Ref<PropertyGroup[]>>('componentProperties')
 
 // Remember last opened AccordionPanel
 
 const openPanel = vue.ref<string>('')
 
 const disabled = vue.computed<boolean>(() => {
-    for (const group of groups.value) {
+    for (const group of groups!.value) {
         if (group.items.length
          || (group.styling
+          && 'fillColours' in group.styling
           && group.styling.fillColours
+          && Array.isArray(group.styling.fillColours)
           && group.styling.fillColours.length)) {
             return false
         }
@@ -84,7 +86,7 @@ const disabled = vue.computed<boolean>(() => {
 })
 
 const hasContent = vue.computed<boolean[]>(() => {
-    return groups.value.map((group: PropertyGroup) => {
+    return groups!.value.map((group: PropertyGroup) => {
         return (group.items.length
          || (group.styling
           && 'fillColours' in group.styling
@@ -98,7 +100,7 @@ const hasContent = vue.computed<boolean[]>(() => {
 })
 
 const objectStyle = vue.computed<INodeStyle|IPathStyle>(() => {
-    const stylingGroup = groups.value.at(-1)
+    const stylingGroup = groups!.value.at(-1)
     if ('fillColours' in stylingGroup.styling) {
         const fillColours: string[] = [...(stylingGroup.styling.fillColours || [])]
         let direction = 'H'
@@ -124,7 +126,7 @@ const objectStyle = vue.computed<INodeStyle|IPathStyle>(() => {
 })
 
 const objectType = vue.computed<string>(() => {
-    const stylingGroup = groups.value.at(-1)
+    const stylingGroup = groups!.value.at(-1)
     if ('fillColours' in stylingGroup.styling) {
         return 'node'
     } else if ('pathStyle' in stylingGroup.styling) {
