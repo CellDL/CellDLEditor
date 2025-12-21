@@ -1,3 +1,3 @@
-<template>
-  <EditorApp />
+<template lang="pug">
+    EditorApp
 </template>
