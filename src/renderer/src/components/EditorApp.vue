@@ -18,16 +18,18 @@
             v-show="loadingMessage !== ''"
         )
         div.editor-window
-            MainMenu(
-                :id="mainMenuId"
-                :hasFiles="hasFiles"
-                v-if="electronApi === undefined"
-                @about="onAboutMenu"
-                @bg2cellml="runBG2CellML"
-                @open="onOpenMenu"
-                @save="onSaveMenu"
-                @settings="onSettingsMenu"
-            )
+            div.flex
+                MainMenu(
+                    :id="mainMenuId"
+                    :hasFiles="hasFiles"
+                    v-if="electronApi === undefined"
+                    @about="onAboutMenu"
+                    @bg2cellml="runBG2CellML"
+                    @open="onOpenMenu"
+                    @save="onSaveMenu"
+                    @settings="onSettingsMenu"
+                )
+                div.flex-grow.text-center.font-bold {{ windowTitle }}
             CellDLEditor(
                 :fileData="fileData"
                 :saveFile="saveFile"
@@ -121,6 +123,7 @@ if (props.theme !== undefined) {
     vueCommon.useTheme().setTheme(props.theme)
 }
 
+const windowTitle = vue.ref<string>('New file')
 const hasFiles = vue.computed(() => {
     return true //  WIP ************* contents.value?.hasFiles() ?? false
 })
@@ -145,6 +148,7 @@ async function onOpenMenu() {
     if (fileHandles.length) {
         const file = await fileHandles[0].getFile()
         const contents = await file.text()
+        windowTitle.value = file.name
         fileData.value = {
             name: file.name,
             contents: contents
