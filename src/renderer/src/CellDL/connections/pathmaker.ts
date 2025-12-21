@@ -151,10 +151,10 @@ export class PathMaker {
     }
 
     get empty() {
-        return this.#edges.length == 0 && this.#currentSvgPath === null
+        return this.#edges.length === 0 && this.#currentSvgPath === null
     }
 
-    static #checkMaxConnections(celldlObject: CellDLConnectedObject): boolean {
+    static #checkMaxConnections(_celldlObject: CellDLConnectedObject): boolean {
         // if (celldlObject.numConnections < libraryManager.objectMethods(celldlObject).maxConnections()) {
         //     return true
         // }

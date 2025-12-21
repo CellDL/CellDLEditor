@@ -256,9 +256,9 @@ export class CellDLDiagram {
 
     #saveDiagramProperties() {
         if (!('created' in this.#diagramProperties)) {
-            this.#diagramProperties['created'] = new Date(Date.now()).toISOString()
+            this.#diagramProperties.created = new Date(Date.now()).toISOString()
         } else {
-            this.#diagramProperties['modified'] = new Date(Date.now()).toISOString()
+            this.#diagramProperties.modified = new Date(Date.now()).toISOString()
         }
         for (const [key, property] of Object.entries(DiagramProperties)) {
             this.#kb.removeStatements(this.#documentNode, property, null)
@@ -307,7 +307,7 @@ export class CellDLDiagram {
             const defsElement = this.#svgDiagram.getElementById(CELLDL_DEFINITIONS_ID)
             styleElement = document.createElementNS(SVG_URI, 'style')
             styleElement.id = CELLDL_STYLESHEET_ID
-            defsElement!.prepend(styleElement)
+            defsElement.prepend(styleElement)
             styleElement.textContent = css
         }
     }
@@ -497,7 +497,7 @@ export class CellDLDiagram {
             // Remove extraneous whitespace around the diagram
             const trimmedViewbox = this.#trimSVGDiagram(this.#svgDiagram)
             if (trimmedViewbox) {
-                svgDiagram!.setAttribute('viewBox', trimmedViewbox.map((n) => String(n)).join(' '))
+                svgDiagram.setAttribute('viewBox', trimmedViewbox.map((n) => String(n)).join(' '))
             }
 
             // Add statements about the document fron plugins
@@ -554,7 +554,7 @@ export class CellDLDiagram {
     associatedObjects(object: CellDLObject): CellDLObject[] {
         const objects: CellDLObject[] = []
         for (const associated of this.#associatedObjects(object)) {
-            if (associated && associated.svgElement) {
+            if (associated?.svgElement) {
                 objects.push(associated)
             }
         }
@@ -946,7 +946,7 @@ export class CellDLDiagram {
         if (connectorNode && $rdf.isNamedNode(connectorNode) && connectorNode.value.startsWith(this.#documentNode.value)) {
             const connectorId = (<NamedNode>connectorNode).id()
             const connector = this.#objects.get(connectorId) as CellDLConnectedObject
-            return connector && connector.isConnectable ? connector : null
+            return connector?.isConnectable ? connector : null
         }
         return null
     }

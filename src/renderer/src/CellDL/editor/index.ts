@@ -387,9 +387,9 @@ export class CellDLEditor {
     async #panelEvent(event: Event) {
         const detail = (<CustomEvent>event).detail
         if (detail.source === this.#openPanelId) {
-            if (this.#openPanelId === PANEL_IDS.PropertyPanel) {
+            if (this.#selectedObject && this.#openPanelId === PANEL_IDS.PropertyPanel) {
                 const values = detail.value
-                if (values.oldValue != values.newValue) {
+                if (values.oldValue !== values.newValue) {
                     await this.#propertiesPanel.updateObjectProperties(this.#selectedObject, detail.itemId, detail.value,
                                                                        this.#celldlDiagram!.rdfStore)
                     notifyChanges()

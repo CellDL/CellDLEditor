@@ -117,7 +117,7 @@ export function updateItemProperty(property: string, value: ValueChange,
         WHERE {
             ${objectUri} <${property}> ?value
         }`)
-    const newValue = value.newValue.trim()
+    const newValue = String(value.newValue).trim()
     if (newValue) {
         rdfStore.update(`${SPARQL_PREFIXES}
             PREFIX : <${celldlObject.celldlDiagram.uri}#>

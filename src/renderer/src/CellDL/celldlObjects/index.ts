@@ -19,7 +19,7 @@ limitations under the License.
 ******************************************************************************/
 
 import { Point, type PointLike } from '@renderer/common/points'
-import type { PropertiesType, StringProperties } from '@renderer/common/types'
+import type { PropertiesType } from '@renderer/common/types'
 
 import { alert } from '@editor/editor/alerts'
 import { editGuides } from '@editor/editor/editguides'
@@ -93,7 +93,7 @@ export class CellDLObject {
     #children: Map<string, CellDLObject> = new Map()
     #parents: Map<string, CellDLObject> = new Map()
 
-    #pluginData: Map<string, Object> = new Map()
+    #pluginData: Map<string, object> = new Map()
 
     constructor(
         public readonly uri: NamedNode,
@@ -216,11 +216,11 @@ export class CellDLObject {
         return this.#celldlSvgElement?.svgElement || null
     }
 
-    pluginData(pluginId: string): Object {
+    pluginData(pluginId: string): object {
         return this.#pluginData.get(pluginId)!
     }
 
-    setPluginData(pluginId: string, data: Object) {
+    setPluginData(pluginId: string, data: object) {
         this.#pluginData.set(pluginId, data)
     }
 

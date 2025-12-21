@@ -758,7 +758,7 @@ export class BondgraphPlugin implements PluginInterface {
             WHERE {
                 ${objectUri} bgf:hasValue ?value
             }`)
-        const newValue = value.newValue.trim()
+        const newValue = String(value.newValue).trim()
         const elementTemplate = (<PluginData>celldlObject.pluginData(this.id)).elementTemplate
         const variable = elementTemplate!.value
         if (newValue) {
@@ -766,7 +766,7 @@ export class BondgraphPlugin implements PluginInterface {
                 PREFIX : <${this.#currentDocumentUri}#>
 
                 INSERT DATA {
-                   ${objectUri} bgf:hasValue "${value.newValue} ${variable!.units}"^^cdt:ucum .
+                   ${objectUri} bgf:hasValue "${newValue} ${variable!.units}"^^cdt:ucum .
                 }
             `)
         }
