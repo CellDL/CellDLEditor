@@ -89,33 +89,48 @@ export interface INodeStyle {
 
 //==============================================================================
 
-// Temp workaround until `import.meta.glob` is correctly configured...
-// Files are in /public
-//      const ontologySource = import.meta.glob('@renderer/assets/bg-rdf/ontology.ttl', { eager: true })
-//      const templatesGlob = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', { eager: true })
-
-import BG_RDF_ONTOLOGY_SOURCE from '/CellDLEditor/bg-rdf/ontology.ttl?url&raw'
-
-import CHEMICAL_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/chemical.ttl?url&raw'
-import ELECTRICAL_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/electrical.ttl?url&raw'
-import HYDRAULIC_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/hydraulic.ttl?url&raw'
-import MECHANICAL_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/mechanical.ttl?url&raw'
-
 const BGF_ONTOLOGY_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework'
 
-const CHEMICAL_TEMPLATE_URI = 'https://bg-rdf.org/templates/chemical.ttl'
-const ELECTRICAL_TEMPLATE_URI = 'https://bg-rdf.org/templates/electrical.ttl'
-const HYDRAULIC_TEMPLATE_URI = 'https://bg-rdf.org/templates/hydraulic.ttl'
-const MECHANICAL_TEMPLATE_URI = 'https://bg-rdf.org/templates/mechanical.ttl'
+const BG_RDF_TEMPLATE_BASE_URI = 'https://bg-rdf.org/'
 
-const BG_RDF_SOURCES: Map<string, string> = new Map([
-    [BGF_ONTOLOGY_URI, BG_RDF_ONTOLOGY_SOURCE],
-    [CHEMICAL_TEMPLATE_URI, CHEMICAL_TEMPLATE_SOURCE],
-    [ELECTRICAL_TEMPLATE_URI, ELECTRICAL_TEMPLATE_SOURCE],
-    [HYDRAULIC_TEMPLATE_URI, HYDRAULIC_TEMPLATE_SOURCE],
-    [MECHANICAL_TEMPLATE_URI, MECHANICAL_TEMPLATE_SOURCE],
+const BG_RDF_TEMPLATE_URIS = [
+    `${BG_RDF_TEMPLATE_BASE_URI}templates/chemical.ttl`,
+    `${BG_RDF_TEMPLATE_BASE_URI}templates/electrical.ttl`,
+    `${BG_RDF_TEMPLATE_BASE_URI}templates/hydraulic.ttl`,
+    `${BG_RDF_TEMPLATE_BASE_URI}templates/mechanical.ttl`
+]
 
-])
+const BG_RDF_SOURCES: Map<string, string> = new Map()
+
+const BG_RDF_ASSET_BASE = '@renderer/assets/bg-rdf/'
+
+const BG_RDF_ONTOLOGY_ASSET_PATH = `${BG_RDF_ASSET_BASE}ontology.ttl`
+
+// See https://vite.dev/guide/features#custom-queries
+
+const BG_RDF_ONTOLOGY_SOURCE: Record<string, string> = import.meta.glob('@renderer/assets/bg-rdf/ontology.ttl', {
+    eager: true,
+    import: 'default',
+    query: '?raw'
+})
+
+if (BG_RDF_ONTOLOGY_ASSET_PATH in BG_RDF_ONTOLOGY_SOURCE) {
+    BG_RDF_SOURCES.set(BGF_ONTOLOGY_URI, BG_RDF_ONTOLOGY_SOURCE[BG_RDF_ONTOLOGY_ASSET_PATH]!)
+}
+
+const BG_RDF_TEMPLATE_SOURCES: Record<string, string> = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', {
+    eager: true,
+    import: 'default',
+    query: '?raw'
+})
+
+for (const templateUri of BG_RDF_TEMPLATE_URIS) {
+    const templatePath = templateUri.substring(BG_RDF_TEMPLATE_BASE_URI.length)
+    const templateKey = `${BG_RDF_ASSET_BASE}${templatePath}`
+    if (templateKey in BG_RDF_TEMPLATE_SOURCES) {
+        BG_RDF_SOURCES.set(templateUri, BG_RDF_TEMPLATE_SOURCES[templateKey]!)
+    }
+}
 
 //==============================================================================
 

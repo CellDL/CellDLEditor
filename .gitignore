@@ -25,6 +25,8 @@ out
 *.sln
 *.sw?
 
+*.sublime-project
+*.sublime-workspace
 *.tsbuildinfo
 
 # unplugin-vue-components
@@ -35,6 +37,7 @@ src/renderer/src/assets/oxigraph
 
 # BG-RDF
 src/renderer/public/bg-rdf
+src/renderer/src/assets/bg-rdf
 
 # Pyodide
 src/renderer/public/pyodide
