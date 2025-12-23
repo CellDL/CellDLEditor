@@ -37,6 +37,10 @@
             CellDLEditor(
                 :fileAction="fileAction"
             )
+            AboutDialog(
+                v-model:visible="aboutVisible"
+                @close="aboutVisible = false"
+            )
 </template>
 
 <script setup lang="ts">
@@ -320,6 +324,16 @@ async function testCellML() {
 //    await rdfTest()
 
     await testBg2cellml()
+}
+
+//==============================================================================
+
+// About dialog.
+
+const aboutVisible = vue.ref<boolean>(false)
+
+function onAboutMenu(): void {
+  aboutVisible.value = true
 }
 
 //==============================================================================
