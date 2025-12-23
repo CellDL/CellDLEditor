@@ -21,19 +21,21 @@
             div.flex
                 MainMenu(
                     :id="mainMenuId"
-                    :hasFiles="hasFiles"
+                    :haveFile="haveFile"
+                    :fileModified="fileModified"
                     v-if="electronApi === undefined"
                     @about="onAboutMenu"
-                    @bg2cellml="saveCellML"
-                    @open="onOpenMenu"
-                    @save="onSaveMenu"
                     @settings="onSettingsMenu"
+                    @close-file="onCloseFile"
+                    @open-file="onOpenFile"
+                    @save-cellml="onSaveCellML"
+                    @save-file="onSaveFile"
+                    @save-file-as="onSaveFileAs"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
+            ConfirmDialog
             CellDLEditor(
-                :loadCellDL="fileData"
-                :saveCellDL="saveFile"
-                :saveCellML="cellmlFile"
+                :fileAction="fileAction"
             )
 </template>
 
@@ -43,7 +45,7 @@ import * as vue from 'vue'
 import 'primeicons/primeicons.css'
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import primeVueConfig from 'primevue/config'
-import primeVueConfirmationService from 'primevue/confirmationservice'
+import { useConfirm } from "primevue/useconfirm"
 
 import * as vueusecore from '@vueuse/core'
 
@@ -128,9 +130,36 @@ if (props.theme !== undefined) {
 
 const windowTitle = vue.ref<string>('New file')
 
-import { useEventListener } from '@vueuse/core'
+const fileStatus = vue.ref<{
+    haveData: boolean
+    modified: boolean
+}>({
+    haveData: false,
+    modified: false
+})
 
-useEventListener(document, 'file-edited', (event) => {
+const haveFile = vue.computed(() => {
+    return fileStatus.value.haveData
+})
+
+const fileModified = vue.computed(() => {
+    return fileStatus.value.modified
+})
+
+const fileAction = vue.ref<{
+    action: string
+    contents: string|undefined
+    fileHandle: FileSystemHandle|undefined
+    name: string|undefined
+}>()
+
+const confirm = useConfirm()
+
+//==============================================================================
+
+vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
+    fileStatus.value.haveData = true
+    fileStatus.value.modified = true
     if (!windowTitle.value.endsWith(' *')) {
         windowTitle.value += ' *'
     }
@@ -138,15 +167,65 @@ useEventListener(document, 'file-edited', (event) => {
 
 //==============================================================================
 
-const hasFiles = vue.computed(() => {
-    return true //  WIP ************* contents.value?.hasFiles() ?? false
-})
+async function onCloseFile() {
+    if (!fileStatus.value.modified) {
+        closeFile()
+    } else {
+        confirm.require({
+            message: 'Close modified file?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            rejectProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptProps: {
+                label: 'Close'
+            },
+            accept: () => {
+                closeFile()
+            }
+        })
+    }
+}
 
-const fileData = vue.ref()
+function closeFile() {
+    fileAction.value = {
+        action: 'close-file'
+    }
+    fileAction.value.fileHandle = undefined
+    fileStatus.value.haveData = false
+    fileStatus.value.modified = false
+    windowTitle.value = 'New file'
+}
 
-// Open
+//==============================================================================
 
-async function onOpenMenu() {
+async function onOpenFile() {
+    if (!fileStatus.value.modified) {
+        await openFile()
+    } else {
+        confirm.require({
+            message: 'Overwrite modified file?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            rejectProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptProps: {
+                label: 'Open'
+            },
+            accept: async () => {
+                await openFile()
+            }
+        })
+    }
+}
+
+async function openFile() {
     const options = {
         excludeAcceptAllOption: true,
         types: [
@@ -160,21 +239,37 @@ async function onOpenMenu() {
     }
     const fileHandles = await window.showOpenFilePicker(options)
     if (fileHandles.length) {
-        const file = await fileHandles[0].getFile()
+        const handle = fileHandles[0]
+        const file = await handle.getFile()
         const contents = await file.text()
-        windowTitle.value = file.name
-        fileData.value = {
-            name: file.name,
+        fileAction.value = {
+            action: 'open-file',
+            fileHandle: handle,
+            name: handle.name,
             contents: contents
         }
+        fileStatus.value.haveData = true
+        fileStatus.value.modified = false
+        windowTitle.value = handle.name
     }
 }
 
-// Save
+//==============================================================================
 
-const saveFile = vue.ref()
+async function onSaveFile() {
+    if (fileAction.value.fileHandle) {
+        fileAction.value = {
+            ...fileAction.value,
+            action: 'save-file'
+        }
+        fileStatus.value.modified = false
+        windowTitle.value = fileAction.value.fileHandle.name
+    } else {
+        await onSaveFileAs()
+    }
+}
 
-async function onSaveMenu() {
+async function onSaveFileAs() {
     const options = {
         types: [
             {
@@ -187,18 +282,19 @@ async function onSaveMenu() {
     }
     const handle = await window.showSaveFilePicker(options).catch(() => {})
     if (handle) {
-        saveFile.value = {
-            fileHandle: handle
+        fileAction.value = {
+            action: 'save-file',
+            fileHandle: handle,
+            name: handle.name
         }
+        fileStatus.value.modified = false
         windowTitle.value = handle.name
     }
 }
 
 //==============================================================================
 
-const cellmlFile = vue.ref()
-
-async function saveCellML() {
+async function onSaveCellML() {
     const options = {
         types: [
             {
@@ -211,9 +307,10 @@ async function saveCellML() {
     }
     const handle = await window.showSaveFilePicker(options).catch(() => {})
     if (handle) {
-        cellmlFile.value = {
-            uri: `https://celldl.org/cellml/${handle.name}`,
-            fileHandle: handle
+        fileAction.value = {
+            action: 'save-cellml',
+            fileHandle: handle,
+            name: `https://celldl.org/cellml/${handle.name}`,
         }
     }
 }

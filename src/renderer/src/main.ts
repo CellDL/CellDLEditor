@@ -1,5 +1,9 @@
 import { createApp } from 'vue'
+import ConfirmationService from 'primevue/confirmationservice';
 
 import App from './App.vue'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.use(ConfirmationService)
+
+app.mount('#app')

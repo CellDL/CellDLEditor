@@ -21,10 +21,11 @@ import * as common from '../common/common'
 const props = defineProps<{
     isActive: boolean
     uiEnabled: boolean
-    hasFiles: boolean
+    haveFile: boolean
+    fileModified: boolean
 }>()
 
-const emit = defineEmits(['about', 'close', 'closeAll', 'bg2cellml', 'open', 'save', 'settings'])
+const emit = defineEmits(['about', 'close-file', 'open-file', 'save-cellml', 'save-file', 'save-file-as', 'settings'])
 const isWindowsOrLinux = common.isWindows() || common.isLinux()
 const isMacOs = common.isMacOs()
 
@@ -36,7 +37,7 @@ const items = [
                 label: 'Open...',
                 shortcut: isWindowsOrLinux ? 'Ctrl+Alt+O' : isMacOs ? '⌘⌥O' : undefined,
                 command: () => {
-                    emit('open')
+                    emit('open-file')
                 }
             },
             { separator: true },
@@ -44,32 +45,33 @@ const items = [
                 label: 'Save...',
                 shortcut: isWindowsOrLinux ? 'Ctrl+Alt+S' : isMacOs ? '⌘⌥S' : undefined,
                 command: () => {
-                    emit('save')
+                    emit('save-file')
                 },
-                disabled: () => !props.hasFiles
+                disabled: () => !(props.haveFile && props.fileModified)
+            },
+            {
+                label: 'Save As...',
+                command: () => {
+                    emit('save-file-as')
+                },
+                disabled: () => !props.haveFile
             },
             { separator: true },
             {
                 label: 'Close',
                 shortcut: isWindowsOrLinux ? 'Ctrl+Alt+W' : isMacOs ? '⌘⌥W' : undefined,
                 command: () => {
-                    emit('close')
+                    emit('close-file')
                 },
-                disabled: () => !props.hasFiles
-            },
-            {
-                label: 'Close All',
-                command: () => {
-                    emit('closeAll')
-                },
-                disabled: () => !props.hasFiles
+                disabled: () => !props.haveFile
             },
             { separator: true },
             {
-                label: 'Save CellML...',
+                label: 'Generate CellML...',
                 command: () => {
-                    emit('bg2cellml')
+                    emit('save-cellml')
                 },
+                disabled: () => !(props.haveFile && !props.fileModified)
             }
         ]
     },
@@ -154,11 +156,11 @@ if (common.isDesktop()) {
         if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyO') {
             event.preventDefault()
 
-            emit('open')
+            emit('file-open')
         } else if (props.hasFiles && common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyW') {
             event.preventDefault()
 
-            emit('close')
+            emit('file-close')
         } else if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'Comma') {
             event.preventDefault()
 

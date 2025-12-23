@@ -218,63 +218,45 @@ function styleEvent(toolId: string, object: string, styling: StyleObject) {
 //==============================================================================
 
 const props = defineProps<{
-    loadCellDL: {
-        name: string
-        contents: string
-    },
-    saveCellDL: {
-        fileHandle: FileSystemHandle
-    },
-    saveCellML: {
-        uri: string
-        fileHandle: FileSystemHandle
+    fileAction: {
+        action: string
+        contents: string|undefined
+        fileHandle: FileSystemHandle|undefined
+        name: string|undefined
     }
 }>()
 
 vue.watch(
-    () => props.loadCellDL,
-    () => {
-        if (props.loadCellDL) {
-            const fileData = props.loadCellDL
-            if (fileData.contents) {
-                celldlDiagram = new CellDLDiagram(fileData.name, fileData.contents, celldlEditor)
+    () => props.fileAction,
+    async () => {
+        if (props.fileAction) {
+            const fileAction = props.fileAction
+            if  (fileAction.action === 'close-file') {
+                celldlDiagram = new CellDLDiagram('', '', celldlEditor)
                 celldlEditor.editDiagram(celldlDiagram)
-            }
-        }
-    }
-)
-
-vue.watch(
-    () => props.saveCellDL,
-    async () => {
-        if (props.saveCellDL) {
-            const data = props.saveCellDL
-            const celldlData = await celldlDiagram?.serialise()
-            const writable = await data.fileHandle.createWritable()
-            await writable.write(celldlData)
-            await writable.close()
-            undoRedo.clean()
-        }
-    }
-)
-
-vue.watch(
-    () => props.saveCellML,
-    async () => {
-        if (props.saveCellML) {
-            const data = props.saveCellML
-            const celldlData = await celldlDiagram?.serialise()
-            if (celldlData) {
-                const cellmlObject = celldl2cellml(data.uri, celldlData)
-                if (cellmlObject.cellml) {
-                    const writable = await data.fileHandle.createWritable()
-                    await writable.write(cellmlObject.cellml)
-                    await writable.close()
-                } else if (cellmlObject.issues) {
-                    alert(cellmlObject.issues.join('\n'))
+            } else if (fileAction.action === 'open-file') {
+                if (fileAction.contents !== undefined) {
+                    celldlDiagram = new CellDLDiagram(fileAction.name, fileAction.contents, celldlEditor)
+                    celldlEditor.editDiagram(celldlDiagram)
                 }
-            } else {
-                alert('Cannot get CellDL...')
+            } else if (fileAction.action === 'save-file') {  // save-file-as
+                const celldlData = await celldlDiagram?.serialise()
+                const writable = await fileAction.fileHandle.createWritable()
+                await writable.write(celldlData)
+                await writable.close()
+                undoRedo.clean()
+            } else if (fileAction.action === 'save-cellml') {
+                const celldlData = await celldlDiagram?.serialise()
+                if (celldlData) {
+                    const cellmlObject = celldl2cellml(fileAction.name, celldlData)
+                    if (cellmlObject.cellml) {
+                        const writable = await fileAction.fileHandle.createWritable()
+                        await writable.write(cellmlObject.cellml)
+                        await writable.close()
+                    } else if (cellmlObject.issues) {
+                        alert(cellmlObject.issues.join('\n'))
+                    }
+                }
             }
         }
     }
