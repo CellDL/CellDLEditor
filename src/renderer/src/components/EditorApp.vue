@@ -132,6 +132,10 @@ if (props.theme !== undefined) {
 //==============================================================================
 //==============================================================================
 
+const beforeUnloadHandler = (event: Event) => {
+    event.preventDefault()
+}
+
 const windowTitle = vue.ref<string>('New file')
 
 const fileStatus = vue.ref<{
@@ -141,6 +145,15 @@ const fileStatus = vue.ref<{
     haveData: false,
     modified: false
 })
+
+function diagramModified(modified: boolean) {
+    fileStatus.value.modified = modified
+    if (modified) {
+        window.addEventListener("beforeunload", beforeUnloadHandler)
+    } else {
+        window.removeEventListener("beforeunload", beforeUnloadHandler)
+    }
+}
 
 const haveFile = vue.computed(() => {
     return fileStatus.value.haveData
@@ -163,7 +176,7 @@ const confirm = useConfirm()
 
 vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
     fileStatus.value.haveData = true
-    fileStatus.value.modified = true
+    diagramModified(true)
     if (!windowTitle.value.endsWith(' *')) {
         windowTitle.value += ' *'
     }
@@ -200,7 +213,7 @@ function closeFile() {
     }
     fileAction.value.fileHandle = undefined
     fileStatus.value.haveData = false
-    fileStatus.value.modified = false
+    diagramModified(false)
     windowTitle.value = 'New file'
 }
 
@@ -253,7 +266,7 @@ async function openFile() {
             contents: contents
         }
         fileStatus.value.haveData = true
-        fileStatus.value.modified = false
+        diagramModified(false)
         windowTitle.value = handle.name
     }
 }
@@ -266,7 +279,7 @@ async function onSaveFile() {
             ...fileAction.value,
             action: 'save-file'
         }
-        fileStatus.value.modified = false
+        diagramModified(false)
         windowTitle.value = fileAction.value.fileHandle.name
     } else {
         await onSaveFileAs()
@@ -291,7 +304,7 @@ async function onSaveFileAs() {
             fileHandle: handle,
             name: handle.name
         }
-        fileStatus.value.modified = false
+        diagramModified(false)
         windowTitle.value = handle.name
     }
 }
