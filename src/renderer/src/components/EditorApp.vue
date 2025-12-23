@@ -131,6 +131,7 @@ if (props.theme !== undefined) {
 }
 
 //==============================================================================
+//==============================================================================
 
 const windowTitle = vue.ref<string>('New file')
 
@@ -320,9 +321,7 @@ async function onSaveCellML() {
 }
 
 async function testCellML() {
-
 //    await rdfTest()
-
     await testBg2cellml()
 }
 

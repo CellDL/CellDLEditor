@@ -262,6 +262,8 @@ vue.watch(
     }
 )
 
+//==============================================================================
+
 vue.onMounted(() => {
     // Tell the editor about the default connection style and component
 
