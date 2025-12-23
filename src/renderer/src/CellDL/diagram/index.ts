@@ -27,20 +27,12 @@ import * as $rdf from '@editor/metadata/index'
 import {
     CELLDL,
     CELLDL_DECLARATIONS,
-    type ContentType,
     DCT,
+    type NamedNode,
     MetadataPropertiesMap,
     type MetadataPropertyValue,
-    namedNode,
-    type NamedNode,
-    Namespace,
-    type NamespaceType,
     OWL,
-    RdfStore,
-    RDF_TYPE,
-    type Statement,
-    type SubjectType,
-    TurtleContentType
+    RDF_TYPE
 } from '@editor/metadata/index'
 
 import type { Bounds, Extent } from '@editor/geometry/index'
@@ -112,11 +104,11 @@ const ID_PREFIX = 'ID-'
 export class CellDLDiagram {
     #svgDiagram!: SVGSVGElement
 
-    #kb: RdfStore = new RdfStore()
+    #kb = new $rdf.RdfStore()
     #celldlEditor: CellDLEditor
 
     #documentNode: NamedNode
-    #documentNS: NamespaceType
+    #documentNS: $rdf.NamespaceType
     #filePath: string
     #diagramProperties: StringProperties = {}
 
@@ -141,13 +133,13 @@ export class CellDLDiagram {
             ) {
                 documentUri = `file://${documentUri}`
             }
-            this.#documentNode = namedNode(documentUri)
-            this.#documentNS = Namespace(`${documentUri}#`)
+            this.#documentNode = $rdf.namedNode(documentUri)
+            this.#documentNS = $rdf.Namespace(`${documentUri}#`)
             this.#loadCellDL(celldlData)
             this.#loadMetadata()
         } else {
-            this.#documentNode = namedNode(NEW_DIAGRAM_URI)
-            this.#documentNS = Namespace(`${NEW_DIAGRAM_URI}#`)
+            this.#documentNode = $rdf.namedNode(NEW_DIAGRAM_URI)
+            this.#documentNS = $rdf.Namespace(`${NEW_DIAGRAM_URI}#`)
             if (importSvg) {
                 this.#importSvg(celldlData)
             } else {
@@ -326,7 +318,7 @@ export class CellDLDiagram {
         const xmlDocument = parser.parseFromString('<xml></xml>', 'application/xml')
         const metadataContent = xmlDocument.createCDATASection(metadata)
         metadataElement.replaceChildren(metadataContent)
-        metadataElement.dataset.contentType = TurtleContentType
+        metadataElement.dataset.contentType = $rdf.TurtleContentType
     }
 
     #importSvg(svgData: string) {
@@ -418,11 +410,11 @@ export class CellDLDiagram {
         const metadataElement = this.#svgDiagram.getElementById(CELLDL_METADATA_ID) as SVGMetadataElement
         if (
             metadataElement &&
-            (!('contentType' in metadataElement.dataset) || metadataElement.dataset.contentType === TurtleContentType)
+            (!('contentType' in metadataElement.dataset) || metadataElement.dataset.contentType === $rdf.TurtleContentType)
         ) {
             for (const childNode of metadataElement.childNodes) {
                 if (childNode.nodeName === '#cdata-section') {
-                    this.#kb.load(this.#documentNode.uri, (<CDATASection>childNode).data, TurtleContentType)
+                    this.#kb.load(this.#documentNode.uri, (<CDATASection>childNode).data, $rdf.TurtleContentType)
                     break
                 }
             }
@@ -508,7 +500,7 @@ export class CellDLDiagram {
             this.#saveDiagramProperties()
 
             // Serialise metadata as Turtle into CDATA section in <metadata> element
-            const metadata: string = await this.#serialiseMetadata(TurtleContentType)
+            const metadata: string = await this.#serialiseMetadata($rdf.TurtleContentType)
             if (metadata !== '') {
                 this.#saveMetadata(svgDiagram, metadata)
             }
@@ -521,7 +513,7 @@ export class CellDLDiagram {
         return ''
     }
 
-    async #serialiseMetadata(metadataFormat: ContentType): Promise<string> {
+    async #serialiseMetadata(metadataFormat: $rdf.ContentType): Promise<string> {
         let metadata: string = ''
         try {
             metadata = await this.#kb.serialise(this.#documentNode.uri, metadataFormat, CELLDL_DECLARATIONS)
@@ -860,7 +852,7 @@ export class CellDLDiagram {
         }
     }
 
-    updateObjectKnowledge(celldlObject: CellDLObject): Statement[] {
+    updateObjectKnowledge(celldlObject: CellDLObject): $rdf.Statement[] {
         return this.#kb.addMetadataPropertiesForSubject(celldlObject.uri, celldlObject.metadataProperties)
     }
 
@@ -900,7 +892,7 @@ export class CellDLDiagram {
         return false
     }
 
-    #celldlObjectFromRdf<T extends CellDLObject>(CellDLClass: Constructor<T>, subject: SubjectType, options = {}): T {
+    #celldlObjectFromRdf<T extends CellDLObject>(CellDLClass: Constructor<T>, subject: $rdf.SubjectType, options = {}): T {
         const metadata = this.#kb.metadataPropertiesForSubject(subject)
         const celldlObject = new CellDLClass(subject, metadata, options, this)
         const objectTemplate = pluginComponents.getObjectTemplate(celldlObject, this.rdfStore)
@@ -910,7 +902,7 @@ export class CellDLDiagram {
         return celldlObject
     }
 
-    #subjectsOfType(parentType: NamedNode): [SubjectType, NamedNode][] {
+    #subjectsOfType(parentType: NamedNode): [$rdf.SubjectType, NamedNode][] {
         return this.#kb.subjectsOfType(parentType).filter((st) => st[0].value.startsWith(this.#documentNode.value))
     }
 
