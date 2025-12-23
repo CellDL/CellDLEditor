@@ -19,8 +19,6 @@ import * as vue from 'vue'
 import * as common from '../common/common'
 
 const props = defineProps<{
-    isActive: boolean
-    uiEnabled: boolean
     haveFile: boolean
     fileModified: boolean
 }>()
@@ -149,9 +147,6 @@ vue.onMounted(() => {
 
 if (common.isDesktop()) {
     vueusecore.onKeyStroke((event: KeyboardEvent) => {
-        if (!props.isActive || !props.uiEnabled) {
-            return
-        }
 
         if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyO') {
             event.preventDefault()

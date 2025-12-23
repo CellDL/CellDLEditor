@@ -25,7 +25,6 @@
                     :fileModified="fileModified"
                     v-if="electronApi === undefined"
                     @about="onAboutMenu"
-                    @settings="onSettingsMenu"
                     @close-file="onCloseFile"
                     @open-file="onOpenFile"
                     @save-cellml="onSaveCellML"
