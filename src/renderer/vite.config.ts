@@ -24,6 +24,11 @@ export default vite.defineConfig({
                 assetFileNames: `assets/[name].[ext]`
             },
             external: [
+                '/CellDLEditor/bg-rdf/ontology.ttl?url&raw',
+                '/CellDLEditor/bg-rdf/templates/chemical.ttl?url&raw',
+                '/CellDLEditor/bg-rdf/templates/electrical.ttl?url&raw',
+                '/CellDLEditor/bg-rdf/templates/hydraulic.ttl?url&raw',
+                '/CellDLEditor/bg-rdf/templates/mechanical.ttl?url&raw',
                 '**/pyodide/*'
             ]
         },

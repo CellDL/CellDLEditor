@@ -94,12 +94,12 @@ export interface INodeStyle {
 //      const ontologySource = import.meta.glob('@renderer/assets/bg-rdf/ontology.ttl', { eager: true })
 //      const templatesGlob = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', { eager: true })
 
-import BG_RDF_ONTOLOGY_SOURCE from '/bg-rdf/ontology.ttl?url&raw'
+import BG_RDF_ONTOLOGY_SOURCE from '/CellDLEditor/bg-rdf/ontology.ttl?url&raw'
 
-import CHEMICAL_TEMPLATE_SOURCE from '/bg-rdf/templates/chemical.ttl?url&raw'
-import ELECTRICAL_TEMPLATE_SOURCE from '/bg-rdf/templates/electrical.ttl?url&raw'
-import HYDRAULIC_TEMPLATE_SOURCE from '/bg-rdf/templates/hydraulic.ttl?url&raw'
-import MECHANICAL_TEMPLATE_SOURCE from '/bg-rdf/templates/mechanical.ttl?url&raw'
+import CHEMICAL_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/chemical.ttl?url&raw'
+import ELECTRICAL_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/electrical.ttl?url&raw'
+import HYDRAULIC_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/hydraulic.ttl?url&raw'
+import MECHANICAL_TEMPLATE_SOURCE from '/CellDLEditor/bg-rdf/templates/mechanical.ttl?url&raw'
 
 const BGF_ONTOLOGY_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework'
 
