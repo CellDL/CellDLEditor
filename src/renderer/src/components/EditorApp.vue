@@ -77,7 +77,9 @@ const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
 console.log('BASE URL:', import.meta.env.BASE_URL)
 
-loadPyodide({ indexURL: '/pyodide/' }).then(async (pyodide: PyodideAPI) => {
+loadPyodide({
+    indexURL: `${import.meta.env.BASE_URL}pyodide/`
+}).then(async (pyodide: PyodideAPI) => {
     // Then initialise our Python packages and `bg2cellml` conversion
     await initialisePyodide(pyodide, loadingMessage)
     loadingMessage.value = ''
