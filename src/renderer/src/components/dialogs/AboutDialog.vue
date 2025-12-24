@@ -4,10 +4,10 @@
         appendTo="self"
         :pt:mask:style="{ position: 'absolute' }"
     )
-        div(class="text-2xl font-bold text-centre") CellDL Editor
-        div(class="text text-centre") Version {{ version }}
+        div(class="text-2xl font-bold") CellDL Editor
+        div.text-xs Copyright (c) 2022 - 2025 David Brooks
+        div.text Version {{ version }}
 </template>
-
 
 <script setup lang="ts">
 defineEmits<(event: 'close') => void>()
