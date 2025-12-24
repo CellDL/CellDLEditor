@@ -14,7 +14,7 @@ export default vite.defineConfig({
         'pyodide/*',
         '**/*.ttl'
     ],
-    base: './',
+    base: 'https://celldl.github.io/CellDLEditor/',
     build: {
         chunkSizeWarningLimit: 2048,
         rollupOptions: {
