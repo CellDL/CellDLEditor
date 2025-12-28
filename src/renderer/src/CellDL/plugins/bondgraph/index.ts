@@ -102,7 +102,7 @@ const BG_RDF_TEMPLATE_URIS = [
 
 const BG_RDF_SOURCES: Map<string, string> = new Map()
 
-const BG_RDF_ASSET_BASE = '@renderer/assets/bg-rdf/'
+const BG_RDF_ASSET_BASE = '/src/assets/bg-rdf/'
 
 const BG_RDF_ONTOLOGY_ASSET_PATH = `${BG_RDF_ASSET_BASE}ontology.ttl`
 
