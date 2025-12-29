@@ -565,6 +565,7 @@ export class BondgraphPlugin implements PluginInterface {
                           group: PropertyGroup,  rdfStore: RdfStore) {
         const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+        const elementTemplate = (<PluginData>celldlObject.pluginData(this.id)).elementTemplate
         propertyTemplates.items.forEach((itemTemplate: ItemDetails) => {
             const items: ItemDetails[] = []
             if (itemTemplate.itemId === BG_INPUT.ElementType) {
@@ -573,13 +574,21 @@ export class BondgraphPlugin implements PluginInterface {
             } else if (itemTemplate.itemId === BG_INPUT.ElementSpecies ||
                        itemTemplate.itemId === BG_INPUT.ElementLocation ||
                        itemTemplate.itemId === BG_INPUT.ElementValue) {
-                const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
+                let item = getItemProperty(celldlObject, itemTemplate, rdfStore)
+                if (!item
+                 && itemTemplate.itemId === BG_INPUT.ElementValue
+                 && elementTemplate && elementTemplate.value) {
+                    item = {...itemTemplate, units: elementTemplate.value.units}
+                }
                 if (item) {
                     if (itemTemplate.itemId === BG_INPUT.ElementSpecies) {
                         pluginData.species = String(item.value)
                     }
                     if (itemTemplate.itemId === BG_INPUT.ElementLocation) {
                         pluginData.location = String(item.value)
+                    }
+                    if (itemTemplate.itemId === BG_INPUT.ElementValue) {
+                        item.optional = false
                     }
                     items.push(item)
                 }
