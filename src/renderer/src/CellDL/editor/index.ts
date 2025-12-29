@@ -429,9 +429,17 @@ export class CellDLEditor {
         }
     }
 
-    #showPos(pos: PointLike) {
-        if (this.#statusPos) {
-            this.#statusPos.innerText = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+    #showStatus(celldlObject: CellDLObject|null) {
+        if (celldlObject) {
+            this.status = celldlObject.name ?? ''
+            if (this.#statusPos) {
+                this.#statusPos.innerText = celldlObject.id
+            }
+        } else {
+            this.status = ''
+            if (this.#statusPos) {
+                this.#statusPos.innerText = ''
+            }
         }
     }
 
@@ -646,7 +654,7 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-            this.status = ''
+            this.#showStatus(null)
             this.#closeTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()
@@ -656,9 +664,7 @@ export class CellDLEditor {
             return
         }
 
-        if (currentObject?.name) {
-            this.status = currentObject.name
-        }
+        this.#showStatus(currentObject)
 
         if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (
@@ -758,7 +764,6 @@ export class CellDLEditor {
         this.#pointerMoved = true
         this.#pointerPosition = new DOMPoint(event.x, event.y)
         const svgPoint = this.#domToSvgCoords(event)
-        this.#showPos(svgPoint)
         if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker) {
                 this.#pathMaker.drawTo(svgPoint, event.shiftKey)
