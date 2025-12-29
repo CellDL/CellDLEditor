@@ -166,8 +166,8 @@ export class CellDLDiagram {
         }
     }
 
-    edit() {
-        this.#celldlEditor.editDiagram(this)
+    async edit() {
+        await this.#celldlEditor.editDiagram(this)
     }
 
     get editorFrame() {

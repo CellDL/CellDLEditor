@@ -233,11 +233,11 @@ vue.watch(
             const fileAction = props.fileAction
             if  (fileAction.action === 'close-file') {
                 celldlDiagram = new CellDLDiagram('', '', celldlEditor)
-                celldlEditor.editDiagram(celldlDiagram)
+                await celldlEditor.editDiagram(celldlDiagram)
             } else if (fileAction.action === 'open-file') {
                 if (fileAction.contents !== undefined) {
                     celldlDiagram = new CellDLDiagram(fileAction.name, fileAction.contents, celldlEditor)
-                    celldlEditor.editDiagram(celldlDiagram)
+                    await celldlEditor.editDiagram(celldlDiagram)
                 }
             } else if (fileAction.action === 'save-file') {  // save-file-as
                 const celldlData = await celldlDiagram?.serialise()
@@ -264,7 +264,7 @@ vue.watch(
 
 //==============================================================================
 
-vue.onMounted(() => {
+vue.onMounted(async () => {
     // Tell the editor about the default connection style and component
 
     despatchToolbarEvent('value', EDITOR_TOOL_IDS.DrawConnectionTool, DEFAULT_CONNECTION_STYLE_DEFINITION.id)
@@ -289,7 +289,7 @@ vue.onMounted(() => {
                         celldlDiagram = new CellDLDiagram('', '', celldlEditor)
                         window.electronAPI?.sendFileAction('ERROR', filePath, '')
                     }
-                    celldlEditor.editDiagram(celldlDiagram)
+                    await celldlEditor.editDiagram(celldlDiagram)
                 } else if (action === 'GET_DATA') {
                     const celldlData = await celldlDiagram?.serialise(filePath!)
                     window.electronAPI?.sendFileAction('WRITE', filePath, celldlData)
@@ -313,7 +313,7 @@ vue.onMounted(() => {
             window.electronAPI?.sendEditorAction('READY')
         }
 
-        celldlDiagram.edit()
+        await celldlDiagram.edit()
     }
 })
 //==============================================================================

@@ -19,6 +19,8 @@ limitations under the License.
 ******************************************************************************/
 /** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 
+import * as vue from 'vue'
+
 import '@renderer/assets/svgContent.css'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
@@ -278,7 +280,7 @@ export class CellDLEditor {
         }
     }
 
-    editDiagram(celldlDiagram: CellDLDiagram) {
+    async editDiagram(celldlDiagram: CellDLDiagram) {
         if (this.#celldlDiagram !== null) {
             this.closeDiagram()
         }
@@ -299,6 +301,9 @@ export class CellDLEditor {
         if (this.#container) {
             this.#container.appendChild(this.#svgDiagram!)
         }
+
+        // Allow for the diagram to render
+        await vue.nextTick()
 
         // Rewriting metadata during diagram finishSetup might dirty
         this.markClean()
