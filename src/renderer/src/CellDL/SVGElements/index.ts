@@ -159,6 +159,7 @@ export class CellDLSVGElement {
     }
 
     svgBounds(recalculate: boolean = false): Bounds {
+        // Get bounds in global coordinates
         return recalculate || this.#bounds === undefined
             ? Bounds.fromSvg(this.#svgElement, this.#globalTransform)
             : this.#bounds
@@ -181,6 +182,7 @@ export class CellDLSVGElement {
         this.#size = new Point(bounds.right - bounds.left, bounds.bottom - bounds.top)
         if (this.#centroid) {
             this.#topLeft = this.#centroid.subtract(this.#size.scale(this.#centroidOffset))
+            // Get bounds in local coordinates
             this.#bounds = new Bounds(
                 this.#topLeft.x,
                 this.#topLeft.y,
