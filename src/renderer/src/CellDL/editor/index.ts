@@ -423,12 +423,6 @@ export class CellDLEditor {
         }
     }
 
-    showTooltip(msg: string, style: string = '') {
-        if (this.#pointerPosition) {
-            this.#showTooltip(this.#pointerPosition, msg, ['warn', 'error'].includes(style) ? 'error' : 'hint')
-        }
-    }
-
     #showStatus(celldlObject: CellDLObject|null) {
         if (celldlObject) {
             this.status = celldlObject.name ?? ''
@@ -440,6 +434,12 @@ export class CellDLEditor {
             if (this.#statusPos) {
                 this.#statusPos.innerText = ''
             }
+        }
+    }
+
+    showTooltip(msg: string, style: string = '') {
+        if (this.#pointerPosition) {
+            this.#showTooltip(this.#pointerPosition, msg, ['warn', 'error'].includes(style) ? 'error' : 'hint')
         }
     }
 
