@@ -50,7 +50,7 @@ export function setInternalIds(svgElement: SVGGraphicsElement, previousId: strin
     }
     for (const element of svgElement.querySelectorAll('use')) {
         const link = element.getAttribute('xlink:href')
-        if (link && link.startsWith('#')) {
+        if (link?.startsWith('#')) {
             if (previousId !== '' && link.startsWith(`#${previousId}-`)) {
                 element.setAttribute('xlink:href', `#${id}${link.substring(previousId.length + 1)}`)
             } else {
@@ -82,7 +82,7 @@ export class CellDLSVGElement {
         if (svgElement === null) {
             throw new Error(`CellDL object '${celldlObject.id}' isn't represented in SVG...`)
         }
-        const svgDiagramElement = celldlObject.celldlDiagram!.svgDiagram
+        const svgDiagramElement = celldlObject.celldlDiagram?.svgDiagram
         // get all transformations that are being applied to the SVG element
         this.#globalTransform = Transform.Identity()
         let element = svgElement
@@ -195,7 +195,7 @@ export class CellDLSVGElement {
         const topLeftOffset = this.#size.scale(this.#centroidOffset).scalarScale(-1)
         // Corner offsets are wrt centroid, anticlockwise from bottom right; see comment below in ``boundaryIntersections()``
         const connectionComponentGap: number = CONNECTION_WIDTH / 2 - SELECTION_STROKE_WIDTH / 2
-        if (connectionComponentGap != 0) {
+        if (connectionComponentGap !== 0) {
             this.#cornerOffsets = [
                 topLeftOffset.add(this.#size).add({ x: connectionComponentGap, y: connectionComponentGap }),
                 topLeftOffset

@@ -843,10 +843,10 @@ export class CellDLDiagram {
         if (currentPathInside) {
             compartmentGroup.appendChild(connection.celldlSvgElement!.svgElement)
         } else {
-            if (connection.source!.isInterface) {
+            if (connection.source?.isInterface) {
                 ;(<CellDLInterface>connection.source!).addExternalConnection(connection)
             }
-            if (connection.target!.isInterface) {
+            if (connection.target?.isInterface) {
                 ;(<CellDLInterface>connection.target!).addExternalConnection(connection)
             }
         }
