@@ -367,7 +367,7 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     }
 
     get maxConnections(): number {
-        return this.objectTemplate?.maxConnections || Infinity
+        return Infinity // WIP...   this.objectTemplate?.maxConnections || Infinity
     }
 
     get numConnections(): number {
