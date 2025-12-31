@@ -79,7 +79,7 @@ export class CellDLObject {
 
     #celldlClassName: CELLDL_CLASS
     #celldlDiagram: CellDLDiagram
-    #celldlSvgElement: CellDLSVGElement | null = null
+    #celldlSvgElement: CellDLSVGElement|undefined
     #celldlType: NamedNode
 
     #label: string | null = null
@@ -205,7 +205,7 @@ export class CellDLObject {
     }
 
     get selected() {
-        return this.#celldlSvgElement!.selected
+        return this.#celldlSvgElement?.selected
     }
 
     get svgElement() {
@@ -213,7 +213,7 @@ export class CellDLObject {
     }
 
     pluginData(pluginId: string): object {
-        return this.#pluginData.get(pluginId)!
+        return this.#pluginData.get(pluginId) || {}
     }
 
     setPluginData(pluginId: string, data: object) {
@@ -230,26 +230,26 @@ export class CellDLObject {
     }
 
     containsPoint(point: PointLike): boolean {
-        return this.#celldlSvgElement !== null && this.#celldlSvgElement.containsPoint(point)
+        return this.#celldlSvgElement?.containsPoint(point) || false
     }
 
     initialiseMove(svgElement: SVGGraphicsElement) {
-        this.#moveable = this.#celldlSvgElement!.isMoveable(svgElement)
+        this.#moveable = this.#celldlSvgElement?.isMoveable(svgElement) || false
         if (this.#moveable) {
             svgElement.style.setProperty('cursor', 'move')
         }
     }
 
     startMove(svgPoint: PointLike) {
-        this.#celldlSvgElement!.startMove(svgPoint)
+        this.#celldlSvgElement?.startMove(svgPoint)
     }
 
     move(svgPoint: PointLike) {
-        this.#celldlSvgElement!.move(svgPoint)
+        this.#celldlSvgElement?.move(svgPoint)
     }
 
     endMove() {
-        this.#celldlSvgElement!.endMove()
+        this.#celldlSvgElement?.endMove()
     }
 
     finaliseMove() {
@@ -269,7 +269,7 @@ export class CellDLObject {
     }
 
     undoControlMove(undoPosition: UndoMovePosition) {
-        this.#celldlSvgElement!.undoControlMove(undoPosition)
+        this.#celldlSvgElement?.undoControlMove(undoPosition)
     }
 
     redraw() {
@@ -455,7 +455,6 @@ export class CellDLCompartment extends CellDLConnectedObject {
             .getPropertyAsArray(CELLDL('hasInterface'))
             .map((node) => <CellDLInterface>celldlDiagram.getConnector(node))
             .filter((node) => node != null)
-            .map((node) => node!)
     }
 
     toString(): string {
@@ -512,7 +511,6 @@ export class CellDLConnection extends CellDLObject {
             .getPropertyAsArray(CELLDL('hasIntermediate'))
             .map((node) => celldlDiagram.getConnector(node))
             .filter((node) => node != null)
-            .map((node) => node!)
         if (source && target) {
             this.#connectedObjects = [source, ...intermediates, target]
             for (const connector of this.#connectedObjects) {
@@ -592,11 +590,11 @@ export class CellDLInterface extends CellDLConnectedObject {
     }
 
     move(_svgPoint: PointLike) {
-        const component = <BoundedElement>this.celldlSvgElement!
-        const svgElement = <SVGGraphicsElement>this.celldlDiagram!.svgDiagram.getElementById(component.id)
+        const component = <BoundedElement>this.celldlSvgElement
+        const svgElement = <SVGGraphicsElement>this.celldlDiagram.svgDiagram.getElementById(component.id)
         const bounds = svgElement.getBoundingClientRect()
         const centre = new Point((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2)
-        const centroid = Point.fromPoint(this.celldlDiagram!.domToSvgCoords(centre))
+        const centroid = Point.fromPoint(this.celldlDiagram.domToSvgCoords(centre))
         const savedCentroid = component.centroid
         component.setCentroid(centroid)
         component.unlimitDirection()
