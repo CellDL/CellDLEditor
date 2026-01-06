@@ -91,9 +91,10 @@ function connectionStylePrompt(name: string): string {
 
 // Make data available to the component selection tool and to the properties panel
 
-import { pluginComponents } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@renderer/plugins/index'
+import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
 
-pluginComponents.loadPlugins()
+componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
 
 // Plugins need to be loaded before creating the editor
 
@@ -101,7 +102,7 @@ const celldlEditor = new CellDLEditor()
 
 //==============================================================================
 
-let defaultComponent = pluginComponents.getSelectedTemplate()!
+let defaultComponent = componentLibraryPlugin.getSelectedTemplate()!
 
 //==============================================================================
 
