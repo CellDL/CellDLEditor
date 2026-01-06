@@ -981,8 +981,7 @@ export class BondgraphPlugin implements PluginInterface {
                 if (componentTemplate.type === element.value) {
                     let component = this.#baseComponents.get(componentTemplate.type)
                     if (!component) {
-                        if (label) {
-                            // Ontology labels override component names
+                        if (label) {    // Ontology labels override component names
                             componentTemplate.name = label.value
                         }
                         component = new BGBaseComponent(componentTemplate,
