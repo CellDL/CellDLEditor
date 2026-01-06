@@ -38,7 +38,7 @@ export type ItemDetails = locApi.IUiJsonInput & {
     numeric?: boolean
 }
 
-export type StyleObject = Object
+export type StyleObject = object
 
 export interface PropertyGroup {
     groupId: string

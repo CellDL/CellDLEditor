@@ -108,7 +108,7 @@ export function getTemplateEventDetails(id: string, target: HTMLImageElement,
     }
     if (event) {
         // Offset of event.x/y wrt centre
-        details['offset'] = {
+        details.offset = {
             x: event.offsetX - target.scrollWidth / 2,
             y: event.offsetY - target.scrollHeight / 2
         }

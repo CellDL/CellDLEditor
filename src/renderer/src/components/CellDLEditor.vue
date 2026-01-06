@@ -47,7 +47,7 @@ import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStyl
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
-import { celldl2cellml } from '@renderer/bg2cellml'
+import { celldl2cellml } from '@renderer/bg2cellml/index'
 
 //==============================================================================
 
@@ -63,7 +63,7 @@ const electronWindow:ElectronWindow = window
 
 const svgContainer = vue.useTemplateRef<HTMLElement>('svg-content')
 
-let celldlDiagram: CellDLDiagram | null = null
+let celldlDiagram: CellDLDiagram|undefined
 
 //==============================================================================
 
