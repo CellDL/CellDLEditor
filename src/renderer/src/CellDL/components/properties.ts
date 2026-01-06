@@ -25,7 +25,7 @@ import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { type NamedProperty, OBJECT_METADATA } from '@editor/components/index'
 import { type RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
-import { componentLibraryPlugin } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 //==============================================================================
 

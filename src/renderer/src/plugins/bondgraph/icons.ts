@@ -105,14 +105,14 @@ export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'ZeroStorageNode_q',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
-        name: 'Zero storage node (q)',
+        name: 'Zero storage node',
         symbol: 'q',
         style: ZERO_STORAGE_STYLE
     },
     {
         id: 'ZeroStorageNode_u',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
-        name: 'Zero storage node (u)',
+        name: 'Zero storage node',
         symbol: 'u',
         style: ZERO_STORAGE_STYLE
     },
@@ -147,7 +147,7 @@ export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'Dissipator',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator',
-        name: 'Dissipative element',
+        name: 'Dissipator',
         symbol: 'R',
         style: RESISTANCE_STYLE
     },
@@ -176,15 +176,15 @@ export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'PotentialSource',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
-        name: 'Potential source',
-        symbol: 'Se',
+        name: 'Potential source',   // These names should come from ontology rdfs:label
+        symbol: 'u',
         style: POTENTIAL_STYLE,
     },
     {
         id: 'FlowSource',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
         name: 'Flow source',
-        symbol: 'Sf',
+        symbol: 'v',
         style: FLOW_STYLE,
     }
 ]

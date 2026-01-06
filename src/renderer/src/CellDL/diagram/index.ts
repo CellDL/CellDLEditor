@@ -64,7 +64,7 @@ import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
 import type { NewObjectClass, ObjectTemplate } from '@editor/components/index'
 
-import { componentLibraryPlugin } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 //==============================================================================
 

@@ -58,7 +58,7 @@ import InputWidget from '../widgets/InputWidget.vue'
 
 import FillStyle from './FillStyle.vue'
 import PathStyle from './PathStyle.vue'
-import type { INodeStyle } from '@editor/plugins/bondgraph/index'
+import type { INodeStyle } from '@renderer/plugins/bondgraph/index'
 import type { IPathStyle } from '@renderer/common/svgUtils'
 
 const props = defineProps<{

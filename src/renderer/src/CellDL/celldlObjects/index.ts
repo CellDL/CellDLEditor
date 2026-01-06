@@ -31,7 +31,7 @@ import type { ConnectionStyle } from '@editor/connections/index'
 import type { CellDLDiagram } from '@editor/diagram/index'
 import { SvgConnection } from '@editor/SVGElements/svgconnection'
 import type { CellDLSVGElement } from '@editor/SVGElements/index'
-import { componentLibraryPlugin } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 import * as $rdf from '@editor/metadata/index'
 import type { MetadataPropertiesMap, NamedNode } from '@editor/metadata/index'

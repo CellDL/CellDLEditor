@@ -51,7 +51,7 @@ import {
 import * as $rdf from '@editor/metadata/index'
 import { BGF, RDF, SPARQL_PREFIXES, type Term } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
-import type { PluginInterface } from '@editor/plugins/index'
+import type { PluginInterface } from '@renderer/plugins/index'
 
 import {
     BONDGRAPH_ICON_DEFINITIONS,
@@ -989,6 +989,10 @@ export class BondgraphPlugin implements PluginInterface {
                 if (componentTemplate.type === element.value) {
                     let component = this.#baseComponents.get(componentTemplate.type)
                     if (!component) {
+                        if (label) {
+                            // Ontology labels override component names
+                            componentTemplate.name = label.value
+                        }
                         component = new BGBaseComponent(componentTemplate,
                                         label ? label.value : getCurie(element.value),
                                         base.value)

@@ -58,7 +58,7 @@
 import * as vue from 'vue'
 import { TinyColor } from '@ctrl/tinycolor'
 
-import { type INodeStyle } from '@editor/plugins/bondgraph/index'
+import { type INodeStyle } from '@renderer/plugins/bondgraph/index'
 
 const props = defineProps<{
     fillStyle: INodeStyle

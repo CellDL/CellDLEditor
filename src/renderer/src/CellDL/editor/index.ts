@@ -29,7 +29,7 @@ import type { TemplateEventDetails } from '@editor/components/index'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
 import type { CellDLDiagram } from '@editor/diagram/index'
 import { round } from '@editor/utils'
-import { componentLibraryPlugin } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { StringProperties } from '@renderer/common/types'
