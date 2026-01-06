@@ -37,7 +37,7 @@ import type {
     StyleObject,
     ValueChange
 } from '@editor/components/properties'
-import { BONDGRAPH_COMPONENT_LIBRARY, BondgraphPlugin } from '@editor/plugins/bondgraph/index'
+import { STYLING_GROUP } from '@editor/components/properties'
 import type { RdfStore } from '@editor/metadata/index'
 
 //==============================================================================
@@ -45,6 +45,7 @@ import type { RdfStore } from '@editor/metadata/index'
 export interface PluginInterface {
     id: string
 
+    componentLibrary: ComponentLibrary
     newDocument: (uri: string, rdfStore: RdfStore) => void
     addDocumentMetadata: (rdfStore: RdfStore) => void
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
@@ -53,54 +54,50 @@ export interface PluginInterface {
     getObjectTemplateById: (id: string) => ObjectTemplate|undefined
     getPropertyGroups: () => PropertyGroup[]
     getStylingGroup: () => PropertyGroup
-    getComponentProperties: (celldlObject: CellDLObject,
+    updateComponentProperties: (celldlObject: CellDLObject,
                              componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
-    updateComponentProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
-                                componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
-    updateComponentStyling: (celldlObject: CellDLObject, objectType: string, styling: StyleObject) => void
+    updateObjectProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                                componentProperties: PropertyGroup[], rdfStore: RdfStore) => Promise<void>
+    updateComponentStyling: (celldlObject: CellDLObject, objectType: string, styling: StyleObject) =>  Promise<void>
     styleRules: () => string
     svgDefinitions: () => string
 }
 
 //==============================================================================
 
-export class PluginComponents {
-    static #instance: PluginComponents | null = null
+class ComponentLibraryPlugin {
+    static #instance: ComponentLibraryPlugin | null = null
 
     #registeredPlugins: Map<string, PluginInterface> = new Map()
-
-    // This will eventually go
-    #bondgraphPlugin: PluginInterface|undefined = undefined
 
     #componentLibraries: ComponentLibrary[] = []
     #componentLibrariesRef = vue.ref<ComponentLibrary[]>(this.#componentLibraries)
 
     private constructor() {
-        if (PluginComponents.#instance) {
-            throw new Error('Use PluginComponents.instance instead of `new`')
+        if (ComponentLibraryPlugin.#instance) {
+            throw new Error('Use ComponentLibraryPlugin.instance instead of `new`')
         }
-        PluginComponents.#instance = this
+        ComponentLibraryPlugin.#instance = this
     }
 
     static get instance() {
-        if (!PluginComponents.#instance) {
-            PluginComponents.#instance = new PluginComponents()
+        if (!ComponentLibraryPlugin.#instance) {
+            ComponentLibraryPlugin.#instance = new ComponentLibraryPlugin()
         }
-        return PluginComponents.#instance
+        return ComponentLibraryPlugin.#instance
     }
 
     get registeredPlugins(): string[] {
         return [...this.#registeredPlugins.keys()]
     }
 
-    registerPlugin(plugin: PluginInterface) {
-        this.#registeredPlugins.set(plugin.id, plugin)
+    install(app: vue.App, _options: object)  {
+        app.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
     }
 
-    loadPlugins() {
-        this.#bondgraphPlugin = new BondgraphPlugin()
-        this.#componentLibraries.push(BONDGRAPH_COMPONENT_LIBRARY)
-        vue.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
+    registerPlugin(plugin: PluginInterface) {
+        this.#componentLibraries.push(plugin.componentLibrary)
+        this.#registeredPlugins.set(plugin.id, plugin)
     }
 
     getSelectedTemplate(): LibraryComponentTemplate|undefined {
@@ -128,15 +125,15 @@ export class PluginComponents {
         }
     }
 
-    addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
-        for (const plugin of this.#registeredPlugins.values()) {
-            plugin.addNewConnection(connection, rdfStore)
-        }
-    }
-
     addDocumentMetadata(rdfStore: RdfStore) {
         for (const plugin of this.#registeredPlugins.values()) {
             plugin.addDocumentMetadata(rdfStore)
+        }
+    }
+
+    addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
+        for (const plugin of this.#registeredPlugins.values()) {
+            plugin.addNewConnection(connection, rdfStore)
         }
     }
 
@@ -146,48 +143,97 @@ export class PluginComponents {
         }
     }
 
-    async updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
-                                    componentProperties: PropertyGroup[], rdfStore: RdfStore) {
-        for (const plugin of this.#registeredPlugins.values()) {
-            await plugin.updateComponentProperties(celldlObject, itemId, value, componentProperties, rdfStore)
-        }
-    }
+    //==========================================================================
 
-    async updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
-        for (const plugin of this.#registeredPlugins.values()) {
-            await plugin.updateComponentStyling(celldlObject, objectType, styling)
+    getObjectTemplateById(fullId: string): ObjectTemplate|undefined {
+        const pluginTemplateId = fullId.split('/')
+        if (pluginTemplateId.length > 1) {
+            const plugin = this.#registeredPlugins.get(pluginTemplateId[0]!)
+            if (plugin) {
+                return plugin.getObjectTemplateById(pluginTemplateId.slice(1).join('/'))
+            }
         }
     }
 
     //==========================================================================
 
     getObjectTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectTemplate|undefined {
-        return this.#bondgraphPlugin!.getObjectTemplate(celldlObject, rdfStore)
+        let objectTemplate: ObjectTemplate|undefined
+        for (const pluginId of celldlObject.pluginIds) {
+            const plugin = this.#registeredPlugins.get(pluginId)
+            if (plugin) {
+                const template = plugin.getObjectTemplate(celldlObject, rdfStore)
+                if (objectTemplate === undefined) {
+                    objectTemplate = template
+                } else if (template !== undefined) {
+                    objectTemplate = { ...objectTemplate, ...template }
+                }
+            }
+        }
+        return objectTemplate
     }
 
-    getObjectTemplateById(id: string): ObjectTemplate|undefined {
-        return this.#bondgraphPlugin!.getObjectTemplateById(id)
+    updateComponentProperties(celldlObject: CellDLObject,
+                           componentProperties: PropertyGroup[], rdfStore: RdfStore): void {
+        for (const pluginId of celldlObject.pluginIds) {
+            const plugin = this.#registeredPlugins.get(pluginId)
+            if (plugin) {
+                plugin.updateComponentProperties(celldlObject, componentProperties, rdfStore)
+            }
+        }
     }
+
+    async updateComponentStyling(celldlObject: CellDLObject, objectType: string, styling: StyleObject) {
+        for (const pluginId of celldlObject.pluginIds) {
+            const plugin = this.#registeredPlugins.get(pluginId)
+            if (plugin) {
+                await plugin.updateComponentStyling(celldlObject, objectType, styling)
+            }
+        }
+    }
+
+    async updateObjectProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
+                                    componentProperties: PropertyGroup[], rdfStore: RdfStore) {
+        for (const pluginId of celldlObject.pluginIds) {
+            const plugin = this.#registeredPlugins.get(pluginId)
+            if (plugin) {
+                await plugin.updateObjectProperties(celldlObject, itemId, value, componentProperties, rdfStore)
+            }
+        }
+    }
+
+    //==========================================================================
 
     getPropertyGroups(): PropertyGroup[] {
-        return this.#bondgraphPlugin!.getPropertyGroups()
+        const propertyGroups: PropertyGroup[] = []
+        for (const plugin of this.#registeredPlugins.values()) {
+            propertyGroups.push(...plugin.getPropertyGroups())
+        }
+        return propertyGroups
     }
 
     getStylingGroup(): PropertyGroup {
-        return this.#bondgraphPlugin!.getStylingGroup()
+        return STYLING_GROUP
     }
 
-    getComponentProperties(celldlObject: CellDLObject,
-                           componentProperties: PropertyGroup[], rdfStore: RdfStore) {
-        return this.#bondgraphPlugin!.getComponentProperties(celldlObject, componentProperties, rdfStore)
-    }
+    //==========================================================================
+
+    // Global style rules and definitions added to the diagram's SVG
 
     styleRules(): string {
-        return this.#bondgraphPlugin!.styleRules()
+        const styling: string[] = []
+        for (const plugin of this.#registeredPlugins.values()) {
+            styling.push(plugin.styleRules())
+        }
+        return styling.join('\n')
     }
 
     svgDefinitions(): string {
-        return this.#bondgraphPlugin!.svgDefinitions()
+        const definitions: string[] = []
+        for (const plugin of this.#registeredPlugins.values()) {
+            definitions.push(plugin.svgDefinitions())
+        }
+        return definitions.join('\n')
     }
 }
 
@@ -196,7 +242,7 @@ export class PluginComponents {
 // Instantiate our plugin components. This will load the BondgraphPlugin
 // and hence BG template definitions from the BG-RDF framework
 
-export const pluginComponents = PluginComponents.instance
+export const componentLibraryPlugin = ComponentLibraryPlugin.instance
 
 //==============================================================================
 //==============================================================================

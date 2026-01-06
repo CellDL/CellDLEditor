@@ -35,6 +35,7 @@ import {
     type CellDLObject
 } from '@editor/celldlObjects/index'
 import type {
+    ComponentLibrary,
     ElementTypeName,
     ObjectTemplate
 } from '@editor/components/index'
@@ -43,13 +44,14 @@ import {
     type ItemDetails,
     type PropertyGroup,
     type StyleObject,
+    STYLING_GROUP_ID,
     updateItemProperty,
     type ValueChange
 } from '@editor/components/properties'
 import * as $rdf from '@editor/metadata/index'
 import { BGF, RDF, SPARQL_PREFIXES, type Term } from '@editor/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
-import { pluginComponents, type PluginInterface } from '@editor/plugins/index'
+import type { PluginInterface } from '@editor/plugins/index'
 
 import {
     BONDGRAPH_ICON_DEFINITIONS,
@@ -67,17 +69,6 @@ import type {
 //==============================================================================
 
 const BONDGRAPH_FRAMEWORK = 'https://bg-rdf.org/ontologies/bondgraph-framework'
-
-//==============================================================================
-
-export const BONDGRAPH_COMPONENT_LIBRARY: BGComponentLibrary = {
-    name: 'Bondgraph Elements',
-    templates: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
-}
-
-const BONDGRAPH_COMPONENT_TEMPLATES: Map<string, BGLibraryComponentTemplate> = new Map(
-    BONDGRAPH_COMPONENT_LIBRARY.templates.map((c: BGLibraryComponentTemplate) => [c.id, c])
-)
 
 //==============================================================================
 
@@ -228,8 +219,7 @@ enum BG_INPUT {
 enum BG_GROUP {
     ElementGroup = 'bg-element-group',
     ParameterGroup = 'bg-parameter-group',
-    StateGroup = 'bg-state-group',
-    StylingGroup = 'bg-styling-group'
+    StateGroup = 'bg-state-group'
 }
 
 const PROPERTY_GROUPS: PropertyGroup[] = [
@@ -288,21 +278,21 @@ const ELEMENT_VALUE_INDEX = 3
 
 //==============================================================================
 
-const STYLING_GROUP = {
-    groupId: BG_GROUP.StylingGroup,
-    title: 'Style',
-    items: [],
-    styling: {}
-}
-
-//==============================================================================
-
 export class BondgraphPlugin implements PluginInterface {
-    readonly id: string = 'bondgraph-plugin'
+    readonly id: string = 'bondgraph-components'
 
     #baseComponents: Map<string, BGBaseComponent> = new Map()                       // Indexed by component.type
     #baseComponentToElementTemplates: Map<string, ElementTemplate[]> = new Map()    // Indexed by component.type
     #elementTemplates: Map<string, ElementTemplate> = new Map()                     // Indexed by element.type
+
+    #componentLibrary: BGComponentLibrary = {
+        id: this.id,
+        name: 'Bondgraph Elements',
+        templates: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
+    }
+    #bondgraph_component_templates: Map<string, BGLibraryComponentTemplate> = new Map(
+        this.#componentLibrary.templates.map((c: BGLibraryComponentTemplate) => [c.id, c])
+    )
 
     #currentDocumentUri: string = ''
     #physicalDomains: Map<string, PhysicalDomain> = new Map()
@@ -316,11 +306,13 @@ export class BondgraphPlugin implements PluginInterface {
         this.#loadBaseComponents()
         this.#assignTemplates()
         this.#loadTemplateParameters()
-
-        pluginComponents.registerPlugin(this)
     }
 
     //==========================================================================
+
+    get componentLibrary(): ComponentLibrary {
+        return this.#componentLibrary
+    }
 
     #getName(type: string): string {
         if (this.#elementTemplates.has(type)) {
@@ -371,7 +363,7 @@ export class BondgraphPlugin implements PluginInterface {
     }
 
     getObjectTemplateById(id: string): ObjectTemplate|undefined {
-        const componentTemplate = BONDGRAPH_COMPONENT_TEMPLATES.get(id)
+        const componentTemplate = this.#bondgraph_component_templates.get(id)
         if (componentTemplate) {
             const metadataProperties: MetadataProperty[] = [
                 [ RDF('type'), $rdf.namedNode(componentTemplate.type)],
@@ -397,12 +389,6 @@ export class BondgraphPlugin implements PluginInterface {
 
     getPropertyGroups(): PropertyGroup[] {
         return PROPERTY_GROUPS
-    }
-
-    //======================================
-
-    getStylingGroup(): PropertyGroup {
-        return STYLING_GROUP
     }
 
     //==========================================================================
@@ -491,13 +477,13 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    getComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
+    updateComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         alert.clear()
         if (celldlObject.isConnection) {
             celldlObject.setPluginData(this.id, { baseComponent: {} })
             componentProperties.forEach(group => {
-                if (group.groupId === BG_GROUP.StylingGroup) {
-                    this.#getElementStyling(celldlObject, group, true)
+                if (group.groupId === STYLING_GROUP_ID) {
+                    this.#loadElementStyling(celldlObject, group, true)
                 }
             })
         } else {
@@ -511,13 +497,13 @@ export class BondgraphPlugin implements PluginInterface {
                 } else if (pluginData.elementTemplate) {
                     if (group.groupId === BG_GROUP.ParameterGroup) {
                         this.#setVariableTemplates(pluginData.elementTemplate.parameters, group)
-                        this.#getVariableProperties(celldlObject, group, rdfStore)
+                        this.#loadVariableProperties(celldlObject, group, rdfStore)
                     } else if (group.groupId === BG_GROUP.StateGroup) {
                         this.#setVariableTemplates(pluginData.elementTemplate.states, group)
-                        this.#getVariableProperties(celldlObject, group, rdfStore)
+                        this.#loadVariableProperties(celldlObject, group, rdfStore)
                     }
-                } else if (group.groupId === BG_GROUP.StylingGroup) {
-                    this.#getElementStyling(celldlObject, group, false)
+                } else if (group.groupId === STYLING_GROUP_ID) {
+                    this.#loadElementStyling(celldlObject, group, false)
                 }
             })
         }
@@ -597,7 +583,7 @@ export class BondgraphPlugin implements PluginInterface {
         })
     }
 
-    #getElementStyling(celldlObject: CellDLObject, group: PropertyGroup, connection: boolean) {
+    #loadElementStyling(celldlObject: CellDLObject, group: PropertyGroup, connection: boolean) {
         if (connection) {
             group.styling = {
                 pathStyle: getSvgPathStyle(celldlObject.celldlSvgElement!.svgElement)
@@ -613,7 +599,7 @@ export class BondgraphPlugin implements PluginInterface {
         }
     }
 
-    #getVariableProperties(celldlObject: CellDLObject, group: PropertyGroup, rdfStore: RdfStore) {
+    #loadVariableProperties(celldlObject: CellDLObject, group: PropertyGroup, rdfStore: RdfStore) {
         const objectUri = celldlObject.uri.toString()
 
         const values: Map<string, string> = new Map()
@@ -691,7 +677,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    async updateComponentProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
+    async updateObjectProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
                                     componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         await this.#updateElementProperties(value, itemId, celldlObject, rdfStore)
 
@@ -999,7 +985,7 @@ export class BondgraphPlugin implements PluginInterface {
             const element = r.get('element')!
             const label = r.get('label')
             const base = r.get('base')!
-            for (const componentTemplate of BONDGRAPH_COMPONENT_TEMPLATES.values()) {
+            for (const componentTemplate of this.#bondgraph_component_templates.values()) {
                 if (componentTemplate.type === element.value) {
                     let component = this.#baseComponents.get(componentTemplate.type)
                     if (!component) {

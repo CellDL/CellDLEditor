@@ -64,7 +64,7 @@ import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
 import type { NewObjectClass, ObjectTemplate } from '@editor/components/index'
 
-import { pluginComponents } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@editor/plugins/index'
 
 //==============================================================================
 
@@ -150,7 +150,7 @@ export class CellDLDiagram {
         this.#setLastIdentifier()
         this.#setupDefines()
         this.#setStylesheet()
-        pluginComponents.newDocument(this.#documentNode.uri, this.#kb)
+        componentLibraryPlugin.newDocument(this.#documentNode.uri, this.#kb)
     }
 
     finishSetup() {
@@ -286,12 +286,12 @@ export class CellDLDiagram {
             this.#svgDiagram.insertAdjacentHTML('afterbegin', `<defs></defs>`)
             defsElement = this.#svgDiagram.firstChild as SVGDefsElement
             defsElement.id = CELLDL_DEFINITIONS_ID
-            defsElement.insertAdjacentHTML('afterbegin', pluginComponents.svgDefinitions())
+            defsElement.insertAdjacentHTML('afterbegin', componentLibraryPlugin.svgDefinitions())
         }
     }
 
     #setStylesheet() {
-        const css = `${CellDLStylesheet}${pluginComponents.styleRules()}`
+        const css = `${CellDLStylesheet}${componentLibraryPlugin.styleRules()}`
         let styleElement = this.#svgDiagram.querySelector(
             `defs#${CELLDL_DEFINITIONS_ID} > style#${CELLDL_STYLESHEET_ID}`
         )
@@ -494,7 +494,7 @@ export class CellDLDiagram {
             }
 
             // Add statements about the document from plugins
-            pluginComponents.addDocumentMetadata(this.rdfStore)
+            componentLibraryPlugin.addDocumentMetadata(this.rdfStore)
 
             // Make sure metadata is up-to-date
             this.#saveDiagramProperties()
@@ -595,7 +595,7 @@ export class CellDLDiagram {
     addNewConnection(svgElement: SVGGraphicsElement, template: ObjectTemplate): CellDLConnection {
         const connection = this.#addNewObject(svgElement, template) as CellDLConnection
         // let the plugins know
-        pluginComponents.addNewConnection(connection, this.rdfStore)
+        componentLibraryPlugin.addNewConnection(connection, this.rdfStore)
         return connection
     }
 
@@ -682,7 +682,7 @@ export class CellDLDiagram {
         ) as CellDLConnection
         this.#addConnection(connection)
         // let the plugins know
-        pluginComponents.addNewConnection(connection, this.rdfStore)
+        componentLibraryPlugin.addNewConnection(connection, this.rdfStore)
         return connection
     }
 
@@ -895,7 +895,7 @@ export class CellDLDiagram {
     #celldlObjectFromRdf<T extends CellDLObject>(CellDLClass: Constructor<T>, subject: $rdf.SubjectType, options = {}): T {
         const metadata = this.#kb.metadataPropertiesForSubject(subject)
         const celldlObject = new CellDLClass(subject, metadata, options, this)
-        const objectTemplate = pluginComponents.getObjectTemplate(celldlObject, this.rdfStore)
+        const objectTemplate = componentLibraryPlugin.getObjectTemplate(celldlObject, this.rdfStore)
         if (objectTemplate) {
             celldlObject.setObjectTemplate(objectTemplate)
         }
@@ -1005,13 +1005,13 @@ export class CellDLDiagram {
             const connections = (<CellDLConnectedObject>celldlObject).connections
             for (const connection of connections) {
                 this.#removeObject(connection, undoAction)
-                pluginComponents.deleteConnection(connection, this.rdfStore)
+                componentLibraryPlugin.deleteConnection(connection, this.rdfStore)
                 connector.deleteConnection(connection)
             }
         }
         if (celldlObject.isConnection) {
             const connection = <CellDLConnection>celldlObject
-            pluginComponents.deleteConnection(connection, this.rdfStore)
+            componentLibraryPlugin.deleteConnection(connection, this.rdfStore)
             for (const connector of connection.connectedObjects) {
                 connector.deleteConnection(connection)
             }

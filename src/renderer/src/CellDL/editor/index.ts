@@ -28,8 +28,8 @@ import { PathMaker, type PathNode } from '@editor/connections/pathmaker'
 import type { TemplateEventDetails } from '@editor/components/index'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
 import type { CellDLDiagram } from '@editor/diagram/index'
-import { pluginComponents } from '@editor/plugins/index'
 import { round } from '@editor/utils'
+import { componentLibraryPlugin } from '@editor/plugins/index'
 
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { StringProperties } from '@renderer/common/types'
@@ -543,7 +543,7 @@ export class CellDLEditor {
             topLeft = topLeft.subtract(PointMath.scalarScale(details.offset, zoomScale))
         }
 
-        const template = pluginComponents.getObjectTemplateById(details.id)
+        const template = componentLibraryPlugin.getObjectTemplateById(details.id)
         if (!template) {
             console.error(`Drop of unknown component template '${details.id}'`)
             return

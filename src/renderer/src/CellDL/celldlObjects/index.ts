@@ -31,7 +31,7 @@ import type { ConnectionStyle } from '@editor/connections/index'
 import type { CellDLDiagram } from '@editor/diagram/index'
 import { SvgConnection } from '@editor/SVGElements/svgconnection'
 import type { CellDLSVGElement } from '@editor/SVGElements/index'
-import { pluginComponents } from '@editor/plugins/index'
+import { componentLibraryPlugin } from '@editor/plugins/index'
 
 import * as $rdf from '@editor/metadata/index'
 import type { MetadataPropertiesMap, NamedNode } from '@editor/metadata/index'
@@ -108,7 +108,7 @@ export class CellDLObject {
         this.#celldlType = this.constructor.celldlType
         this.#setMetadataProperties(metadata)
 
-        for (const pluginId of pluginComponents.registeredPlugins) {
+        for (const pluginId of componentLibraryPlugin.registeredPlugins) {
             this.#pluginData.set(pluginId, {})
         }
     }
@@ -210,6 +210,10 @@ export class CellDLObject {
 
     get svgElement() {
         return this.#celldlSvgElement?.svgElement || null
+    }
+
+    get pluginIds(): string[] {
+        return [...this.#pluginData.keys()]
     }
 
     pluginData(pluginId: string): object {

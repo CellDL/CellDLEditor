@@ -51,7 +51,7 @@ export interface LibraryComponentTemplate {
 }
 
 export interface ComponentLibrary {
-    id?: string
+    id: string
     name: string
     templates: LibraryComponentTemplate[]
 }

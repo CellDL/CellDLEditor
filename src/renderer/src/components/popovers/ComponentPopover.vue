@@ -8,7 +8,7 @@
                         v-for="template in library.templates"
                         :class="{ selected: template.selected }"
                         :library="library.id"
-                        :id="template.id"
+                        :id="fullId(library, template)"
                         :src="template.image"
                         :aria-label="template.name"
                         :title="template.name"
@@ -36,14 +36,20 @@ const props = defineProps<{
 }>()
 
 const idToComponent: Map<string, LibraryComponentTemplate> = new Map()
-let selectedId: string | undefined 
+let selectedId: string | undefined
+
+function fullId(library: ComponentLibrary, template: LibraryComponentTemplate): string {
+    return `${library.id}/${template.id}`
+}
 
 vue.onMounted(() => {
-    libraries!.value.forEach((library: ComponentLibrary) => {
+console.log('mount:', libraries.value.length)
+    libraries.value.forEach((library: ComponentLibrary) => {
         library.templates.forEach((template: LibraryComponentTemplate) => {
-            idToComponent.set(template.id, template)
+            const id = fullId(library, template)
+            idToComponent.set(id, template)
             if (template.selected) {
-                selectedId = template.id
+                selectedId = id
             }
         })
     })

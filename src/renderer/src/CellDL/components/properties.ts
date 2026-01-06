@@ -22,13 +22,10 @@ import * as vue from 'vue'
 
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
-import type { PropertiesType } from '@renderer/common/types'
-
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { type NamedProperty, OBJECT_METADATA } from '@editor/components/index'
-import * as $rdf from '@editor/metadata/index'
-import { MetadataPropertiesMap, type RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
-import { pluginComponents } from '@editor/plugins/index'
+import { type RdfStore, SPARQL_PREFIXES } from '@editor/metadata/index'
+import { componentLibraryPlugin } from '@editor/plugins/index'
 
 //==============================================================================
 
@@ -73,6 +70,17 @@ const METADATA_GROUP: PropertyGroup = {
 }
 
 //==============================================================================
+
+export const STYLING_GROUP_ID = 'object-styling'
+
+export const STYLING_GROUP: PropertyGroup = {
+    groupId: STYLING_GROUP_ID,
+    title: 'Style',
+    items: [],
+    styling: {}
+}
+
+//==============================================================================
 //==============================================================================
 
 export function getItemProperty(celldlObject: CellDLObject,
@@ -94,8 +102,8 @@ export function getItemProperty(celldlObject: CellDLObject,
     if (value === undefined) {
         if (!itemTemplate.optional) {
             return Object.assign({
-                value: itemTemplate.defaultValue || '',
-                ...itemTemplate
+                ...itemTemplate,
+                value: itemTemplate.defaultValue || ''
             })
         }
         return undefined
@@ -103,14 +111,14 @@ export function getItemProperty(celldlObject: CellDLObject,
     if (itemTemplate.numeric) {
         const valueUnits = value!.split(' ')
         return {
+            ...itemTemplate,
             value:  Number(valueUnits[0]),
-            units: valueUnits[1],
-            ...itemTemplate
+            units: valueUnits[1]
         }
     }
     return {
-        value: value,
-        ...itemTemplate
+        ...itemTemplate,
+        value: value
     }
 }
 
@@ -143,7 +151,7 @@ export function updateItemProperty(property: string, value: ValueChange,
 
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])
-    #propertyGroups = [...pluginComponents.getPropertyGroups(), METADATA_GROUP, pluginComponents.getStylingGroup()]
+    #propertyGroups = [...componentLibraryPlugin.getPropertyGroups(), METADATA_GROUP, componentLibraryPlugin.getStylingGroup()]
     #metadataIndex: number = -1
 
     constructor() {
@@ -174,7 +182,7 @@ export class ObjectPropertiesPanel {
         if (celldlObject) {
             // Update component properties with plugin specific values
 
-            pluginComponents.getComponentProperties(celldlObject, this.#componentProperties.value, rdfStore)
+            componentLibraryPlugin.updateComponentProperties(celldlObject, this.#componentProperties.value, rdfStore)
 
             if (this.#metadataIndex >= 0) {
                 // Update component properties in the METADATA_GROUP
@@ -197,7 +205,7 @@ export class ObjectPropertiesPanel {
         if (celldlObject) {
             // Save plugin specific component properties
 
-            await pluginComponents.updateComponentProperties(celldlObject, itemId, value,
+            await componentLibraryPlugin.updateObjectProperties(celldlObject, itemId, value,
                                                              this.#componentProperties.value, rdfStore)
 
             // Save component properties in the METADATA_GROUP
@@ -216,7 +224,7 @@ export class ObjectPropertiesPanel {
 
     async updateObjectStyling(celldlObject: CellDLObject|null, objectType: string, styling: StyleObject) {
         if (celldlObject) {
-            await pluginComponents.updateComponentStyling(celldlObject, objectType, styling)
+            await componentLibraryPlugin.updateComponentStyling(celldlObject, objectType, styling)
         }
     }
 }
