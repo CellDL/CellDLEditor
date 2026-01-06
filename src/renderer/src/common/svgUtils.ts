@@ -37,6 +37,12 @@ export const SVG_URI = 'http://www.w3.org/2000/svg'
 
 //==============================================================================
 
+export interface INodeStyle {
+    gradientFill: boolean
+    colours: string[]
+    direction?: string
+}
+
 export interface IPathStyle {
     colour: string   // defaut is CONNECTION_COLOUR (with opacity of 0.7)
     width: number    // default is CONNECTION_WIDTH (but +2 when selected)

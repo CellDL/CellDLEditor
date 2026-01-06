@@ -72,14 +72,6 @@ const BONDGRAPH_FRAMEWORK = 'https://bg-rdf.org/ontologies/bondgraph-framework'
 
 //==============================================================================
 
-export interface INodeStyle {
-    gradientFill: boolean
-    colours: string[]
-    direction?: string
-}
-
-//==============================================================================
-
 const BGF_ONTOLOGY_URI = 'https://bg-rdf.org/ontologies/bondgraph-framework'
 
 const BG_RDF_TEMPLATE_BASE_URI = 'https://bg-rdf.org/'
