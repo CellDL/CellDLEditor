@@ -176,7 +176,7 @@ export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'PotentialSource',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
-        name: 'Potential source',   // These names should come from ontology rdfs:label
+        name: 'Potential source',
         symbol: 'u',
         style: POTENTIAL_STYLE,
     },
