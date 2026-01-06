@@ -53,7 +53,6 @@ export interface PluginInterface {
     getObjectTemplate: (celldlObject: CellDLObject, rdfStore: RdfStore) => ObjectTemplate|undefined
     getObjectTemplateById: (id: string) => ObjectTemplate|undefined
     getPropertyGroups: () => PropertyGroup[]
-    getStylingGroup: () => PropertyGroup
     updateComponentProperties: (celldlObject: CellDLObject,
                              componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
     updateObjectProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
