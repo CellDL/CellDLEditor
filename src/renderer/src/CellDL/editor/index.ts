@@ -29,6 +29,7 @@ import type { TemplateEventDetails } from '@editor/components/index'
 import { ObjectPropertiesPanel } from '@editor/components/properties'
 import type { CellDLDiagram } from '@editor/diagram/index'
 import { componentLibraryPlugin } from '@renderer/plugins/index'
+import { round } from '@editor/utils'
 
 import { type PointLike, PointMath } from '@renderer/common/points'
 import type { StringProperties } from '@renderer/common/types'
@@ -422,16 +423,17 @@ export class CellDLEditor {
         }
     }
 
-    #showStatus(celldlObject: CellDLObject|null) {
-        if (celldlObject) {
-            this.status = celldlObject.name ?? ''
+    #showStatus(pos: PointLike) {
+        const position = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+        if (this.#activeObject) {
+            this.status = this.#activeObject.name ?? ''
             if (this.#statusPos) {
-                this.#statusPos.innerText = celldlObject.id
+                this.#statusPos.innerText = `${this.#activeObject.id} ${position}`
             }
         } else {
             this.status = ''
             if (this.#statusPos) {
-                this.#statusPos.innerText = ''
+                this.#statusPos.innerText = position
             }
         }
     }
@@ -653,7 +655,6 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-            this.#showStatus(null)
             this.#closeTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()
@@ -663,7 +664,6 @@ export class CellDLEditor {
             return
         }
 
-        this.#showStatus(currentObject)
 
         if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (
@@ -763,6 +763,7 @@ export class CellDLEditor {
         this.#pointerMoved = true
         this.#pointerPosition = new DOMPoint(event.x, event.y)
         const svgPoint = this.#domToSvgCoords(event)
+        this.#showStatus(svgPoint)
         if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (this.#pathMaker) {
                 this.#pathMaker.drawTo(svgPoint, event.shiftKey)
