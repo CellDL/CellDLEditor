@@ -268,7 +268,7 @@ export class PathElement {
     componentBoundingBoxMoved(component: BoundedElement, centroidDelta: Point) {
         for (const index of [0, this.#pathPoints.length - 1]) {
             if (component === this.#pathPoints[index]!.component) {
-                this.moveComponentBoundingBox(index, component, centroidDelta)
+                this.movedComponentBoundingBox(index, component, centroidDelta)
                 return
             }
         }
@@ -277,7 +277,7 @@ export class PathElement {
     componentBoundingBoxResisized(component: BoundedElement, cornerDeltas: [Point, Point]) {
         for (const index of [0, this.#pathPoints.length - 1]) {
             if (component === this.#pathPoints[index]!.component) {
-                this.resizeComponentBoundingBox(index, component, cornerDeltas)
+                this.resizedComponentBoundingBox(index, component, cornerDeltas)
                 return
             }
         }
@@ -297,9 +297,9 @@ export class PathElement {
 
     protected movePathPoint(_position: PointLike) {}
 
-    protected moveComponentBoundingBox(_index: number, _component: BoundedElement, _centroidDelta: Point) {}
+    protected movedComponentBoundingBox(_index: number, _component: BoundedElement, _centroidDelta: Point) {}
 
-    protected resizeComponentBoundingBox(_index: number, _component: BoundedElement, _cornerDeltas: [Point, Point]) {}
+    protected resizedComponentBoundingBox(_index: number, _component: BoundedElement, _cornerDeltas: [Point, Point]) {}
 
     protected setPathPoints(_pathArray: NormalArray) {}
 

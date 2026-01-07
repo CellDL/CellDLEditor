@@ -87,7 +87,7 @@ export class LinearPath extends PathElement {
         }
     }
 
-    protected moveComponentBoundingBox(index: number, component: BoundedElement, _centroidDelta: Point) {
+    protected movedComponentBoundingBox(index: number, component: BoundedElement, _centroidDelta: Point) {
         const position = component.centroid
 
         const pathPoint = this.pathPoints.at(index)!
@@ -140,8 +140,8 @@ export class LinearPath extends PathElement {
         }
     }
 
-    protected resizeComponentBoundingBox(index: number, component: BoundedElement, _cornerDeltas: [Point, Point]) {
-        this.moveComponentBoundingBox(index, component, _cornerDeltas[0])
+    protected resizedComponentBoundingBox(index: number, component: BoundedElement, _cornerDeltas: [Point, Point]) {
+        this.movedComponentBoundingBox(index, component, _cornerDeltas[0])
     }
 
     protected simplifyPathPoints(): PathPoint[] | null {

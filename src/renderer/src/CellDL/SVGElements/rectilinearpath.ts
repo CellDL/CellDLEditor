@@ -320,7 +320,7 @@ export class RectilinearPath extends PathElement {
         }
     }
 
-    protected resizeComponentBoundingBox(index: number, component: BoundedElement, cornerDeltas: [Point, Point]) {
+    protected resizedComponentBoundingBox(index: number, component: BoundedElement, cornerDeltas: [Point, Point]) {
         //  [TL, BR]
         const nPoints = this.pathPoints.length
         let splayPoint: PathPoint
@@ -343,7 +343,7 @@ export class RectilinearPath extends PathElement {
         }
     }
 
-    protected moveComponentBoundingBox(index: number, component: BoundedElement, centroidDelta: Point) {
+    protected movedComponentBoundingBox(index: number, component: BoundedElement, centroidDelta: Point) {
         const nPoints = this.pathPoints.length
         let splayPoint: PathPoint
         if (index === 0) {
