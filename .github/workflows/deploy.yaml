@@ -20,6 +20,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set the timezone to New Zealand
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: 'Pacific/Auckland'
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -52,6 +57,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      - name: Set the timezone to New Zealand
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: 'Pacific/Auckland'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
