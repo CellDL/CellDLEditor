@@ -32,8 +32,8 @@ jobs:
 
       - name: Build the CellDL Editor as a component
         run: |
-          cd src/renderer
           bun install
+          cd src/renderer
           bun build:lib
 
       - name: Publish the CellDL Editor on npm
