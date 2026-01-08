@@ -187,7 +187,7 @@ DEBUGGING **/
 //==============================================================================
 
 export class RectilinearPath extends PathElement {
-    protected pathFromPathPoints(): NormalArray {
+    protected pathArrayFromPathPoints(): NormalArray {
         const points = this.pathPoints
         const nPoints = points.length
         const firstIndex = PointMath.colinear(points[0]!, points[1]!, points[2]!, true) ? 2 : 1

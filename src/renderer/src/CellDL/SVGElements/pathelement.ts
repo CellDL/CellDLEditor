@@ -103,6 +103,7 @@ export class PathElement {
         lastElement: BoundedElement
     ) {
         this.#connection = connection
+        // biome-ignore lint/style/noNonNullAssertion: the diagram has an editor frame
         this.#editorFrame = connection.celldlDiagram.editorFrame!
         this.#svgElement = svgElement
         this.#svgParentId = id.split(ID_PART_SEPARATOR).slice(0, -1).join(ID_PART_SEPARATOR)
@@ -165,6 +166,7 @@ export class PathElement {
         // needs to remove handles for the points it deletes
         for (let index = 1; index < this.#pathPoints.length - 1; ++index) {
             if (!selected) {
+                // biome-ignore lint/style/noNonNullAssertion: index is in range
                 this.#pathPoints[index]!.removeSvgElement()
             }
         }
@@ -172,8 +174,9 @@ export class PathElement {
 
     drawControlHandles(selected: boolean) {
         for (let index = 1; index < this.#pathPoints.length - 1; ++index) {
-            const pathPoint = this.#pathPoints[index]
-            const svgElement = pathPoint!.createSvgElement(this.#editorFrame, '', this.#connection)
+            // biome-ignore lint/style/noNonNullAssertion: index is in range
+            const pathPoint = this.#pathPoints[index]!
+            const svgElement = pathPoint.createSvgElement(this.#editorFrame, '', this.#connection)
             svgElement.id = `${this.#svgParentId}-cp-${index}`
             svgElement.dataset.parentId = this.#svgParentId
             svgElement.dataset.controlIndex = `${this.id}${ID_PART_SEPARATOR}${index}`
@@ -196,9 +199,10 @@ export class PathElement {
 
     isMoveable(index: number): boolean {
         if (index > 0 && index < this.#pathPoints.length - 1) {
-            const pathPoint = this.#pathPoints[index]
-            if (!pathPoint!.fixed) {
-                this.#movePoint = pathPoint!
+            // biome-ignore lint/style/noNonNullAssertion: index is in range
+            const pathPoint = this.#pathPoints[index]!
+            if (!pathPoint.fixed) {
+                this.#movePoint = pathPoint
                 this.#moveIndex = index
                 return true
             }
@@ -210,7 +214,9 @@ export class PathElement {
     move(position: PointLike) {
         let redraw = false
         if (this.#movePoint) {
-            this.pathPoints.forEach((pathPoint) => pathPoint.clean())
+            this.pathPoints.forEach((pathPoint) => {
+                pathPoint.clean()
+            })
             this.movePathPoint(position)
             this.pathPoints.forEach((pathPoint) => {
                 if (pathPoint.redraw()) redraw = true
@@ -219,14 +225,15 @@ export class PathElement {
         return redraw
     }
 
-    protected pathFromPathPoints(): NormalArray {
+    protected pathArrayFromPathPoints(): NormalArray {
         const normalArray = this.pathPoints.map((p) => ['L', p.x, p.y])
+        // biome-ignore lint/style/noNonNullAssertion: array is three long
         normalArray[0]![0] = 'M'
         return normalArray as NormalArray
     }
 
     redraw() {
-        this.#pathArray = this.pathFromPathPoints()
+        this.#pathArray = this.pathArrayFromPathPoints()
         this.#svgElement.setAttribute('d', SVGPathCommander.pathToString(this.#pathArray))
     }
 
@@ -244,6 +251,7 @@ export class PathElement {
         headArray.push(['L', point.x, point.y])
 
         const tailPoints = this.#pathArray.slice(splitPoint.segment! + 1).map((p: number[]) => {
+            // biome-ignore lint/style/noNonNullAssertion: indices are in range
             return { x: p[1]!, y: p[2]! }
         })
         tailPoints.splice(0, 0, point)
@@ -267,6 +275,7 @@ export class PathElement {
 
     componentBoundingBoxMoved(component: BoundedElement, centroidDelta: Point) {
         for (const index of [0, this.#pathPoints.length - 1]) {
+            // biome-ignore lint/style/noNonNullAssertion: index is in range
             if (component === this.#pathPoints[index]!.component) {
                 this.movedComponentBoundingBox(index, component, centroidDelta)
                 return
@@ -276,6 +285,7 @@ export class PathElement {
 
     componentBoundingBoxResisized(component: BoundedElement, cornerDeltas: [Point, Point]) {
         for (const index of [0, this.#pathPoints.length - 1]) {
+            // biome-ignore lint/style/noNonNullAssertion: index is in range
             if (component === this.#pathPoints[index]!.component) {
                 this.resizedComponentBoundingBox(index, component, cornerDeltas)
                 return
@@ -285,6 +295,7 @@ export class PathElement {
 
     undoControlMove(moveIndex: number, movePoint: Point | null) {
         if (moveIndex > 0 && moveIndex < this.#pathPoints.length - 1 && movePoint) {
+            // biome-ignore lint/style/noNonNullAssertion: index is in range
             const pathPoint = this.#pathPoints[moveIndex]!
             pathPoint.point = movePoint
             let redraw = false
