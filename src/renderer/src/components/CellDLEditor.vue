@@ -39,7 +39,7 @@ import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS, PANEL_IDS } from '@editor/edit
 import { editGuides } from '@editor/editor/editguides'
 import { undoRedo } from '@editor/editor/undoredo'
 
-import { type EditorToolButton } from '@renderer/common/EditorTool'
+import { type EditorToolButton } from '@renderer/common/EditorTypes'
 import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
 
 import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue'

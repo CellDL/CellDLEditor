@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import { type EditorToolButton } from '@renderer/common/EditorTool'
+import { type EditorToolButton } from '@renderer/common/EditorTypes'
 
 const props = defineProps<{
     type?: string
