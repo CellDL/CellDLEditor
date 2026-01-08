@@ -2,6 +2,10 @@ name: Publish the Editor CellDL as a npm package
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
