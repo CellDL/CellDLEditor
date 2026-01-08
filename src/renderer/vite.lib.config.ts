@@ -10,11 +10,14 @@ import * as vite from 'vite'
 const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default vite.defineConfig({
-    assetsInclude: ['**/*.ttl'],
+    assetsInclude: [
+        'pyodide/*',
+        '**/*.ttl'
+    ],
     build: {
         lib: {
             entry: './index.ts',
-            fileName: (format) => `CellDLEditor.${format}.js`,
+            fileName: (format: string) => `CellDLEditor.${format}.js`,
             formats: ['es'],
             name: 'CellDLEditor'
         },
@@ -39,12 +42,16 @@ export default vite.defineConfig({
     optimizeDeps: {
         esbuildOptions: {
             target: 'esnext'
-        }
+        },
+        exclude: [
+            'oxigraph'
+        ]
     },
     resolve: {
         alias: {
             'node-fetch': 'isomorphic-fetch',
             '@editor': path.resolve(_dirname, 'src/CellDL'),
+            '@pyodide': path.resolve(_dirname, 'public/pyodide'),
             '@renderer': path.resolve(_dirname, 'src')
         }
     },
