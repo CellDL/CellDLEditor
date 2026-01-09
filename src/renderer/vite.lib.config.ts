@@ -29,8 +29,8 @@ export default vite.defineConfig({
                     vue: 'Vue'
                 },
                 assetFileNames: (assetInfo) => {
-                    if (assetInfo.names.includes('style.css')) {
-                        return 'dist/CellDLEditor.css'
+                    if (assetInfo.names.includes('celldl-editor.css')) {
+                        return 'CellDLEditor.css'
                     }
 
                     return assetInfo.names[0] ?? 'default-name'

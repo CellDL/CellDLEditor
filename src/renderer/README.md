@@ -31,11 +31,11 @@ The Vue component gives access to all of the CellDL Editor's features
 
 ```vue
 <template>
-  <Editor />
+  <CellDLEditor />
 </template>
 
 <script setup lang="ts">
 import CellDLEditor from '@abi-software/celldl-editor';
-import '@abi-software/celldl-editor/style.css';
+import '@abi-software/celldl-editor/CellDLEditor.css';
 </script>
 ```
