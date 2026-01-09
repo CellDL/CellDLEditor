@@ -11,7 +11,7 @@ const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default vite.defineConfig({
     assetsInclude: [
-        'pyodide/*',
+        'oxigraph/*',
         '**/*.ttl'
     ],
     base: 'https://celldl.github.io/CellDLEditor/',
