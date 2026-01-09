@@ -28,9 +28,23 @@ import { WEB_DECLARATIONS } from './namespaces'
 
 //==============================================================================
 
+const defaultGraph = globalThis.oxigraph.defaultGraph
+
+type Quad = $oxigraph.Quad
+
+const makeQuad = globalThis.oxigraph.quad
+
+type Variable = $oxigraph.Variable
+
+//==============================================================================
+
+export type Term = $oxigraph.Term
+
+//==============================================================================
+
 export type BlankNode = $oxigraph.BlankNode
 
-export const blankNode = $oxigraph.blankNode
+export const blankNode = globalThis.oxigraph.blankNode
 
 export function isBlankNode(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
@@ -41,7 +55,7 @@ export function isBlankNode(term: unknown): boolean {
 
 export type Literal = $oxigraph.Literal
 
-export const literal = $oxigraph.literal
+export const literal = globalThis.oxigraph.literal
 
 export function isLiteral(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
@@ -55,7 +69,7 @@ export interface NamedNode extends $oxigraph.NamedNode {
     id: () => string
 }
 
-function makeNamedNode(term: $oxigraph.Term): NamedNode | $oxigraph.Term {
+function makeNamedNode(term: Term): NamedNode | Term {
     if (isNamedNode(term)) {
         ;(term as NamedNode).uri = term.value
         ;(term as NamedNode).id = () => {
@@ -71,7 +85,7 @@ function makeNamedNode(term: $oxigraph.Term): NamedNode | $oxigraph.Term {
 }
 
 export function namedNode(value: string): NamedNode {
-    return makeNamedNode($oxigraph.namedNode(value)) as NamedNode
+    return makeNamedNode(globalThis.oxigraph.namedNode(value)) as NamedNode
 }
 
 export function isNamedNode(term: unknown): boolean {
@@ -81,21 +95,17 @@ export function isNamedNode(term: unknown): boolean {
 
 //==============================================================================
 
-export type Term = $oxigraph.Term
+export type SubjectType = BlankNode | NamedNode | Quad | Variable
+export type PredicateType = NamedNode | Variable
+export type ObjectType = BlankNode | Literal | NamedNode | Quad | Variable
 
-//==============================================================================
-
-export type SubjectType = BlankNode | NamedNode | $oxigraph.Quad | $oxigraph.Variable
-export type PredicateType = NamedNode | $oxigraph.Variable
-export type ObjectType = BlankNode | Literal | NamedNode | $oxigraph.Quad | $oxigraph.Variable
-
-export interface Statement extends $oxigraph.Quad {
+export interface Statement extends Quad {
     subject: SubjectType
     predicate: PredicateType
     object: ObjectType
 }
 
-function makeStatement(quad: $oxigraph.Quad): Statement {
+function makeStatement(quad: Quad): Statement {
     return {
         graph: makeNamedNode(quad.graph),
         object: makeNamedNode(quad.object),
@@ -124,7 +134,7 @@ export class RdfStore extends BaseStore {
 
     constructor() {
         super()
-        this.#rdfStore = new $oxigraph.Store()
+        this.#rdfStore = new globalThis.oxigraph.Store()
     }
 
     statements(graph: NamedNode | null = null): Statement[] {
@@ -132,7 +142,7 @@ export class RdfStore extends BaseStore {
     }
 
     add(s: SubjectType, p: PredicateType, o: ObjectType, g: NamedNode | null = null): Statement {
-        const statement = $oxigraph.quad(s, p, o, g || $oxigraph.defaultGraph())
+        const statement = makeQuad(s, p, o, g || defaultGraph())
         this.#rdfStore.add(statement)
         return makeStatement(statement)
     }
@@ -143,7 +153,7 @@ export class RdfStore extends BaseStore {
         o: ObjectType | null = null,
         g: NamedNode | null = null
     ): boolean {
-        return this.#rdfStore.match(s, p, o, g || $oxigraph.defaultGraph()).length > 0
+        return this.#rdfStore.match(s, p, o, g || defaultGraph()).length > 0
     }
 
     load(baseIri: string|null=null, rdf: string, contentType: ContentType=TurtleContentType, graph: NamedNode|null=null) {
@@ -151,7 +161,7 @@ export class RdfStore extends BaseStore {
             this.#rdfStore.load(rdf, {
                 format: contentType,
                 base_iri: baseIri || undefined,
-                to_graph_name: graph || $oxigraph.defaultGraph()
+                to_graph_name: graph || defaultGraph()
             })
         } catch (error) {
             throw new Error(`Error parsing RDF: ${(<Error>error).message}`)
@@ -164,7 +174,7 @@ export class RdfStore extends BaseStore {
         o: ObjectType | null = null,
         g: NamedNode | null = null
     ) {
-        const statements = this.#rdfStore.match(s, p, o, g || $oxigraph.defaultGraph())
+        const statements = this.#rdfStore.match(s, p, o, g || defaultGraph())
         for (const statement of statements) {
             this.#rdfStore.delete(statement)
         }
@@ -177,7 +187,7 @@ export class RdfStore extends BaseStore {
         graph: NamedNode | null = null
     ): Promise<string> {
         if (contentType === TurtleContentType) {
-            const quads = this.#rdfStore.match(null, null, null, graph || $oxigraph.defaultGraph())
+            const quads = this.#rdfStore.match(null, null, null, graph || defaultGraph())
             const turtle = await prettyTurtle(quads, {
                 format: 'text/turtle',
                 prefixes: Object.assign({ '': `${baseIri}#` }, WEB_DECLARATIONS, namespaces),
@@ -190,16 +200,16 @@ export class RdfStore extends BaseStore {
         } else {
             return this.#rdfStore.dump({
                 format: contentType,
-                from_graph_name: graph || $oxigraph.defaultGraph()
+                from_graph_name: graph || defaultGraph()
             })
         }
     }
 
-    query(sparql: string, all_graphs: boolean = false): Map<string, $oxigraph.Term>[] {
+    query(sparql: string, all_graphs: boolean = false): Map<string, Term>[] {
         try {
             const results = this.#rdfStore.query(sparql, {
                 use_default_graph_as_union: all_graphs
-            }) as Map<string, $oxigraph.Term>[]
+            }) as Map<string, Term>[]
             for (const result of results) {
                 for (const term of result.values()) {
                     makeNamedNode(term)
@@ -226,7 +236,7 @@ export class RdfStore extends BaseStore {
         o: ObjectType | null = null,
         g: NamedNode | null = null
     ): Statement[] {
-        const statements: $oxigraph.Quad[] = this.#rdfStore.match(s, p, o, g || $oxigraph.defaultGraph())
+        const statements: Quad[] = this.#rdfStore.match(s, p, o, g || defaultGraph())
         return statements.map((s) => makeStatement(s))
     }
 

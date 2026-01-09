@@ -20,11 +20,13 @@
         <script type="module">
             // Load oxigraph's WASM module
             import initOxigraph from '@renderer/assets/oxigraph/web.js'
-            await initOxigraph()
+            const wasm = await initOxigraph()
+            import * as oxigraph from '@renderer/assets/oxigraph/web.js'
+            globalThis.oxigraph = oxigraph
         </script>
     </head>
     <body>
         <div id="app" />
-        <script type="module" src="./src/main.ts"></script>
+        <script type="module" src="./src/main.ts" defer></script>
     </body>
 </html>
