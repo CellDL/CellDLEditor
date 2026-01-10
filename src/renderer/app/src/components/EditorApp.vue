@@ -23,7 +23,6 @@
                     :id="mainMenuId"
                     :haveFile="haveFile"
                     :fileModified="fileModified"
-                    v-if="electronApi === undefined"
                     @about="onAboutMenu"
                     @close-file="onCloseFile"
                     @open-file="onOpenFile"
@@ -54,7 +53,6 @@ import * as vueusecore from '@vueuse/core'
 
 import type { IEditorProps } from '../../index'
 
-import { electronApi } from '@renderer/common/electronApi'
 import { SHORT_DELAY } from '../../../src/common/constants'
 import * as vueCommon from '../../../src/common/vueCommon'
 

@@ -51,16 +51,6 @@ import { celldl2cellml } from '@renderer/bg2cellml/index'
 
 //==============================================================================
 
-import type {IElectronAPI} from '../../../preload/index'
-
-interface ElectronWindow extends Window {
-  electronAPI: IElectronAPI
-}
-
-const electronWindow:ElectronWindow = window
-
-//==============================================================================
-
 const svgContainer = vue.useTemplateRef<HTMLElement>('svg-content')
 
 let celldlDiagram: CellDLDiagram|undefined
@@ -273,43 +263,6 @@ vue.onMounted(async () => {
 
         // Create a new diagram in the editor's window
         celldlDiagram = new CellDLDiagram('', '', celldlEditor)
-
-        // Listen for events from host when running as an Electron app
-        if ('electronAPI' in window) {
-            window.electronAPI?.onFileAction(async (_: Event, action: string, filePath: string, data: string | undefined) => {
-                if (action === 'IMPORT' || action === 'OPEN') {
-                    // Load CellDL file (SVG and metadata)
-                    try {
-                        celldlDiagram = new CellDLDiagram(filePath!, data!, celldlEditor, action === 'IMPORT')
-                    } catch (error) {
-                        console.log(error)
-                        window.alert((error as Error).toString())
-                        celldlDiagram = new CellDLDiagram('', '', celldlEditor)
-                        window.electronAPI?.sendFileAction('ERROR', filePath, '')
-                    }
-                    await celldlEditor.editDiagram(celldlDiagram)
-                } else if (action === 'GET_DATA') {
-                    const celldlData = await celldlDiagram?.serialise(filePath!)
-                    window.electronAPI?.sendFileAction('WRITE', filePath, celldlData)
-                    undoRedo.clean()
-                }
-            })
-
-            window.electronAPI?.onMenuAction((_: Event, action: string, ...args: any) => {
-                if (action === 'menu-redo') {
-                    undoRedo.redo(celldlDiagram!)
-                } else if (action === 'menu-undo') {
-                    undoRedo.undo(celldlDiagram!)
-                } else if (action === 'show-grid') {
-                    if (args.length) {
-                        editGuides.showGrid(args[0])
-                    }
-                }
-            })
-
-            // Let Electron know that the editor's window is ready
-            window.electronAPI?.sendEditorAction('READY')
-        }
 
         await celldlDiagram.edit()
     }
