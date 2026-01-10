@@ -48,9 +48,9 @@ import {
     updateItemProperty,
     type ValueChange
 } from '@editor/components/properties'
-import * as $rdf from '@editor/metadata/index'
-import { BGF, RDF, SPARQL_PREFIXES, type Term } from '@editor/metadata/index'
-import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@editor/metadata/index'
+import * as $rdf from '@renderer/metadata/index'
+import { BGF, RDF, SPARQL_PREFIXES, type Term } from '@renderer/metadata/index'
+import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@renderer/metadata/index'
 import type { PluginInterface } from '@renderer/plugins/index'
 
 import {

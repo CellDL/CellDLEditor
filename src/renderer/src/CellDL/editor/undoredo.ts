@@ -21,7 +21,7 @@ limitations under the License.
 import type { CellDLDiagram } from '@editor/diagram/index'
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { Point, type PointLike } from '@renderer/common/points'
-import type { Statement } from '@editor/metadata/index'
+import type { Statement } from '@renderer/metadata/index'
 
 import { notifyChanges } from './index'
 

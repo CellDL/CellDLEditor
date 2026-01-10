@@ -38,7 +38,7 @@ import type {
     ValueChange
 } from '@editor/components/properties'
 import { STYLING_GROUP } from '@editor/components/properties'
-import type { RdfStore } from '@editor/metadata/index'
+import type { RdfStore } from '@renderer/metadata/index'
 
 //==============================================================================
 

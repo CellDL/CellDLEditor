@@ -18,11 +18,11 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '@editor/metadata/index'
+import * as $rdf from '@renderer/metadata/index'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
-import { MetadataPropertiesMap, type NamedNode } from '@editor/metadata/index'
-import { CELLDL, DCT, RDFS, RDF_TYPE } from '@editor/metadata/index'
+import { MetadataPropertiesMap, type NamedNode } from '@renderer/metadata/index'
+import { CELLDL, DCT, RDFS, RDF_TYPE } from '@renderer/metadata/index'
 
 import type { PointLike } from '@renderer/common/points'
 import type { Constructor, StringProperties } from '@renderer/common/types'

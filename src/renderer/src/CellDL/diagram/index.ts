@@ -23,7 +23,7 @@ import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styl
 import { svgCircleElement, SVG_URI, svgRectElement } from '@renderer/common/svgUtils'
 import type { Constructor, StringProperties } from '@renderer/common/types'
 
-import * as $rdf from '@editor/metadata/index'
+import * as $rdf from '@renderer/metadata/index'
 import {
     CELLDL,
     CELLDL_DECLARATIONS,
@@ -33,7 +33,7 @@ import {
     type MetadataPropertyValue,
     OWL,
     RDF_TYPE
-} from '@editor/metadata/index'
+} from '@renderer/metadata/index'
 
 import type { Bounds, Extent } from '@editor/geometry/index'
 import { ShapeIntersections } from '@editor/geometry/intersections'
