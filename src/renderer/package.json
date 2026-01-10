@@ -40,7 +40,7 @@
         "build": "vite build",
         "build:lib": "vite build --config vite.lib.config.ts && cp index.d.ts dist/index.d.ts",
         "clean": "bun scripts/clean.js",
-        "dev": "vite dev",
+        "dev": "vite app",
         "format": "bunx --bun biome format --fix --max-diagnostics=none",
         "format:check": "bunx --bun biome format --max-diagnostics=none",
         "lint": "bunx --bun biome lint --fix --error-on-warnings --max-diagnostics=none",

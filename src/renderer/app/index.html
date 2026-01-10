@@ -19,9 +19,9 @@
         </style>
         <script type="module">
             // Load oxigraph's WASM module
-            import initOxigraph from '@renderer/assets/oxigraph/web.js'
+            import initOxigraph from '../src/assets/oxigraph/web.js'
             const wasm = await initOxigraph()
-            import * as oxigraph from '@renderer/assets/oxigraph/web.js'
+            import * as oxigraph from '../src/assets/oxigraph/web.js'
             globalThis.oxigraph = oxigraph
         </script>
     </head>

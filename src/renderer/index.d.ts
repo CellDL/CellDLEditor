@@ -1,7 +1,7 @@
 import { Component } from 'vue'
 
-import { IEditorProps } from '.'
-export { IEditorProps }
+import { CellDLEditorProps } from './index'
+export { CellDLEditorProps }
 
-export declare const Editor: Component<IEditorProps>
-export default Editor
+export declare const CellDLEditor: Component<CellDLEditorProps>
+export default CellDLEditor

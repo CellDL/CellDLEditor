@@ -1,10 +1,13 @@
-import EditorApp from '@renderer/components/EditorApp.vue'
+import CellDLEditor from '@renderer/components/CellDLEditor.vue'
 
-export type Theme = 'light' | 'dark' | 'system'
-
-export interface IEditorProps {
-    theme?: Theme
+export interface CellDLEditorProps {
+    fileAction: {
+        action: string
+        contents: string|undefined
+        fileHandle: FileSystemHandle|undefined
+        name: string|undefined
+    }
 }
 
-export { EditorApp }
-export default EditorApp
+export { CellDLEditor }
+export default CellDLEditor

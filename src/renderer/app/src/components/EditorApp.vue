@@ -54,25 +54,25 @@ import * as vueusecore from '@vueuse/core'
 
 import type { IEditorProps } from '../../index'
 
-import { SHORT_DELAY } from '@renderer/common/constants'
 import { electronApi } from '@renderer/common/electronApi'
-import * as vueCommon from '@renderer/common/vueCommon'
+import { SHORT_DELAY } from '../../../src/common/constants'
+import * as vueCommon from '../../../src/common/vueCommon'
 
-import '@renderer/assets/app.css'
-import '@renderer/assets/icons.css'
+import '../assets/app.css'
+import '../assets/icons.css'
 
-import { rdfTest, testBg2cellml } from '@renderer/bg2cellml'
+import { rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
 
 //==============================================================================
 
 import { loadPyodide } from '@pyodide/pyodide.mjs'
 import type { PyodideAPI } from '@pyodide/pyodide'
-import { initialisePyodide } from '@renderer/bg2cellml/index'
-import { alert } from '@editor/editor/alerts'
 
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
 // Load Pyodide's WASM module
+import { initialisePyodide } from '../../../src/bg2cellml/index'
+import { alert } from '../../../src/CellDL/editor/alerts'
 
 
 console.log('BASE URL:', import.meta.env.BASE_URL)

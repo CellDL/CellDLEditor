@@ -218,14 +218,11 @@ function styleEvent(toolId: string, object: string, styling: StyleObject) {
 //==============================================================================
 //==============================================================================
 
-const props = defineProps<{
-    fileAction: {
-        action: string
-        contents: string|undefined
-        fileHandle: FileSystemHandle|undefined
-        name: string|undefined
-    }
-}>()
+import type { CellDLEditorProps } from '../../index'
+
+const props = defineProps<CellDLEditorProps>()
+
+//==============================================================================
 
 vue.watch(
     () => props.fileAction,
