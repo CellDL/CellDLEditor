@@ -91,15 +91,22 @@ const BG_RDF_ONTOLOGY_ASSET_PATH = `${BG_RDF_ASSET_BASE}ontology.ttl`
 
 // See https://vite.dev/guide/features#custom-queries
 
+// N.B. The path to `glob()` must be a literal, not a computed constant
+
 const BG_RDF_ONTOLOGY_SOURCE: Record<string, string> = import.meta.glob('@renderer/assets/bg-rdf/ontology.ttl', {
     eager: true,
     import: 'default',
     query: '?raw'
 })
 
-if (BG_RDF_ONTOLOGY_ASSET_PATH in BG_RDF_ONTOLOGY_SOURCE) {
-    BG_RDF_SOURCES.set(BGF_ONTOLOGY_URI, BG_RDF_ONTOLOGY_SOURCE[BG_RDF_ONTOLOGY_ASSET_PATH]!)
+for (const [path, data] of Object.entries(BG_RDF_ONTOLOGY_SOURCE)) {
+    if (path.endsWith(BG_RDF_ONTOLOGY_ASSET_PATH)) {
+        BG_RDF_SOURCES.set(BGF_ONTOLOGY_URI, data)
+        break
+    }
 }
+
+// N.B. The path to `glob()` must be a literal, not a computed constant
 
 const BG_RDF_TEMPLATE_SOURCES: Record<string, string> = import.meta.glob('@renderer/assets/bg-rdf/templates/*.ttl', {
     eager: true,
@@ -107,11 +114,14 @@ const BG_RDF_TEMPLATE_SOURCES: Record<string, string> = import.meta.glob('@rende
     query: '?raw'
 })
 
-for (const templateUri of BG_RDF_TEMPLATE_URIS) {
-    const templatePath = templateUri.substring(BG_RDF_TEMPLATE_BASE_URI.length)
-    const templateKey = `${BG_RDF_ASSET_BASE}${templatePath}`
-    if (templateKey in BG_RDF_TEMPLATE_SOURCES) {
-        BG_RDF_SOURCES.set(templateUri, BG_RDF_TEMPLATE_SOURCES[templateKey]!)
+for (const [path, data] of Object.entries(BG_RDF_TEMPLATE_SOURCES)) {
+    for (const templateUri of BG_RDF_TEMPLATE_URIS) {
+        const templatePath = templateUri.substring(BG_RDF_TEMPLATE_BASE_URI.length)
+        const templateKey = `${BG_RDF_ASSET_BASE}${templatePath}`
+        if (path.endsWith(templateKey)) {
+            BG_RDF_SOURCES.set(templateUri, data)
+            break
+        }
     }
 }
 
