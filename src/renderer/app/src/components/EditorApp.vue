@@ -52,6 +52,7 @@ import { useConfirm } from "primevue/useconfirm"
 import * as vueusecore from '@vueuse/core'
 
 import type { IEditorProps } from '../../index'
+import AboutDialog from './dialogs/AboutDialog.vue'
 
 import { SHORT_DELAY } from '../../../src/common/constants'
 import * as vueCommon from '../../../src/common/vueCommon'
