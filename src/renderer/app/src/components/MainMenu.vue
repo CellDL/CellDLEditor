@@ -2,64 +2,83 @@
     Menubar(ref="menuBar" :model="items")
         template(#item="{ item, props }")
             a(v-bind="props.action")
+                .p-icon(
+                    v-if="item.icon !== undefined"
+                    :class="item.icon"
+                )
                 div.p-menubar-item-label {{ item.label }}
                 .ml-auto.p-icon.p-menubar-submenu-icon(
                     v-if="item.items !== undefined"
                     content="url(/icons/Chevron.svg)"
-                    class=""
                 )
+                .ml-auto.border.rounded.shortcut(
+                    v-if="item.shortcut !== undefined"
+                    class="text-xs/3"
+                ) {{ item.shortcut }}
 </template>
 
 <script setup lang="ts">
+import * as vue from 'vue'
 import * as vueusecore from '@vueuse/core'
 
 import type Menubar from 'primevue/menubar'
-import * as vue from 'vue'
 
-import * as common from '../../../src/common/common'
+//==============================================================================
+
+import * as common from '@renderer/common/common'
+import { type EditorState } from '@renderer/common/EditorTypes'
 
 const props = defineProps<{
     haveFile: boolean
-    fileModified: boolean
+    fileModified: boolean  // to become part of editor state
+    editorState: EditorState
+    noPython?: boolean
 }>()
 
-const emit = defineEmits(['about', 'close-file', 'open-file', 'save-cellml', 'save-file', 'save-file-as', 'settings'])
+const emit = defineEmits([
+    'about',
+    'edit-action',
+    'export-action',
+    'file-action',
+    'settings'
+])
+
 const isWindowsOrLinux = common.isWindows() || common.isLinux()
 const isMacOs = common.isMacOs()
+
+//==============================================================================
 
 const items = [
     {
         label: 'File',
         items: [
             {
-                label: 'Open...',
-                shortcut: isWindowsOrLinux ? 'Ctrl+Alt+O' : isMacOs ? '⌘⌥O' : undefined,
+                label: 'New File',
+                shortcut: isWindowsOrLinux ? 'Ctrl+N' : isMacOs ? '⌘N' : undefined,
                 command: () => {
-                    emit('open-file')
+                    emit('file-action', 'new')
+                }
+            },
+            {
+                label: 'Open...',
+                shortcut: isWindowsOrLinux ? 'Ctrl+O' : isMacOs ? '⌘O' : undefined,
+                command: () => {
+                    emit('file-action', 'open')
                 }
             },
             { separator: true },
             {
                 label: 'Save...',
-                shortcut: isWindowsOrLinux ? 'Ctrl+Alt+S' : isMacOs ? '⌘⌥S' : undefined,
+                shortcut: isWindowsOrLinux ? 'Ctrl+S' : isMacOs ? '⌘S' : undefined,
                 command: () => {
-                    emit('save-file')
+                    emit('file-action', 'save')
                 },
                 disabled: () => !(props.haveFile && props.fileModified)
             },
             {
                 label: 'Save As...',
                 command: () => {
-                    emit('save-file-as')
-                },
-                disabled: () => !props.haveFile
-            },
-            { separator: true },
-            {
-                label: 'Close',
-                shortcut: isWindowsOrLinux ? 'Ctrl+Alt+W' : isMacOs ? '⌘⌥W' : undefined,
-                command: () => {
-                    emit('close-file')
+                    emit('file-action', 'save-as')
                 },
                 disabled: () => !props.haveFile
             },
@@ -67,13 +86,72 @@ const items = [
             {
                 label: 'Generate CellML...',
                 command: () => {
-                    emit('save-cellml')
+                    emit('export-action', 'cellml')
                 },
-                disabled: () => !(props.haveFile && !props.fileModified)
+                disabled: () => !(props.haveFile && !props.fileModified),
+                visible: () => !props.noPython
             }
         ]
     },
     {
+        label: 'Edit',
+        items: [
+            {
+                label: 'Undo',
+                icon: 'pi pi-undo',
+                shortcut: isWindowsOrLinux ? 'Ctrl+Z' : isMacOs ? '⌘Z' : undefined,
+                command: () => {
+                    emit('edit-action', 'undo')
+                },
+                disabled: !props.editorState.fileModified
+            },
+            {
+                label: 'Redo',
+                shortcut: isWindowsOrLinux ? 'Ctrl+Shift+O' : isMacOs ? '⇧⌘O' : undefined,
+                command: () => {
+                    emit('edit-action', 'redo')
+                },
+                disabled: !props.editorState.redoContents
+            },
+            { separator: true },
+            {
+                label: 'Cut',
+                icon: 'pi pi-file-export',
+                shortcut: isWindowsOrLinux ? 'Ctrl+X' : isMacOs ? '⌘X' : undefined,
+                command: () => {
+                    emit('edit-action', 'cut')
+                },
+                disabled: !props.editorState.itemSelected
+            },
+            {
+                label: 'Copy',
+                icon: 'pi pi-copy',
+                shortcut: isWindowsOrLinux ? 'Ctrl+C' : isMacOs ? '⌘C' : undefined,
+                command: () => {
+                    emit('edit-action', 'copy')
+                },
+                disabled: !props.editorState.itemSelected
+            },
+            {
+                label: 'Paste',
+                icon: 'pi pi-clipboard',
+                shortcut: isWindowsOrLinux ? 'Ctrl+V' : isMacOs ? '⌘V' : undefined,
+                command: () => {
+                    emit('edit-action', 'paste')
+                },
+                disabled: !props.editorState.pasteContents
+            },
+            {
+                label: 'Delete',
+                icon: 'pi pi-trash',
+                shortcut: isWindowsOrLinux ? 'Del' : isMacOs ? '⌦' : undefined,
+                command: () => {
+                    emit('edit-action', 'delete')
+                },
+                disabled: !props.editorState.itemSelected
+            }
+        ]
+    },    {
         label: 'Help',
         items: [
             {
@@ -99,6 +177,28 @@ const items = [
         ]
     }
 ]
+
+
+//==============================================================================
+
+// Keyboard shortcuts.
+
+if (common.isDesktop()) {
+    vueusecore.onKeyStroke((event: KeyboardEvent) => {
+        if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyN') {
+            event.preventDefault()
+            emit('file-action', 'new')
+        } else if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyO') {
+            event.preventDefault()
+            emit('file-action', 'open')
+        } else if (props.haveFile && common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyS') {
+            event.preventDefault()
+            emit('file-action', 'save')
+        }
+    })
+}
+
+//==============================================================================
 
 // A few things that can only be done when the component is mounted.
 
@@ -143,26 +243,8 @@ vue.onMounted(() => {
     }
 })
 
-// Keyboard shortcuts.
+//==============================================================================
 
-if (common.isDesktop()) {
-    vueusecore.onKeyStroke((event: KeyboardEvent) => {
-
-        if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyO') {
-            event.preventDefault()
-
-            emit('file-open')
-        } else if (props.hasFiles && common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'KeyW') {
-            event.preventDefault()
-
-            emit('file-close')
-        } else if (common.isCtrlOrCmd(event) && !event.shiftKey && event.code === 'Comma') {
-            event.preventDefault()
-
-            emit('settings')
-        }
-    })
-}
 </script>
 
 <style scoped>

@@ -13,11 +13,8 @@
                     :haveFile="haveFile"
                     :fileModified="fileModified"
                     @about="onAboutMenu"
-                    @close-file="onCloseFile"
-                    @open-file="onOpenFile"
-                    @save-cellml="onSaveCellML"
-                    @save-file="onSaveFile"
-                    @save-file-as="onSaveFileAs"
+                    @export-action="onExportAction"
+                    @file-action="onFileAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
             ConfirmDialog
@@ -155,7 +152,11 @@ const fileAction = vue.ref<{
     contents: string|undefined
     fileHandle: FileSystemHandle|undefined
     name: string|undefined
-}>()
+}>({
+    action: ''
+})
+
+//==============================================================================
 
 const confirm = useConfirm()
 
@@ -170,8 +171,23 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
 })
 
 //==============================================================================
+//==============================================================================
 
-async function onCloseFile() {
+async function onFileAction(action: string) {
+    if (action === 'new') {
+        await onNewFile()
+        } else if (action === 'open') {
+        await onOpenFile()
+    } else if (action === 'save') {
+        await onSaveFile()
+    } else if (action === 'save-as') {
+        await onSaveFileAs()
+    }
+}
+
+//==============================================================================
+
+async function onNewFile() {
     if (!fileStatus.value.modified) {
         closeFile()
     } else {
@@ -297,6 +313,13 @@ async function onSaveFileAs() {
 }
 
 //==============================================================================
+//==============================================================================
+
+async function onExportAction(action: string) {
+    if (action === 'cellml') {
+        await onSaveCellML()
+    }
+}
 
 async function onSaveCellML() {
     const options = {
