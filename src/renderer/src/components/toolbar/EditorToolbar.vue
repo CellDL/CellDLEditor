@@ -24,7 +24,13 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
+//==============================================================================
+
 import { type EditorToolButton } from '@renderer/common/EditorTypes'
+
+import ToolButton from './ToolButton.vue'
+
+//==============================================================================
 
 const props = defineProps<{
     type?: string
@@ -47,6 +53,9 @@ function buttonEvent(toolId: string, active: boolean, panel: vue.Raw<vue.Compone
 function popoverEvent(id: string, data: any) {
     emit('popover-event', id, data)
 }
+
+//==============================================================================
+
 </script>
 
 <style>
