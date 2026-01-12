@@ -1,15 +1,5 @@
 <template lang="pug">
-    BlockUI.overflow-hidden.editor-window(
-        ref="blockUi"
-        :blocked="compUiBlocked"
-        :class="blockUiClass"
-
-        @click="activateInstance"
-        @focus="activateInstance"
-        @focusin="activateInstance"
-        @keydown="activateInstance"
-        @mousedown="activateInstance"
-    )
+    BlockUI.overflow-hidden
         BackgroundComponent(
             v-show="loadingMessage !== ''"
         )
@@ -17,10 +7,9 @@
             :message="loadingMessage"
             v-show="loadingMessage !== ''"
         )
-        div.editor-window
-            div.flex
+        .h-dvh.flex.flex-col
+            .flex
                 MainMenu(
-                    :id="mainMenuId"
                     :haveFile="haveFile"
                     :fileModified="fileModified"
                     @about="onAboutMenu"
@@ -32,7 +21,7 @@
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
             ConfirmDialog
-            CellDLEditor(
+            CellDLEditor.grow(
                 :fileAction="fileAction"
             )
             AboutDialog(
@@ -87,14 +76,8 @@ loadPyodide({
 
 const props = defineProps<IEditorProps>()
 
-const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)
-const mainMenuId = vue.ref('editorMainMenu')
-const activeInstanceUid = vueCommon.activeInstanceUid()
 
-// Keep track of which instance of the CellDL Editor is currently active.
 
-function activateInstance(): void {
-    activeInstanceUid.value = String(crtInstance?.uid)
 }
 
 // Get the current Vue app instance to use some PrimeVue plugins.
@@ -353,109 +336,13 @@ function onAboutMenu(): void {
 
 //==============================================================================
 
-// A few things that can only be done when the component is mounted.
-
-const blockUiClass = vue.ref('')
-const width = vue.ref<number>(0)
-const height = vue.ref<number>(0)
-const heightMinusMainMenu = vue.ref<number>(0)
-
-vue.onMounted(() => {
-    // Set our height to '100vh'/'100dvh' or '100%', depending on whether we are mounted as a Vue application or a Vue
-    // component.
-
-    const blockUiElement = blockUi.value?.$el as HTMLElement
-    const parentElement = blockUiElement.parentElement
-    const grandParentElement = parentElement?.parentElement
-    const greatGrandParentElement = grandParentElement?.parentElement
-    const greatGreatGrandParentElement = greatGrandParentElement?.parentElement
-
-    blockUiClass.value =
-        parentElement?.tagName === 'DIV' &&
-        parentElement.id === 'app' &&
-        grandParentElement?.tagName === 'BODY' &&
-        greatGrandParentElement?.tagName === 'HTML' &&
-        greatGreatGrandParentElement === null
-            ? 'editor-application'
-            : 'editor-component'
-
-    // Customise our IDs.
-
-    mainMenuId.value = `editorMainMenu${String(crtInstance?.uid)}`
-
-    // Make ourselves the active instance.
-
-    setTimeout(() => {
-        activateInstance()
-    }, SHORT_DELAY)
-
-    // Track the height of our main menu.
-
-    let mainMenuResizeObserver: ResizeObserver | undefined
-
-    setTimeout(() => {
-        mainMenuResizeObserver = vueCommon.trackElementHeight(mainMenuId.value)
-    }, SHORT_DELAY)
-
-    // Monitor our size.
-    // Note: this accounts for changes in viewport size (e.g., when rotating a mobile device).
-
-    window.addEventListener('resize', resizeOurselves)
-
-    vue.onUnmounted(() => {
-        window.removeEventListener('resize', resizeOurselves)
-    })
-
-    // Monitor our contents size.
-
-    function resizeOurselves() {
-        const style = window.getComputedStyle(blockUiElement)
-
-        width.value = parseFloat(style.width)
-        height.value = parseFloat(style.height)
-
-        heightMinusMainMenu.value = height.value - vueCommon.trackedCssVariableValue(mainMenuId.value)
     }
 
-    const resizeObserver = new ResizeObserver(() => {
-        setTimeout(() => {
-            resizeOurselves()
-        }, SHORT_DELAY)
-    })
 
-    let oldMainMenuHeight = vueCommon.trackedCssVariableValue(mainMenuId.value)
 
-    const mutationObserver = new MutationObserver(() => {
-        const newMainMenuHeight = vueCommon.trackedCssVariableValue(mainMenuId.value)
 
-        if (newMainMenuHeight !== oldMainMenuHeight) {
-            oldMainMenuHeight = newMainMenuHeight
 
-            resizeOurselves()
-        }
-    })
 
-    resizeObserver.observe(blockUiElement)
-    mutationObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] })
 
-    vue.onUnmounted(() => {
-        resizeObserver.disconnect()
-        mutationObserver.disconnect()
-
-        mainMenuResizeObserver?.disconnect()
-    })
-})
 
 </script>
-
-<style scoped>
-.editor-component {
-    height: 100%;
-}
-.editor-window {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-}
-</style>
