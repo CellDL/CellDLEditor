@@ -223,7 +223,8 @@ const props = defineProps<CellDLEditorProps>()
 //==============================================================================
 
 const emit = defineEmits<{
-    'editor-data': [data: EditorData]
+    'editor-data': [data: EditorData],
+    'error': [msg: string]
 }>()
 
 vue.watch(
@@ -237,8 +238,12 @@ vue.watch(
                 await celldlEditor.editDiagram(celldlDiagram)
             } else if (options.action === 'open') {
                 if (options.data !== undefined) {
-                    celldlDiagram = new CellDLDiagram(options?.name || '', options.data, celldlEditor)
-                    await celldlEditor.editDiagram(celldlDiagram)
+                    try {
+                        celldlDiagram = new CellDLDiagram(options?.name || '', options.data, celldlEditor)
+                        await celldlEditor.editDiagram(celldlDiagram)
+                    } catch(err) {
+                        emit('error', `Cannot open ${options?.name} -- invalid CellDL file?`)
+                    }
                 }
             } else if (options.action === 'data') {
                 const celldl = await celldlDiagram?.serialise()

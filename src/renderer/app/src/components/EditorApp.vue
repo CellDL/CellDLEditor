@@ -24,6 +24,7 @@
             CellDLEditor.grow(
                 :editorCommand="editorCommand"
                 @editorData="onEditorData"
+                @error="onError"
             )
             AboutDialog(
                 v-model:visible="aboutVisible"
@@ -205,6 +206,13 @@ async function onEditorData(data: EditorData) {
     }
 }
 
+//==============================================================================
+
+function onError(msg: string) {
+    window.alert(msg)
+}
+
+//==============================================================================
 //==============================================================================
 //==============================================================================
 
