@@ -43,6 +43,7 @@ import { useConfirm } from "primevue/useconfirm"
 //==============================================================================
 
 import '../assets/app.css'
+import * as vueCommon from '../common/vueCommon'
 
 import AboutDialog from './dialogs/AboutDialog.vue'
 
@@ -51,7 +52,6 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 import  { CellDLEditor, type CellDLEditorCommand, type EditorData } from '../../../index'
 
 import type { EditorState } from '../../../src/common/EditorTypes'
-import * as vueCommon from '../../../src/common/vueCommon'
 
 //==============================================================================
 
