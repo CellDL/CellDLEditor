@@ -13,6 +13,7 @@
                     :haveFile="haveFile"
                     :fileModified="fileModified"
                     :editorState="editorState"
+                    :noPython="noPython"
                     @about="onAboutMenu"
                     @edit-action="onEditAction"
                     @export-action="onExportAction"
@@ -64,25 +65,27 @@ const props = defineProps<IEditorAppProps>()
 import { loadPyodide } from '@pyodide/pyodide.mjs'
 import type { PyodideAPI } from '@pyodide/pyodide'
 
-const loadingMessage = vue.ref<string>('Loading CellDL editor')
-
-// Load Pyodide's WASM module
 import { initialisePyodide } from '../../../src/bg2cellml/index'
 import { alert } from '../../../src/CellDL/editor/alerts'
 
+const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
 console.log('BASE URL:', import.meta.env.BASE_URL)
+if (!props.noPython) {
+    // Load Pyodide's WASM module
 
-loadPyodide({
-    indexURL: `${import.meta.env.BASE_URL}pyodide/`
-}).then(async (pyodide: PyodideAPI) => {
-    // Then initialise our Python packages and `bg2cellml` conversion
-    await initialisePyodide(pyodide, loadingMessage)
-    loadingMessage.value = ''
-    alert.info('Editor ready...')
-})
-
-const props = defineProps<IEditorProps>()
+    loadPyodide({
+        indexURL: `${import.meta.env.BASE_URL}pyodide/`
+    }).then(async (pyodide: PyodideAPI) => {
+        // Then initialise our Python packages and `bg2cellml` conversion
+        await initialisePyodide(pyodide, loadingMessage)
+        loadingMessage.value = ''
+        alert.info('Editor ready...')
+    })
+} else {
+   loadingMessage.value = ''
+   alert.info('Editor ready...')
+}
 
 import { celldl2cellml, rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
 
