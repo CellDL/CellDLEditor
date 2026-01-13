@@ -43,7 +43,6 @@ import { useConfirm } from "primevue/useconfirm"
 //==============================================================================
 
 import '../assets/app.css'
-import '../assets/icons.css'
 
 import AboutDialog from './dialogs/AboutDialog.vue'
 
