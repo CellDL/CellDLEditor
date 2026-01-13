@@ -589,6 +589,7 @@ export class CellDLDiagram {
         if (object) {
             this.#addMoveableObject(object)
         }
+        notifyChanges()
         return object
     }
 
@@ -596,6 +597,7 @@ export class CellDLDiagram {
         const connection = this.#addNewObject(svgElement, template) as CellDLConnection
         // let the plugins know
         componentLibraryPlugin.addNewConnection(connection, this.rdfStore)
+        notifyChanges()
         return connection
     }
 
@@ -644,6 +646,7 @@ export class CellDLDiagram {
         if (compartment) {
             this.#addMoveableObject(compartment)
         }
+        notifyChanges()
         return compartment
     }
 
@@ -954,6 +957,7 @@ export class CellDLDiagram {
 
     objectMoved(celldlObject: CellDLObject) {
         this.#spatialIndex.update(celldlObject)
+        notifyChanges()
     }
 
     deleteInsertedObject(undoAction: EditorUndoAction) {
@@ -986,6 +990,7 @@ export class CellDLDiagram {
         if (this.#objects.has(celldlObject.id)) {
             const undoAction = undoRedo.undoDeleteAction()
             this.#removeObject(celldlObject, undoAction)
+            notifyChanges()
         }
     }
 
