@@ -50,7 +50,8 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 
 //==============================================================================
 
-import  { CellDLEditor, type CellDLEditorCommand, type EditorData } from '../../../index'
+import CellDLEditor from '../../../index'
+import type { CellDLEditorCommand, EditorData } from '../../../index'
 
 import type { EditorState } from '../../../src/common/EditorTypes'
 
