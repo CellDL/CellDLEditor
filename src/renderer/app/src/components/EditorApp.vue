@@ -188,7 +188,7 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
 async function onEditorData(data: EditorData) {
     if (data.kind === 'export') {
         if (!props.noPython) {
-            await saveCellML(data.celldl)
+            await saveCellML(data.data)
         }
     } else if (currentFileHandle) {
         // but when new file there is no CFH...

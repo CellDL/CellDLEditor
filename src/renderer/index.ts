@@ -23,7 +23,7 @@ import CellDLEditor from '@renderer/components/CellDLEditor.vue'
 //==============================================================================
 
 export type EditorData = {
-    celldl: string
+    data: string
     kind?: string
 }
 

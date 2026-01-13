@@ -250,7 +250,7 @@ vue.watch(
                 emit('editor-data', {
                     data: celldl,
                     kind: options.kind
-                })
+                } as EditorData)
 
             } else if (props.editorCommand.command === 'edit') {
                 const command = props.editorCommand as EditorEditCommand
