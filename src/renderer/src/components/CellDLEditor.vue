@@ -1,31 +1,32 @@
 <template lang="pug">
-    main#editor-pane.editor-pane
-        EditorToolbar.editor-bar(
-            :buttons="toolButtons"
-            type="popover"
-            @button-event="buttonEvent"
-            @popover-event="popoverEvent"
-        )
-        div#svg-content(ref="svg-content")
-            <!-- context-menu(id="context-menu")  -->
-        #panel-content(
-            :class="{ hidden: !panelVisible }"
-        )
-            component(
-                    v-if="panelComponent"
-                    :is="panelComponent"
-                    :toolId="panelToolId"
-                    @panel-event="panelEvent"
-                    @style-event="styleEvent"
-                )
-        EditorToolbar.editor-bar(
-            :buttons="panelButtons"
-            type="panel"
-            @button-event="buttonEvent"
-        )
-    footer.status-bar
-        span#status-msg
-        span#status-pos
+    .flex.flex-col.h-full
+        main.editor-pane.relative.flex.flex-1
+            EditorToolbar.editor-bar(
+                :buttons="toolButtons"
+                type="popover"
+                @button-event="buttonEvent"
+                @popover-event="popoverEvent"
+            )
+            div#svg-content(ref="svg-content")
+                <!-- context-menu(id="context-menu")  -->
+            #panel-content(
+                :class="{ hidden: !panelVisible }"
+            )
+                component(
+                        v-if="panelComponent"
+                        :is="panelComponent"
+                        :toolId="panelToolId"
+                        @panel-event="panelEvent"
+                        @style-event="styleEvent"
+                    )
+            EditorToolbar.editor-bar(
+                :buttons="panelButtons"
+                type="panel"
+                @button-event="buttonEvent"
+            )
+        footer.status-bar
+            span#status-msg
+            span#status-pos
 </template>
 
 <script setup lang="ts">
@@ -275,10 +276,7 @@ vue.onMounted(async () => {
 
 <style scoped>
 .editor-pane {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    position: relative;
+    min-height: calc(100% - 1.6em);
 }
 
 .editor-bar {
