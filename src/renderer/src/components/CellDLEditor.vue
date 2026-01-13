@@ -1,6 +1,6 @@
 <template lang="pug">
     .flex.flex-col.h-full
-        main.editor-pane.relative.flex.flex-1
+        main.editor-pane.relative.flex.grow
             EditorToolbar.editor-bar(
                 :buttons="toolButtons"
                 type="popover"
@@ -287,7 +287,6 @@ vue.onMounted(async () => {
 .editor-pane {
     min-height: calc(100% - 1.6em);
 }
-
 .editor-bar {
     width: 40px;
     overflow: auto;
@@ -304,8 +303,11 @@ vue.onMounted(async () => {
     border-left-width: 1px;
     right: 38px; /* This depends on panel bar width... */
     top: 0px;
-    bottom: 0px;
+    bottom: 1.6em;
     position: absolute;
+}
+.hidden {
+    display: none;
 }
 .status-bar {
     min-height: 1.6em;
