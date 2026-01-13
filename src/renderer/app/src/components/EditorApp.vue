@@ -74,6 +74,9 @@ loadPyodide({
 const props = defineProps<IEditorProps>()
 
 
+async function testCellML() {
+    await testBg2cellml()
+}
 
 }
 
@@ -340,11 +343,6 @@ async function onSaveCellML() {
             name: `https://celldl.org/cellml/${handle.name}`,
         }
     }
-}
-
-async function testCellML() {
-//    await rdfTest()
-    await testBg2cellml()
 }
 
 //==============================================================================
