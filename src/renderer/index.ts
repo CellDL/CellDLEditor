@@ -65,5 +65,11 @@ export interface CellDLEditorProps {
     editorCommand: CellDLEditorCommand
 }
 
+import { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'
+export { celldl2cellml, initialisePython }
+
+import { componentLibraryPlugin } from '@renderer/plugins/index'
+export { componentLibraryPlugin }
+
 //==============================================================================
 //==============================================================================

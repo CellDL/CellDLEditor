@@ -65,7 +65,7 @@ const props = defineProps<IEditorAppProps>()
 
 //==============================================================================
 
-import { celldl2cellml, initialisePython } from '../../../src/bg2cellml/index'
+import { celldl2cellml, initialisePython } from '../../../index'
 
 import { alert } from '../../../src/CellDL/editor/alerts'
 

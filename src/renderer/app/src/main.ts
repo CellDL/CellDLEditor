@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import ConfirmationService from 'primevue/confirmationservice';
 
-import { componentLibraryPlugin } from '../../src/plugins/index'
+import { componentLibraryPlugin } from '../../index'
 
 import App from './App.vue'
 
