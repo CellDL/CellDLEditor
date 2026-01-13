@@ -63,41 +63,32 @@ type IEditorAppProps = {
 
 const props = defineProps<IEditorAppProps>()
 
-
 //==============================================================================
 
-import { loadPyodide } from '@pyodide/pyodide.mjs'
-import type { PyodideAPI } from '@pyodide/pyodide'
+import { celldl2cellml, initialisePython } from '../../../src/bg2cellml/index'
 
-import { initialisePyodide } from '../../../src/bg2cellml/index'
 import { alert } from '../../../src/CellDL/editor/alerts'
 
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
-console.log('BASE URL:', import.meta.env.BASE_URL)
 if (!props.noPython) {
-    // Load Pyodide's WASM module
-
-    loadPyodide({
-        indexURL: `${import.meta.env.BASE_URL}pyodide/`
-    }).then(async (pyodide: PyodideAPI) => {
-        // Then initialise our Python packages and `bg2cellml` conversion
-        await initialisePyodide(pyodide, loadingMessage)
-        loadingMessage.value = ''
-        alert.info('Editor ready...')
+    initialisePython((msg: string) => {
+        loadingMessage.value = msg
     })
-} else {
-   loadingMessage.value = ''
-   alert.info('Editor ready...')
 }
+alert.info('Editor ready...')
 
-import { celldl2cellml, rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
+/*
+import { rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
 
 async function testCellML() {
     await testBg2cellml()
 }
 
+async function testRDF() {
+    await rdfTest()
 }
+*/
 
 //==============================================================================
 
@@ -196,8 +187,9 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
 
 async function onEditorData(data: EditorData) {
     if (data.kind === 'export') {
-        await saveCellML(data.celldl)
-
+        if (!props.noPython) {
+            await saveCellML(data.celldl)
+        }
     } else if (currentFileHandle) {
         // but when new file there is no CFH...
         const writable = await currentFileHandle.createWritable()
