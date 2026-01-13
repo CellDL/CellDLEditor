@@ -32,4 +32,13 @@ export interface EditorToolButton {
 }
 
 //==============================================================================
+
+export interface EditorState {
+    fileModified: boolean
+    itemSelected: boolean
+    pasteContents: boolean
+    redoContents: boolean
+}
+
+//==============================================================================
 //==============================================================================

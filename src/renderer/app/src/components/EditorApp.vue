@@ -12,6 +12,7 @@
                 MainMenu(
                     :haveFile="haveFile"
                     :fileModified="fileModified"
+                    :editorState="editorState"
                     @about="onAboutMenu"
                     @edit-action="onEditAction"
                     @export-action="onExportAction"
@@ -44,6 +45,7 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 import { SHORT_DELAY } from '../../../src/common/constants'
 import  { CellDLEditor, type CellDLEditorCommand, type EditorData } from '../../../index'
 
+import type { EditorState } from '../../../src/common/EditorTypes'
 import * as vueCommon from '../../../src/common/vueCommon'
 
 import '../assets/app.css'
@@ -393,6 +395,27 @@ async function saveCellML(celldl: string) {
     }
 }
 
+//==============================================================================
+//==============================================================================
+
+const editorState = vue.computed<EditorState>(() => {
+    return {
+        fileModified: false,
+        itemSelected: true,
+        pasteContents: true
+    }
+})
+
+async function onEditAction(action: string) {
+    editorCommand.value = {
+        command: 'edit',
+        options: {
+            action: action
+        }
+    }
+}
+
+//==============================================================================
 //==============================================================================
 
 // About dialog.
