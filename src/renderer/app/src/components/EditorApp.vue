@@ -33,24 +33,28 @@
 
 <script setup lang="ts">
 import * as vue from 'vue'
+import * as vueusecore from '@vueuse/core'
 
 import 'primeicons/primeicons.css'
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import primeVueConfig from 'primevue/config'
 import { useConfirm } from "primevue/useconfirm"
 
-import * as vueusecore from '@vueuse/core'
+//==============================================================================
+
+import '../assets/app.css'
+import '../assets/icons.css'
 
 import AboutDialog from './dialogs/AboutDialog.vue'
 
-import { SHORT_DELAY } from '../../../src/common/constants'
+//==============================================================================
+
 import  { CellDLEditor, type CellDLEditorCommand, type EditorData } from '../../../index'
 
 import type { EditorState } from '../../../src/common/EditorTypes'
 import * as vueCommon from '../../../src/common/vueCommon'
 
-import '../assets/app.css'
-import '../assets/icons.css'
+//==============================================================================
 
 type IEditorAppProps = {
     theme?: string
@@ -94,6 +98,8 @@ async function testCellML() {
 }
 
 }
+
+//==============================================================================
 
 // Get the current Vue app instance to use some PrimeVue plugins.
 
