@@ -185,24 +185,17 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
     }
 })
 
+//==============================================================================
+
 async function onEditorData(data: EditorData) {
     if (data.kind === 'export') {
         if (!props.noPython) {
             await saveCellML(data.data)
         }
+    } else if (data.kind === 'save-as' || !currentFileHandle) {
+        await saveFile(data.data)
     } else if (currentFileHandle) {
-        // but when new file there is no CFH...
-        const writable = await currentFileHandle.createWritable()
-        await writable.write(data.celldl)
-        await writable.close()
-        diagramModified(false)
-        windowTitle.value = currentFileHandle.name
-        editorCommand.value = {
-            command: 'edit',
-            options: {
-                action: 'clean'
-            }
-        }
+        await writeFileData(currentFileHandle, data.data)
     }
 }
 
@@ -219,12 +212,12 @@ function onError(msg: string) {
 async function onFileAction(action: string) {
     if (action === 'new') {
         await onNewFile()
-        } else if (action === 'open') {
+    } else if (action === 'open') {
         await onOpenFile()
     } else if (action === 'save') {
-        await onSaveFile()
+        await onSaveFile(false)
     } else if (action === 'save-as') {
-        await onSaveFileAs()
+        await onSaveFile(true)
     }
 }
 
@@ -326,20 +319,17 @@ async function openFile() {
 
 //==============================================================================
 
-async function onSaveFile() {
-    if (currentFileHandle) {
-        editorCommand.value = {
-            command: 'file',
-            options: {
-                action: 'data'
-            }
+async function onSaveFile(saveAs: boolean=false) {
+    editorCommand.value = {
+        command: 'file',
+        options: {
+            action: 'data',
+            kind: saveAs || !currentFileHandle ? 'save-as' : 'save'
         }
-    } else {
-        await onSaveFileAs()
     }
 }
 
-async function onSaveFileAs() {
+async function saveFile(celldl: string) {
     const options = {
         types: [
             {
@@ -352,14 +342,22 @@ async function onSaveFileAs() {
     }
     const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
     if (fileHandle) {
-        editorCommand.value = {
-            command: 'file',
-            options: {
-                action: 'data',
-                name: fileHandle.name
-            }
-        }
+        await writeFileData(fileHandle, celldl)
         currentFileHandle = fileHandle
+    }
+}
+
+async function writeFileData(fileHandle: FileSystemFileHandle, data: string) {
+    const writableStream = await fileHandle.createWritable()
+    await writableStream.write(data)
+    await writableStream.close()
+    diagramModified(false)
+    windowTitle.value = fileHandle.name
+    editorCommand.value = {
+        command: 'edit',
+        options: {
+            action: 'clean'
+        }
     }
 }
 
@@ -393,9 +391,9 @@ async function saveCellML(celldl: string) {
     if (fileHandle) {
         const cellmlObject = celldl2cellml(`https://celldl.org/cellml/${fileHandle.name}`, celldl)
         if (cellmlObject.cellml) {
-            const writable = await fileHandle.createWritable()
-            await writable.write(cellmlObject.cellml)
-            await writable.close()
+            const writableStream = await fileHandle.createWritable()
+            await writableStream.write(cellmlObject.cellml)
+            await writableStream.close()
         } else if (cellmlObject.issues) {
             window.alert(cellmlObject.issues.join('\n'))
         }
