@@ -203,7 +203,6 @@ async function onEditorData(data: EditorData) {
                 action: 'clean'
             }
         }
-
     }
 }
 
