@@ -138,11 +138,8 @@ const editorCommand = vue.ref<CellDLEditorCommand>({
 //==============================================================================
 //==============================================================================
 
-const beforeUnloadHandler = (event: Event) => {
-    event.preventDefault()
-}
 
-let currentFileHandle: FileSystemFileHandle|undefined
+//==============================================================================
 
 const windowTitle = vue.ref<string>('New file')
 
@@ -153,6 +150,10 @@ const fileStatus = vue.ref<{
     haveData: false,
     modified: false
 })
+
+const beforeUnloadHandler = (event: Event) => {
+    event.preventDefault()
+}
 
 function diagramModified(modified: boolean) {
     fileStatus.value.modified = modified
@@ -171,10 +172,9 @@ const fileModified = vue.computed(() => {
     return fileStatus.value.modified
 })
 
+let currentFileHandle: FileSystemFileHandle|undefined
+
 //==============================================================================
-
-const confirm = useConfirm()
-
 //==============================================================================
 
 vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
@@ -207,6 +207,9 @@ function onError(msg: string) {
 
 //==============================================================================
 //==============================================================================
+
+const confirm = useConfirm()
+
 //==============================================================================
 
 async function onFileAction(action: string) {
