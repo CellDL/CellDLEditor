@@ -47,8 +47,6 @@ import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStyl
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
-import { celldl2cellml } from '@renderer/bg2cellml/index'
-
 //==============================================================================
 
 const svgContainer = vue.useTemplateRef<HTMLElement>('svg-content')
@@ -208,42 +206,47 @@ function styleEvent(toolId: string, object: string, styling: StyleObject) {
 //==============================================================================
 //==============================================================================
 
-import type { CellDLEditorProps } from '../../index'
+import type {
+    CellDLEditorProps,
+    EditorData,
+    EditorEditCommand,
+    EditorFileCommand
+} from '../../index'
 
 const props = defineProps<CellDLEditorProps>()
 
 //==============================================================================
 
+const emit = defineEmits<{
+    'editor-data': [data: EditorData]
+}>()
+
 vue.watch(
-    () => props.fileAction,
+    () => props.editorCommand,
     async () => {
-        if (props.fileAction) {
-            const fileAction = props.fileAction
-            if  (fileAction.action === 'close-file') {
+        if (props.editorCommand.command === 'file') {
+            const command = props.editorCommand as EditorFileCommand
+            const options = command.options
+            if  (options.action === 'close') {
                 celldlDiagram = new CellDLDiagram('', '', celldlEditor)
                 await celldlEditor.editDiagram(celldlDiagram)
-            } else if (fileAction.action === 'open-file') {
-                if (fileAction.contents !== undefined) {
-                    celldlDiagram = new CellDLDiagram(fileAction.name, fileAction.contents, celldlEditor)
+            } else if (options.action === 'open') {
+                if (options.data !== undefined) {
+                    celldlDiagram = new CellDLDiagram(options?.name || '', options.data, celldlEditor)
                     await celldlEditor.editDiagram(celldlDiagram)
                 }
-            } else if (fileAction.action === 'save-file') {  // save-file-as
-                const celldlData = await celldlDiagram?.serialise()
-                const writable = await fileAction.fileHandle.createWritable()
-                await writable.write(celldlData)
-                await writable.close()
-                undoRedo.clean()
-            } else if (fileAction.action === 'save-cellml') {
-                const celldlData = await celldlDiagram?.serialise()
-                if (celldlData) {
-                    const cellmlObject = celldl2cellml(fileAction.name, celldlData)
-                    if (cellmlObject.cellml) {
-                        const writable = await fileAction.fileHandle.createWritable()
-                        await writable.write(cellmlObject.cellml)
-                        await writable.close()
-                    } else if (cellmlObject.issues) {
-                        alert(cellmlObject.issues.join('\n'))
-                    }
+            } else if (options.action === 'data') {
+                const celldl = await celldlDiagram?.serialise()
+                emit('editor-data', {
+                    data: celldl,
+                    kind: options.kind
+                })
+
+            } else if (props.editorCommand.command === 'edit') {
+                const command = props.editorCommand as EditorEditCommand
+                const options = command.options
+                if (options.action === 'clean') {
+                    undoRedo.clean()
                 }
             }
         }

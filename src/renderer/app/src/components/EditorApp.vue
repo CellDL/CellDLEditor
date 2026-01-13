@@ -13,13 +13,15 @@
                     :haveFile="haveFile"
                     :fileModified="fileModified"
                     @about="onAboutMenu"
+                    @edit-action="onEditAction"
                     @export-action="onExportAction"
                     @file-action="onFileAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
             ConfirmDialog
             CellDLEditor.grow(
-                :fileAction="fileAction"
+                :editorCommand="editorCommand"
+                @editorData="onEditorData"
             )
             AboutDialog(
                 v-model:visible="aboutVisible"
@@ -37,16 +39,23 @@ import { useConfirm } from "primevue/useconfirm"
 
 import * as vueusecore from '@vueuse/core'
 
-import type { IEditorProps } from '../../index'
 import AboutDialog from './dialogs/AboutDialog.vue'
 
 import { SHORT_DELAY } from '../../../src/common/constants'
+import  { CellDLEditor, type CellDLEditorCommand, type EditorData } from '../../../index'
+
 import * as vueCommon from '../../../src/common/vueCommon'
 
 import '../assets/app.css'
 import '../assets/icons.css'
 
-import { rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
+type IEditorAppProps = {
+    theme?: string
+    noPython?: boolean
+}
+
+const props = defineProps<IEditorAppProps>()
+
 
 //==============================================================================
 
@@ -73,6 +82,7 @@ loadPyodide({
 
 const props = defineProps<IEditorProps>()
 
+import { celldl2cellml, rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
 
 async function testCellML() {
     await testBg2cellml()
@@ -119,9 +129,18 @@ if (props.theme !== undefined) {
 //==============================================================================
 //==============================================================================
 
+const editorCommand = vue.ref<CellDLEditorCommand>({
+    command: ''
+})
+
+//==============================================================================
+//==============================================================================
+
 const beforeUnloadHandler = (event: Event) => {
     event.preventDefault()
 }
+
+let currentFileHandle: FileSystemFileHandle|undefined
 
 const windowTitle = vue.ref<string>('New file')
 
@@ -150,15 +169,6 @@ const fileModified = vue.computed(() => {
     return fileStatus.value.modified
 })
 
-const fileAction = vue.ref<{
-    action: string
-    contents: string|undefined
-    fileHandle: FileSystemHandle|undefined
-    name: string|undefined
-}>({
-    action: ''
-})
-
 //==============================================================================
 
 const confirm = useConfirm()
@@ -172,6 +182,27 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
         windowTitle.value += ' *'
     }
 })
+
+async function onEditorData(data: EditorData) {
+    if (data.kind === 'export') {
+        await saveCellML(data.celldl)
+
+    } else if (currentFileHandle) {
+        // but when new file there is no CFH...
+        const writable = await currentFileHandle.createWritable()
+        await writable.write(data.celldl)
+        await writable.close()
+        diagramModified(false)
+        windowTitle.value = currentFileHandle.name
+        editorCommand.value = {
+            command: 'edit',
+            options: {
+                action: 'clean'
+            }
+        }
+
+    }
+}
 
 //==============================================================================
 //==============================================================================
@@ -214,10 +245,13 @@ async function onNewFile() {
 }
 
 function closeFile() {
-    fileAction.value = {
-        action: 'close-file'
+    editorCommand.value = {
+        command: 'file',
+        options: {
+            action: 'close'
+        }
     }
-    fileAction.value.fileHandle = undefined
+    currentFileHandle = undefined
     fileStatus.value.haveData = false
     diagramModified(false)
     windowTitle.value = 'New file'
@@ -262,31 +296,35 @@ async function openFile() {
     }
     const fileHandles = await window.showOpenFilePicker(options)
     if (fileHandles.length) {
-        const handle = fileHandles[0]
-        const file = await handle.getFile()
-        const contents = await file.text()
-        fileAction.value = {
-            action: 'open-file',
-            fileHandle: handle,
-            name: handle.name,
-            contents: contents
+        currentFileHandle = fileHandles[0]
+        if (currentFileHandle) {
+            const file = await currentFileHandle.getFile()
+            const contents = await file.text()
+            editorCommand.value = {
+                command: 'file',
+                options: {
+                    action: 'open',
+                    data: contents,
+                    name: currentFileHandle.name
+                }
+            }
+            fileStatus.value.haveData = true
+            diagramModified(false)
+            windowTitle.value = currentFileHandle.name
         }
-        fileStatus.value.haveData = true
-        diagramModified(false)
-        windowTitle.value = handle.name
     }
 }
 
 //==============================================================================
 
 async function onSaveFile() {
-    if (fileAction.value.fileHandle) {
-        fileAction.value = {
-            ...fileAction.value,
-            action: 'save-file'
+    if (currentFileHandle) {
+        editorCommand.value = {
+            command: 'file',
+            options: {
+                action: 'data'
+            }
         }
-        diagramModified(false)
-        windowTitle.value = fileAction.value.fileHandle.name
     } else {
         await onSaveFileAs()
     }
@@ -303,15 +341,16 @@ async function onSaveFileAs() {
             }
         ]
     }
-    const handle = await window.showSaveFilePicker(options).catch(() => {})
-    if (handle) {
-        fileAction.value = {
-            action: 'save-file',
-            fileHandle: handle,
-            name: handle.name
+    const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
+    if (fileHandle) {
+        editorCommand.value = {
+            command: 'file',
+            options: {
+                action: 'data',
+                name: fileHandle.name
+            }
         }
-        diagramModified(false)
-        windowTitle.value = handle.name
+        currentFileHandle = fileHandle
     }
 }
 
@@ -320,11 +359,17 @@ async function onSaveFileAs() {
 
 async function onExportAction(action: string) {
     if (action === 'cellml') {
-        await onSaveCellML()
+        editorCommand.value = {
+            command: 'file',
+            options: {
+                action: 'data',
+                kind: 'export'
+            }
+        }
     }
 }
 
-async function onSaveCellML() {
+async function saveCellML(celldl: string) {
     const options = {
         types: [
             {
@@ -335,12 +380,15 @@ async function onSaveCellML() {
             }
         ]
     }
-    const handle = await window.showSaveFilePicker(options).catch(() => {})
-    if (handle) {
-        fileAction.value = {
-            action: 'save-cellml',
-            fileHandle: handle,
-            name: `https://celldl.org/cellml/${handle.name}`,
+    const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
+    if (fileHandle) {
+        const cellmlObject = celldl2cellml(`https://celldl.org/cellml/${fileHandle.name}`, celldl)
+        if (cellmlObject.cellml) {
+            const writable = await fileHandle.createWritable()
+            await writable.write(cellmlObject.cellml)
+            await writable.close()
+        } else if (cellmlObject.issues) {
+            window.alert(cellmlObject.issues.join('\n'))
         }
     }
 }
@@ -356,14 +404,6 @@ function onAboutMenu(): void {
 }
 
 //==============================================================================
-
-    }
-
-
-
-
-
-
-
+//==============================================================================
 
 </script>
