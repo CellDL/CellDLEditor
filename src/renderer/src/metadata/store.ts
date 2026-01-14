@@ -46,9 +46,6 @@ export interface PredicateValue {
 //==============================================================================
 
 export abstract class BaseStore {
-    #RDF_LIST_END = RDF.uri('nil')
-    #RDF_LIST_HEAD = RDF.uri('first')
-    #RDF_LIST_REST = RDF.uri('rest')
 
     abstract add(s: SubjectType, p: PredicateType, o: ObjectType, g: NamedNode | null): Statement
 
@@ -153,7 +150,7 @@ export abstract class BaseStore {
             return value
         } else if (isBlankNode(value)) {
             // @ts-expect-error: value is a BlankNode
-            if (this.contains(value, RDF_LIST_REST, null)) {
+            if (this.contains(value, RDF.uri('rest'), null)) {
                 // @ts-expect-error: `value` is a BlankNode
                 return this.#listFromCollection(value)
             } else {
@@ -169,13 +166,13 @@ export abstract class BaseStore {
         const result: MetadataPropertyValue[] = []
         const nodes = [subject.value]
         let next = subject
-        while (next && !next.equals(this.#RDF_LIST_END)) {
-            const headItem = this.statementsMatching(next, this.#RDF_LIST_HEAD, null, null)
+        while (next && !next.equals(RDF.uri('nil'))) {
+            const headItem = this.statementsMatching(next, RDF.uri('first'), null, null)
             if (headItem.length !== 1 || headItem[0] === undefined) break
             const value = this.#metadataValue(headItem[0].object)
             if (!value) break
             result.push(value)
-            const nextItem = this.statementsMatching(next, this.#RDF_LIST_REST, null, null)
+            const nextItem = this.statementsMatching(next, RDF.uri('rest'), null, null)
             if (nextItem.length !== 1 || nextItem[0] === undefined) break
             next = nextItem[0].object as NamedNode
             if (nodes.includes(next.value)) {
@@ -190,14 +187,14 @@ export abstract class BaseStore {
         const statements: Statement[] = []
         let current = subject
         values.forEach((value, index) => {
-            statements.push(...this.#addMetadataProperties(current, this.#RDF_LIST_HEAD, value))
+            statements.push(...this.#addMetadataProperties(current, RDF.uri('first'), value))
             if (index < values.length - 1) {
                 const next = blankNode()
-                statements.push(this.add(current, this.#RDF_LIST_REST, next, null))
+                statements.push(this.add(current, RDF.uri('rest'), next, null))
                 current = next
             }
         })
-        statements.push(this.add(current, this.#RDF_LIST_REST, this.#RDF_LIST_END, null))
+        statements.push(this.add(current, RDF.uri('rest'), RDF.uri('nil'), null))
         return statements
     }
 }
