@@ -120,7 +120,9 @@ export abstract class BaseStore {
     }
 
     addStatementList(statements: Statement[]) {
-        statements.forEach((s) => this.add(s.subject, s.predicate, s.object, null))
+        statements.forEach((s) => {
+            this.add(s.subject, s.predicate, s.object, null)
+        })
     }
 
     metadataFromPredicates(predicateValues: PredicateValue[]): MetadataPropertiesMap {
@@ -140,7 +142,9 @@ export abstract class BaseStore {
     }
 
     removeStatementList(statements: Statement[]) {
-        statements.forEach((s) => this.removeStatements(s.subject, s.predicate, s.object, null))
+        statements.forEach((s) => {
+            this.removeStatements(s.subject, s.predicate, s.object, null)
+        })
     }
 
     #metadataValue(value: ObjectType): MetadataPropertyValue | null {
@@ -165,14 +169,14 @@ export abstract class BaseStore {
         const result: MetadataPropertyValue[] = []
         const nodes = [subject.value]
         let next = subject
-            if (headItem.length != 1 || headItem[0] === undefined) break
         while (next && !next.equals(this.#RDF_LIST_END)) {
             const headItem = this.statementsMatching(next, this.#RDF_LIST_HEAD, null, null)
+            if (headItem.length !== 1 || headItem[0] === undefined) break
             const value = this.#metadataValue(headItem[0].object)
             if (!value) break
             result.push(value)
-            if (nextItem.length != 1 || nextItem[0] === undefined) break
             const nextItem = this.statementsMatching(next, this.#RDF_LIST_REST, null, null)
+            if (nextItem.length !== 1 || nextItem[0] === undefined) break
             next = nextItem[0].object as NamedNode
             if (nodes.includes(next.value)) {
                 break
