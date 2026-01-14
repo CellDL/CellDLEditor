@@ -74,8 +74,8 @@ class BranchPoint implements PointLike {
 //==============================================================================
 
 export class CellDLObject {
-    static celldlClassName = CELLDL_CLASS.Unknown
-    static celldlType = CELLDL.uri('Object')
+    static celldlClassName: CELLDL_CLASS = CELLDL_CLASS.Unknown
+    static celldlType: string = 'Object'
 
     #celldlClassName: CELLDL_CLASS
     #celldlDiagram: CellDLDiagram
@@ -105,7 +105,7 @@ export class CellDLObject {
         // @ts-expect-error: celldlClassName is a member of the object's constructor
         this.#celldlClassName = this.constructor.celldlClassName
         // @ts-expect-error: celldlType is a member of the object's constructor
-        this.#celldlType = this.constructor.celldlType
+        this.#celldlType = CELLDL.uri(this.constructor.celldlType)
         this.#setMetadataProperties(metadata)
 
         for (const pluginId of componentLibraryPlugin.registeredPlugins) {
@@ -344,7 +344,7 @@ export class CellDLMoveableObject extends CellDLObject {
 
 export class CellDLAnnotation extends CellDLMoveableObject {
     static celldlClassName = CELLDL_CLASS.Annotation
-    static celldlType = CELLDL.uri('Annotation')
+    static celldlType = 'Annotation'
 
     get hasEditGuides() {
         return true
@@ -354,7 +354,7 @@ export class CellDLAnnotation extends CellDLMoveableObject {
 //==============================================================================
 
 export class CellDLConnectedObject extends CellDLMoveableObject {
-    static celldlType = CELLDL.uri('Connector')
+    static celldlType = 'Connector'
 
     #connections: Map<string, CellDLConnection> = new Map()
 
@@ -426,7 +426,7 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
 
 export class CellDLComponent extends CellDLConnectedObject {
     static celldlClassName = CELLDL_CLASS.Component
-    static celldlType = CELLDL.uri('Component')
+    static celldlType = 'Component'
 
     get hasEditGuides() {
         return true
@@ -437,14 +437,14 @@ export class CellDLComponent extends CellDLConnectedObject {
 
 export class CellDLConduit extends CellDLComponent {
     static readonly celldlClassName = CELLDL_CLASS.Conduit
-    static celldlType = CELLDL.uri('Conduit')
+    static celldlType = 'Conduit'
 }
 
 //==============================================================================
 
 export class CellDLCompartment extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.Compartment
-    static celldlType = CELLDL.uri('Compartment')
+    static celldlType = 'Compartment'
 
     #interfacePorts: CellDLInterface[] = []
 
@@ -497,7 +497,7 @@ export class CellDLCompartment extends CellDLConnectedObject {
 
 export class CellDLConnection extends CellDLObject {
     static readonly celldlClassName = CELLDL_CLASS.Connection
-    static celldlType = CELLDL.uri('Connection')
+    static celldlType = 'Connection'
 
     #connectedObjects: CellDLConnectedObject[] = []
     #svgConnection: SvgConnection|null = null
@@ -573,7 +573,7 @@ export class CellDLConnection extends CellDLObject {
 
 export class CellDLInterface extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.Interface
-    static celldlType = CELLDL.uri('Interface')
+    static celldlType = 'Interface'
 
     #externalConnections: CellDLConnection[] = []
 
@@ -624,7 +624,7 @@ export class CellDLInterface extends CellDLConnectedObject {
 
 export class CellDLUnconnectedPort extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.UnconnectedPort
-    static celldlType = CELLDL.uri('UnconnectedPort')
+    static celldlType = 'UnconnectedPort'
 }
 
 //==============================================================================

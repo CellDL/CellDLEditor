@@ -22,7 +22,7 @@ import * as $rdf from '@renderer/metadata/index'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import { MetadataPropertiesMap, type NamedNode } from '@renderer/metadata/index'
-import { CELLDL, DCT, RDF, RDFS } from '@renderer/metadata/index'
+import { CELLDL, RDF, RDFS } from '@renderer/metadata/index'
 
 import type { PointLike } from '@renderer/common/points'
 import type { Constructor, StringProperties } from '@renderer/common/types'
@@ -67,17 +67,6 @@ export interface NamedProperty {
     name: string
     property: string
 }
-
-export const OBJECT_METADATA: NamedProperty[] = [
-    {
-        name: 'Label',
-        property: RDFS.uri('label').value
-    },
-    {
-        name: 'Description',
-        property: DCT.uri('description').value
-    }
-]
 
 //==============================================================================
 

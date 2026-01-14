@@ -224,52 +224,54 @@ enum BG_GROUP {
     StateGroup = 'bg-state-group'
 }
 
-const PROPERTY_GROUPS: PropertyGroup[] = [
-    {
-        groupId: BG_GROUP.ElementGroup,
-        title: 'Element',
-        items: [
-            {
-                itemId: BG_INPUT.ElementType,
-                property: RDF.uri('type').value,
-                name: 'Bond Element',
-                possibleValues: [],
-                optional: true
-            },
-            {
-                itemId: BG_INPUT.ElementSpecies,
-                property: BGF.uri('hasSpecies').value,
-                name: 'Species',
-                defaultValue: ''
-            },
-            {
-                itemId: BG_INPUT.ElementLocation,
-                property: BGF.uri('hasLocation').value,
-                name: 'Location',
-                defaultValue: ''
-            },
-            // @ts-expect-error:
-            {
-                itemId: BG_INPUT.ElementValue,
-                property: BGF.uri('hasValue').value,
-                name: 'Initial value',
-                defaultValue: 0,
-                numeric: true,
-                optional: true
-            }
-        ]
-    },
-    {
-        groupId: BG_GROUP.ParameterGroup,
-        title: 'Parameters',
-        items: []
-    },
-    {
-        groupId: BG_GROUP.StateGroup,
-        title: 'States',
-        items: []
-    }
-]
+function PROPERTY_GROUPS(): PropertyGroup[] {
+    return [
+        {
+            groupId: BG_GROUP.ElementGroup,
+            title: 'Element',
+            items: [
+                {
+                    itemId: BG_INPUT.ElementType,
+                    property: RDF.uri('type').value,
+                    name: 'Bond Element',
+                    possibleValues: [],
+                    optional: true
+                },
+                {
+                    itemId: BG_INPUT.ElementSpecies,
+                    property: BGF.uri('hasSpecies').value,
+                    name: 'Species',
+                    defaultValue: ''
+                },
+                {
+                    itemId: BG_INPUT.ElementLocation,
+                    property: BGF.uri('hasLocation').value,
+                    name: 'Location',
+                    defaultValue: ''
+                },
+                // @ts-expect-error:
+                {
+                    itemId: BG_INPUT.ElementValue,
+                    property: BGF.uri('hasValue').value,
+                    name: 'Initial value',
+                    defaultValue: 0,
+                    numeric: true,
+                    optional: true
+                }
+            ]
+        },
+        {
+            groupId: BG_GROUP.ParameterGroup,
+            title: 'Parameters',
+            items: []
+        },
+        {
+            groupId: BG_GROUP.StateGroup,
+            title: 'States',
+            items: []
+        }
+    ]
+}
 
 const ELEMENT_GROUP_INDEX = 0
 const PARAMS_GROUP_INDEX = 1
@@ -286,6 +288,7 @@ export class BondgraphPlugin implements PluginInterface {
     #baseComponents: Map<string, BGBaseComponent> = new Map()                       // Indexed by component.type
     #baseComponentToElementTemplates: Map<string, ElementTemplate[]> = new Map()    // Indexed by component.type
     #elementTemplates: Map<string, ElementTemplate> = new Map()                     // Indexed by element.type
+    #propertyGroups: PropertyGroup[]
 
     #componentLibrary: BGComponentLibrary = {
         id: this.id,
@@ -301,6 +304,7 @@ export class BondgraphPlugin implements PluginInterface {
     #rdfStore: RdfStore = new RdfStore()
 
     constructor() {
+        this.#propertyGroups = PROPERTY_GROUPS()
         for (const [uri, source] of BG_RDF_SOURCES.entries()) {
             this.#rdfStore.load(uri, source)
         }
@@ -390,7 +394,7 @@ export class BondgraphPlugin implements PluginInterface {
     //======================================
 
     getPropertyGroups(): PropertyGroup[] {
-        return PROPERTY_GROUPS
+        return this.#propertyGroups
     }
 
     //==========================================================================
@@ -551,7 +555,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     #getElementProperties(celldlObject: CellDLObject,
                           group: PropertyGroup,  rdfStore: RdfStore) {
-        const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
+        const propertyTemplates = this.#propertyGroups[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
         const elementTemplate = (<PluginData>celldlObject.pluginData(this.id)).elementTemplate
         propertyTemplates.items.forEach((itemTemplate: ItemDetails) => {
@@ -633,14 +637,14 @@ export class BondgraphPlugin implements PluginInterface {
     //==========================================================================
 
     #deleteElementValue(celldlObject: CellDLObject, rdfStore: RdfStore) {
-        const item = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
+        const item = this.#propertyGroups[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
         updateItemProperty(item.property, { newValue: '', oldValue: ''}, celldlObject, rdfStore)
     }
 
     #setElementValueTemplate(variable: Variable|undefined, group: PropertyGroup) {
         const haveVarItem = (group.items.length > ELEMENT_VALUE_INDEX)
 
-        const itemDefn = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
+        const itemDefn = this.#propertyGroups[ELEMENT_GROUP_INDEX]!.items[ELEMENT_VALUE_INDEX]!
         if (haveVarItem) {
             const item = group.items[ELEMENT_VALUE_INDEX]!
             if (variable) {
@@ -719,7 +723,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     async #updateElementProperties(value: ValueChange, itemId: string,
                              celldlObject: CellDLObject, rdfStore: RdfStore) {
-        const propertyTemplates = PROPERTY_GROUPS[ELEMENT_GROUP_INDEX]!
+        const propertyTemplates = this.#propertyGroups[ELEMENT_GROUP_INDEX]!
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
 
         for (const item of propertyTemplates.items) {

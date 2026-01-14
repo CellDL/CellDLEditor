@@ -72,13 +72,15 @@ export const CELLDL_VERSION = '1.0'
 
 //==============================================================================
 
-export const DiagramProperties = {
-    author: DCT.uri('creator'),
-    created: DCT.uri('created'),
-    description: DCT.uri('description'),
-    modified: DCT.uri('modified'),
-    title: DCT.uri('title'),
-    celldlVersion: OWL.uri('versionInfo')
+function DIAGRAM_METADATA() {
+    return {
+        author: DCT.uri('creator'),
+        created: DCT.uri('created'),
+        description: DCT.uri('description'),
+        modified: DCT.uri('modified'),
+        title: DCT.uri('title'),
+        celldlVersion: OWL.uri('versionInfo')
+    }
 }
 
 //==============================================================================
@@ -110,6 +112,8 @@ export class CellDLDiagram {
     #documentNode: NamedNode
     #documentNS: $rdf.Namespace
     #filePath: string
+
+    #diagramMetadata: Record<string, NamedNode>
     #diagramProperties: StringProperties = {}
 
     #currentLayer: SVGGElement | null = null
@@ -121,6 +125,7 @@ export class CellDLDiagram {
     #spatialIndex = new CellDLSpatialIndex()
 
     constructor(filePath: string, celldlData: string, celldlEditor: CellDLEditor, importSvg: boolean = false) {
+        this.#diagramMetadata = DIAGRAM_METADATA()
         this.#filePath = filePath
         this.#celldlEditor = celldlEditor
         this.#imported = importSvg
@@ -176,7 +181,7 @@ export class CellDLDiagram {
 
     get metadata(): StringProperties {
         return Object.keys(this.#diagramProperties)
-            .filter((key) => key in DiagramProperties)
+            .filter((key) => key in this.#diagramMetadata)
             .reduce((obj: Record<string, any>, key: string) => {
                 obj[key] = this.#diagramProperties[key]
                 return obj
@@ -184,7 +189,7 @@ export class CellDLDiagram {
     }
     set metadata(data: StringProperties) {
         Object.keys(data)
-            .filter((key) => key in DiagramProperties)
+            .filter((key) => key in this.#diagramMetadata)
             .forEach((key) => {
                 // @ts-expect-error: `key` is a valid key for `data`
                 this.#diagramProperties[key] = data[key]
@@ -238,7 +243,7 @@ export class CellDLDiagram {
     }
 
     #loadDiagramProperties() {
-        for (const [key, property] of Object.entries(DiagramProperties)) {
+        for (const [key, property] of Object.entries(this.#diagramMetadata)) {
             for (const stmt of this.#kb.statementsMatching(this.#documentNode, property, null)) {
                 this.#diagramProperties[key] = stmt.object.value
                 break
@@ -252,7 +257,7 @@ export class CellDLDiagram {
         } else {
             this.#diagramProperties.modified = new Date(Date.now()).toISOString()
         }
-        for (const [key, property] of Object.entries(DiagramProperties)) {
+        for (const [key, property] of Object.entries(this.#diagramMetadata)) {
             this.#kb.removeStatements(this.#documentNode, property, null)
             if (key in this.#diagramProperties) {
                 const value = this.#diagramProperties[key]

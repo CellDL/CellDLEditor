@@ -23,8 +23,8 @@ import * as vue from 'vue'
 import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
-import { type NamedProperty, OBJECT_METADATA } from '@editor/components/index'
-import { type RdfStore, SPARQL_PREFIXES } from '@renderer/metadata/index'
+import type { NamedProperty } from '@editor/components/index'
+import { DCT, RDFS, type RdfStore, SPARQL_PREFIXES } from '@renderer/metadata/index'
 import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 //==============================================================================
@@ -56,17 +56,32 @@ export interface ValueChange {
 
 export const METADATA_GROUP_ID = 'cd-metadata'
 
-const METADATA_GROUP: PropertyGroup = {
-    groupId: METADATA_GROUP_ID,
-    title: 'Metadata',
-    items: OBJECT_METADATA.map((nameUri: NamedProperty) => {
-        return {
-            itemId: nameUri.property,
-            property: nameUri.property,
-            name: nameUri.name,
-            defaultValue: ''
+function OBJECT_METADATA(): NamedProperty[] {
+    return [
+        {
+            name: 'Label',
+            property: RDFS.uri('label').value
+        },
+        {
+            name: 'Description',
+            property: DCT.uri('description').value
         }
-    })
+    ]
+}
+
+function METADATA_GROUP(): PropertyGroup {
+    return {
+        groupId: METADATA_GROUP_ID,
+        title: 'Metadata',
+        items: OBJECT_METADATA().map((nameUri: NamedProperty) => {
+            return {
+                itemId: nameUri.property,
+                property: nameUri.property,
+                name: nameUri.name,
+                defaultValue: ''
+            }
+        })
+    }
 }
 
 //==============================================================================
@@ -151,10 +166,15 @@ export function updateItemProperty(property: string, value: ValueChange,
 
 export class ObjectPropertiesPanel {
     #componentProperties = vue.ref<PropertyGroup[]>([])
-    #propertyGroups = [...componentLibraryPlugin.getPropertyGroups(), METADATA_GROUP, componentLibraryPlugin.getStylingGroup()]
+    #propertyGroups: PropertyGroup[]
     #metadataIndex: number = -1
 
     constructor() {
+        this.#propertyGroups = [
+            ...componentLibraryPlugin.getPropertyGroups(),
+            METADATA_GROUP(),
+            componentLibraryPlugin.getStylingGroup()
+        ]
         this.#propertyGroups.forEach((group, index) => {
             if (group.groupId === METADATA_GROUP_ID) {
                 this.#metadataIndex = index
@@ -188,7 +208,7 @@ export class ObjectPropertiesPanel {
                 // Update component properties in the METADATA_GROUP
 
                 const group = this.#componentProperties.value[this.#metadataIndex]
-                METADATA_GROUP.items.forEach((itemTemplate: ItemDetails) => {
+                METADATA_GROUP().items.forEach((itemTemplate: ItemDetails) => {
                     const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
                     if (item) {
                         group.items.push(item)
