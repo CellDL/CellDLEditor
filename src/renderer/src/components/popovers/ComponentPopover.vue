@@ -43,7 +43,6 @@ function fullId(library: ComponentLibrary, template: LibraryComponentTemplate): 
 }
 
 vue.onMounted(() => {
-console.log('mount:', libraries.value.length)
     libraries.value.forEach((library: ComponentLibrary) => {
         library.templates.forEach((template: LibraryComponentTemplate) => {
             const id = fullId(library, template)
