@@ -53,7 +53,7 @@ export function isBlankNode(term: unknown): boolean {
 
 export type Literal = $oxigraph.Literal
 
-export function literal(value: string|number|boolean, datatype: NamedNode|undefined) {
+export function literal(value: string|number|boolean, datatype: NamedNode|undefined=undefined) {
     return globalThis.oxigraph.literal(value, datatype)
 }
 

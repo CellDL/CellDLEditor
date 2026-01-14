@@ -739,7 +739,7 @@ export class CellDLEditor {
                     }
                 }
             }
-        } else if (this.#activeObject !== null && this.#activeObject.moveable) {
+        } else if (this.#activeObject?.moveable) {
             // EDITOR_STATE.Selecting or EDITOR_STATE.AddComponent
             this.#activeObject.startMove(svgPoint)
             this.#moving = true
