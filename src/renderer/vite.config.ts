@@ -24,6 +24,7 @@ export default vite.defineConfig({
                 assetFileNames: `assets/[name].[ext]`
             }
         },
+        sourcemap: true,
         target: 'esnext'
     },
     optimizeDeps: {

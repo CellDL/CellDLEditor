@@ -37,6 +37,7 @@ export default vite.defineConfig({
                 }
             }
         },
+        sourcemap: true,
         target: 'esnext'
     },
     optimizeDeps: {
