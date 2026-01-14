@@ -18,8 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import initOxigraph from '@renderer/assets/oxigraph/web.js'
-import * as $oxigraph from '@renderer/assets/oxigraph/web'
+import type * as $oxigraph from '@renderer/assets/oxigraph/web'
 
 import { write as prettyTurtle } from '@jeswr/pretty-turtle'
 
@@ -29,19 +28,7 @@ import { WEB_DECLARATIONS } from './namespaces'
 
 //==============================================================================
 
-let oxigraph: module|undefined
-
-if (oxigraph === undefined) {
-    // Load oxigraph's WASM module
-    const wasm = await initOxigraph()
-    oxigraph = $oxigraph
-}
-
-const defaultGraph = oxigraph.defaultGraph
-
 type Quad = $oxigraph.Quad
-
-const makeQuad = oxigraph.quad
 
 type Variable = $oxigraph.Variable
 
@@ -53,7 +40,9 @@ export type Term = $oxigraph.Term
 
 export type BlankNode = $oxigraph.BlankNode
 
-export const blankNode = oxigraph.blankNode
+export function blankNode(value: string|undefined) {
+    return globalThis.oxigraph.blankNode(value)
+}
 
 export function isBlankNode(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
@@ -64,7 +53,9 @@ export function isBlankNode(term: unknown): boolean {
 
 export type Literal = $oxigraph.Literal
 
-export const literal = oxigraph.literal
+export function literal(value: string|number|boolean, datatype: NamedNode|undefined) {
+    return globalThis.oxigraph.literal(value, datatype)
+}
 
 export function isLiteral(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
@@ -94,7 +85,7 @@ function makeNamedNode(term: Term): NamedNode | Term {
 }
 
 export function namedNode(value: string): NamedNode {
-    return makeNamedNode(oxigraph.namedNode(value)) as NamedNode
+    return makeNamedNode(globalThis.oxigraph.namedNode(value)) as NamedNode
 }
 
 export function isNamedNode(term: unknown): boolean {
@@ -143,7 +134,7 @@ export class RdfStore extends BaseStore {
 
     constructor() {
         super()
-        this.#rdfStore = new oxigraph.Store()
+        this.#rdfStore = new globalThis.oxigraph.Store()
     }
 
     statements(graph: NamedNode | null = null): Statement[] {
@@ -151,7 +142,7 @@ export class RdfStore extends BaseStore {
     }
 
     add(s: SubjectType, p: PredicateType, o: ObjectType, g: NamedNode | null = null): Statement {
-        const statement = makeQuad(s, p, o, g || defaultGraph())
+        const statement = globalThis.oxigraph.quad(s, p, o, g || globalThis.oxigraph.defaultGraph())
         this.#rdfStore.add(statement)
         return makeStatement(statement)
     }
@@ -162,7 +153,7 @@ export class RdfStore extends BaseStore {
         o: ObjectType | null = null,
         g: NamedNode | null = null
     ): boolean {
-        return this.#rdfStore.match(s, p, o, g || defaultGraph()).length > 0
+        return this.#rdfStore.match(s, p, o, g || globalThis.oxigraph.defaultGraph()).length > 0
     }
 
     load(baseIri: string|null=null, rdf: string, contentType: ContentType=TurtleContentType, graph: NamedNode|null=null) {
@@ -170,7 +161,7 @@ export class RdfStore extends BaseStore {
             this.#rdfStore.load(rdf, {
                 format: contentType,
                 base_iri: baseIri || undefined,
-                to_graph_name: graph || defaultGraph()
+                to_graph_name: graph || globalThis.oxigraph.defaultGraph()
             })
         } catch (error) {
             throw new Error(`Error parsing RDF: ${(<Error>error).message}`)
@@ -183,7 +174,7 @@ export class RdfStore extends BaseStore {
         o: ObjectType | null = null,
         g: NamedNode | null = null
     ) {
-        const statements = this.#rdfStore.match(s, p, o, g || defaultGraph())
+        const statements = this.#rdfStore.match(s, p, o, g || globalThis.oxigraph.defaultGraph())
         for (const statement of statements) {
             this.#rdfStore.delete(statement)
         }
@@ -196,7 +187,7 @@ export class RdfStore extends BaseStore {
         graph: NamedNode | null = null
     ): Promise<string> {
         if (contentType === TurtleContentType) {
-            const quads = this.#rdfStore.match(null, null, null, graph || defaultGraph())
+            const quads = this.#rdfStore.match(null, null, null, graph || globalThis.oxigraph.defaultGraph())
             const turtle = await prettyTurtle(quads, {
                 format: 'text/turtle',
                 prefixes: Object.assign({ '': `${baseIri}#` }, WEB_DECLARATIONS, namespaces),
@@ -209,7 +200,7 @@ export class RdfStore extends BaseStore {
         } else {
             return this.#rdfStore.dump({
                 format: contentType,
-                from_graph_name: graph || defaultGraph()
+                from_graph_name: graph || globalThis.oxigraph.defaultGraph()
             })
         }
     }
@@ -245,7 +236,7 @@ export class RdfStore extends BaseStore {
         o: ObjectType | null = null,
         g: NamedNode | null = null
     ): Statement[] {
-        const statements: Quad[] = this.#rdfStore.match(s, p, o, g || defaultGraph())
+        const statements: Quad[] = this.#rdfStore.match(s, p, o, g || globalThis.oxigraph.defaultGraph())
         return statements.map((s) => makeStatement(s))
     }
 
