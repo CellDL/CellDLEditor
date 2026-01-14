@@ -39,6 +39,7 @@ import * as vueusecore from '@vueuse/core'
 import 'primeicons/primeicons.css'
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import primeVueConfig from 'primevue/config'
+import ConfirmationService from 'primevue/confirmationservice';
 import { useConfirm } from "primevue/useconfirm"
 
 //==============================================================================
@@ -93,8 +94,10 @@ async function testRDF() {
 */
 
 //==============================================================================
+//==============================================================================
 
 // Get the current Vue app instance to use some PrimeVue plugins.
+// Setup PrimeVue confirmation service
 
 const crtInstance = vue.getCurrentInstance()
 
@@ -124,11 +127,13 @@ if (crtInstance !== null) {
             }
         })
     }
+    app.use(ConfirmationService)
 }
 
 if (props.theme !== undefined) {
     vueCommon.useTheme().setTheme(props.theme)
 }
+const confirm = useConfirm()
 
 //==============================================================================
 //==============================================================================
@@ -208,10 +213,6 @@ function onError(msg: string) {
 }
 
 //==============================================================================
-//==============================================================================
-
-const confirm = useConfirm()
-
 //==============================================================================
 
 async function onFileAction(action: string) {
