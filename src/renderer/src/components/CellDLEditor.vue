@@ -32,6 +32,8 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
+import 'primeicons/primeicons.css'
+
 //==============================================================================
 
 import '@renderer/assets/style.css'
