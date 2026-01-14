@@ -67,6 +67,7 @@ export interface PluginInterface {
 class ComponentLibraryPlugin {
     static #instance: ComponentLibraryPlugin | null = null
 
+    #app: vue.App|undefined = undefined
     #registeredPlugins: Map<string, PluginInterface> = new Map()
 
     #componentLibraries: ComponentLibrary[] = []
@@ -91,12 +92,17 @@ class ComponentLibraryPlugin {
     }
 
     install(app: vue.App, _options: object)  {
-        app.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
+        if (!this.#app) {
+            app.provide<vue.Ref<ComponentLibrary[]>>('componentLibraries', this.#componentLibrariesRef)
+            this.#app = app
+        }
     }
 
     registerPlugin(plugin: PluginInterface) {
-        this.#componentLibraries.push(plugin.componentLibrary)
-        this.#registeredPlugins.set(plugin.id, plugin)
+        if (!this.#registeredPlugins.has(plugin.id)) {
+            this.#componentLibraries.push(plugin.componentLibrary)
+            this.#registeredPlugins.set(plugin.id, plugin)
+        }
     }
 
     getSelectedTemplate(): LibraryComponentTemplate|undefined {
