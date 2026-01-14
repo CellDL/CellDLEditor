@@ -77,6 +77,7 @@ if (!props.noPython) {
         loadingMessage.value = msg
     })
 }
+loadingMessage.value = ''
 alert.info('Editor ready...')
 
 /*
