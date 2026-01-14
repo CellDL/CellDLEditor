@@ -55,10 +55,6 @@ import { RDF } from './namespaces'
 
 //==============================================================================
 
-export const RDF_TYPE = RDF('type')
-
-//==============================================================================
-
 /**
  * The type of the ``object`` of a ``predicate``
  */
@@ -141,7 +137,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     setProperty(predicate: PredicateType, value: MetadataPropertyValue, multiValued = false) {
-        if (predicate.equals(RDF_TYPE) && isNamedNode(value)) {
+        if (predicate.equals(RDF.uri('type')) && isNamedNode(value)) {
             // @ts-expect-error: `value` is a NamedNode
             this.#rdfTypes.add(value.uri)
         }

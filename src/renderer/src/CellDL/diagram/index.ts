@@ -32,7 +32,7 @@ import {
     MetadataPropertiesMap,
     type MetadataPropertyValue,
     OWL,
-    RDF_TYPE
+    RDF
 } from '@renderer/metadata/index'
 
 import type { Bounds, Extent } from '@editor/geometry/index'
@@ -73,12 +73,12 @@ export const CELLDL_VERSION = '1.0'
 //==============================================================================
 
 export const DiagramProperties = {
-    author: DCT('creator'),
-    created: DCT('created'),
-    description: DCT('description'),
-    modified: DCT('modified'),
-    title: DCT('title'),
-    celldlVersion: OWL('versionInfo')
+    author: DCT.uri('creator'),
+    created: DCT.uri('created'),
+    description: DCT.uri('description'),
+    modified: DCT.uri('modified'),
+    title: DCT.uri('title'),
+    celldlVersion: OWL.uri('versionInfo')
 }
 
 //==============================================================================
@@ -108,7 +108,7 @@ export class CellDLDiagram {
     #celldlEditor: CellDLEditor
 
     #documentNode: NamedNode
-    #documentNS: $rdf.NamespaceType
+    #documentNS: $rdf.Namespace
     #filePath: string
     #diagramProperties: StringProperties = {}
 
@@ -134,12 +134,12 @@ export class CellDLDiagram {
                 documentUri = `file://${documentUri}`
             }
             this.#documentNode = $rdf.namedNode(documentUri)
-            this.#documentNS = $rdf.Namespace(`${documentUri}#`)
+            this.#documentNS = new $rdf.Namespace(`${documentUri}#`)
             this.#loadCellDL(celldlData)
             this.#loadMetadata()
         } else {
             this.#documentNode = $rdf.namedNode(NEW_DIAGRAM_URI)
-            this.#documentNS = $rdf.Namespace(`${NEW_DIAGRAM_URI}#`)
+            this.#documentNS = new $rdf.Namespace(`${NEW_DIAGRAM_URI}#`)
             if (importSvg) {
                 this.#importSvg(celldlData)
             } else {
@@ -217,7 +217,7 @@ export class CellDLDiagram {
     }
 
     makeUri(id: string): NamedNode {
-        return this.#documentNS(id)
+        return this.#documentNS.uri(id)
     }
 
     #nextIdentifier(): string {
@@ -402,7 +402,7 @@ export class CellDLDiagram {
     }
 
     #initaliseMetadata() {
-        this.#kb.add(this.#documentNode, RDF_TYPE, CELLDL('Document'))
+        this.#kb.add(this.#documentNode, RDF.uri('type'), CELLDL.uri('Document'))
         this.#diagramProperties.celldlVersion = CELLDL_VERSION
     }
 
@@ -419,7 +419,7 @@ export class CellDLDiagram {
                 }
             }
         }
-        if (!this.#kb.contains(this.#documentNode, RDF_TYPE, CELLDL('Document'))) {
+        if (!this.#kb.contains(this.#documentNode, RDF.uri('type'), CELLDL.uri('Document'))) {
             throw new Error(`${this.#filePath} metadata doesn't describe a valid CellDL document`)
         }
         this.#loadDiagramProperties()
@@ -638,7 +638,7 @@ export class CellDLDiagram {
                 CellDLClass: CellDLCompartment,
                 type: CellDLCompartment.celldlType.uri,
                 metadataProperties: MetadataPropertiesMap.fromProperties([
-                    [CELLDL('hasInterface'), interfacePorts.map((p) => p.uri)]
+                    [CELLDL.uri('hasInterface'), interfacePorts.map((p) => p.uri)]
                 ])
             },
             false
@@ -670,9 +670,9 @@ export class CellDLDiagram {
         }
         // what ComponentPlugin was used to create the object?
         const metadataProperties = MetadataPropertiesMap.fromProperties([
-            [CELLDL('hasSource'), connectedObjects[0]!.uri],
-            [CELLDL('hasTarget'), connectedObjects[connectedObjects.length - 1]!.uri],
-            [CELLDL('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]
+            [CELLDL.uri('hasSource'), connectedObjects[0]!.uri],
+            [CELLDL.uri('hasTarget'), connectedObjects[connectedObjects.length - 1]!.uri],
+            [CELLDL.uri('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]
         ])
         const connection = this.#addNewObject(
             svgElement,
@@ -921,20 +921,20 @@ export class CellDLDiagram {
     }
 
     #loadAnnotations() {
-        this.#loadObject(CELLDL('Annotation'), CellDLAnnotation)
+        this.#loadObject(CELLDL.uri('Annotation'), CellDLAnnotation)
     }
 
     #loadComponents() {
-        this.#loadObject(CELLDL('Component'), CellDLComponent)
-        this.#loadObject(CELLDL('UnconnectedPort'), CellDLUnconnectedPort)
+        this.#loadObject(CELLDL.uri('Component'), CellDLComponent)
+        this.#loadObject(CELLDL.uri('UnconnectedPort'), CellDLUnconnectedPort)
     }
 
     #loadInterfaces() {
-        this.#loadObject(CELLDL('Connector'), CellDLInterface)
+        this.#loadObject(CELLDL.uri('Connector'), CellDLInterface)
     }
 
     #loadConduits() {
-        this.#loadObject(CELLDL('Conduit'), CellDLConduit)
+        this.#loadObject(CELLDL.uri('Conduit'), CellDLConduit)
     }
 
     getConnector(connectorNode: MetadataPropertyValue | null): CellDLConnectedObject | null {
@@ -948,7 +948,7 @@ export class CellDLDiagram {
     }
 
     #loadConnections() {
-        this.#loadObject(CELLDL('Connection'), CellDLConnection)
+        this.#loadObject(CELLDL.uri('Connection'), CellDLConnection)
     }
 
     objectsContainedIn(compartment: Bounds): ContainedObject[] {

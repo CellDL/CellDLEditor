@@ -68,31 +68,39 @@ export const SPARQL_PREFIXES = Object.entries(declaredNamespaces).map(
 
 export type NamespaceType = (_: string) => NamedNode
 
-export function Namespace(nsuri: string): NamespaceType {
-    return (ln: string): NamedNode => namedNode(nsuri + (ln || ''))
+export class Namespace {
+    #nsuri: string
+
+    constructor(nsuri: string) {
+        this.#nsuri = nsuri
+    }
+
+    uri(ln: string): NamedNode {
+        return namedNode(this.#nsuri + (ln || ''))
+    }
 }
 
 //==============================================================================
 
-export const CELLDL = Namespace(CELLDL_URI)
+export const CELLDL = new Namespace(CELLDL_URI)
 
-export const BG = Namespace(BG_URI)
-export const BGF = Namespace(BGF_URI)
-export const CDT = Namespace(CDT_URI)
-export const TPL = Namespace(TPL_URI)
+export const BG = new Namespace(BG_URI)
+export const BGF = new Namespace(BGF_URI)
+export const CDT = new Namespace(CDT_URI)
+export const TPL = new Namespace(TPL_URI)
 
-export const DCT = Namespace(DCT_URI)
-export const OWL = Namespace(OWL_URI)
-export const RDF = Namespace(RDF_URI)
-export const RDFS = Namespace(RDFS_URI)
-export const XSD = Namespace(XSD_URI)
+export const DCT = new Namespace(DCT_URI)
+export const OWL = new Namespace(OWL_URI)
+export const RDF = new Namespace(RDF_URI)
+export const RDFS = new Namespace(RDFS_URI)
+export const XSD = new Namespace(XSD_URI)
 
 //==============================================================================
 
-export function curieSuffix(NS: NamespaceType, term: string | NamedNode): string {
+export function curieSuffix(NS: Namespace, term: string | NamedNode): string {
     const curie: string = isNamedNode(term) ? (<NamedNode>term).uri : <string>term
     const fullUri = expandCurie(curie)
-    const nsUri = NS('').uri
+    const nsUri = NS.uri('').uri
     if (fullUri.startsWith(nsUri)) {
         return fullUri.slice(nsUri.length)
     }

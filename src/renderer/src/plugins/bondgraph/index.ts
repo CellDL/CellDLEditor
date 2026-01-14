@@ -147,11 +147,11 @@ export class BGBaseComponent {
     }
 
     get isBondElement() {
-        return this.#nodeType === BGF('BondElement').value
+        return this.#nodeType === BGF.uri('BondElement').value
     }
 
     get isJunctionStructure() {
-        return this.#nodeType === BGF('JunctionStructure').value
+        return this.#nodeType === BGF.uri('JunctionStructure').value
     }
 
     get name() {
@@ -231,27 +231,27 @@ const PROPERTY_GROUPS: PropertyGroup[] = [
         items: [
             {
                 itemId: BG_INPUT.ElementType,
-                property: RDF('type').value,
+                property: RDF.uri('type').value,
                 name: 'Bond Element',
                 possibleValues: [],
                 optional: true
             },
             {
                 itemId: BG_INPUT.ElementSpecies,
-                property: BGF('hasSpecies').value,
+                property: BGF.uri('hasSpecies').value,
                 name: 'Species',
                 defaultValue: ''
             },
             {
                 itemId: BG_INPUT.ElementLocation,
-                property: BGF('hasLocation').value,
+                property: BGF.uri('hasLocation').value,
                 name: 'Location',
                 defaultValue: ''
             },
             // @ts-expect-error:
             {
                 itemId: BG_INPUT.ElementValue,
-                property: BGF('hasValue').value,
+                property: BGF.uri('hasValue').value,
                 name: 'Initial value',
                 defaultValue: 0,
                 numeric: true,
@@ -368,13 +368,13 @@ export class BondgraphPlugin implements PluginInterface {
         const componentTemplate = this.#bondgraph_component_templates.get(id)
         if (componentTemplate) {
             const metadataProperties: MetadataProperty[] = [
-                [ RDF('type'), $rdf.namedNode(componentTemplate.type)],
-                [ BGF('hasSymbol'), $rdf.literal(componentTemplate.symbol)]
+                [ RDF.uri('type'), $rdf.namedNode(componentTemplate.type)],
+                [ BGF.uri('hasSymbol'), $rdf.literal(componentTemplate.symbol)]
             ]
             if (!componentTemplate.noSpeciesLocation) {
                 metadataProperties.push(
-                    [ BGF('hasSpecies'), $rdf.literal(DEFAULT_SPECIES)],
-                    [ BGF('hasLocation'), $rdf.literal(DEFAULT_LOCATION)]
+                    [ BGF.uri('hasSpecies'), $rdf.literal(DEFAULT_SPECIES)],
+                    [ BGF.uri('hasLocation'), $rdf.literal(DEFAULT_LOCATION)]
                 )
             }
             return {
@@ -398,7 +398,7 @@ export class BondgraphPlugin implements PluginInterface {
     newDocument(uri: string, rdfStore: RdfStore) {
         // We are creating a BondgraphModel
 
-        rdfStore.add($rdf.namedNode(uri), RDF('type'), BGF('BondgraphModel'))
+        rdfStore.add($rdf.namedNode(uri), RDF.uri('type'), BGF.uri('BondgraphModel'))
         this.#currentDocumentUri = uri
 
         // Add a copy of the BG-RDF framework as a named graph, to use later when
@@ -667,7 +667,7 @@ export class BondgraphPlugin implements PluginInterface {
                 // @ts-expect-error: WIP
                 group.items.push({
                     itemId: `${group.groupId}/${variable.name}`,
-                    property: BGF('parameterValue').value,
+                    property: BGF.uri('parameterValue').value,
                     name: `${variable.name} (${variable.units})`,
                     minimumValue: 0,
                     defaultValue: 0,
@@ -1059,9 +1059,9 @@ export class BondgraphPlugin implements PluginInterface {
                 }
                 const domain = this.#physicalDomains.get(domainId)
                 if (domain) {
-                    if (component.type === BGF('PotentialSource').value) {
+                    if (component.type === BGF.uri('PotentialSource').value) {
                         elementTemplate.value = domain.potential
-                    } else if (component.type === BGF('FlowSource').value) {
+                    } else if (component.type === BGF.uri('FlowSource').value) {
                         elementTemplate.value = domain.flow
                     } else {
                         const relation = r.get('relation')
@@ -1096,7 +1096,7 @@ export class BondgraphPlugin implements PluginInterface {
             }`
         ).forEach((r) => {
             const base = r.get('base')!
-            if ([BGF('ZeroStorageNode').value, BGF('OneResistanceNode').value]
+            if ([BGF.uri('ZeroStorageNode').value, BGF.uri('OneResistanceNode').value]
                     .includes(base.value)) {
                 const component = this.#baseComponents.get(r.get('base')!.value)
                 if (component) {

@@ -25,7 +25,7 @@ import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
 import { alert } from '@editor/editor/alerts'
 import type { EditorFrame } from '@editor/editor/editorframe'
 
-import { CELLDL, RDF_TYPE } from '@renderer/metadata/index'
+import { CELLDL, RDF } from '@renderer/metadata/index'
 import { MetadataPropertiesMap } from '@renderer/metadata/index'
 import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects/index'
 import type { CellDLSVGElement } from '@editor/SVGElements/index'
@@ -471,10 +471,10 @@ export class PathMaker {
 
         // Create a new connection between start and end objects
         const metadataProperties = MetadataPropertiesMap.fromProperties([
-            [RDF_TYPE, CELLDL('Connection')], // shouldn't CellDLClass imply this??
-            [CELLDL('hasSource'), this.#nodes[0]!.uri],
-            [CELLDL('hasTarget'), endNode.uri],
-            [CELLDL('hasIntermediate'), this.#nodes.slice(1, -1).map((c) => c.uri)]
+            [RDF.uri('type'), CELLDL.uri('Connection')], // shouldn't CellDLClass imply this??
+            [CELLDL.uri('hasSource'), this.#nodes[0]!.uri],
+            [CELLDL.uri('hasTarget'), endNode.uri],
+            [CELLDL.uri('hasIntermediate'), this.#nodes.slice(1, -1).map((c) => c.uri)]
         ])
         // need to unregister redo handler...
         celldlDiagram.addNewConnection(svgElement, {

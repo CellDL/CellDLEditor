@@ -18,6 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
+import initOxigraph from '@renderer/assets/oxigraph/web.js'
 import * as $oxigraph from '@renderer/assets/oxigraph/web'
 
 import { write as prettyTurtle } from '@jeswr/pretty-turtle'
@@ -28,11 +29,19 @@ import { WEB_DECLARATIONS } from './namespaces'
 
 //==============================================================================
 
-const defaultGraph = globalThis.oxigraph.defaultGraph
+let oxigraph: module|undefined
+
+if (oxigraph === undefined) {
+    // Load oxigraph's WASM module
+    const wasm = await initOxigraph()
+    oxigraph = $oxigraph
+}
+
+const defaultGraph = oxigraph.defaultGraph
 
 type Quad = $oxigraph.Quad
 
-const makeQuad = globalThis.oxigraph.quad
+const makeQuad = oxigraph.quad
 
 type Variable = $oxigraph.Variable
 
@@ -44,7 +53,7 @@ export type Term = $oxigraph.Term
 
 export type BlankNode = $oxigraph.BlankNode
 
-export const blankNode = globalThis.oxigraph.blankNode
+export const blankNode = oxigraph.blankNode
 
 export function isBlankNode(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
@@ -55,7 +64,7 @@ export function isBlankNode(term: unknown): boolean {
 
 export type Literal = $oxigraph.Literal
 
-export const literal = globalThis.oxigraph.literal
+export const literal = oxigraph.literal
 
 export function isLiteral(term: unknown): boolean {
     // @ts-expect-error: term is of unknown type
@@ -85,7 +94,7 @@ function makeNamedNode(term: Term): NamedNode | Term {
 }
 
 export function namedNode(value: string): NamedNode {
-    return makeNamedNode(globalThis.oxigraph.namedNode(value)) as NamedNode
+    return makeNamedNode(oxigraph.namedNode(value)) as NamedNode
 }
 
 export function isNamedNode(term: unknown): boolean {
@@ -134,7 +143,7 @@ export class RdfStore extends BaseStore {
 
     constructor() {
         super()
-        this.#rdfStore = new globalThis.oxigraph.Store()
+        this.#rdfStore = new oxigraph.Store()
     }
 
     statements(graph: NamedNode | null = null): Statement[] {

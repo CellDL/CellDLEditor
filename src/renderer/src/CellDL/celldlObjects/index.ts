@@ -35,7 +35,7 @@ import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 import * as $rdf from '@renderer/metadata/index'
 import type { MetadataPropertiesMap, NamedNode } from '@renderer/metadata/index'
-import { CELLDL, RDFS, RDF_TYPE } from '@renderer/metadata/index'
+import { CELLDL, RDF, RDFS } from '@renderer/metadata/index'
 
 //==============================================================================
 
@@ -75,7 +75,7 @@ class BranchPoint implements PointLike {
 
 export class CellDLObject {
     static celldlClassName = CELLDL_CLASS.Unknown
-    static celldlType = CELLDL('Object')
+    static celldlType = CELLDL.uri('Object')
 
     #celldlClassName: CELLDL_CLASS
     #celldlDiagram: CellDLDiagram
@@ -301,9 +301,9 @@ export class CellDLObject {
     #setMetadataProperties(properties: MetadataPropertiesMap) {
         // Create a new MetadataPropertiesMap rather than storing a reference
         const metadataProperties = properties.copy()
-        metadataProperties.setProperty(RDF_TYPE, this.#celldlType, true)
+        metadataProperties.setProperty(RDF.uri('type'), this.#celldlType, true)
         this.#metadataProperties = metadataProperties
-        const label = properties.get(RDFS('label').value) || 0
+        const label = properties.get(RDFS.uri('label').value) || 0
         if ($rdf.isLiteral(label)) {
             // @ts-expect-error: label is a Literal
             this.#label = label.value
@@ -344,7 +344,7 @@ export class CellDLMoveableObject extends CellDLObject {
 
 export class CellDLAnnotation extends CellDLMoveableObject {
     static celldlClassName = CELLDL_CLASS.Annotation
-    static celldlType = CELLDL('Annotation')
+    static celldlType = CELLDL.uri('Annotation')
 
     get hasEditGuides() {
         return true
@@ -354,7 +354,7 @@ export class CellDLAnnotation extends CellDLMoveableObject {
 //==============================================================================
 
 export class CellDLConnectedObject extends CellDLMoveableObject {
-    static celldlType = CELLDL('Connector')
+    static celldlType = CELLDL.uri('Connector')
 
     #connections: Map<string, CellDLConnection> = new Map()
 
@@ -426,7 +426,7 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
 
 export class CellDLComponent extends CellDLConnectedObject {
     static celldlClassName = CELLDL_CLASS.Component
-    static celldlType = CELLDL('Component')
+    static celldlType = CELLDL.uri('Component')
 
     get hasEditGuides() {
         return true
@@ -437,14 +437,14 @@ export class CellDLComponent extends CellDLConnectedObject {
 
 export class CellDLConduit extends CellDLComponent {
     static readonly celldlClassName = CELLDL_CLASS.Conduit
-    static celldlType = CELLDL('Conduit')
+    static celldlType = CELLDL.uri('Conduit')
 }
 
 //==============================================================================
 
 export class CellDLCompartment extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.Compartment
-    static celldlType = CELLDL('Compartment')
+    static celldlType = CELLDL.uri('Compartment')
 
     #interfacePorts: CellDLInterface[] = []
 
@@ -456,7 +456,7 @@ export class CellDLCompartment extends CellDLConnectedObject {
     ) {
         super(uri, metadata, options, celldlDiagram)
         this.#interfacePorts = metadata
-            .getPropertyAsArray(CELLDL('hasInterface'))
+            .getPropertyAsArray(CELLDL.uri('hasInterface'))
             .map((node) => <CellDLInterface>celldlDiagram.getConnector(node))
             .filter((node) => node != null)
     }
@@ -497,7 +497,7 @@ export class CellDLCompartment extends CellDLConnectedObject {
 
 export class CellDLConnection extends CellDLObject {
     static readonly celldlClassName = CELLDL_CLASS.Connection
-    static celldlType = CELLDL('Connection')
+    static celldlType = CELLDL.uri('Connection')
 
     #connectedObjects: CellDLConnectedObject[] = []
     #svgConnection: SvgConnection|null = null
@@ -509,10 +509,10 @@ export class CellDLConnection extends CellDLObject {
         celldlDiagram: CellDLDiagram
     ) {
         super(uri, metadata, options, celldlDiagram)
-        const source = celldlDiagram.getConnector(metadata.getProperty(CELLDL('hasSource')))
-        const target = celldlDiagram.getConnector(metadata.getProperty(CELLDL('hasTarget')))
+        const source = celldlDiagram.getConnector(metadata.getProperty(CELLDL.uri('hasSource')))
+        const target = celldlDiagram.getConnector(metadata.getProperty(CELLDL.uri('hasTarget')))
         const intermediates: CellDLConnectedObject[] = metadata
-            .getPropertyAsArray(CELLDL('hasIntermediate'))
+            .getPropertyAsArray(CELLDL.uri('hasIntermediate'))
             .map((node) => celldlDiagram.getConnector(node))
             .filter((node) => node != null)
         if (source && target) {
@@ -573,7 +573,7 @@ export class CellDLConnection extends CellDLObject {
 
 export class CellDLInterface extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.Interface
-    static celldlType = CELLDL('Interface')
+    static celldlType = CELLDL.uri('Interface')
 
     #externalConnections: CellDLConnection[] = []
 
@@ -624,7 +624,7 @@ export class CellDLInterface extends CellDLConnectedObject {
 
 export class CellDLUnconnectedPort extends CellDLConnectedObject {
     static readonly celldlClassName = CELLDL_CLASS.UnconnectedPort
-    static celldlType = CELLDL('UnconnectedPort')
+    static celldlType = CELLDL.uri('UnconnectedPort')
 }
 
 //==============================================================================
