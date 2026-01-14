@@ -53,6 +53,9 @@ import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStyl
 
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
+import { componentLibraryPlugin } from '@renderer/plugins/index'
+import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
+
 //==============================================================================
 
 const svgContainer = vue.useTemplateRef<HTMLElement>('svg-content')
@@ -82,22 +85,29 @@ function connectionStylePrompt(name: string): string {
 }
 
 //==============================================================================
+//==============================================================================
 
-// Make data available to the component selection tool and to the properties panel
+// Install our component library plugin
 
-import { componentLibraryPlugin } from '@renderer/plugins/index'
-import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
+const crtInstance = vue.getCurrentInstance()
 
-componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
+if (crtInstance !== null) {
+    const app = crtInstance.appContext.app
 
-// Plugins need to be loaded before creating the editor
+    componentLibraryPlugin.install(app, {})
 
-const celldlEditor = new CellDLEditor()
+    componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
+}
+
+const defaultComponent = componentLibraryPlugin.getSelectedTemplate()!
 
 //==============================================================================
 
-let defaultComponent = componentLibraryPlugin.getSelectedTemplate()!
+// Plugins need to be initialised before creating the editor
 
+let celldlEditor: CellDLEditor = new CellDLEditor()
+
+//==============================================================================
 //==============================================================================
 
 const toolButtons = vue.ref<EditorToolButton[]>([
