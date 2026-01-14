@@ -34,6 +34,27 @@ export default vite.defineConfig({
                     }
 
                     return assetInfo.names[0] ?? 'default-name'
+                },
+                manualChunks: (id: string) => {
+                    // List of modules that rollup sometimes bundles with manual chunks
+                    // causing those chunks to be eager-loaded
+                    const ROLLUP_COMMON_MODULES = [
+                        'vite/preload-helper',
+                        'vite/modulepreload-polyfill',
+                        'vite/dynamic-import-helper',
+                        'commonjsHelpers',
+                        'commonjs-dynamic-modules',
+                        '__vite-browser-external'
+                    ];
+
+                    // Bundle all 3rd-party modules into a single vendor.js module
+                    if (id.includes('node_modules')
+                     || ROLLUP_COMMON_MODULES.some((commonModule) => id.includes(commonModule))) {
+                        return 'vendor';
+                    }
+
+                    // All other files are project source files and are allowed
+                    // to be split whichever way rollup wants
                 }
             }
         },
