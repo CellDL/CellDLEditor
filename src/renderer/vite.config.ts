@@ -1,4 +1,5 @@
 import * as primeVueAutoImportResolver from '@primevue/auto-import-resolver'
+import topLevelAwait from "vite-plugin-top-level-await";
 import tailwindcssPlugin from '@tailwindcss/vite'
 import vuePlugin from '@vitejs/plugin-vue'
 
@@ -38,6 +39,12 @@ export default vite.defineConfig({
         // Note: this must be in sync with electron.vite.config.ts.
 
         tailwindcssPlugin(),
+        topLevelAwait({
+          // The export name of top-level await promise for each chunk module
+          promiseExportName: "__tla",
+          // The function to generate import names of top-level await promise in each chunk module
+          promiseImportName: (i: string) => `__tla_${i}`
+        }),
         vuePlugin(),
         vitePlugin({
             resolvers: [primeVueAutoImportResolver.PrimeVueResolver()]
