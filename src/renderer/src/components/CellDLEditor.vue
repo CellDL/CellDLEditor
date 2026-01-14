@@ -34,6 +34,7 @@ import * as vue from 'vue'
 
 //==============================================================================
 
+import '@renderer/assets/style.css'
 import '@renderer/assets/icons.css'
 
 import { type StyleObject } from '@editor/components/properties'
