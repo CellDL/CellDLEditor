@@ -52,6 +52,7 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 //==============================================================================
 
 import CellDLEditor from '../../../index'
+// Make sure `oxigraph` has loaded before importing the editor
 import type { CellDLEditorCommand, EditorData } from '../../../index'
 
 import type { EditorState } from '../../../src/common/EditorTypes'
