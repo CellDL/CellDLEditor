@@ -73,6 +73,7 @@ export default vite.defineConfig({
         alias: {
             'node-fetch': 'isomorphic-fetch',
             '@editor': path.resolve(_dirname, 'src/CellDL'),
+            '@oxigraph': path.resolve(_dirname, 'public/oxigraph'),
             '@pyodide': path.resolve(_dirname, 'public/pyodide'),
             '@renderer': path.resolve(_dirname, 'src')
         }

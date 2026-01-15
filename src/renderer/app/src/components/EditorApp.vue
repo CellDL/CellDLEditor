@@ -51,8 +51,16 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 
 //==============================================================================
 
-import CellDLEditor from '../../../index'
-// Make sure `oxigraph` has loaded before importing the editor
+// Load oxigraph's WASM module before importing the editor is imported
+import initOxigraph from '@oxigraph/web.js'
+import * as oxigraph from '@oxigraph/web.js'
+
+const CellDLEditor = vue.defineAsyncComponent(async () => {
+    const wasm = await initOxigraph()
+    globalThis.oxigraph = oxigraph
+    return import('../../../index')
+})
+
 import type { CellDLEditorCommand, EditorData } from '../../../index'
 
 import type { EditorState } from '../../../src/common/EditorTypes'

@@ -4,13 +4,6 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
         <title>CellDL Editor</title>
-        <script type="module">
-            // Load oxigraph's WASM module
-            import initOxigraph from '../src/assets/oxigraph/web.js'
-            const wasm = await initOxigraph()
-            import * as oxigraph from '../src/assets/oxigraph/web.js'
-            globalThis.oxigraph = oxigraph
-        </script>
     </head>
     <body>
         <div id="app" />
