@@ -240,17 +240,16 @@ class ComponentGuideGroup {
 
     add(position: number): IntervalGuide {
         const n = this.match(position)
-        let guide
+        let guide: IntervalGuide
         if (n >= 0) {
-            guide = this.#intervalGuides[n]
             // @ts-expect-error: `n` is a valid index
+            guide = this.#intervalGuides[n]
             guide.addUser()
         } else {
             guide = new IntervalGuide(position, this.#type, this.#extent)
             this.#intervalGuides.splice(-(n + 1), 0, guide)
             this.#svgGroup.appendChild(guide.svgElement)
         }
-        // @ts-expect-error: `guide` is assigned
         return guide
     }
 
