@@ -155,6 +155,21 @@ const panelToolId = vue.ref<string>()
 
 //==============================================================================
 
+function resetToolBars() {
+    // Set the toolbar to its default tool
+
+    for (const toolButton of toolButtons.value) {
+        toolButton.active = (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === toolButton.toolId
+    }
+
+    // Hide any open panel
+    // FUTURE: reset to default panel tool
+
+    panelVisible.value = false
+}
+
+//==============================================================================
+
 function buttonEvent(toolId: string, active: boolean, newComponent: vue.Raw<vue.Component> | null) {
     if (newComponent) {
         // Update the RH panel to show its current component
@@ -247,9 +262,11 @@ vue.watch(
             const command = props.editorCommand as EditorFileCommand
             const options = command.options
             if  (options.action === 'close') {
+                resetToolBars()
                 celldlDiagram = new CellDLDiagram('', '', celldlEditor)
                 await celldlEditor.editDiagram(celldlDiagram)
             } else if (options.action === 'open') {
+                resetToolBars()
                 if (options.data !== undefined) {
                     try {
                         celldlDiagram = new CellDLDiagram(options?.name || '', options.data, celldlEditor)
@@ -290,6 +307,7 @@ vue.watch(
 //==============================================================================
 
 vue.onMounted(async () => {
+
     // Tell the editor about the default connection style and component
 
     despatchToolbarEvent('value', EDITOR_TOOL_IDS.DrawConnectionTool, DEFAULT_CONNECTION_STYLE_DEFINITION.id)
