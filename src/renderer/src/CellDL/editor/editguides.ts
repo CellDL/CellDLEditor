@@ -21,9 +21,9 @@ limitations under the License.
 import type { ViewState } from '@renderer/common/EditorTypes'
 import { Point, type PointLike } from '@renderer/common/points'
 import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
-import type { CellDLDiagram } from '@editor/diagram'
-import type { CellDLMoveableObject } from '@editor/celldlObjects'
-import type { Extent } from '@editor/geometry'
+import type { CellDLDiagram } from '@editor/diagram/index'
+import type { CellDLMoveableObject } from '@editor/celldlObjects/index'
+import type { Extent } from '@editor/geometry/index'
 import { range } from '@editor/utils'
 
 //==============================================================================

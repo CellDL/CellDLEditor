@@ -54,7 +54,7 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 
 //==============================================================================
 
-// Load oxigraph's WASM module before importing the editor is imported
+// Load oxigraph's WASM module before the editor is imported
 import initOxigraph from '@oxigraph/web.js'
 import * as oxigraph from '@oxigraph/web.js'
 
@@ -138,8 +138,9 @@ if (crtInstance !== null) {
                 options: options
             }
         })
+
+        app.use(ConfirmationService)
     }
-    app.use(ConfirmationService)
 }
 
 if (props.theme !== undefined) {
@@ -425,7 +426,7 @@ const editorState = vue.computed<EditorState>(() => {
     }
 })
 
-async function onEditAction(action: string) {
+function onEditAction(action: string) {
     editorCommand.value = {
         command: 'edit',
         options: {
