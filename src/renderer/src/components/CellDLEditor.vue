@@ -228,8 +228,7 @@ import type {
     CellDLEditorProps,
     EditorData,
     EditorEditCommand,
-    EditorFileCommand,
-    ViewState
+    EditorFileCommand
 } from '../../index'
 
 const props = defineProps<CellDLEditorProps>()
