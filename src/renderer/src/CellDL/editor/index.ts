@@ -423,17 +423,32 @@ export class CellDLEditor {
         }
     }
 
-    #showStatus(pos: PointLike) {
-        const position = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
-        if (this.#activeObject) {
-            this.status = this.#activeObject.name ?? ''
-            if (this.#statusPos) {
-                this.#statusPos.innerText = `${this.#activeObject.id} ${position}`
-            }
-        } else {
+    #showStatus(pos: PointLike|null) {
+        if (pos === null) {
             this.status = ''
             if (this.#statusPos) {
-                this.#statusPos.innerText = position
+                const text = this.#statusPos.innerText
+                if (!text.startsWith('(')) {
+                    if (text.includes('(')) {
+                        const parts = text.split('(')
+                        this.#statusPos.innerText = `(${parts.slice(1).join('(')}`
+                    } else {
+                        this.#statusPos.innerText = ''
+                    }
+                }
+            }
+        } else {
+            const position = `(${round(pos.x, 1)}, ${round(pos.y, 1)})`
+            if (this.#activeObject) {
+                this.status = this.#activeObject.name ?? ''
+                if (this.#statusPos) {
+                    this.#statusPos.innerText = `${this.#activeObject.id} ${position}`
+                }
+            } else {
+                this.status = ''
+                if (this.#statusPos) {
+                    this.#statusPos.innerText = position
+                }
             }
         }
     }
@@ -552,7 +567,9 @@ export class CellDLEditor {
         const componentGroup = this.#editorFrame!.addSvgElement(template, this.#domToSvgCoords(topLeft))
         const celldlObject = this.#celldlDiagram!.addConnectedObject(componentGroup, template)
         if (celldlObject) {
+            this.#setActiveObject(celldlObject)
             this.#setSelectedObject(celldlObject)
+            this.#showStatus(eventPosition)
         }
     }
 
@@ -838,6 +855,7 @@ export class CellDLEditor {
             this.#unsetActiveObject()
             this.#celldlDiagram!.removeObject(this.#selectedObject)
             this.#unsetSelectedObject()
+            this.#showStatus(null)
         } else if (this.#selectionBox) {
             for (const object of this.#selectionBox.selectedObjects) {
                 this.#celldlDiagram!.removeObject(object)
