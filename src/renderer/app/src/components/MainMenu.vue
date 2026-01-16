@@ -1,15 +1,14 @@
 <template lang="pug">
-    Menubar(ref="menuBar" :model="items")
-        template(#item="{ item, props }")
+    Menubar(ref="menuBar" :model="menuItems")
+        template(#item="{ item, props, root }")
             a(v-bind="props.action")
                 .p-icon(
                     v-if="item.icon !== undefined"
                     :class="item.icon"
                 )
                 div.p-menubar-item-label {{ item.label }}
-                .ml-auto.p-icon.p-menubar-submenu-icon(
-                    v-if="item.items !== undefined"
-                    content="url(/icons/Chevron.svg)"
+                i.pi.pi-angle-right.ml-auto(
+                    v-if="!root && item.items !== undefined"
                 )
                 .ml-auto.border.rounded.shortcut(
                     v-if="item.shortcut !== undefined"
@@ -22,17 +21,19 @@ import * as vue from 'vue'
 import * as vueusecore from '@vueuse/core'
 
 import type Menubar from 'primevue/menubar'
+import type { MenuItem, MenuItemCommandEvent } from 'primevue/menuitem'
 
 //==============================================================================
 
 import * as common from '@renderer/common/common'
-import { type EditorState } from '@renderer/common/EditorTypes'
+import type { EditorState, ViewState } from '@renderer/common/EditorTypes'
 
 const props = defineProps<{
     haveFile: boolean
     fileModified: boolean  // to become part of editor state
     editorState: EditorState
     noPython?: boolean
+    viewState: ViewState
 }>()
 
 const emit = defineEmits([
@@ -40,7 +41,8 @@ const emit = defineEmits([
     'edit-action',
     'export-action',
     'file-action',
-    'settings'
+    'settings',
+    'view-action'
 ])
 
 const isWindowsOrLinux = common.isWindows() || common.isLinux()
@@ -48,7 +50,88 @@ const isMacOs = common.isMacOs()
 
 //==============================================================================
 
-const items = [
+function getCheckedIcon(checked: boolean): string {
+    if (checked) {
+        return 'pi pi-check'
+    } else {
+        return 'pi'
+    }
+}
+
+function itemChecked(item: MenuItem): boolean {
+    return item.icon.includes('pi-check')
+}
+
+function toggleCheckedIcon(item: MenuItem): string {
+    return getCheckedIcon(!itemChecked(item))
+}
+
+//==============================================================================
+
+let snapToGridValue = props.viewState.snapToGrid
+
+const snapToGrid = vue.computed<number>({
+    get() {
+        return snapToGridValue
+    },
+    set(value: number) {
+        snapToGridValue = value
+        snapToGridItems[0]!.icon = getCheckedIcon(value === 1)
+        snapToGridItems[1]!.icon = getCheckedIcon(value > 0 && value < 1)
+        snapToGridItems[2]!.icon = getCheckedIcon(value === 0)
+        emit('view-action', 'snap-to-grid', value)
+    }
+})
+
+const snapToGridItems = [
+    {
+        label: 'Always',
+        icon: getCheckedIcon(snapToGrid.value === 1),
+        command: (e: MenuItemCommandEvent) => {
+            snapToGrid.value = 1
+        }
+    },
+    {
+        label: 'Close',
+        icon: getCheckedIcon(snapToGrid.value > 0 && snapToGrid.value < 1),
+        command: (e: MenuItemCommandEvent) => {
+            snapToGrid.value = 0.5
+        }
+    },
+    {
+        label: 'None',
+        icon: getCheckedIcon(snapToGrid.value === 0),
+        command: (e: MenuItemCommandEvent) => {
+            snapToGrid.value = 0
+        }
+    }
+]
+
+//==============================================================================
+
+const viewItems = {
+    label: 'View',
+    items: [
+        {
+            label: 'Grid',
+            icon: getCheckedIcon(props.viewState.showGrid),
+            command: (e: MenuItemCommandEvent) => {
+                e.item.icon = toggleCheckedIcon(e.item)
+                emit('view-action', 'show-grid', itemChecked(e.item))
+            }
+        },
+        {
+            label: 'Snap',
+            icon: 'pi',
+            items: snapToGridItems
+        }
+    ]
+}
+
+//==============================================================================
+//==============================================================================
+
+const menuItems = [
     {
         label: 'File',
         items: [
@@ -151,7 +234,9 @@ const items = [
                 disabled: !props.editorState.itemSelected
             }
         ]
-    },    {
+    },
+    viewItems,
+    {
         label: 'Help',
         items: [
             {

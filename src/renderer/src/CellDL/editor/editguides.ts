@@ -18,6 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
+import type { ViewState } from '@renderer/common/EditorTypes'
 import { Point, type PointLike } from '@renderer/common/points'
 import { getViewbox, SVG_URI } from '@renderer/common/svgUtils'
 import type { CellDLDiagram } from '@editor/diagram'
@@ -61,27 +62,31 @@ export type GridAlignOptions = {
 
 type GridOptions = {
     gridSpacing: number // pixels
-    showGrid: boolean
+    resolution: number
     snapGrid: boolean
+    fullSnap: boolean
 }
+
+// Needs to match what's passed to the CellDLEditor component as `viewState`
 
 const defaultGridOptions: GridOptions = {
     gridSpacing: GRID_SPACING,
-    showGrid: true,
-    snapGrid: true
+    resolution: GRID_SNAP_RESOLUTION,
+    snapGrid: true,
+    fullSnap: true,
 }
 
 //==============================================================================
 
 class AlignmentGrid {
-    #options: GridOptions = defaultGridOptions
+    #options: GridOptions
     #gridSpacing: number
     #gridLinesElement: SVGPathElement | null = null
 
     constructor(celldlDiagram: CellDLDiagram, options = {}) {
-        this.#options = Object.assign({}, defaultGridOptions, options)
+        this.#options = {...defaultGridOptions, ...options}
         this.#gridSpacing = +(this.#options.gridSpacing || 0)
-        if (this.#options.showGrid && this.#gridSpacing) {
+        if (this.#gridSpacing) {
             const viewbox = getViewbox(celldlDiagram.svgDiagram)
             this.#gridLinesElement = this.#lineElement(this.#gridLines(viewbox))
             celldlDiagram.addEditorElement(this.#gridLinesElement, true)
@@ -124,9 +129,10 @@ class AlignmentGrid {
     }
 
     align(point: PointLike, options: GridAlignOptions = {}): Point {
-        if (this.#options.snapGrid && this.#options.gridSpacing !== 0) {
-            const alignMethod = options.fullSnap ? this.#fullAlign.bind(this) : this.#partAlign.bind(this)
-            const resolution = options.resolution || GRID_SNAP_RESOLUTION
+        const alignOptions = {...this.#options, ...options}
+        if (alignOptions.snapGrid && alignOptions.gridSpacing !== 0) {
+            const alignMethod = alignOptions.fullSnap ? this.#fullAlign.bind(this) : this.#partAlign.bind(this)
+            const resolution = alignOptions.resolution
             if (options.noAlign || (options.noAlignX && options.noAlignY)) {
                 return Point.fromPoint(point)
             } else if (!options.noAlignX && !options.noAlignY) {
@@ -138,6 +144,10 @@ class AlignmentGrid {
             }
         }
         return Point.fromPoint(point)
+    }
+
+    setOptions(options = {}) {
+        this.#options = {...this.#options, ...options}
     }
 
     show(visible: boolean = true) {
@@ -371,7 +381,10 @@ class EditGuides {
     }
 
     static get instance() {
-        return EditGuides.#instance ?? (EditGuides.#instance = new EditGuides())
+        if (!EditGuides.#instance) {
+            EditGuides.#instance = new EditGuides()
+        }
+        return EditGuides.#instance
     }
 
     gridAlign(point: PointLike, options: GridAlignOptions = {}): Point {
@@ -389,18 +402,22 @@ class EditGuides {
     }
 
     newDiagram(celldlDiagram: CellDLDiagram, showGrid: boolean) {
-        if (showGrid) {
-            this.#alignmentGrid = new AlignmentGrid(celldlDiagram)
-            window.electronAPI?.sendEditorAction('SHOWGRID', true)
-        } else {
-            window.electronAPI?.sendEditorAction('SHOWGRID', null)
-        }
+        this.#alignmentGrid = new AlignmentGrid(celldlDiagram)
+        this.setState({showGrid: showGrid})
         this.#componentGuides = new ComponentGuides(celldlDiagram)
     }
 
-    showGrid(visible: boolean = true) {
+    setState(state: ViewState) {
         if (this.#alignmentGrid) {
-            this.#alignmentGrid.show(visible)
+            if (state.showGrid !== undefined) {
+                this.#alignmentGrid.show(state.showGrid)
+            }
+            if (state.snapToGrid !== undefined) {
+                this.#alignmentGrid.setOptions({
+                    snapGrid: state.snapToGrid > 0,
+                    fullSnap: state.snapToGrid === 1
+                })
+            }
         }
     }
 

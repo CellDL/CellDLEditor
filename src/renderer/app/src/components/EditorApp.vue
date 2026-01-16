@@ -14,15 +14,18 @@
                     :fileModified="fileModified"
                     :editorState="editorState"
                     :noPython="noPython"
+                    :viewState="viewState"
                     @about="onAboutMenu"
                     @edit-action="onEditAction"
                     @export-action="onExportAction"
                     @file-action="onFileAction"
+                    @view-action="onViewAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
             ConfirmDialog
             CellDLEditor.grow(
                 :editorCommand="editorCommand"
+                :viewState="viewState"
                 @editorData="onEditorData"
                 @error="onError"
             )
@@ -63,7 +66,7 @@ const CellDLEditor = vue.defineAsyncComponent(async () => {
 
 import type { CellDLEditorCommand, EditorData } from '../../../index'
 
-import type { EditorState } from '../../../src/common/EditorTypes'
+import type { EditorState, ViewState } from '../../../index'
 
 //==============================================================================
 
@@ -428,6 +431,26 @@ async function onEditAction(action: string) {
         options: {
             action: action
         }
+    }
+}
+
+//==============================================================================
+
+const viewState = vue.ref<ViewState>({
+    showGrid: true,
+    gridSpacing: 10,
+    snapToGrid: 1
+})
+
+function onViewAction(action: string, value: number|boolean) {
+    if (action === 'show-grid') {
+        // This assignment has to be on two parts as otherwise
+        // `viewState` is not seen as having changed
+        const newState = { ...viewState.value, showGrid: value }
+        viewState.value = newState
+    } else if (action === 'snap-to-grid') {
+        const newState = { ...viewState.value, snapToGrid: value }
+        viewState.value = newState
     }
 }
 

@@ -56,13 +56,17 @@ export type EditorViewCommand = {
 
 export type CellDLEditorCommand = EditorEditCommand | EditorFileCommand | EditorViewCommand
 
+import type { ViewState } from '@renderer/common/EditorTypes'
+export type { EditorState, ViewState } from '@renderer/common/EditorTypes'
+
 //==============================================================================
 
 export { CellDLEditor }
 export default CellDLEditor
 
 export interface CellDLEditorProps {
-    editorCommand: CellDLEditorCommand
+    editorCommand: CellDLEditorCommand,
+    viewState: ViewState
 }
 
 import { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'
