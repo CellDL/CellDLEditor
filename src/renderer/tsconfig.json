@@ -2,7 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "composite": true,
-        "lib": ["esnext"],
+        "lib": ["dom", "esnext"],
         "module": "esnext",
         "moduleResolution": "bundler",
         "noEmit": false,
