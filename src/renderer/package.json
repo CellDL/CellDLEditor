@@ -53,6 +53,7 @@
     },
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
+        "@ctrl/tinycolor": "^4.2.0",
         "@jeswr/pretty-turtle": "^1.8.2",
         "@primevue/auto-import-resolver": "4.4.1",
         "@mathjax/src": "^4.0.0",
