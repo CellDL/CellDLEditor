@@ -295,7 +295,7 @@ export class CellDLObject {
         this.#name = objectTemplate?.name || ''
     }
 
-    assignSvgElement(_svgElement: SVGGraphicsElement) {
+    assignSvgElement(_svgElement: SVGGraphicsElement, _align: boolean) {
     }
 
     #setMetadataProperties(properties: MetadataPropertiesMap) {
@@ -335,8 +335,8 @@ export class CellDLMoveableObject extends CellDLObject {
         editGuides.addGuide(this)
     }
 
-    assignSvgElement(svgElement: SVGGraphicsElement) {
-        new BoundedElement(this, svgElement, this.isAlignable)
+    assignSvgElement(svgElement: SVGGraphicsElement, align: boolean) {
+        new BoundedElement(this, svgElement, this.isAlignable, align)
     }
 }
 
@@ -552,7 +552,7 @@ export class CellDLConnection extends CellDLObject {
         return this.#connectedObjects.length > 1 ? this.#connectedObjects.at(-1) : null
     }
 
-    assignSvgElement(svgElement: SVGGraphicsElement) {
+    assignSvgElement(svgElement: SVGGraphicsElement, _align: boolean) {
         this.#svgConnection = new SvgConnection(this, svgElement, this.options.style as ConnectionStyle)
     }
 

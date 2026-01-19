@@ -46,7 +46,7 @@ export class BoundedElement extends CellDLSVGElement {
     #transform: Transform
     #undoMoveAction: EditorUndoAction | null = null
 
-    constructor(object: CellDLObject, svgElement: SVGGraphicsElement, gridAlign = false) {
+    constructor(object: CellDLObject, svgElement: SVGGraphicsElement, gridAligned: boolean=false, align: boolean=false) {
         super(object, svgElement)
         // local transform on the element
         this.#transform = Transform.fromString(getComputedStyle(svgElement).transform)
@@ -57,8 +57,8 @@ export class BoundedElement extends CellDLSVGElement {
         )
         this.setCentroid(this.#controlRect.centroid.point)
         this.#topLeftCorner = this.#controlRect.topLeftPoint
-        this.#controlRect.gridAlign = gridAlign
-        if (gridAlign) {
+        this.#controlRect.gridAligned = gridAligned
+        if (gridAligned && align) {
             const gridAlignedCentroid = editGuides.gridAlign(this.centroid, { fullSnap: true })
             this.#reposition(gridAlignedCentroid)
         }
