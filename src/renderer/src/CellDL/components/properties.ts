@@ -113,7 +113,6 @@ export function getItemProperty(celldlObject: CellDLObject,
         value = r.get('value')?.value
     })
 
-    let item: ItemDetails|undefined
     if (value === undefined) {
         if (!itemTemplate.optional) {
             return Object.assign({
@@ -124,7 +123,7 @@ export function getItemProperty(celldlObject: CellDLObject,
         return undefined
     }
     if (itemTemplate.numeric) {
-        const valueUnits = value!.split(' ')
+        const valueUnits = value.split(' ')
         return {
             ...itemTemplate,
             value:  Number(valueUnits[0]),
@@ -186,7 +185,7 @@ export class ObjectPropertiesPanel {
         }
         // Make data available to the properties panel
 
-        vue.provide<PropertyGroup[]>('componentProperties', this.#componentProperties)
+        vue.provide<vue.Ref<PropertyGroup[]>>('componentProperties', this.#componentProperties)
     }
 
     //==================================
@@ -207,7 +206,8 @@ export class ObjectPropertiesPanel {
             if (this.#metadataIndex >= 0) {
                 // Update component properties in the METADATA_GROUP
 
-                const group = this.#componentProperties.value[this.#metadataIndex]
+                // biome-ignore lint/style/noNonNullAssertion: `metadataIndex` is in range
+                const group = this.#componentProperties.value[this.#metadataIndex]!
                 METADATA_GROUP().items.forEach((itemTemplate: ItemDetails) => {
                     const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
                     if (item) {
@@ -230,6 +230,7 @@ export class ObjectPropertiesPanel {
 
             // Save component properties in the METADATA_GROUP
 
+            // biome-ignore lint/style/noNonNullAssertion: `metadataIndex` is in range
             const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
             for (const itemTemplate of metadataGroup.items) {
                 if (itemId === itemTemplate.itemId) {

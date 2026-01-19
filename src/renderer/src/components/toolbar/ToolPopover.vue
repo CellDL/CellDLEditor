@@ -19,7 +19,7 @@ const slots = vue.useSlots()
 
 const hasTitle = vue.computed(() => !!slots.title);
 
-const pointerPos = vue.inject('pointerPos')
+const pointerPos = vue.inject<vue.DeepReadonly<number>>('pointerPos')
 
 // Don't show a wrongly positioned tooltip in Firefox
 const showtip = vue.ref()
