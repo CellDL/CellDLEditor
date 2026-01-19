@@ -41,15 +41,15 @@
         "version:new": "bun src/renderer/scripts/version.js"
     },
     "peerDependencies": {
-        "vue": "3.5.22"
+        "vue": "3.4.21"
     },
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
         "@ctrl/tinycolor": "^4.2.0",
         "@jeswr/pretty-turtle": "^1.8.2",
         "@mathjax/src": "^4.0.0",
-        "@primevue/auto-import-resolver": "4.4.1",
         "@primeuix/themes": "^2.0.2",
+        "@primevue/auto-import-resolver": "4.2.5",
         "@vueuse/core": "14.1.0",
         "buffer": "^6.0.3",
         "flatbush": "^4.5.0",
@@ -57,7 +57,7 @@
         "jsonschema": "^1.5.0",
         "oxigraph": "^0.5.2",
         "primeicons": "^7.0.0",
-        "primevue": "4.4.1",
+        "primevue": "4.2.5",
         "pyodide": "^0.29.0",
         "rbush": "^4.0.1",
         "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers",
@@ -65,7 +65,7 @@
         "systeminformation": "^5.27.11",
         "transformation-matrix": "^3.1.0",
         "ua-parser-js": "^2.0.8",
-        "vue": "3.5.22"
+        "vue": "3.4.21"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.11",
