@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import { type PropertyGroup } from '@editor/components/properties'
+import type { PropertyGroup, StylingGroup } from '@editor/components/properties'
 
 import ToolPanel from '../toolbar/ToolPanel.vue'
 import InputWidget from '../widgets/InputWidget.vue'
@@ -91,20 +91,18 @@ const disabled = vue.computed<boolean>(() => {
 
 const hasContent = vue.computed<boolean[]>(() => {
     return groups!.value.map((group: PropertyGroup) => {
-        return (group.items.length
-         || (group.styling
-          && 'fillColours' in group.styling
-          && group.styling.fillColours
-          && Array.isArray(group.styling.fillColours)
-          && group.styling.fillColours.length)
-         || (group.styling
-          && 'pathStyle' in group.styling)
+        return (group.items.length > 0
+             || (group.styling !== undefined && 'fillColours' in group.styling
+                                             && group.styling.fillColours !== undefined
+                                             && Array.isArray(group.styling.fillColours)
+                                             && group.styling.fillColours.length > 0)
+             || (group.styling !== undefined && 'pathStyle' in group.styling)
         )
     })
 })
 
-const objectStyle = vue.computed<INodeStyle|IPathStyle>(() => {
-    const stylingGroup = groups!.value.at(-1)
+const objectStyle = vue.computed<INodeStyle|IPathStyle|undefined>(() => {
+    const stylingGroup: StylingGroup = groups!.value.at(-1)! as StylingGroup
     if ('fillColours' in stylingGroup.styling) {
         const fillColours: string[] = [...(stylingGroup.styling.fillColours || [])]
         let direction = 'H'
@@ -123,14 +121,14 @@ const objectStyle = vue.computed<INodeStyle|IPathStyle>(() => {
             gradientFill: colours.length > 1,
             colours,
             direction
-        }
+        } as INodeStyle
     } else if ('pathStyle' in stylingGroup.styling) {
-        return stylingGroup.styling.pathStyle
+        return stylingGroup.styling.pathStyle!
     }
 })
 
 const objectType = vue.computed<string>(() => {
-    const stylingGroup = groups!.value.at(-1)
+    const stylingGroup: StylingGroup = groups!.value.at(-1)! as StylingGroup
     if ('fillColours' in stylingGroup.styling) {
         return 'node'
     } else if ('pathStyle' in stylingGroup.styling) {

@@ -24,6 +24,8 @@ import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import type { NamedProperty } from '@editor/components/index'
+
+import type { IPathStyle } from '@renderer/common/svgUtils'
 import { DCT, RDFS, type RdfStore, SPARQL_PREFIXES } from '@renderer/metadata/index'
 import { componentLibraryPlugin } from '@renderer/plugins/index'
 
@@ -38,13 +40,20 @@ export type ItemDetails = locApi.IUiJsonInput & {
     numeric?: boolean
 }
 
-export type StyleObject = object
+export type StyleObject = {
+    fillColours?: string[]
+    pathStyle?: IPathStyle
+}
 
 export interface PropertyGroup {
     groupId: string
     items: ItemDetails[]
     styling?: StyleObject
     title: string
+}
+
+export type StylingGroup = PropertyGroup & {
+    styling: StyleObject
 }
 
 export interface ValueChange {
