@@ -3,10 +3,11 @@
         "baseUrl": ".",
         "composite": true,
         "module": "esnext",
-        "moduleResolution": "esnext",
+        "moduleResolution": "bundler",
         "noEmit": false,
         "strictNullChecks": true,
         "resolveJsonModule": true,
+        "target": "esnext",
         "types": ["vite/client"],
         "paths": {
             "@editor/*": ["./src/CellDL/*"],
