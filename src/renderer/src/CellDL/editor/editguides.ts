@@ -58,6 +58,7 @@ export type GridAlignOptions = {
     noAlignX?: boolean
     noAlignY?: boolean
     resolution?: number
+    snapGrid?: boolean
 }
 
 type GridOptions = {
@@ -74,6 +75,12 @@ const defaultGridOptions: GridOptions = {
     resolution: GRID_SNAP_RESOLUTION,
     snapGrid: true,
     fullSnap: true,
+}
+
+export const INITIAL_VIEW_STATE: ViewState = {
+    showGrid: true,
+    gridSpacing: GRID_SPACING,
+    snapToGrid: defaultGridOptions.snapGrid ? (defaultGridOptions.fullSnap ? 1 : 0.5) : 0
 }
 
 //==============================================================================
