@@ -153,7 +153,10 @@ class UndoRedo {
     }
 
     static get instance() {
-        return UndoRedo.#instance ?? (UndoRedo.#instance = new UndoRedo())
+        if (!UndoRedo.#instance) {
+            UndoRedo.#instance = new UndoRedo()
+        }
+        return UndoRedo.#instance
     }
 
     clean() {
