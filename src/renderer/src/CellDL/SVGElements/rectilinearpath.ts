@@ -364,6 +364,7 @@ export class RectilinearPath extends PathElement {
             splayPoint.move(intersections[1], {
                 noAlignX: dirn === 'H',
                 noAlignY: dirn === 'V',
+                fullSnap: false,
                 resolution: 0.2
             })
             intersections = boundaryPoint.component!.boundaryIntersections(splayPoint, 0)
