@@ -1,7 +1,7 @@
 <template lang="pug">
     .popover(
         v-if="type === 'popover'"
-        ref="tool-popover"
+        ref="toolPopover"
         :class="{ hidden: !popoverVisible }"
         :style="{ top: popoverTop }"
     )
@@ -63,12 +63,12 @@ const popoverTop = vue.ref()
 const pointerPos = vue.ref()
 vue.provide('pointerPos', vue.readonly(pointerPos))
 
-const popoverReference = vue.useTemplateRef('tool-popover')
+const toolPopover = vue.ref(null)
 let popoverElement: HTMLElement | null = null
 
 vue.onMounted(() => {
-    if (popoverReference.value) {
-        popoverElement = (<HTMLElement>popoverReference.value).firstElementChild as HTMLElement
+    if (toolPopover.value) {
+        popoverElement = (<HTMLElement>toolPopover.value).firstElementChild as HTMLElement
     }
 })
 

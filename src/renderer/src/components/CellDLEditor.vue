@@ -7,7 +7,7 @@
                 @button-event="buttonEvent"
                 @popover-event="popoverEvent"
             )
-            div#svg-content(ref="svg-content")
+            div#svg-content(ref="svgContent")
                 <!-- context-menu(id="context-menu")  -->
             #panel-content(
                 :class="{ hidden: !panelVisible }"
@@ -60,7 +60,7 @@ import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
 
 //==============================================================================
 
-const svgContainer = vue.useTemplateRef<HTMLElement>('svg-content')
+const svgContent = vue.ref(null)
 
 let celldlDiagram: CellDLDiagram|undefined
 
@@ -313,8 +313,8 @@ vue.onMounted(async () => {
     despatchToolbarEvent('value', EDITOR_TOOL_IDS.DrawConnectionTool, DEFAULT_CONNECTION_STYLE_DEFINITION.id)
     despatchToolbarEvent('value', EDITOR_TOOL_IDS.AddComponentTool, defaultComponent.id)
 
-    if (svgContainer.value) {
-        celldlEditor.mount(svgContainer.value)
+    if (svgContent.value) {
+        celldlEditor.mount(svgContent.value)
 
         // Create a new diagram in the editor's window
         celldlDiagram = new CellDLDiagram('', '', celldlEditor)
