@@ -134,6 +134,7 @@ export class EditorUndoAction {
         } else {
             console.warn('Move has ended on a different control point...')
         }
+        notifyChanges()
     }
 }
 
@@ -203,9 +204,6 @@ class UndoRedo {
 
     #pushUndoStack(undoAction: EditorUndoAction, reDoing: boolean): EditorUndoAction {
         this.#undoStack.push(undoAction)
-        if (this.#undoStack.length === 1) {
-            notifyChanges()
-        }
         if (!reDoing) {
             this.#clearRedoStack() // Can no longer redo once there are new items
         }
