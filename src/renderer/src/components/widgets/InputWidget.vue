@@ -49,15 +49,18 @@ import KeyFilter from 'primevue/keyfilter';
 
 import type * as locApi from '../../libopencor/locUIJsonApi'
 
-const value = defineModel<number|string|locApi.IUiJsonDiscreteInputPossibleValue>({ required: true })
+type ValueType = number|string|locApi.IUiJsonDiscreteInputPossibleValue
+
+const value = defineModel<ValueType>({ required: true })
 
 const emits = defineEmits(['change'])
 
 const props = defineProps<{
+    name: string
+    value: ValueType
     maximumValue?: number
     minimumValue?: number
     itemId: string
-    name: string
     units?: string
     numeric?: boolean
     possibleValues?: locApi.IUiJsonDiscreteInputPossibleValue[]
@@ -78,8 +81,18 @@ const discreteValue = vue.computed<locApi.IUiJsonDiscreteInputPossibleValue>({
     }
 })
 
-const scalarValue = vue.ref<number>(value.value);
-const scalarValueString = vue.ref<string>(String(value.value));
+const scalarValue = vue.ref<number>(value.value)
+const stringValue = vue.ref<string>(String(value.value))
+
+vue.watch(
+    () => props.value,
+    () => {
+        if (scalarType) {
+            scalarValue.value = props.value
+            stringValue.value = String(value.value)
+        }
+    }
+)
 
 // Some methods to handle a scalar value using an input text and a slider.
 
@@ -88,7 +101,7 @@ function emitChange(newValue: number | string) {
         if (scalarType && props.possibleValues === undefined) {
             value.value = newValue
             scalarValue.value = <number>newValue
-            scalarValueString.value = String(newValue) // This will properly format the input text.
+            stringValue.value = String(newValue) // This will properly format the input text.
         }
 
         emits('change', props.itemId, oldValue, newValue)
