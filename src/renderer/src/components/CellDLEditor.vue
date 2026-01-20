@@ -282,13 +282,12 @@ vue.watch(
                     data: celldl,
                     kind: options.kind
                 } as EditorData)
-
-            } else if (props.editorCommand.command === 'edit') {
-                const command = props.editorCommand as EditorEditCommand
-                const options = command.options
-                if (options.action === 'clean') {
-                    undoRedo.clean()
-                }
+            }
+        } else if (props.editorCommand.command === 'edit') {
+            const command = props.editorCommand as EditorEditCommand
+            const options = command.options
+            if (options.action === 'clean') {
+                undoRedo.clean()
             }
         } else if (props.editorCommand.command === 'view') {
             const command = props.editorCommand as EditorViewCommand
