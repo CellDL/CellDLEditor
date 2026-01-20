@@ -305,7 +305,6 @@ export class CellDLObject {
         this.#metadataProperties = metadataProperties
         const label = properties.get(RDFS.uri('label').value) || 0
         if ($rdf.isLiteral(label)) {
-            // @ts-expect-error: label is a Literal
             this.#label = label.value
         }
     }
