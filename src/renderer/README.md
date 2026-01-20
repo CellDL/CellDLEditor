@@ -11,9 +11,11 @@ This package is a [Vue 3](https://vuejs.org/) component for the CellDL Editor, b
 
 The component comes with the following props:
 
-| Name    | Type                                       | Default    | Description                                                                      |
-| ------- | ------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
-| `theme` | String: `'light'`, `'dark'`, or `'system'` | `'system'` | The theme to use. Note that it is set once and for all, i.e. it is not reactive. |
+**TODO**
+
+and emits the following actions:
+
+**TODO**
 
 - **index.html:**
 
