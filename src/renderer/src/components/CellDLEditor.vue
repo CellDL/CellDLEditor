@@ -243,7 +243,8 @@ import type {
     CellDLEditorProps,
     EditorData,
     EditorEditCommand,
-    EditorFileCommand
+    EditorFileCommand,
+    EditorViewCommand
 } from '../../index'
 
 const props = defineProps<CellDLEditorProps>()
@@ -289,18 +290,10 @@ vue.watch(
                     undoRedo.clean()
                 }
             }
+        } else if (props.editorCommand.command === 'view') {
+            const command = props.editorCommand as EditorViewCommand
+            editGuides.setState(command.options)
         }
-    }
-)
-
-//==============================================================================
-
-editGuides.setState(props.viewState)
-
-vue.watch(
-    () => props.viewState,
-    async () => {
-        editGuides.setState(props.viewState)
     }
 )
 

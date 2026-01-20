@@ -25,7 +25,6 @@
             ConfirmDialog
             CellDLEditor.grow(
                 :editorCommand="editorCommand"
-                :viewState="viewState"
                 @editorData="onEditorData"
                 @error="onError"
             )
@@ -443,13 +442,17 @@ const viewState = vue.ref<ViewState>({ ...INITIAL_VIEW_STATE })
 
 function onViewAction(action: string, value: number|boolean) {
     if (action === 'show-grid') {
-        // This assignment has to be on two parts as otherwise
-        // `viewState` is not seen as having changed
-        const newState = { ...viewState.value, showGrid: value }
-        viewState.value = newState
+        viewState.value = { ...viewState.value, showGrid: value }
+        editorCommand.value = {
+            command: 'view',
+            options: viewState.value
+        }
     } else if (action === 'snap-to-grid') {
-        const newState = { ...viewState.value, snapToGrid: value }
-        viewState.value = newState
+        viewState.value = { ...viewState.value, snapToGrid: value }
+        editorCommand.value = {
+            command: 'view',
+            options: viewState.value
+        }
     }
 }
 

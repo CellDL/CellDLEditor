@@ -48,10 +48,7 @@ export type EditorFileCommand = {
 
 export type EditorViewCommand = {
     command: 'view'
-    options: {
-        action: string
-        value: string|boolean
-    }
+    options: ViewState
 }
 
 export type CellDLEditorCommand = EditorEditCommand | EditorFileCommand | EditorViewCommand
@@ -66,7 +63,6 @@ export default CellDLEditor
 
 export interface CellDLEditorProps {
     editorCommand: CellDLEditorCommand,
-    viewState: ViewState
 }
 
 import { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'
