@@ -320,6 +320,7 @@ export class CellDLEditor {
         this.#activeObject = null
         this.#pointerMoved = false
         this.#selectedObject = null
+        this.#propertiesPanel.clearObjectProperties()
     }
 
     closeDiagram() {

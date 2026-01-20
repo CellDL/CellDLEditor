@@ -68,6 +68,8 @@ import type { CellDLEditorCommand, EditorData } from '../../../index'
 
 import type { EditorState, ViewState } from '../../../index'
 
+import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
+
 //==============================================================================
 
 type IEditorAppProps = {
@@ -437,11 +439,7 @@ function onEditAction(action: string) {
 
 //==============================================================================
 
-const viewState = vue.ref<ViewState>({
-    showGrid: true,
-    gridSpacing: 10,
-    snapToGrid: 1
-})
+const viewState = vue.ref<ViewState>({ ...INITIAL_VIEW_STATE })
 
 function onViewAction(action: string, value: number|boolean) {
     if (action === 'show-grid') {

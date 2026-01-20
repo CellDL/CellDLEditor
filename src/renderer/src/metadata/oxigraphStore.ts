@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import type * as $oxigraph from '@renderer/assets/oxigraph/web'
+import type * as $oxigraph from '@oxigraph/web'
 
 import { write as prettyTurtle } from '@jeswr/pretty-turtle'
 
@@ -40,7 +40,7 @@ export type Term = $oxigraph.Term
 
 export type BlankNode = $oxigraph.BlankNode
 
-export function blankNode(value: string|undefined) {
+export function blankNode(value: string|undefined=undefined) {
     return globalThis.oxigraph.blankNode(value)
 }
 

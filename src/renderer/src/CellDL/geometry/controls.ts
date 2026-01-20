@@ -181,7 +181,7 @@ export class FixedControlPoint extends ControlPoint {
 //==============================================================================
 
 export class ControlRect {
-    #gridAlign: boolean = true
+    #gridAligned: boolean = true
     #topLeft!: RestrictedPoint
     #bottomRight!: RestrictedPoint
     #size!: Point
@@ -195,8 +195,8 @@ export class ControlRect {
         this.setCentroidOffset(centroidOffset || new Point(0.5, 0.5))
     }
 
-    set gridAlign(align: boolean) {
-        this.#gridAlign = align
+    set gridAligned(align: boolean) {
+        this.#gridAligned = align
     }
 
     get centroid() {
@@ -258,7 +258,7 @@ export class ControlRect {
 
     move(point: PointLike) {
         const position = this.#moveOffset!.add(point)
-        this.reposition(this.#gridAlign ? editGuides.gridAlign(position) : position)
+        this.reposition(this.#gridAligned ? editGuides.gridAlign(position) : position)
     }
 
     /**

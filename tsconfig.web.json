@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "baseUrl": ".",
-        "target": "es2024",
+        "target": "esnext",
         "paths": {
             "@editor/*": ["./src/renderer/src/CellDL/*"],
             "@oxigraph/*": ["./src/renderer/public/oxigraph/*"],

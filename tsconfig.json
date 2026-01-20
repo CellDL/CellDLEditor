@@ -1,8 +1,10 @@
 {
     "files": [],
     "compilerOptions": {
+        "lib": ["dom", "esnext"],
         "module": "esnext",
-        "target": "es2024",
+        "moduleResolution": "bundler",
+        "target": "esnext",
         "composite": true,
         "allowJs": true
     },

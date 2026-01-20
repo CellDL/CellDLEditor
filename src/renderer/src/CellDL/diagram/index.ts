@@ -880,7 +880,7 @@ export class CellDLDiagram {
         if (celldlObject.isConnection) {
             this.#addConnection(<CellDLConnection>celldlObject)
         }
-        celldlObject.assignSvgElement(svgElement)
+        celldlObject.assignSvgElement(svgElement, true)
         const undoAction = undoRedo.undoInsertAction()
         undoAction.addObjectDetails(celldlObject)
         undoAction.addKnowledge(knowledge)
@@ -890,7 +890,7 @@ export class CellDLDiagram {
     #setObjectSvgElement(celldlObject: CellDLObject): boolean {
         const svgElement = <SVGGraphicsElement>this.#svgDiagram.getElementById(celldlObject.id)
         if (svgElement) {
-            celldlObject.assignSvgElement(svgElement) // this sets bounds and hence centre
+            celldlObject.assignSvgElement(svgElement, false)
             if (celldlObject.hasEditGuides) {
                 editGuides.addGuide(<CellDLComponent>celldlObject)
             }

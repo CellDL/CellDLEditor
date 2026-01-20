@@ -60,7 +60,7 @@ popoverVisible.value = false
 
 const popoverTop = vue.ref()
 
-const pointerPos = vue.ref()
+const pointerPos = vue.ref<number>()
 vue.provide('pointerPos', vue.readonly(pointerPos))
 
 const toolPopover = vue.ref(null)

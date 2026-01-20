@@ -62,7 +62,7 @@ class PathPoint {
     }
 
     objectContainsPoint(point: PointLike) {
-        return this.celldlObject !== null && this.celldlObject.containsPoint(point)
+        return this.celldlObject?.containsPoint(point)
     }
 }
 
@@ -94,7 +94,7 @@ export class PathNode {
     constructor(readonly object: CellDLConnectedObject) {}
 
     get celldlSvgElement() {
-        return this.object.celldlSvgElement!
+        return this.object.celldlSvgElement
     }
 
     get id() {
@@ -105,7 +105,7 @@ export class PathNode {
         return this.object.uri
     }
 
-    canConnect(node: PathNode): boolean {
+    canConnect(_node: PathNode): boolean {
         // Check if objects are allowed to be connected
         return true
         //       return libraryManager.objectMethods(this.object).canConnect(node.object)
@@ -142,7 +142,7 @@ export class PathMaker {
         this.#nodes.push(startNode)
         this.#objectIds.push(startNode.id)
         this.#lastNode = startNode
-        this.#lastNodeElement = startNode.celldlSvgElement
+        this.#lastNodeElement = startNode.celldlSvgElement!
         this.#style = style
     }
 
@@ -236,7 +236,7 @@ export class PathMaker {
             if (round(delta.x) === 0 && round(delta.y) === 0) {
                 return Point.fromPoint(startPoint)
             } else {
-                if (this.#rectilinearDirn.length == 0 || !['H', 'V'].includes(this.#rectilinearDirn.slice(0, 1))) {
+                if (this.#rectilinearDirn.length === 0 || !['H', 'V'].includes(this.#rectilinearDirn.slice(0, 1))) {
                     let theta = (180 * Math.atan2(-delta.y, delta.x)) / Math.PI
                     if (theta < 0) theta += 360
                     theta = 90 * Math.round(theta / 90)
@@ -323,7 +323,7 @@ export class PathMaker {
 
     #addPoint(point: PointLike, rectilinear: boolean): Point {
         let end = Point.fromPoint(point)
-        const lastPathPoint = this.#pathPoints.at(-1)
+        const lastPathPoint = this.#pathPoints.at(-1)!
         const lastPoint = lastPathPoint.point
         if (this.#rectilinearDirn.toUpperCase().startsWith('H') && lastPoint.x === point.x) {
             end = new Point(lastPoint.x, point.y)
@@ -369,7 +369,7 @@ export class PathMaker {
 
     drawTo(point: PointLike, shiftKey: boolean = false) {
         const rectilinear = this.#style === ConnectionStyle.Rectilinear || shiftKey
-        if (this.#pathPoints.length == 0) {
+        if (this.#pathPoints.length === 0) {
             point = this.#constrainAngle(this.#lastNodeElement.centroid, point, rectilinear)
             const firstPoint = this.#lastNodeElement.boundaryIntersections(point)[0]
             if (firstPoint !== null) {
@@ -378,7 +378,7 @@ export class PathMaker {
                 this.#setCurrentSvgPath([])
             }
         } else {
-            const lastPathPoint = this.#pathPoints.at(-1)
+            const lastPathPoint = this.#pathPoints.at(-1)!
             const lastPoint = lastPathPoint.point
             if (
                 !(

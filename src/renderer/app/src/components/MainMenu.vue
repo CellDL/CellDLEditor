@@ -176,6 +176,7 @@ const menuItems = [
             }
         ]
     },
+/*** WIP
     {
         label: 'Edit',
         items: [
@@ -235,6 +236,7 @@ const menuItems = [
             }
         ]
     },
+WIP ***/
     viewItems,
     {
         label: 'Help',

@@ -24,6 +24,8 @@ import type * as locApi from '@renderer/libopencor/locUIJsonApi'
 
 import type { CellDLObject } from '@editor/celldlObjects/index'
 import type { NamedProperty } from '@editor/components/index'
+
+import type { IPathStyle } from '@renderer/common/svgUtils'
 import { DCT, RDFS, type RdfStore, SPARQL_PREFIXES } from '@renderer/metadata/index'
 import { componentLibraryPlugin } from '@renderer/plugins/index'
 
@@ -38,13 +40,20 @@ export type ItemDetails = locApi.IUiJsonInput & {
     numeric?: boolean
 }
 
-export type StyleObject = object
+export type StyleObject = {
+    fillColours?: string[]
+    pathStyle?: IPathStyle
+}
 
 export interface PropertyGroup {
     groupId: string
     items: ItemDetails[]
     styling?: StyleObject
     title: string
+}
+
+export type StylingGroup = PropertyGroup & {
+    styling: StyleObject
 }
 
 export interface ValueChange {
@@ -113,7 +122,6 @@ export function getItemProperty(celldlObject: CellDLObject,
         value = r.get('value')?.value
     })
 
-    let item: ItemDetails|undefined
     if (value === undefined) {
         if (!itemTemplate.optional) {
             return Object.assign({
@@ -124,7 +132,7 @@ export function getItemProperty(celldlObject: CellDLObject,
         return undefined
     }
     if (itemTemplate.numeric) {
-        const valueUnits = value!.split(' ')
+        const valueUnits = value.split(' ')
         return {
             ...itemTemplate,
             value:  Number(valueUnits[0]),
@@ -186,12 +194,12 @@ export class ObjectPropertiesPanel {
         }
         // Make data available to the properties panel
 
-        vue.provide<PropertyGroup[]>('componentProperties', this.#componentProperties)
+        vue.provide<vue.Ref<PropertyGroup[]>>('componentProperties', this.#componentProperties)
     }
 
     //==================================
 
-    setObjectProperties(celldlObject: CellDLObject|null, rdfStore: RdfStore) {
+    clearObjectProperties() {
         // Clear each group's list of items
         for (const group of this.#componentProperties.value) {
             group.items = []
@@ -199,6 +207,10 @@ export class ObjectPropertiesPanel {
                 group.styling = {}
             }
         }
+    }
+
+    setObjectProperties(celldlObject: CellDLObject|null, rdfStore: RdfStore) {
+        this.clearObjectProperties()
         if (celldlObject) {
             // Update component properties with plugin specific values
 
@@ -207,7 +219,8 @@ export class ObjectPropertiesPanel {
             if (this.#metadataIndex >= 0) {
                 // Update component properties in the METADATA_GROUP
 
-                const group = this.#componentProperties.value[this.#metadataIndex]
+                // biome-ignore lint/style/noNonNullAssertion: `metadataIndex` is in range
+                const group = this.#componentProperties.value[this.#metadataIndex]!
                 METADATA_GROUP().items.forEach((itemTemplate: ItemDetails) => {
                     const item = getItemProperty(celldlObject, itemTemplate, rdfStore)
                     if (item) {
@@ -230,6 +243,7 @@ export class ObjectPropertiesPanel {
 
             // Save component properties in the METADATA_GROUP
 
+            // biome-ignore lint/style/noNonNullAssertion: `metadataIndex` is in range
             const metadataGroup = this.#propertyGroups[this.#metadataIndex]!
             for (const itemTemplate of metadataGroup.items) {
                 if (itemId === itemTemplate.itemId) {

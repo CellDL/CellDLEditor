@@ -672,7 +672,8 @@ export class BondgraphPlugin implements PluginInterface {
                 group.items.push({
                     itemId: `${group.groupId}/${variable.name}`,
                     property: BGF.uri('parameterValue').value,
-                    name: `${variable.name} (${variable.units})`,
+                    name: variable.name,
+                    units: variable.units,
                     minimumValue: 0,
                     defaultValue: 0,
                     numeric: true
