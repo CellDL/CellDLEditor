@@ -199,7 +199,7 @@ export class ObjectPropertiesPanel {
 
     //==================================
 
-    setObjectProperties(celldlObject: CellDLObject|null, rdfStore: RdfStore) {
+    clearObjectProperties() {
         // Clear each group's list of items
         for (const group of this.#componentProperties.value) {
             group.items = []
@@ -207,6 +207,10 @@ export class ObjectPropertiesPanel {
                 group.styling = {}
             }
         }
+    }
+
+    setObjectProperties(celldlObject: CellDLObject|null, rdfStore: RdfStore) {
+        this.clearObjectProperties()
         if (celldlObject) {
             // Update component properties with plugin specific values
 
