@@ -15,6 +15,16 @@ The component comes with the following props:
 | ------- | ------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
 | `theme` | String: `'light'`, `'dark'`, or `'system'` | `'system'` | The theme to use. Note that it is set once and for all, i.e. it is not reactive. |
 
+- **index.html:**
+
+The `Content-Security-Policy` **must** allow `data:` connections and Wasm to be evaluated, for instance:
+
+```html
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="connect-src * data:; script-src 'self' 'wasm-unsafe-eval'" />
+```
+
 - **main.ts:**
 
 ```typescript

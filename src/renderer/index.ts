@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import CellDLEditor from '@renderer/components/CellDLEditor.vue'
+import CellDLEditor from '@renderer/components/WrappedEditor.vue'
 
 //==============================================================================
 

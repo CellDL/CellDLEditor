@@ -11,7 +11,7 @@ const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default vite.defineConfig({
     assetsInclude: [
-        'oxigraph/*',
+        '**/*.wasm',
         '**/*.ttl'
     ],
     build: {
@@ -66,15 +66,15 @@ export default vite.defineConfig({
             target: 'esnext'
         },
         exclude: [
-            'oxigraph'
+            '*.wasm'
         ]
     },
     resolve: {
         alias: {
             'node-fetch': 'isomorphic-fetch',
             '@editor': path.resolve(_dirname, 'src/CellDL'),
-            '@oxigraph': path.resolve(_dirname, 'public/oxigraph'),
             '@pyodide': path.resolve(_dirname, 'public/pyodide'),
+            '@oxigraph': path.resolve(_dirname, 'src/assets/oxigraph'),
             '@renderer': path.resolve(_dirname, 'src')
         }
     },

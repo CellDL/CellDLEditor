@@ -4,8 +4,8 @@
 umask 022
 
 # Copy oxigraph into assets
-mkdir -p ./src/renderer/public/oxigraph
-cp -p ./node_modules/oxigraph/web* ./src/renderer/public/oxigraph
+mkdir -p ./src/renderer/src/assets/oxigraph
+cp -p ./node_modules/oxigraph/web* ./src/renderer/src/assets/oxigraph
 
 # Copy pyodide into public
 mkdir -p ./src/renderer/public/pyodide
