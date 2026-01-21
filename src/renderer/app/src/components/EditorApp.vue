@@ -35,11 +35,20 @@
             )
             Dialog.issues(
                 v-model:visible="issuesVisible"
-                header="Issues generating CellML:"
             )
-                p.mb-1(
-                    v-for="issue in issues"
-                ) {{ issue }}
+                template(#header)
+                    .flex.w-full
+                        p.text-2xl.font-bold Issues generating CellML:
+                        .grow
+                        Button(
+                            icon="pi pi-copy"
+                            title="Copy to clipboard"
+                            @click="copyIssuesToClipboard"
+                        )
+                div
+                    p.mb-1(
+                        v-for="issue in issues"
+                    ) {{ issue }}
 </template>
 
 <script setup lang="ts">
@@ -402,6 +411,10 @@ async function onExportAction(action: string) {
 
 const issues = vue.ref<string[]>([])
 const issuesVisible = vue.ref(false)
+
+function copyIssuesToClipboard() {
+    navigator.clipboard.writeText(issues.value.join('\n'))
+}
 
 async function saveCellML(celldl: string) {
     const options = {
