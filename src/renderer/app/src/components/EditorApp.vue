@@ -33,6 +33,13 @@
                 v-model:visible="aboutVisible"
                 @close="aboutVisible = false"
             )
+            Dialog.issues(
+                v-model:visible="issuesVisible"
+                header="Issues generating CellML:"
+            )
+                p.mb-1(
+                    v-for="issue in issues"
+                ) {{ issue }}
 </template>
 
 <script setup lang="ts">
@@ -393,6 +400,9 @@ async function onExportAction(action: string) {
     }
 }
 
+const issues = vue.ref<string[]>([])
+const issuesVisible = vue.ref(false)
+
 async function saveCellML(celldl: string) {
     const options = {
         types: [
@@ -412,7 +422,8 @@ async function saveCellML(celldl: string) {
             await writableStream.write(cellmlObject.cellml)
             await writableStream.close()
         } else if (cellmlObject.issues) {
-            window.alert(cellmlObject.issues.join('\n'))
+            issues.value = cellmlObject.issues
+            issuesVisible.value = true
         }
     }
 }
