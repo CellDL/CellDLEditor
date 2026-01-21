@@ -1128,7 +1128,7 @@ export class BondgraphPlugin implements PluginInterface {
             SELECT ?element ?parameterName ?parameterUnits
                             ?variableName ?variableUnits
             WHERE {
-                ?element a bgf:CompositeElement ;
+                ?element a bgf:CompositeTemplate ;
                     rdfs:subClassOf ?base .
                 ?base a bgf:ElementTemplate .
                 {
