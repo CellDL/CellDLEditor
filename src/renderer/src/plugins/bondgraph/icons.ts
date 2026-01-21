@@ -145,9 +145,9 @@ export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
         style: FLOW_STYLE
     },
     {
-        id: 'Dissipator',
-        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Dissipator',
-        name: 'Dissipator',
+        id: 'Resistance',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Resistance',
+        name: 'Resistance',
         symbol: 'R',
         style: RESISTANCE_STYLE
     },
