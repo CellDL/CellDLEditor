@@ -1026,32 +1026,27 @@ export class BondgraphPlugin implements PluginInterface {
     }
 
     #assignTemplates() {
-        // Find what templates correspond to each base element
-        this.#query(`
-            SELECT ?element ?label ?domain ?relation ?base WHERE {
-                ?element
-                    rdfs:subClassOf* ?subType .
-                    ?subType bgf:hasDomain ?domain ;
-                            rdfs:subClassOf* ?base .
-                    ?base rdfs:subClassOf bgf:BondElement .
-                OPTIONAL { ?element rdfs:label ?label }
-                OPTIONAL { ?subType bgf:constitutiveRelation ?relation }
-                FILTER EXISTS {
-                    { ?element a bgf:ElementTemplate }
-                UNION
-                    { ?element a bgf:CompositeElement }
-                }
-            }`
-        ).forEach((r) => {
-            const base = r.get('base')!
-            const element = r.get('element')!
-            const component = this.#baseComponents.get(base.value)
-            if (component) {
+        for (const [base, component] of this.#baseComponents.entries()) {
+            this.#query(`
+                SELECT ?element ?label ?domain ?relation WHERE {
+                    ?element
+                        rdfs:subClassOf* ?subType ;
+                        rdfs:subClassOf* <${base}> .
+                    ?subType bgf:hasDomain ?domain .
+                    OPTIONAL { ?element rdfs:label ?label }
+                    OPTIONAL { ?subType bgf:constitutiveRelation ?relation }
+                    FILTER (
+                        exists { ?element a bgf:ElementTemplate }
+                     || exists {<${base}> a bgf:CompositeElement}
+                    )
+                  } order by ?label`
+            ).forEach((r) => {
+                const element = r.get('element')!
+                const domainId = r.get('domain')!.value
+                const label = r.get('label')
                 if (!this.#baseComponentToElementTemplates.has(component.type)) {
                     this.#baseComponentToElementTemplates.set(component.type, [])
                 }
-                const label = r.get('label')
-                const domainId = r.get('domain')!.value
                 const elementTemplate: ElementTemplate = {
                     type: element.value,
                     domain: domainId,
@@ -1080,55 +1075,8 @@ export class BondgraphPlugin implements PluginInterface {
                 }
                 this.#elementTemplates.set(elementTemplate.type, elementTemplate)
                 this.#baseComponentToElementTemplates.get(component.type)!.push(elementTemplate)
-            }
-        })
-
-        // Composite element templates are incorrectly inserted into `baseComponentToElementTemplates`
-        // above, so now correct their entries
-        this.#query(`
-            SELECT ?element ?base WHERE {
-                { ?element
-                    a bgf:CompositeElement ;
-                    rdfs:subClassOf* ?base ;
-                    rdfs:subClassOf* bgf:ZeroStorageNode
-                }
-                UNION
-                { ?element
-                    a bgf:CompositeElement ;
-                    rdfs:subClassOf* ?base ;
-                    rdfs:subClassOf* bgf:OneResistanceNode
-                }
-            }`
-        ).forEach((r) => {
-            const base = r.get('base')!
-            if ([BGF.uri('ZeroStorageNode').value, BGF.uri('OneResistanceNode').value]
-                    .includes(base.value)) {
-                const component = this.#baseComponents.get(r.get('base')!.value)
-                if (component) {
-                    const element = r.get('element')!
-                    const elementTemplate = this.#elementTemplates.get(element.value)
-                    if (elementTemplate) {
-                        if (!this.#baseComponentToElementTemplates.has(component.type)) {
-                            this.#baseComponentToElementTemplates.set(component.type, [])
-                        }
-/* WIP
-                        const elementTemplates = this.#baseComponentToElementTemplates.get(component.templateId)!
-                        if (elementTemplate.baseComponentType) {
-                            // Remove from list assigned above
-                            const baseTemplates = this.#baseComponentToElementTemplates.get(elementTemplate.baseComponentType)
-                            if (baseTemplates) {
-                                const filtered =
-                                this.#baseComponentToElementTemplates.set(elementTemplate.baseComponentType,
-                                    baseTemplates.filter(t => (t.id !== element.value)))
-                            }
-                        }
-WIP */
-                        elementTemplate.baseComponentType = component.type
-                        this.#baseComponentToElementTemplates.get(component.type)!.push(elementTemplate)
-                    }
-                }
-            }
-        })
+            })
+        }
     }
 
     #saveParametersAndStates(r: Map<string, Term>) {
