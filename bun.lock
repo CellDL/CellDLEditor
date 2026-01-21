@@ -241,7 +241,7 @@
 
     "@primeuix/styles": ["@primeuix/styles@1.2.5", "", { "dependencies": { "@primeuix/styled": "^0.7.3" } }, "sha512-nypFRct/oaaBZqP4jinT0puW8ZIfs4u+l/vqUFmJEPU332fl5ePj6DoOpQgTLzo3OfmvSmz5a5/5b4OJJmmi7Q=="],
 
-    "@primeuix/themes": ["@primeuix/themes@2.0.2", "", { "dependencies": { "@primeuix/styled": "^0.7.4" } }, "sha512-prwQvA3tDGBz8yWSUenaJUttEMCEvPvxwOfFhDPmSe1vwsfVKL2Nmh5eZvtPFQnxmIOPsHZS7zc0/L3CzJ83Eg=="],
+    "@primeuix/themes": ["@primeuix/themes@2.0.3", "", { "dependencies": { "@primeuix/styled": "^0.7.4" } }, "sha512-3fS1883mtCWhgUgNf/feiaaDSOND4EBIOu9tZnzJlJ8QtYyL6eFLcA6V3ymCWqLVXQ1+lTVEZv1gl47FIdXReg=="],
 
     "@primeuix/utils": ["@primeuix/utils@0.6.2", "", {}, "sha512-l+li4z6UAwamqbu4xodN3lqr1G4S37DKEJ7Y/nE3MjEx7zJ+KIBkb5voF26Nuly1UCmIcRWQJokhLRF7+sRhyg=="],
 
