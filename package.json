@@ -1,6 +1,6 @@
 {
     "name": "@abi-software/celldl-editor",
-    "version": "0.20260115.0",
+    "version": "0.20260127.0-vue.3.4",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
