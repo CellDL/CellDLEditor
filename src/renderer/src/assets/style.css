@@ -4,3 +4,6 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
+
+/* Required for Vue 3.4, Primevue 4.2 */
+@import "./tooltip.css";
