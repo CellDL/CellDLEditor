@@ -36,6 +36,13 @@ export type EditorEditCommand = {
     }
 }
 
+export type EditorExportCommand = {
+    command: 'export'
+    options: {
+        action: string
+    }
+}
+
 export type EditorFileCommand = {
     command: 'file'
     options: {
@@ -51,7 +58,10 @@ export type EditorViewCommand = {
     options: ViewState
 }
 
-export type CellDLEditorCommand = EditorEditCommand | EditorFileCommand | EditorViewCommand
+export type CellDLEditorCommand = EditorEditCommand
+                                | EditorExportCommand
+                                | EditorFileCommand
+                                | EditorViewCommand
 
 import type { ViewState } from '@renderer/common/EditorTypes'
 export type { EditorState, ViewState } from '@renderer/common/EditorTypes'
