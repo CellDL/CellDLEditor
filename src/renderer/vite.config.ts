@@ -32,7 +32,7 @@ export default vite.defineConfig({
             target: 'esnext'
         },
         exclude: [
-            'oxigraph'
+            '*.wasm'
         ]
     },
     plugins: [
