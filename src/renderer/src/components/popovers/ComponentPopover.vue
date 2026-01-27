@@ -12,6 +12,7 @@
                         :src="template.image"
                         :aria-label="template.name"
                         :title="template.name"
+                        v-tippy="{ content: template.name, placement: 'right' }"
                         draggable="true"
                         @dragstart="dragstart"
                         @mousedown="selected"

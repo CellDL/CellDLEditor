@@ -73,7 +73,8 @@
         "systeminformation": "^5.27.11",
         "transformation-matrix": "^3.1.0",
         "ua-parser-js": "^2.0.8",
-        "vue": "3.4.21"
+        "vue": "3.4.21",
+        "vue-tippy": "^6.7.1"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.11",

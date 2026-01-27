@@ -10,7 +10,7 @@
         :id="toolId"
         :class="buttonClasses"
         :style="buttonStyle"
-        v-tooltip="{ value: prompt }"
+        v-tippy="{ content: prompt, placement: 'right' }"
         :aria-label="prompt"
         @click="toolButtonClick"
     )
