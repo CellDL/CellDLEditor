@@ -37,6 +37,7 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
     position: absolute;
     margin-left: 36px;
     z-index: 100;
+    border: 1px solid grey;
 }
 
 .left-popover.showtip::before {
