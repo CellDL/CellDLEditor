@@ -73,7 +73,7 @@ const rdfModule = {
 //==============================================================================
 
 const pythonPackages = [
-    'bg2cellml-0.8.6-py3-none-any.whl',
+    'bg2cellml-0.8.7-py3-none-any.whl',
     'flexcache-0.3-py3-none-any.whl',
     'flexparser-0.4-py3-none-any.whl',
     'lark-1.3.1-py3-none-any.whl',
@@ -94,11 +94,9 @@ import traceback
 from bg2cellml.bondgraph.framework import get_framework
 
 def get_issues(issues, debug=False) -> list[str]:
-    for issue in issues:
-        if debug:
-            return traceback.format_exception(issue)
-        else:
-            return traceback.format_exception_only(issue)
+    return [ traceback.format_exception(issue) if debug else issue.reason
+        for issue in issues
+    ]
 
 framework = await get_framework(base='${import.meta.env.BASE_URL}')
 if framework.has_issues:
