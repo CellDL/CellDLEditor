@@ -41,7 +41,7 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
 }
 
 .left-popover.showtip::before {
-    content: url("/icons/LeftPanelArrow.svg");
+    content: url("./icons/LeftPanelArrow.svg");
     display: inline-block;
     position: absolute;
     width: 20px;

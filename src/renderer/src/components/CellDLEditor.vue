@@ -37,7 +37,6 @@ import 'primeicons/primeicons.css'
 //==============================================================================
 
 import '@renderer/assets/style.css'
-import '@renderer/assets/icons.css'
 
 import { type StyleObject } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'

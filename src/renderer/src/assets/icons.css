@@ -7,21 +7,17 @@
 }
 
 .ci-cog {
-    background: url("/icons/Cog.svg");
-}
-
-.ci-left-panel-arrow {
-    background: url("/icons/LeftPanelArrow.svg");
+    background: url("./icons/Cog.svg");
 }
 
 .ci-linear-connection {
-    background: url("/icons/LinearConnection.svg");
+    background: url("./icons/LinearConnection.svg");
 }
 
 .ci-pointer {
-    background: url("/icons/Pointer.svg");
+    background: url("./icons/Pointer.svg");
 }
 
 .ci-rectilinear-connection {
-    background: url("/icons/RectilinearConnection.svg");
+    background: url("./icons/RectilinearConnection.svg");
 }

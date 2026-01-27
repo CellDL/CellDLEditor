@@ -144,7 +144,7 @@ async function toolButtonClick(e: MouseEvent) {
 }
 
 .tool-button.modal::before {
-    content: url("/icons/ModalButton.svg");
+    content: url("./icons/ModalButton.svg");
     display: inline-block;
     position: relative;
     transform: scale(0.3);
