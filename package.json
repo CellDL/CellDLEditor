@@ -1,6 +1,6 @@
 {
     "name": "@abi-software/celldl-editor",
-    "version": "0.20260127.0-vue.3.4",
+    "version": "0.20260128.1-styling",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
@@ -34,7 +34,6 @@
         "format": "bunx --bun biome format --fix --max-diagnostics=none",
         "format:check": "bunx --bun biome format --max-diagnostics=none",
         "lint": "bunx --bun biome lint --fix --error-on-warnings --max-diagnostics=none",
-        "postinstall": "bash ./scripts/postinstall.sh",
         "release": "electron-builder",
         "start": "electron-vite preview",
         "start:web": "bun build:web && cd ./src/renderer && vite preview",

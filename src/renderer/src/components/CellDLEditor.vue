@@ -4,26 +4,9 @@
             EditorToolbar.editor-bar(
                 :buttons="toolButtons"
                 type="popover"
-                @button-event="buttonEvent"
-                @popover-event="popoverEvent"
             )
             div#svg-content(ref="svgContent")
                 <!-- context-menu(id="context-menu")  -->
-            #panel-content(
-                :class="{ hidden: !panelVisible }"
-            )
-                component(
-                        v-if="panelComponent"
-                        :is="panelComponent"
-                        :toolId="panelToolId"
-                        @panel-event="panelEvent"
-                        @style-event="styleEvent"
-                    )
-            EditorToolbar.editor-bar(
-                :buttons="panelButtons"
-                type="panel"
-                @button-event="buttonEvent"
-            )
         footer.status-bar
             span#status-msg
             span#status-pos
@@ -32,81 +15,35 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import 'primeicons/primeicons.css'
-
 //==============================================================================
 
-import '@renderer/assets/style.css'
+import '../assets/style.css'
 
-import { type StyleObject } from '@editor/components/properties'
-import { CellDLDiagram } from '@editor/diagram/index'
 
-import { CellDLEditor } from '@editor/editor/index'
-import { DEFAULT_EDITOR_TOOL_ID, EDITOR_TOOL_IDS, PANEL_IDS } from '@editor/editor/index'
-import { editGuides } from '@editor/editor/editguides'
-import { undoRedo } from '@editor/editor/undoredo'
+import { type EditorToolButton } from '../common/EditorTypes'
+import EditorToolbar from './toolbar/EditorToolbar.vue'
 
-import { type EditorToolButton } from '@renderer/common/EditorTypes'
-import EditorToolbar from '@renderer/components/toolbar/EditorToolbar.vue'
-
-import ComponentPopover from '@renderer/components/popovers/ComponentPopover.vue'
-import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStylePopover.vue'
-
-import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
-
-import { componentLibraryPlugin } from '@renderer/plugins/index'
-import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
+import ConnectionStylePopover from './popovers/ConnectionStylePopover.vue'
+import { DEFAULT_CONNECTION_STYLE_DEFINITION } from './popovers/ConnectionStylePopover.vue'
 
 //==============================================================================
 
 const svgContent = vue.ref(null)
 
-let celldlDiagram: CellDLDiagram|undefined
-
 //==============================================================================
 
-function despatchToolbarEvent(type: string, source: string, value: boolean|string) {
-    document.dispatchEvent(
-        new CustomEvent('toolbar-event', {
-            detail: {
-                type,
-                source,
-                value
-            }
-        })
-    )
+enum EDITOR_TOOL_IDS {
+    SelectTool = 'select-tool',
+    DrawConnectionTool = 'draw-connection-tool',
+    AddComponentTool = 'add-component-tool'
 }
 
-//==============================================================================
+const DEFAULT_EDITOR_TOOL_ID = EDITOR_TOOL_IDS.SelectTool
 
-import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 
 function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
 }
-
-//==============================================================================
-//==============================================================================
-
-// Install our component library plugin
-
-const crtInstance = vue.getCurrentInstance()
-
-if (crtInstance !== null) {
-    const app = crtInstance.appContext.app
-
-    componentLibraryPlugin.install(app, {})
-
-    componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
-}
-
-const defaultComponent = componentLibraryPlugin.getSelectedTemplate()!
-
-//==============================================================================
-
-// Plugins need to be initialised before creating the editor
-
-let celldlEditor: CellDLEditor = new CellDLEditor()
 
 //==============================================================================
 //==============================================================================
@@ -124,35 +61,10 @@ const toolButtons = vue.ref<EditorToolButton[]>([
         prompt: connectionStylePrompt(DEFAULT_CONNECTION_STYLE_DEFINITION.name),
         icon: DEFAULT_CONNECTION_STYLE_DEFINITION.icon,
         panel: vue.markRaw(ConnectionStylePopover)
-    },
-    {
-        toolId: EDITOR_TOOL_IDS.AddComponentTool,
-        active: (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === EDITOR_TOOL_IDS.AddComponentTool,
-        prompt: defaultComponent.name,
-        image: defaultComponent.image,
-        panel: vue.markRaw(ComponentPopover)
     }
 ])
 
-//==============================================================================
-
-const panelButtons = vue.ref<EditorToolButton[]>([
-    {
-        toolId: PANEL_IDS.PropertyPanel,
-        prompt: 'Component properties',
-        icon: 'ci-cog',
-        panel: vue.markRaw(PropertiesPanel)
-    }
-])
-
-const panelComponent = vue.ref<vue.Raw<vue.Component>>()
-
-const panelVisible = vue.ref<boolean>()
-panelVisible.value = false
-
-const panelToolId = vue.ref<string>()
-
-//==============================================================================
+///==============================================================================
 
 function resetToolBars() {
     // Set the toolbar to its default tool
@@ -160,79 +72,6 @@ function resetToolBars() {
     for (const toolButton of toolButtons.value) {
         toolButton.active = (DEFAULT_EDITOR_TOOL_ID as EDITOR_TOOL_IDS) === toolButton.toolId
     }
-
-    // Hide any open panel
-    // FUTURE: reset to default panel tool
-
-    panelVisible.value = false
-}
-
-//==============================================================================
-
-function buttonEvent(toolId: string, active: boolean, newComponent: vue.Raw<vue.Component> | null) {
-    if (newComponent) {
-        // Update the RH panel to show its current component
-
-        if (active) {
-            panelComponent.value = newComponent
-            panelToolId.value = toolId
-        }
-        panelVisible.value = active
-    }
-
-    // Tell the editor that a tool has changed
-
-    despatchToolbarEvent('state', toolId, active)
-}
-
-//==============================================================================
-
-function popoverEvent(toolId: string, data: any) {
-    if (toolId === EDITOR_TOOL_IDS.DrawConnectionTool) {
-        toolButtons.value[1]!.prompt = connectionStylePrompt(data.name)
-        toolButtons.value[1]!.icon = data.icon
-
-        // Tell the editor that the connection style has changed
-
-        despatchToolbarEvent('value', toolId, data.id)
-
-    } else if (toolId === EDITOR_TOOL_IDS.AddComponentTool) {
-        toolButtons.value[2]!.prompt = data.name
-        toolButtons.value[2]!.image = data.image
-
-        // Tell the editor that the component template has changed
-
-        despatchToolbarEvent('value', toolId, data.id)
-    }
-}
-
-function panelEvent(toolId: string, itemId: string, oldValue: string, newValue: string) {
-    document.dispatchEvent(
-        new CustomEvent('panel-event', {
-            detail: {
-                type: 'value',
-                source: toolId,
-                itemId: itemId,
-                value: {
-                    oldValue,
-                    newValue
-                }
-            }
-        })
-    )
-}
-
-function styleEvent(toolId: string, object: string, styling: StyleObject) {
-    document.dispatchEvent(
-        new CustomEvent('style-event', {
-            detail: {
-                type: 'value',
-                source: toolId,
-                object,
-                styling
-            }
-        })
-    )
 }
 
 //==============================================================================
@@ -247,72 +86,6 @@ import type {
 } from '../../index'
 
 const props = defineProps<CellDLEditorProps>()
-
-//==============================================================================
-
-const emit = defineEmits<{
-    'editor-data': [data: EditorData],
-    'error': [msg: string]
-}>()
-
-vue.watch(
-    () => props.editorCommand,
-    async () => {
-        if (props.editorCommand.command === 'file') {
-            const command = props.editorCommand as EditorFileCommand
-            const options = command.options
-            if  (options.action === 'close') {
-                resetToolBars()
-                celldlDiagram = new CellDLDiagram('', '', celldlEditor)
-                await celldlEditor.editDiagram(celldlDiagram)
-            } else if (options.action === 'open') {
-                resetToolBars()
-                if (options.data !== undefined) {
-                    try {
-                        celldlDiagram = new CellDLDiagram(options?.name || '', options.data, celldlEditor)
-                        await celldlEditor.editDiagram(celldlDiagram)
-                    } catch(err) {
-                        emit('error', `Cannot open ${options?.name} -- invalid CellDL file?`)
-                    }
-                }
-            } else if (options.action === 'data') {
-                const celldl = await celldlDiagram?.serialise()
-                emit('editor-data', {
-                    data: celldl,
-                    kind: options.kind
-                } as EditorData)
-            }
-        } else if (props.editorCommand.command === 'edit') {
-            const command = props.editorCommand as EditorEditCommand
-            const options = command.options
-            if (options.action === 'clean') {
-                undoRedo.clean()
-            }
-        } else if (props.editorCommand.command === 'view') {
-            const command = props.editorCommand as EditorViewCommand
-            editGuides.setState(command.options)
-        }
-    }
-)
-
-//==============================================================================
-
-vue.onMounted(async () => {
-
-    // Tell the editor about the default connection style and component
-
-    despatchToolbarEvent('value', EDITOR_TOOL_IDS.DrawConnectionTool, DEFAULT_CONNECTION_STYLE_DEFINITION.id)
-    despatchToolbarEvent('value', EDITOR_TOOL_IDS.AddComponentTool, defaultComponent.id)
-
-    if (svgContent.value) {
-        celldlEditor.mount(svgContent.value)
-
-        // Create a new diagram in the editor's window
-        celldlDiagram = new CellDLDiagram('', '', celldlEditor)
-
-        await celldlDiagram.edit()
-    }
-})
 
 //==============================================================================
 //==============================================================================

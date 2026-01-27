@@ -9,13 +9,7 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-// Load oxigraph's WASM module before the editor is imported
-import initOxigraph from '@oxigraph/web.js'
-import * as oxigraph from '@oxigraph/web.js'
-
 const CellDLEditor = vue.defineAsyncComponent(async () => {
-    const wasm = await initOxigraph()
-    globalThis.oxigraph = oxigraph
     return import('./CellDLEditor.vue')
 })
 

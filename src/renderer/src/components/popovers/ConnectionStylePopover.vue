@@ -19,6 +19,36 @@
                         span {{ slotProps.option.name }}
 </template>
 
+<script lang="ts">
+export enum ConnectionStyle {
+    Linear = 'linear',
+    Rectilinear = 'rectilinear'
+}
+
+export interface ConnectionStyleDefinition {
+    id: ConnectionStyle
+    icon: string
+    name: string
+}
+
+export const DEFAULT_CONNECTION_STYLE_DEFINITION = {
+    id: ConnectionStyle.Rectilinear,
+    name: 'Rectilinear',
+    icon: 'ci-rectilinear-connection'
+}
+
+export const DEFAULT_CONNECTION_STYLE = DEFAULT_CONNECTION_STYLE_DEFINITION.id
+
+export const CONNECTION_STYLE_DEFINITIONS: ConnectionStyleDefinition[] = [
+    {
+        id: ConnectionStyle.Linear,
+        name: 'Linear',
+        icon: 'ci-linear-connection'
+    },
+    DEFAULT_CONNECTION_STYLE_DEFINITION
+]
+</script>
+
 <script setup lang="ts">
 import * as vue from 'vue'
 
@@ -27,12 +57,7 @@ import { type SelectChangeEvent } from 'primevue/select'
 
 import ToolPopover from '../toolbar/ToolPopover.vue'
 
-import {
-    type ConnectionStyleDefinition,
-    CONNECTION_STYLE_DEFINITIONS,
-    DEFAULT_CONNECTION_STYLE
-} from '@editor/connections/index'
-
+//==============================================================================
 //==============================================================================
 
 const selectedId: string = DEFAULT_CONNECTION_STYLE
