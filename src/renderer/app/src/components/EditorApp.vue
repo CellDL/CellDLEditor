@@ -44,6 +44,9 @@ import primeVueConfig from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice';
 import { useConfirm } from "primevue/useconfirm"
 
+import vueTippy from 'vue-tippy'
+import 'tippy.js/dist/tippy.css'
+
 //==============================================================================
 
 import '../assets/app.css'
@@ -109,7 +112,7 @@ async function testRDF() {
 //==============================================================================
 //==============================================================================
 
-// Get the current Vue app instance to use some PrimeVue plugins.
+// Get the current Vue app instance to use some PrimeVue plugins and VueTippy.
 // Setup PrimeVue confirmation service
 
 const crtInstance = vue.getCurrentInstance()
@@ -139,6 +142,8 @@ if (crtInstance !== null) {
                 options: options
             }
         })
+
+        app.use(vueTippy)
 
         app.use(ConfirmationService)
     }
