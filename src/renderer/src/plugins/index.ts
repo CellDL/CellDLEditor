@@ -108,12 +108,9 @@ class ComponentLibraryPlugin {
     getSelectedTemplate(): LibraryComponentTemplate|undefined {
         let selectedTemplate: LibraryComponentTemplate|undefined
         if (this.#componentLibraries.length &&
-            // @ts-expect-error: `componentLibraries` is at least 1 long
             this.#componentLibraries[0].templates.length) {
 
             // Select the default component template
-
-            // @ts-expect-error: `componentLibraries` is at least 1 long
             selectedTemplate = this.#componentLibraries[0].templates[0]
             if (selectedTemplate) {
                 selectedTemplate.selected = true
