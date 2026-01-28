@@ -416,7 +416,24 @@ export class BondgraphPlugin implements PluginInterface {
 
     //======================================
 
-    addDocumentMetadata(rdfStore: RdfStore) {
+    addDocumentMetadataToStore(rdfStore: RdfStore) {
+        // First remove existing statements about components in the document
+
+        rdfStore.update(`${SPARQL_PREFIXES}
+            DELETE {
+                <${this.#currentDocumentUri}> bgf:hasBondElement ?uri
+            }
+            WHERE {
+                <${this.#currentDocumentUri}> bgf:hasBondElement ?uri
+            }`)
+        rdfStore.update(`${SPARQL_PREFIXES}
+            DELETE {
+                <${this.#currentDocumentUri}> bgf:hasJunctionStructure ?uri
+            }
+            WHERE {
+                <${this.#currentDocumentUri}> bgf:hasJunctionStructure ?uri
+            }`)
+
         const statements: string[] = []
 
         // Find the BondElements in the diagram

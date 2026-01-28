@@ -499,7 +499,7 @@ export class CellDLDiagram {
             }
 
             // Add statements about the document from plugins
-            componentLibraryPlugin.addDocumentMetadata(this.rdfStore)
+            componentLibraryPlugin.addDocumentMetadataToStore(this.rdfStore)
 
             // Make sure metadata is up-to-date
             this.#saveDiagramProperties()

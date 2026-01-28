@@ -47,7 +47,7 @@ export interface PluginInterface {
 
     componentLibrary: ComponentLibrary
     newDocument: (uri: string, rdfStore: RdfStore) => void
-    addDocumentMetadata: (rdfStore: RdfStore) => void
+    addDocumentMetadataToStore: (rdfStore: RdfStore) => void
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     getObjectTemplate: (celldlObject: CellDLObject, rdfStore: RdfStore) => ObjectTemplate|undefined
@@ -130,9 +130,9 @@ class ComponentLibraryPlugin {
         }
     }
 
-    addDocumentMetadata(rdfStore: RdfStore) {
+    addDocumentMetadataToStore(rdfStore: RdfStore) {
         for (const plugin of this.#registeredPlugins.values()) {
-            plugin.addDocumentMetadata(rdfStore)
+            plugin.addDocumentMetadataToStore(rdfStore)
         }
     }
 
