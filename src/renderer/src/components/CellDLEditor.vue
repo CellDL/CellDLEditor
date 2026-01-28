@@ -32,11 +32,17 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 
-import 'primeicons/primeicons.css'
+import primeVueAuraTheme from '@primeuix/themes/aura'
+import primeVueConfig from 'primevue/config'
+
+import vueTippy from 'vue-tippy'
+import 'tippy.js/dist/tippy.css'
 
 //==============================================================================
 
 import '@renderer/assets/style.css'
+
+import * as vueCommon from '@renderer/common/vueCommon'
 
 import { type StyleObject } from '@editor/components/properties'
 import { CellDLDiagram } from '@editor/diagram/index'
@@ -57,6 +63,72 @@ import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 import { componentLibraryPlugin } from '@renderer/plugins/index'
 import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
 
+//==============================================================================
+
+import type {
+    CellDLEditorProps,
+    EditorData,
+    EditorEditCommand,
+    EditorFileCommand,
+    EditorViewCommand
+} from '../../index'
+
+const props = defineProps<CellDLEditorProps>()
+
+//==============================================================================
+//==============================================================================
+
+// Get the current Vue app instance to use some PrimeVue plugins and VueTippy.
+
+const crtInstance = vue.getCurrentInstance()
+
+if (crtInstance !== null) {
+    const app = crtInstance.appContext.app
+
+    if (app.config.globalProperties.$primevue === undefined) {
+        let options = {}
+
+        if (props.theme === 'light') {
+            options = {
+                darkModeSelector: false
+            }
+        } else if (props.theme === 'dark') {
+            document.documentElement.classList.add('editor-dark-mode')
+            document.body.classList.add('editor-dark-mode')
+
+            options = {
+                darkModeSelector: '.editor-dark-mode'
+            }
+        }
+
+        app.use(primeVueConfig as unknown as vue.Plugin, {
+            theme: {
+                preset: primeVueAuraTheme,
+                options: options
+            }
+        })
+
+    }
+
+    // Setup VueTippy
+
+    app.use(vueTippy)
+
+    // Install our component library plugin manager with the Bondgraph plugin
+
+    componentLibraryPlugin.install(app, {})
+    componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
+}
+
+if (props.theme !== undefined) {
+    vueCommon.useTheme().setTheme(props.theme)
+}
+
+// Set the default component from the component library
+
+const defaultComponent = componentLibraryPlugin.getSelectedTemplate()!
+
+//==============================================================================
 //==============================================================================
 
 const svgContent = vue.ref(null)
@@ -84,23 +156,6 @@ import { DEFAULT_CONNECTION_STYLE_DEFINITION } from '@editor/connections/index'
 function connectionStylePrompt(name: string): string {
     return `Draw ${name.toLowerCase()} connection`
 }
-
-//==============================================================================
-//==============================================================================
-
-// Install our component library plugin
-
-const crtInstance = vue.getCurrentInstance()
-
-if (crtInstance !== null) {
-    const app = crtInstance.appContext.app
-
-    componentLibraryPlugin.install(app, {})
-
-    componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
-}
-
-const defaultComponent = componentLibraryPlugin.getSelectedTemplate()!
 
 //==============================================================================
 
@@ -236,18 +291,6 @@ function styleEvent(toolId: string, object: string, styling: StyleObject) {
 }
 
 //==============================================================================
-//==============================================================================
-
-import type {
-    CellDLEditorProps,
-    EditorData,
-    EditorEditCommand,
-    EditorFileCommand,
-    EditorViewCommand
-} from '../../index'
-
-const props = defineProps<CellDLEditorProps>()
-
 //==============================================================================
 
 const emit = defineEmits<{

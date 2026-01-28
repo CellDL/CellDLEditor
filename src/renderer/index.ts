@@ -74,11 +74,16 @@ export type { EditorState, ViewState } from '@renderer/common/EditorTypes'
 
 //==============================================================================
 
+export type Theme = 'light' | 'dark' | 'system';
+
+//==============================================================================
+
 export { CellDLEditor }
 export default CellDLEditor
 
 export interface CellDLEditorProps {
     editorCommand: CellDLEditorCommand,
+    theme?: Theme
 }
 
 import { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'

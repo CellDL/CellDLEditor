@@ -55,18 +55,15 @@ import * as vue from 'vue'
 import * as vueusecore from '@vueuse/core'
 
 import 'primeicons/primeicons.css'
+
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import primeVueConfig from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice';
 import { useConfirm } from "primevue/useconfirm"
 
-import vueTippy from 'vue-tippy'
-import 'tippy.js/dist/tippy.css'
-
 //==============================================================================
 
 import '../assets/app.css'
-import * as vueCommon from '../common/vueCommon'
 
 import AboutDialog from './dialogs/AboutDialog.vue'
 
@@ -76,6 +73,7 @@ import type { CellDLEditorCommand, EditorData } from '../../../index'
 import type { EditorState, ViewState } from '../../../index'
 
 import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
+import * as vueCommon from '@renderer/common/vueCommon'
 
 //==============================================================================
 
@@ -117,8 +115,7 @@ async function testRDF() {
 //==============================================================================
 //==============================================================================
 
-// Get the current Vue app instance to use some PrimeVue plugins and VueTippy.
-// Setup PrimeVue confirmation service
+// Setup PrimeVue's theme and confirmation service
 
 const crtInstance = vue.getCurrentInstance()
 
@@ -147,8 +144,6 @@ if (crtInstance !== null) {
                 options: options
             }
         })
-
-        app.use(vueTippy)
 
         app.use(ConfirmationService)
     }
