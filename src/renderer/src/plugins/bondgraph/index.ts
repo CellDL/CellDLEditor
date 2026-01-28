@@ -1119,7 +1119,7 @@ export class BondgraphPlugin implements PluginInterface {
                         bgf:hasUnits ?variableUnits
                     ]
                 }
-            }`
+            } ORDER BY ?element ?parameterName ?variableName`
         ).forEach((r) => {
             this.#saveParametersAndStates(r)
         })
@@ -1144,7 +1144,7 @@ export class BondgraphPlugin implements PluginInterface {
                         bgf:hasUnits ?variableUnits
                     ]
                 }
-            }`
+            } ORDER BY ?element ?parameterName ?variableName`
         ).forEach((r) => {
             this.#saveParametersAndStates(r)
         })
