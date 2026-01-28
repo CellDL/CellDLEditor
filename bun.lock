@@ -55,6 +55,8 @@
         "vite": "^7.2.7",
       },
       "peerDependencies": {
+        "@primeuix/themes": "^2.0.2",
+        "primevue": "4.2.5",
         "vue": "3.4.21",
       },
     },
