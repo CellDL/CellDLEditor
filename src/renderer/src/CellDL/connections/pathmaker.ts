@@ -165,13 +165,11 @@ export class PathMaker {
 
     static validStartObject(celldlObject: CellDLObject): PathNode | null {
         if (celldlObject.isConnectable && !celldlObject.isConduit) {
-            // ???????????
             if (PathMaker.#checkMaxConnections(<CellDLConnectedObject>celldlObject)) {
                 return new PathNode(<CellDLConnectedObject>celldlObject)
             }
-        } else {
-            //alert.warn(`${celldlObject.name} cannot start a path`)
-            alert.warn('Cannot start a path...') // Need to know template name...
+        } else if (!celldlObject.isConnection) {
+            alert.tooltip('Component cannot start a path')
         }
         return null
     }
@@ -187,20 +185,23 @@ export class PathMaker {
 
     validPathNode(celldlObject: CellDLObject): PathNode | null {
         if (!celldlObject.isConnectable) {
-            alert.warn(`${celldlObject.id} not allowed to be connected...`)
+            if (!celldlObject.isConnection) {
+                alert.tooltip('Component does not allow connections')
+            }
             return null
         } else if (this.#currentSvgPath === null) {
             return null
         // biome-ignore lint/style/noNonNullAssertion: nodes array is not empty
         } else if (celldlObject.id === this.#nodes[0]!.id) {
             if (this.#nodes.length < 2) {
-                alert.warn('Path cannot directly loop to start object')
+                alert.tooltip('Path cannot directly loop to start component')
                 return null
             }
         } else if (this.#objectIds.includes(celldlObject.id)) {
-            alert.warn(`${celldlObject.id} is already on the path`)
+            alert.tooltip('Component is already on the path')
             return null
         }
+        // Check with plugins that (source --> object) would be valid.
         if (!PathMaker.#checkMaxConnections(<CellDLConnectedObject>celldlObject)) {
             return null
         }
