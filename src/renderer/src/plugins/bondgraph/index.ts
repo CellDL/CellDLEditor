@@ -128,24 +128,24 @@ for (const [path, data] of Object.entries(BG_RDF_TEMPLATE_SOURCES)) {
 //==============================================================================
 
 export class BGBaseComponent {
-    #defaultSymbol: string
     #name: string|undefined
     #nodeType: string
     #numPorts: number
     #style: BGElementStyle
+    #symbol: string
     #type: string
 
     constructor(template: BGLibraryComponentTemplate, name: string, nodeType: string) {
         this.#name = name
         this.#nodeType = nodeType
-        this.#defaultSymbol = template.symbol
+        this.#symbol = template.symbol
         this.#style = template.style
         this.#type = template.type
         this.#numPorts = template.numPorts
     }
 
-    get defaultSymbol() {
-        return this.#defaultSymbol
+    get symbol() {
+        return this.#symbol
     }
 
     get isBondElement() {
@@ -199,8 +199,8 @@ type ElementTemplate = ElementTypeName & {
     value?: Variable
     parameters: IdVariableMap
     states: IdVariableMap
+    symbol: string
     defaultStyle: BGElementStyle
-    defaultSymbol: string
     baseComponentType: string
     numPorts: number
 }
@@ -859,8 +859,8 @@ export class BondgraphPlugin implements PluginInterface {
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
         const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
         const symbol = pluginData?.symbol
-                     ?? pluginData.elementTemplate?.defaultSymbol
-                     ?? baseComponent.defaultSymbol
+                     ?? pluginData.elementTemplate?.symbol
+                     ?? baseComponent.symbol
         let svgData = ''
         try {
             svgData = svgImage(symbol, species, location,
@@ -955,10 +955,10 @@ export class BondgraphPlugin implements PluginInterface {
         let newSymbol: string|undefined
         if (this.#elementTemplates.has(value.newValue)) {
             pluginData.elementTemplate = this.#elementTemplates.get(value.newValue)!
-            newSymbol = pluginData.elementTemplate.defaultSymbol
+            newSymbol = pluginData.elementTemplate.symbol
         }
         if (newSymbol === undefined) {
-            newSymbol = baseComponent.defaultSymbol
+            newSymbol = baseComponent.symbol
         }
         if (oldSymbol !== newSymbol) {
             pluginData.symbol = newSymbol
@@ -1097,7 +1097,7 @@ export class BondgraphPlugin implements PluginInterface {
                     parameters: new Map(),
                     states: new Map(),
                     defaultStyle: component.style,
-                    defaultSymbol: symbol ? symbol.value : component.defaultSymbol,
+                    symbol: symbol ? symbol.value : component.symbol,
                     baseComponentType: component.type,
                     numPorts: component.numPorts
                 }
