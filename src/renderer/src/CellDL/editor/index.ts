@@ -884,18 +884,19 @@ export class CellDLEditor {
     }
 
     #keyDownEvent(event: KeyboardEvent) {
-        if (event.key === 'Backspace') {
+        if (this.#editorState === EDITOR_STATE.DrawPath
+         && (event.key === 'Escape' || event.key === 'Backspace')) {
+            if (this.#pathMaker) {
+                // Remove any partial path
+                this.#pathMaker.close()
+                this.#pathMaker = null
+            }
+        } else if (event.key === 'Backspace') {
             if (this.#haveFocus) {
                 this.#deleteSelectedObjects()
             } else if (event.target === document.body) {
                 // Prevent the default browser action (navigating back)
                 event.preventDefault()
-            }
-        } else if (this.#editorState === EDITOR_STATE.DrawPath && event.key === 'Escape') {
-            if (this.#pathMaker) {
-                // Remove any partial path
-                this.#pathMaker.close()
-                this.#pathMaker = null
             }
         }
     }
