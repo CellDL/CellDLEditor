@@ -171,7 +171,6 @@ export class CellDLEditor {
 **/
         // Add a handler for events from toolbar buttons
         document.addEventListener('toolbar-event', this.#toolBarEvent.bind(this))
-        // @ts-expect-error: event passed to handler is a custom event
         document.addEventListener('component-selected', this.#componentTemplateSelectedEvent.bind(this))
         document.addEventListener('component-drag', this.#componentTemplateDragEvent.bind(this))
 
@@ -698,7 +697,6 @@ export class CellDLEditor {
         } else if (this.#selectionBox?.pointerEvent(event, this.#domToSvgCoords(event))) {
             return
         }
-
 
         if (this.#editorState === EDITOR_STATE.DrawPath) {
             if (
