@@ -470,7 +470,7 @@ export class CellDLEditor {
         }
     }
 
-    #showTooltip(msg: string, style: string = '') {
+    showTooltip(msg: string, style: string = '') {
         if (this.#tooltip) {
             this.#tooltip.value.setContent(msg)
             this.#tooltip.value.show()
@@ -488,7 +488,7 @@ export class CellDLEditor {
         }
     }
 
-    #hideTooltip() {
+    hideTooltip() {
         if (this.#tooltip) {
             this.#tooltip.value.hide()
         }
@@ -686,7 +686,7 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-            this.#hideTooltip()
+            this.hideTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()
             }
