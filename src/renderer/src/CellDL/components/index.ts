@@ -26,12 +26,8 @@ import type { Constructor, StringProperties } from '@renderer/common/types'
 
 //==============================================================================
 
-export interface NewObjectClass {
+export interface ObjectTemplate {
     CellDLClass: Constructor<CellDLObject>
-    type: string
-}
-
-export interface ObjectTemplate extends NewObjectClass {
     description?: string
     image?: string
     metadataProperties: MetadataPropertiesMap

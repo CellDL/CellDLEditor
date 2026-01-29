@@ -62,7 +62,7 @@ import { type CellDLEditor, notifyChanges } from '@editor/editor/index'
 import { editGuides } from '@editor/editor/editguides'
 import { type EditorUndoAction, undoRedo } from '@editor/editor/undoredo'
 
-import type { NewObjectClass, ObjectTemplate } from '@editor/components/index'
+import type { ObjectTemplate } from '@editor/components/index'
 
 import { componentLibraryPlugin } from '@renderer/plugins/index'
 
@@ -638,10 +638,8 @@ export class CellDLDiagram {
             }
         }
         const compartment = this.#addNewObject(
-            compartmentGroup,
-            {
+            compartmentGroup, {
                 CellDLClass: CellDLCompartment,
-                type: CellDLCompartment.celldlType.uri,
                 metadataProperties: MetadataPropertiesMap.fromProperties([
                     [CELLDL.uri('hasInterface'), interfacePorts.map((p) => p.uri)]
                 ])
@@ -680,10 +678,8 @@ export class CellDLDiagram {
             [CELLDL.uri('hasIntermediate'), connectedObjects.slice(1, -1).map((c) => c.uri)]
         ])
         const connection = this.#addNewObject(
-            svgElement,
-            {
+            svgElement, {
                 CellDLClass: CellDLConnection,
-                type: CellDLConnection.celldlType.uri,
                 metadataProperties
             },
             false
@@ -694,15 +690,12 @@ export class CellDLDiagram {
         return connection
     }
 
-    #createPort<T extends CellDLConnectedObject>(newObjectClass: NewObjectClass, point: PointLike): T {
+    #createPort<T extends CellDLConnectedObject>(newObjectClass: Constructor<CellDLObject>, point: PointLike): T {
         const connector = this.#addNewObject(
-            svgCircleElement(point, 0, { id: this.#nextIdentifier() }),
-            Object.assign(
-                {
-                    metadataProperties: new MetadataPropertiesMap()
-                },
-                newObjectClass
-            ),
+            svgCircleElement(point, 0, { id: this.#nextIdentifier() }), {
+                CellDLClass: newObjectClass,
+                metadataProperties: new MetadataPropertiesMap()
+            },
             false
         ) as T
         this.#addMoveableObject(connector)
@@ -710,23 +703,11 @@ export class CellDLDiagram {
     }
 
     createInterfacePort(point: PointLike): CellDLInterface {
-        return this.#createPort<CellDLInterface>(
-            {
-                CellDLClass: CellDLInterface,
-                type: CellDLInterface.celldlType.uri
-            },
-            point
-        )
+        return this.#createPort<CellDLInterface>(CellDLInterface, point)
     }
 
     createUnconnectedPort(point: PointLike): CellDLUnconnectedPort {
-        return this.#createPort<CellDLUnconnectedPort>(
-            {
-                CellDLClass: CellDLUnconnectedPort,
-                type: CellDLUnconnectedPort.celldlType.uri
-            },
-            point
-        )
+        return this.#createPort<CellDLUnconnectedPort>(CellDLUnconnectedPort, point)
     }
 
     #addConnectionToCompartment(
