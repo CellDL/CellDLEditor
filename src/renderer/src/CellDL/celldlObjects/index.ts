@@ -303,9 +303,9 @@ export class CellDLObject {
         const metadataProperties = properties.copy()
         metadataProperties.setProperty(RDF.uri('type'), this.#celldlType, true)
         this.#metadataProperties = metadataProperties
-        const label = properties.get(RDFS.uri('label').value) || 0
-        if ($rdf.isLiteral(label)) {
-            this.#label = label.value
+        const label = properties.get(RDFS.uri('label').value)
+        if (label && $rdf.isLiteral(label)) {
+            this.#label = (label as $rdf.Literal).value
         }
     }
 }
