@@ -68,11 +68,11 @@ svg {
 .active:not(.celldl-Connection) {
     stroke: var(--active) !important;
 }
-.highlight:not(.celldl-Connection) {
-    stroke: var(--highlighted) !important;
-}
 .selected:not(.celldl-Connection) {
     stroke: var(--selected) !important;
+}
+.highlight:not(.celldl-Connection) {
+    stroke: var(--highlighted) !important;
 }
 .active.selected:not(.celldl-Connection) {
     stroke: var(--active-selected) !important;
