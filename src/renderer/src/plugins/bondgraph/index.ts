@@ -131,6 +131,7 @@ export class BGBaseComponent {
     #defaultSymbol: string
     #name: string|undefined
     #nodeType: string
+    #numPorts: number
     #style: BGElementStyle
     #type: string
 
@@ -140,6 +141,7 @@ export class BGBaseComponent {
         this.#defaultSymbol = template.symbol
         this.#style = template.style
         this.#type = template.type
+        this.#numPorts = template.numPorts
     }
 
     get defaultSymbol() {
@@ -156,6 +158,10 @@ export class BGBaseComponent {
 
     get name() {
         return this.#name
+    }
+
+    get numPorts() {
+        return this.#numPorts
     }
 
     get style() {
@@ -196,6 +202,7 @@ type ElementTemplate = ElementTypeName & {
     defaultStyle: BGElementStyle
     defaultSymbol: string
     baseComponentType: string
+    numPorts: number
 }
 
 //==============================================================================
@@ -1073,6 +1080,7 @@ export class BondgraphPlugin implements PluginInterface {
                     defaultStyle: component.style,
                     defaultSymbol: component.defaultSymbol,
                     baseComponentType: component.type,
+                    numPorts: component.numPorts
                 }
                 const domain = this.#physicalDomains.get(domainId)
                 if (domain) {

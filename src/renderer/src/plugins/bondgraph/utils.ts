@@ -40,13 +40,15 @@ export interface BGComponentDefinition {
     name: string
     symbol: string
     style: BGElementStyle,
-    noSpeciesLocation?: boolean
+    noSpeciesLocation?: boolean,
+    numPorts: number
 }
 
 export type BGLibraryComponentTemplate = LibraryComponentTemplate & {
     type: string
     symbol: string
     noSpeciesLocation?: boolean
+    numPorts: number
     style: BGElementStyle
     component?: BGBaseComponent
 }

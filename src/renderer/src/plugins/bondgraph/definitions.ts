@@ -106,6 +106,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'ZeroStorageNode_q',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
         name: 'Zero storage node',
+        numPorts: Infinity,
         symbol: 'q',
         style: ZERO_STORAGE_STYLE
     },
@@ -113,6 +114,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'ZeroStorageNode_u',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
         name: 'Zero storage node',
+        numPorts: Infinity,
         symbol: 'u',
         style: ZERO_STORAGE_STYLE
     },
@@ -120,6 +122,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'OneResistanceNode',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
         name: 'One resistance node',
+        numPorts: Infinity,
         symbol: 'v',
         style: ONE_RESISTANCE_STYLE
     },
@@ -127,6 +130,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'QuantityStore',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore',
         name: 'Static energy store',
+        numPorts: 1,
         symbol: 'q',
         style: POTENTIAL_STORAGE_STYLE
     },
@@ -134,6 +138,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'ZeroNode',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode',
         name: 'Zero node',
+        numPorts: Infinity,
         symbol: 'u',
         style: POTENTIAL_STYLE
     },
@@ -141,6 +146,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'OneNode',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneNode',
         name: 'One node',
+        numPorts: Infinity,
         symbol: 'v',
         style: FLOW_STYLE
     },
@@ -148,6 +154,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'Resistance',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Resistance',
         name: 'Resistance',
+        numPorts: 1,
         symbol: 'R',
         style: RESISTANCE_STYLE
     },
@@ -155,6 +162,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'Reaction',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Reaction',
         name: 'Reaction',
+        numPorts: 2,
         symbol: 'v',
         style: REACTION_STYLE
     },
@@ -162,6 +170,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'TransformNode',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode',
         name: 'Transform node',
+        numPorts: 2,
         symbol: 'k',
         style: SCALE_STYLE,
         noSpeciesLocation: true
@@ -170,6 +179,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'FlowStore',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore',
         name: 'Dynamic energy store',
+        numPorts: 1,
         symbol: 'L',
         style: KINETIC_STORAGE_STYLE
     },
@@ -177,6 +187,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'PotentialSource',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource',
         name: 'Potential source',
+        numPorts: 1,
         symbol: 'u',
         style: POTENTIAL_STYLE,
     },
@@ -184,6 +195,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         id: 'FlowSource',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource',
         name: 'Flow source',
+        numPorts: 1,
         symbol: 'v',
         style: FLOW_STYLE,
     }
