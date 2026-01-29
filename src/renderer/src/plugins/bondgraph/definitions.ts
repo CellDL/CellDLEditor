@@ -101,7 +101,7 @@ const ZERO_STORAGE_STYLE: BGElementStyle = {
 
 //==============================================================================
 
-export const BONDGRAPH_ICON_DEFINITIONS: BGComponentDefinition[] = [
+export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
     {
         id: 'ZeroStorageNode_q',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',

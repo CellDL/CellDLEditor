@@ -54,12 +54,12 @@ import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from
 import type { PluginInterface } from '@renderer/plugins/index'
 
 import {
-    BONDGRAPH_ICON_DEFINITIONS,
+    BONDGRAPH_COMPONENT_DEFINITIONS,
     DEFAULT_LOCATION,
     DEFAULT_SPECIES,
     definitionToLibraryTemplate,
     svgImage
-} from './icons'
+} from './definitions'
 import type {
     BGComponentLibrary,
     BGLibraryComponentTemplate,
@@ -293,7 +293,7 @@ export class BondgraphPlugin implements PluginInterface {
     #componentLibrary: BGComponentLibrary = {
         id: this.id,
         name: 'Bondgraph Elements',
-        templates: BONDGRAPH_ICON_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
+        templates: BONDGRAPH_COMPONENT_DEFINITIONS.map(defn => definitionToLibraryTemplate(defn))
     }
     #bondgraph_component_templates: Map<string, BGLibraryComponentTemplate> = new Map(
         this.#componentLibrary.templates.map((c: BGLibraryComponentTemplate) => [c.id, c])
