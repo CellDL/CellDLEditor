@@ -44,11 +44,7 @@ export namespace alert {
 
     export function tooltip(msg: string) {
         if (CellDLEditor.instance) {
-            if (msg !== '') {
-                CellDLEditor.instance.showTooltip(msg, 'error')
-            } else {
-                CellDLEditor.instance.hideTooltip()
-            }
+            CellDLEditor.instance.showTooltip(msg, 'error')
         }
     }
 
