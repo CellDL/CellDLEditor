@@ -20,6 +20,7 @@ limitations under the License.
 /** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 
 import * as vue from 'vue'
+import { useTippy } from "vue-tippy"
 
 import '@renderer/assets/svgContent.css'
 
@@ -157,6 +158,10 @@ export class CellDLEditor {
     #openPanelId: PANEL_IDS | null = null
     #propertiesPanel: ObjectPropertiesPanel = new ObjectPropertiesPanel()
 
+    #tooltip: vue.Ref|undefined
+    #tooltipElement: HTMLElement|undefined
+    #tooltipStyle: string = ''
+
     constructor() {
         CellDLEditor.instance = this
 
@@ -209,6 +214,22 @@ export class CellDLEditor {
         this.#container.addEventListener('dragover', this.#appDragOverEvent.bind(this))
         this.#container.addEventListener('drop', this.#appDropEvent.bind(this))
 
+        // Create a tooltip
+
+        const { tippy } = useTippy(this.#container, {
+            content: '',
+            animation: 'none',
+            duration: [0, 0],
+            showOnCreate: false,
+            hideOnClick: false,
+            trigger: 'manual',
+            arrow: true,
+            followCursor: true
+        })
+        if (tippy.value) {
+            this.#tooltip = tippy
+            this.#tooltipElement = this.#tooltip.value.popper
+        }
 /**
 
         // Handle context menu events
@@ -235,10 +256,6 @@ export class CellDLEditor {
             }
             this.#contextMenu.close()
         })
-
-        // Create a tooltip
-        this.#currentTooltip = document.createElement('x-tooltip') as XTooltipElement
-        this.#container.append(this.#currentTooltip)
 **/
     }
 
@@ -454,28 +471,28 @@ export class CellDLEditor {
         }
     }
 
-    showTooltip(msg: string, style: string = '') {
-        if (this.#pointerPosition) {
-            this.#showTooltip(this.#pointerPosition, msg, ['warn', 'error'].includes(style) ? 'error' : 'hint')
+    #showTooltip(msg: string, style: string = '') {
+        if (this.#tooltip) {
+            this.#tooltip.value.setContent(msg)
+            this.#tooltip.value.show()
+            if (this.#tooltipElement) {
+                if (this.#tooltipStyle !== '') {
+                    this.#tooltipElement.classList.remove(this.#tooltipStyle)
+                    this.#tooltipStyle = ''
+                }
+                if (style !== '') {
+                    const tooltipStyle = `tooltip-${style}`
+                    this.#tooltipElement.classList.add(tooltipStyle)
+                    this.#tooltipStyle = tooltipStyle
+                }
+            }
         }
     }
 
-    #showTooltip(_context: DOMPoint | DOMRect | Element, _content: string, _type: string = 'hint') {
-/**
-        if (this.#currentTooltip && content.trim() !== '') {
-            this.#currentTooltip.innerHTML = `<x-message>${content}</x-message>`
-            this.#currentTooltip.type = type
-            setTimeout(() => {
-                this.#currentTooltip!.open(context, false)
-            }, 1)
+    #hideTooltip() {
+        if (this.#tooltip) {
+            this.#tooltip.value.hide()
         }
-**/
-    }
-
-    #closeTooltip() {
-//        if (this.#currentTooltip) {
-//            this.#currentTooltip.close(false)
-//        }
     }
 
     #domToSvgCoords(domCoords: PointLike): DOMPoint {
@@ -673,7 +690,7 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-            this.#closeTooltip()
+            this.#hideTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()
             }

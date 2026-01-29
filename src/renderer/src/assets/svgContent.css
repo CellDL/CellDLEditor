@@ -1,3 +1,7 @@
+:root {
+    --tooltip-error-background: darkred;
+}
+
 svg {
     background-color: #eee;
     user-select: none;
@@ -123,4 +127,11 @@ svg {
     opacity: 1;
     stroke: yellow;
     stroke-opacity: 1;
+}
+
+.tooltip-error > .tippy-box {
+    background-color: var(--tooltip-error-background);
+}
+.tooltip-error > .tippy-box > .tippy-arrow {
+    color: var(--tooltip-error-background);
 }
