@@ -142,6 +142,7 @@ export class PathMaker {
         this.#nodes.push(startNode)
         this.#objectIds.push(startNode.id)
         this.#lastNode = startNode
+        // biome-ignore lint/style/noNonNullAssertion: node has an SVG element
         this.#lastNodeElement = startNode.celldlSvgElement!
         this.#style = style
     }
@@ -195,7 +196,8 @@ export class PathMaker {
             return null
         } else if (this.#currentSvgPath === null) {
             return null
-        } else if (celldlObject.id == this.#nodes[0]!.id) {
+        // biome-ignore lint/style/noNonNullAssertion: nodes array is not empty
+        } else if (celldlObject.id === this.#nodes[0]!.id) {
             if (this.#nodes.length < 2) {
                 alert.warn('Path cannot directly loop to start object')
                 return null
@@ -290,9 +292,11 @@ export class PathMaker {
 
     #setFirstPoints(currentObject: CellDLConnectedObject, finishing: boolean = false, rectilinear: boolean) {
         // Called when no path points have been set
+        // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
         const objectCentroid = currentObject.celldlSvgElement!.centroid
         let firstPoint = this.#lastNodeElement.boundaryIntersections(objectCentroid)[0]
         if (firstPoint) {
+            // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
             let currentPoint = currentObject.celldlSvgElement!.boundaryIntersections(firstPoint)[0]
             let midPoints: PathPoint[] = []
             if (rectilinear) {
@@ -304,12 +308,15 @@ export class PathMaker {
                 const startFromEnd = this.#constrainAngle(objectCentroid, this.#lastNodeElement.centroid, true, true)
                 firstPoint = this.#lastNodeElement.boundaryIntersections(endFromStart)[0]
                 if (firstPoint) {
+                    // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
                     if (currentObject.celldlSvgElement!.containsPoint(endFromStart)) {
                         midPoints = this.#splitPath(endFromStart, startFromEnd)
+                        // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
                         currentPoint = currentObject.celldlSvgElement!.boundaryIntersections(startFromEnd)[0]
                     } else {
                         // Start and end objects are separate enough to just need a corner point to change path direction
                         midPoints = [new PathPoint(endFromStart)]
+                        // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
                         currentPoint = currentObject.celldlSvgElement!.boundaryIntersections(endFromStart)[0]
                     }
                 }
@@ -323,6 +330,7 @@ export class PathMaker {
 
     #addPoint(point: PointLike, rectilinear: boolean): Point {
         let end = Point.fromPoint(point)
+        // biome-ignore lint/style/noNonNullAssertion: pathPoints array has elements
         const lastPathPoint = this.#pathPoints.at(-1)!
         const lastPoint = lastPathPoint.point
         if (this.#rectilinearDirn.toUpperCase().startsWith('H') && lastPoint.x === point.x) {
@@ -354,7 +362,8 @@ export class PathMaker {
                 addedPoints = true
             }
         } else {
-            const lastPathPoint = this.#pathPoints.at(-1)
+            // biome-ignore lint/style/noNonNullAssertion: pathPoints array has elements
+            const lastPathPoint = this.#pathPoints.at(-1)!
             if (!lastPathPoint.objectContainsPoint(point)) {
                 this.#addPoint(point, rectilinear)
                 addedPoints = true
@@ -378,6 +387,7 @@ export class PathMaker {
                 this.#setCurrentSvgPath([])
             }
         } else {
+            // biome-ignore lint/style/noNonNullAssertion: pathPoints array has elements
             const lastPathPoint = this.#pathPoints.at(-1)!
             const lastPoint = lastPathPoint.point
             if (
@@ -399,12 +409,15 @@ export class PathMaker {
             // If rectilinear will add points to align path
             this.#setFirstPoints(object, true, rectilinear)
         } else {
+            // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
             const centroid = object.celldlSvgElement!.centroid
-            const prevPathPoint = this.#pathPoints.at(-1)
+            // biome-ignore lint/style/noNonNullAssertion: pathPoints array has elements
+            const prevPathPoint = this.#pathPoints.at(-1)!
             let prevPoint = prevPathPoint.point
             if (rectilinear) {
                 // Adjust previous point to align with endObject
                 let nextPoint = this.#constrainAngle(prevPoint, centroid, rectilinear, true)
+                // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
                 if (object.celldlSvgElement!.containsPoint(nextPoint)) {
                     nextPoint = this.#constrainAngle(centroid, prevPoint, rectilinear, true)
                     this.#changeDirection()
@@ -414,6 +427,7 @@ export class PathMaker {
                 }
                 prevPoint = nextPoint
             }
+            // biome-ignore lint/style/noNonNullAssertion: object has an SVG element
             const lastPoint = object.celldlSvgElement!.boundaryIntersections(prevPoint)[0]
             if (lastPoint) {
                 // no lastPoint if centroid, but dirn set...
@@ -429,7 +443,8 @@ export class PathMaker {
         this.#nodes.push(node)
         this.#objectIds.push(node.id)
         this.#lastNode = node
-        this.#lastNodeElement = node.celldlSvgElement
+        // biome-ignore lint/style/noNonNullAssertion: node has an SVG element
+        this.#lastNodeElement = node.celldlSvgElement!
 
         const lastPoints = this.#pathPoints.slice(-2)
         if (rectilinear) {
@@ -456,16 +471,23 @@ export class PathMaker {
         }
 
         // The last path segment has an arrowhead
+        // biome-ignore lint/style/noNonNullAssertion: edge has an SVG path
         this.#edges[this.#edges.length - 1]!.svgPath!.classList.add('arrow')
 
         // When multiple edges we return a SVG group containing the paths
         let svgElement: SVGGraphicsElement
-        if (this.#edges.length == 1) {
+        if (this.#edges.length === 1) {
+            // biome-ignore lint/style/noNonNullAssertion: edge has an SVG path
             svgElement = this.#edges[0]!.svgPath!
         } else {
             svgElement = document.createElementNS(SVG_URI, 'g') as SVGGraphicsElement
-            this.#edges.forEach((edge) => edge.svgPath!.classList.add('parent-id'))
-            this.#edges.forEach((edge) => svgElement.appendChild(edge.svgPath!))
+            this.#edges.forEach((edge) => {
+                edge.svgPath?.classList.add('parent-id')
+            })
+            this.#edges.forEach((edge) => {
+                // biome-ignore lint/style/noNonNullAssertion: edge has an SVG path
+                svgElement.appendChild(edge.svgPath!)
+            })
         }
         svgElement.classList.add(this.#style)
 
@@ -493,6 +515,7 @@ export class PathMaker {
         const lastPointIndex = this.#pathPoints.length - 1
         const connector = celldlDiagram.createUnconnectedPort(this.#pathPoints[lastPointIndex]!.point)
         if (connector) {
+            // biome-ignore lint/style/noNonNullAssertion: connector has an SVG element
             const pathEnd = connector.celldlSvgElement!.boundaryIntersections(
                 this.#pathPoints[lastPointIndex - 1]!.point
             )[0]
