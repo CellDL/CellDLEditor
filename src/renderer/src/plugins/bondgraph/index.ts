@@ -755,7 +755,7 @@ export class BondgraphPlugin implements PluginInterface {
             if (itemId === item.itemId) {
                 alert.clear()
                 if (itemId === BG_INPUT.ElementType) {
-                    this.#updateElementType(item, value, celldlObject, rdfStore)
+                    await this.#updateElementType(item, value, celldlObject, rdfStore)
                 } else if (itemId === BG_INPUT.ElementSpecies) {
                     const errorMsg = await this.#updateSvgElement(celldlObject, value.newValue, pluginData.location)
                     if (errorMsg === '') {
@@ -858,7 +858,9 @@ export class BondgraphPlugin implements PluginInterface {
 
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
         const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
-        const symbol = pluginData?.symbol ?? baseComponent.defaultSymbol
+        const symbol = pluginData?.symbol
+                     ?? pluginData.elementTemplate?.defaultSymbol
+                     ?? baseComponent.defaultSymbol
         let svgData = ''
         try {
             svgData = svgImage(symbol, species, location,
@@ -922,7 +924,7 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    #updateElementType(_itemTemplate: ItemDetails, value: ValueChange,
+    async #updateElementType(_itemTemplate: ItemDetails, value: ValueChange,
                        celldlObject: CellDLObject, rdfStore: RdfStore) {
         const objectUri = celldlObject.uri.toString()
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
@@ -936,20 +938,35 @@ export class BondgraphPlugin implements PluginInterface {
         } else if (this.#baseComponents.has(value.oldValue)) {
             deleteTriples.push(`${objectUri} a <${value.oldValue}>`)
         }
+        const oldSymbol = pluginData.symbol
+        if (oldSymbol) {
+            deleteTriples.push(`${objectUri} bgf:hasSymbol "${oldSymbol}"`)
+        }
         rdfStore.update(`${SPARQL_PREFIXES}
             PREFIX : <${this.#currentDocumentUri}#>
-
             DELETE DATA {
                 ${deleteTriples.join('\n')}
             }`)
 
         rdfStore.update(`${SPARQL_PREFIXES}
             PREFIX : <${this.#currentDocumentUri}#>
-
             INSERT DATA { ${objectUri} a <${value.newValue}> }
         `)
+        let newSymbol: string|undefined
         if (this.#elementTemplates.has(value.newValue)) {
-           pluginData.elementTemplate = this.#elementTemplates.get(value.newValue)!
+            pluginData.elementTemplate = this.#elementTemplates.get(value.newValue)!
+            newSymbol = pluginData.elementTemplate.defaultSymbol
+        }
+        if (newSymbol === undefined) {
+            newSymbol = baseComponent.defaultSymbol
+        }
+        if (oldSymbol !== newSymbol) {
+            pluginData.symbol = newSymbol
+            rdfStore.update(`${SPARQL_PREFIXES}
+                PREFIX : <${this.#currentDocumentUri}#>
+                INSERT DATA { ${objectUri} bgf:hasSymbol "${newSymbol}" }
+            `)
+            await this.#updateSvgElement(celldlObject, pluginData.species, pluginData.location)
         }
         celldlObject.setName(this.#getName(value.newValue))
     }
@@ -1052,12 +1069,13 @@ export class BondgraphPlugin implements PluginInterface {
     #assignTemplates() {
         for (const [base, component] of this.#baseComponents.entries()) {
             this.#query(`
-                SELECT ?element ?label ?domain ?relation WHERE {
+                SELECT ?element ?label ?symbol ?domain ?relation WHERE {
                     ?element
                         rdfs:subClassOf* ?subType ;
                         rdfs:subClassOf* <${base}> .
                     ?subType bgf:hasDomain ?domain .
                     OPTIONAL { ?element rdfs:label ?label }
+                    OPTIONAL { ?element bgf:hasSymbol ?symbol }
                     OPTIONAL { ?subType bgf:constitutiveRelation ?relation }
                     FILTER (
                         exists { ?element a bgf:ElementTemplate }
@@ -1068,6 +1086,7 @@ export class BondgraphPlugin implements PluginInterface {
                 const element = r.get('element')!
                 const domainId = r.get('domain')!.value
                 const label = r.get('label')
+                const symbol = r.get('symbol')
                 if (!this.#baseComponentToElementTemplates.has(component.type)) {
                     this.#baseComponentToElementTemplates.set(component.type, [])
                 }
@@ -1078,7 +1097,7 @@ export class BondgraphPlugin implements PluginInterface {
                     parameters: new Map(),
                     states: new Map(),
                     defaultStyle: component.style,
-                    defaultSymbol: component.defaultSymbol,
+                    defaultSymbol: symbol ? symbol.value : component.defaultSymbol,
                     baseComponentType: component.type,
                     numPorts: component.numPorts
                 }
