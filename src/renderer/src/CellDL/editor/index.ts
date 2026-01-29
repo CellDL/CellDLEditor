@@ -470,8 +470,16 @@ export class CellDLEditor {
         }
     }
 
-    showTooltip(msg: string, style: string = '') {
+    #hideTooltip() {
         if (this.#tooltip) {
+            this.#tooltip.value.hide()
+        }
+    }
+
+    showTooltip(msg: string, style: string = '') {
+        if (msg === '') {
+            this.#hideTooltip()
+        } else if (this.#tooltip) {
             this.#tooltip.value.setContent(msg)
             this.#tooltip.value.show()
             if (this.#tooltipElement) {
@@ -485,12 +493,6 @@ export class CellDLEditor {
                     this.#tooltipStyle = tooltipStyle
                 }
             }
-        }
-    }
-
-    hideTooltip() {
-        if (this.#tooltip) {
-            this.#tooltip.value.hide()
         }
     }
 
@@ -688,7 +690,7 @@ export class CellDLEditor {
             // A move finishes with pointer up
             return
         } else if (this.#notDiagramElement(element)) {
-            this.hideTooltip()
+            this.#hideTooltip()
             if (this.#activeObject && currentObject !== this.#activeObject) {
                 this.#unsetActiveObject()
             }
