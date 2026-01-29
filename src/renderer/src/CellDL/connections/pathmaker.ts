@@ -155,17 +155,12 @@ export class PathMaker {
         return this.#edges.length === 0 && this.#currentSvgPath === null
     }
 
-    static #checkMaxConnections(_celldlObject: CellDLConnectedObject): boolean {
-        // if (celldlObject.numConnections < libraryManager.objectMethods(celldlObject).maxConnections()) {
-        //     return true
-        // }
-        return true
-
-        //  An object needs the name of its template/type
-        //
-        //
-        //alert.warn(`${celldlObject.name} already has maximum number of connections`)
-        //return false
+    static #checkMaxConnections(celldlObject: CellDLConnectedObject): boolean {
+        if (celldlObject.numConnections < celldlObject.maxConnections) {
+            return true
+        }
+        alert.tooltip('Component has maximum number of connections')
+        return false
     }
 
     static validStartObject(celldlObject: CellDLObject): PathNode | null {

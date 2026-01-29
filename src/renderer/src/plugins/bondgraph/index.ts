@@ -202,7 +202,6 @@ type ElementTemplate = ElementTypeName & {
     symbol: string
     defaultStyle: BGElementStyle
     baseComponentType: string
-    numPorts: number
 }
 
 //==============================================================================
@@ -503,6 +502,12 @@ export class BondgraphPlugin implements PluginInterface {
                 ${uri} bgf:hasTarget ${connection.target!.uri.toString()} .
             }
         `)
+    }
+
+    getMaxConnections(celldlObject: CellDLObject): number {
+        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
+        return baseComponent.numPorts
     }
 
     //==========================================================================
@@ -1099,7 +1104,6 @@ export class BondgraphPlugin implements PluginInterface {
                     defaultStyle: component.style,
                     symbol: symbol ? symbol.value : component.symbol,
                     baseComponentType: component.type,
-                    numPorts: component.numPorts
                 }
                 const domain = this.#physicalDomains.get(domainId)
                 if (domain) {

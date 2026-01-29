@@ -50,6 +50,7 @@ export interface PluginInterface {
     addDocumentMetadataToStore: (rdfStore: RdfStore) => void
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
+    getMaxConnections: (celldlObject: CellDLObject) => number
     getObjectTemplate: (celldlObject: CellDLObject, rdfStore: RdfStore) => ObjectTemplate|undefined
     getObjectTemplateById: (id: string) => ObjectTemplate|undefined
     getPropertyGroups: () => PropertyGroup[]
@@ -143,6 +144,16 @@ class ComponentLibraryPlugin {
         for (const plugin of this.#registeredPlugins.values()) {
             plugin.deleteConnection(connection, rdfStore)
         }
+    }
+
+    getMaxConnections(celldlObject: CellDLObject): number {
+        for (const pluginId of celldlObject.pluginIds) {
+            const plugin = this.#registeredPlugins.get(pluginId)
+            if (plugin) {
+                return plugin.getMaxConnections(celldlObject)
+            }
+        }
+        return Infinity
     }
 
     //==========================================================================

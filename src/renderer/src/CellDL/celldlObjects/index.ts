@@ -31,11 +31,11 @@ import type { ConnectionStyle } from '@editor/connections/index'
 import type { CellDLDiagram } from '@editor/diagram/index'
 import { SvgConnection } from '@editor/SVGElements/svgconnection'
 import type { CellDLSVGElement } from '@editor/SVGElements/index'
-import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 import * as $rdf from '@renderer/metadata/index'
 import type { MetadataPropertiesMap, NamedNode } from '@renderer/metadata/index'
 import { CELLDL, RDF, RDFS } from '@renderer/metadata/index'
+import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 //==============================================================================
 
@@ -356,6 +356,7 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     static celldlType = 'Connector'
 
     #connections: Map<string, CellDLConnection> = new Map()
+    #maxConnections: number|undefined
 
     toString(): string {
         return `${super.toString()}  Connections: ${[...this.#connections.keys()].join(', ')}`
@@ -370,7 +371,10 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     }
 
     get maxConnections(): number {
-        return Infinity // WIP...   this.objectTemplate?.maxConnections || Infinity
+        if (this.#maxConnections === undefined) {
+            this.#maxConnections = componentLibraryPlugin.getMaxConnections(this)
+        }
+        return this.#maxConnections
     }
 
     get numConnections(): number {
