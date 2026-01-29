@@ -18,11 +18,8 @@ limitations under the License.
 
 ******************************************************************************/
 
-import * as $rdf from '@renderer/metadata/index'
-
 import type { CellDLObject } from '@editor/celldlObjects/index'
-import { MetadataPropertiesMap, type NamedNode } from '@renderer/metadata/index'
-import { CELLDL, RDF, RDFS } from '@renderer/metadata/index'
+import type { MetadataPropertiesMap } from '@renderer/metadata/index'
 
 import type { PointLike } from '@renderer/common/points'
 import type { Constructor, StringProperties } from '@renderer/common/types'
@@ -103,102 +100,6 @@ export function getTemplateEventDetails(id: string, target: HTMLImageElement,
         }
     }
     return details
-}
-
-//==============================================================================
-
-export class ComponentTemplate implements ObjectTemplate {
-    readonly rdfType: NamedNode
-    #constraints: MetadataPropertiesMap | null = null // <<<<<<<<<<
-    #definition: MetadataPropertiesMap = new MetadataPropertiesMap()
-    #description?: string
-    #label?: string
-    #maxConnections: number = Infinity
-    #roles: MetadataPropertiesMap | null = null
-
-    constructor(
-        readonly CellDLClass: Constructor<CellDLObject>,
-        readonly type: string
-    ) {
-        this.rdfType = $rdf.namedNode(type)
-    }
-
-    get constraints() {
-        return this.#constraints
-    }
-
-    get description() {
-        return this.#description
-    }
-
-    get label() {
-        return this.#label
-    }
-
-    get maxConnections() {
-        return this.#maxConnections
-    }
-
-    get metadataProperties(): MetadataPropertiesMap {
-        return MetadataPropertiesMap.fromProperties([[RDF.uri('type'), this.rdfType]])
-    }
-
-    get roles() {
-        return this.#roles
-    }
-
-    get templateProperties(): TemplateProperties {
-        const result: TemplateProperties = {}
-        return result
-    }
-
-    canConnect(_from: CellDLObject, _to: CellDLObject): boolean {
-        return true
-    }
-
-    copy(): ComponentTemplate {
-        const copy = new ComponentTemplate(this.CellDLClass, this.type)
-        copy.assign(this)
-        return copy
-    }
-
-    assign(other: ComponentTemplate) {
-        this.define(other.#definition)
-    }
-
-    define(definition: MetadataPropertiesMap) {
-        this.#definition = definition
-        const label = definition.getProperty(RDFS.uri('label'))
-        if (label && $rdf.isLiteral(label)) {
-            // @ts-expect-error: `label` is a Literal
-            this.#label = label.value
-        }
-        const maxConnections = definition.getProperty(CELLDL.uri('maxConnections'))
-        if (maxConnections && $rdf.isLiteral(maxConnections)) {
-            // @ts-expect-error: `maxConnections` is a Literal
-            this.#maxConnections = +maxConnections.value
-        }
-        const constraints = definition.getProperty(CELLDL.uri('hasConstraint'))
-        if (constraints instanceof MetadataPropertiesMap) {
-            this.#constraints = constraints
-        }
-        const roles = definition.getProperty(CELLDL.uri('hasRole'))
-        if (roles instanceof MetadataPropertiesMap) {
-            this.#roles = roles
-        }
-    }
-
-    updateTemplateProperties(_properties: TemplateProperties): boolean {
-        return false
-    }
-
-    updateFromMetadata(_properties: MetadataPropertiesMap): boolean {
-        return true
-    }
-
-    validateTemplateProperties(_properties: TemplateProperties) {
-        return ''
-    }
 }
 
 //==============================================================================
