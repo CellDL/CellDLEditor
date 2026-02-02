@@ -125,7 +125,7 @@ async function toolButtonClick(e: MouseEvent) {
 <style scoped>
 .tool-button {
     border-style: solid;
-    border-color: grey;
+    border-color: var(--editor-border-color);
     border-width: 0 1px 2px;
 }
 .tool-button:hover {
@@ -144,7 +144,6 @@ async function toolButtonClick(e: MouseEvent) {
 }
 
 .tool-button.modal::before {
-    content: url("./icons/ModalButton.svg");
     display: inline-block;
     position: relative;
     transform: scale(0.3);
@@ -152,6 +151,14 @@ async function toolButtonClick(e: MouseEvent) {
     height: 10px;
     top: 22px;
     left: 22px;
+}
+
+.tool-button.modal::before {
+    content: url("./icons/ModalButtonLight.svg");
+}
+
+.celldl-dark-mode .tool-button.modal::before {
+    content: url("./icons/ModalButtonDark.svg");
 }
 
 .hidden {

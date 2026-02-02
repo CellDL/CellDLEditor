@@ -1,6 +1,7 @@
 <template lang="pug">
     CellDLEditor.grow(
         :editorCommand="editorCommand"
+        :theme="theme"
         @editorData="onEditorData"
         @error="onError"
     )
@@ -38,5 +39,4 @@ function onEditorData(data: EditorData) {
 function onError(msg: string) {
     emit('error', msg)
 }
-
 </script>

@@ -7,11 +7,11 @@
 }
 
 .ci-cog {
-    background: url("./icons/Cog.svg");
+    background: url("./icons/CogLight.svg");
 }
 
 .ci-linear-connection {
-    background: url("./icons/LinearConnection.svg");
+    background: url("./icons/LinearConnectionLight.svg");
 }
 
 .ci-pointer {
@@ -19,5 +19,17 @@
 }
 
 .ci-rectilinear-connection {
-    background: url("./icons/RectilinearConnection.svg");
+    background: url("./icons/RectilinearConnectionLight.svg");
+}
+
+.celldl-dark-mode .ci-cog {
+    background: url("./icons/CogDark.svg");
+}
+
+.celldl-dark-mode .ci-linear-connection {
+    background: url("./icons/LinearConnectionDark.svg");
+}
+
+.celldl-dark-mode .ci-rectilinear-connection {
+    background: url("./icons/RectilinearConnectionDark.svg");
 }

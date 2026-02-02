@@ -22,9 +22,17 @@
                     @view-action="onViewAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
+                ToggleButton.editor-dark-selector(
+                    v-model="darkMode"
+                    offIcon="pi pi-sun"
+                    onIcon="pi pi-moon"
+                    size="small"
+                    @change="onDarkMode"
+                )
             ConfirmDialog
             CellDLEditor.grow(
                 :editorCommand="editorCommand"
+                :theme="editorTheme"
                 @editorData="onEditorData"
                 @error="onError"
             )
@@ -50,6 +58,12 @@
                     ) {{ issue }}
 </template>
 
+<style>
+    .editor-dark-selector .p-togglebutton-label {
+        display: none;
+    }
+</style>
+
 <script setup lang="ts">
 import * as vue from 'vue'
 import * as vueusecore from '@vueuse/core'
@@ -68,7 +82,7 @@ import '../assets/app.css'
 import AboutDialog from './dialogs/AboutDialog.vue'
 
 import CellDLEditor from '../../../index'
-import type { CellDLEditorCommand, EditorData } from '../../../index'
+import type { CellDLEditorCommand, EditorData, Theme } from '../../../index'
 
 import type { EditorState, ViewState } from '../../../index'
 
@@ -78,7 +92,7 @@ import * as vueCommon from '@renderer/common/vueCommon'
 //==============================================================================
 
 type IEditorAppProps = {
-    theme?: string
+    theme?: Theme
     noPython?: boolean
 }
 
@@ -117,42 +131,45 @@ async function testRDF() {
 
 // Setup PrimeVue's theme and confirmation service
 
-const crtInstance = vue.getCurrentInstance()
+const crtInstance = vue.getCurrentInstance();
 
-if (crtInstance !== null) {
-    const app = crtInstance.appContext.app
+if (crtInstance) {
+    const app = crtInstance.appContext.app;
 
-    if (app.config.globalProperties.$primevue === undefined) {
-        let options = {}
-
-        if (props.theme === 'light') {
-            options = {
-                darkModeSelector: false
-            }
-        } else if (props.theme === 'dark') {
-            document.documentElement.classList.add('editor-dark-mode')
-            document.body.classList.add('editor-dark-mode')
-
-            options = {
-                darkModeSelector: '.editor-dark-mode'
-            }
-        }
-
+    if (!app.config.globalProperties.$primevue) {
         app.use(primeVueConfig as unknown as vue.Plugin, {
             theme: {
                 preset: primeVueAuraTheme,
-                options: options
+                options: {
+                    darkModeSelector: '.celldl-dark-mode'
+                }
             }
         })
+    }
 
-        app.use(ConfirmationService)
+    if (!app.config.globalProperties.$confirm) {
+        app.use(ConfirmationService as unknown as vue.Plugin);
     }
 }
 
-if (props.theme !== undefined) {
-    vueCommon.useTheme().setTheme(props.theme)
-}
+vueCommon.useTheme().setTheme(props.theme)
+
 const confirm = useConfirm()
+
+//==============================================================================
+
+const editorTheme = vue.ref<Theme|undefined>(props.theme)
+
+const darkMode = vue.ref<boolean>(props.theme === 'dark')
+
+function onDarkMode() {
+    if (darkMode.value) {
+        editorTheme.value = 'dark'
+    } else {
+        editorTheme.value = 'light'
+    }
+    vueCommon.useTheme().setTheme(editorTheme.value)
+}
 
 //==============================================================================
 //==============================================================================

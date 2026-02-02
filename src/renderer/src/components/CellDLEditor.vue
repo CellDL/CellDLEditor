@@ -78,51 +78,44 @@ const props = defineProps<CellDLEditorProps>()
 //==============================================================================
 //==============================================================================
 
-// Get the current Vue app instance to use some PrimeVue plugins and VueTippy.
+// Setup PrimeVue's theme, vue-tippy, and our plugins
 
-const crtInstance = vue.getCurrentInstance()
+const crtInstance = vue.getCurrentInstance();
 
-if (crtInstance !== null) {
-    const app = crtInstance.appContext.app
+if (crtInstance) {
+    const app = crtInstance.appContext.app;
 
-    if (app.config.globalProperties.$primevue === undefined) {
-        let options = {}
-
-        if (props.theme === 'light') {
-            options = {
-                darkModeSelector: false
-            }
-        } else if (props.theme === 'dark') {
-            document.documentElement.classList.add('editor-dark-mode')
-            document.body.classList.add('editor-dark-mode')
-
-            options = {
-                darkModeSelector: '.editor-dark-mode'
-            }
-        }
-
+    if (!app.config.globalProperties.$primevue) {
         app.use(primeVueConfig as unknown as vue.Plugin, {
             theme: {
                 preset: primeVueAuraTheme,
-                options: options
+                options: {
+                    darkModeSelector: '.celldl-dark-mode'
+                }
             }
         })
-
     }
-
-    // Setup VueTippy
 
     app.use(vueTippy)
 
-    // Install our component library plugin manager with the Bondgraph plugin
+    // Install our component library plugin manager and the Bondgraph plugin
 
     componentLibraryPlugin.install(app, {})
     componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
 }
 
-if (props.theme !== undefined) {
-    vueCommon.useTheme().setTheme(props.theme)
-}
+vueCommon.useTheme().setTheme(props.theme)
+
+//==============================================================================
+
+vue.watch(
+    () => props.theme,
+    () => {
+        vueCommon.useTheme().setTheme(props.theme)
+    }
+)
+
+//==============================================================================
 
 // Set the default component from the component library
 
@@ -371,13 +364,13 @@ vue.onMounted(async () => {
 }
 #svg-content {
     margin:  0;
-    border: 2px solid grey;
+    border: 2px solid var(--editor-border-color);
     flex: 1;
     overflow: hidden;
 }
 #panel-content {
     width: 250px;
-    border: 2px solid grey;
+    border: 2px solid var(--editor-border-color);
     border-left-width: 1px;
     right: 38px; /* This depends on panel bar width... */
     top: 0px;
@@ -389,10 +382,10 @@ vue.onMounted(async () => {
 }
 .status-bar {
     min-height: 1.6em;
-    border-top: 1px solid gray;
+    border-top: 1px solid var(--editor-border-color);
     padding-left: 16px;
     padding-right: 16px;
-    background-color: #ECECEC;
+    background-color: var(--editor-statusbar-background);
 }
 #status-msg.error {
     color: red;

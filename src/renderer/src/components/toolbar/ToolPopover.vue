@@ -41,7 +41,6 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
 }
 
 .left-popover.showtip::before {
-    content: url("./icons/LeftPanelArrow.svg");
     display: inline-block;
     position: absolute;
     width: 20px;
@@ -49,4 +48,13 @@ showtip.value = true //CSS.supports("x: attr(x type(*))")
     top: attr(data-tip-top px);
     z-index: 99;
 }
+
+.left-popover.showtip::before {
+    content: url("./icons/LeftPanelArrowLight.svg");
+}
+
+.celldl-dark-mode .left-popover.showtip::before {
+    content: url("./icons/LeftPanelArrowDark.svg");
+}
+
 </style>
