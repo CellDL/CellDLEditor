@@ -353,7 +353,6 @@ export class CellDLDiagram {
             }
         }
         backgroundGroup.setAttribute('class', CELLDL_BACKGROUND_CLASS)
-
         this.#setLayer(CELLDL_DIAGRAM_ID)
     }
 

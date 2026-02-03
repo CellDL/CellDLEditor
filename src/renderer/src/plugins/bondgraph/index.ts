@@ -33,7 +33,7 @@ import {
     CellDLComponent,
     type CellDLConnection,
     type CellDLObject
-} from '@editor/celldlObjects/index'
+} from '@editor/celldlObjects'
 import type {
     ComponentLibrary,
     ElementTypeName,
