@@ -60,6 +60,10 @@ export interface PluginInterface {
     id: string
 
     componentLibrary: ComponentLibrary
+    getPropertyGroups: () => PropertyGroup[]
+    styleRules: () => string
+    svgDefinitions: () => string
+
     newDocument: (uri: string, rdfStore: RdfStore) => void
     addDocumentMetadataToStore: (rdfStore: RdfStore) => void
     getPluginData: (celldlObject: CellDLObject, rdfStore: RdfStore) => object
@@ -68,16 +72,14 @@ export interface PluginInterface {
     checkConnectionValid: (startObject: CellDLObject, endObject: CellDLObject) => ConnectionStatus|undefined
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     getMaxConnections: (celldlObject: CellDLObject) => number
+
     getObjectTemplateById: (id: string) => ObjectTemplate|undefined
-    getPropertyGroups: () => PropertyGroup[]
     getTemplateName: (rdfType: string) => string|undefined
     updateComponentProperties: (celldlObject: CellDLObject,
                              componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
     updateObjectProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
                                 componentProperties: PropertyGroup[], rdfStore: RdfStore) => Promise<void>
     updateComponentStyling: (celldlObject: CellDLObject, objectType: string, styling: StyleObject) =>  Promise<void>
-    styleRules: () => string
-    svgDefinitions: () => string
 }
 
 //==============================================================================

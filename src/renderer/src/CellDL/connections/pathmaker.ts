@@ -18,18 +18,18 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { SVG_URI } from '@renderer/common/svgUtils'
 import { Point, type PointLike, PointMath } from '@renderer/common/points'
 import { CONNECTION_COLOUR, CONNECTION_WIDTH } from '@renderer/common/styling'
-import { svgPath, svgPathDescription } from '@renderer/common/svgUtils'
-import { alert } from '@editor/editor/alerts'
-import type { EditorFrame } from '@editor/editor/editorframe'
-
+import { svgPath, svgPathDescription, SVG_URI } from '@renderer/common/svgUtils'
 import { CELLDL, RDF } from '@renderer/metadata/index'
 import { MetadataPropertiesMap } from '@renderer/metadata/index'
+import { componentLibraryPlugin, type connectionStatus } from '@renderer/plugins/index'
+
 import { type CellDLConnectedObject, CellDLConnection, type CellDLObject } from '@editor/celldlObjects/index'
-import type { CellDLSVGElement } from '@editor/SVGElements/index'
+import { alert } from '@editor/editor/alerts'
 import type { CellDLDiagram } from '@editor/diagram/index'
+import type { EditorFrame } from '@editor/editor/editorframe'
+import type { CellDLSVGElement } from '@editor/SVGElements/index'
 import { round } from '@editor/utils'
 
 import { ConnectionStyle } from './index'
