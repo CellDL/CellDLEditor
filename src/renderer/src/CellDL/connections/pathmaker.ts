@@ -135,6 +135,7 @@ export class PathMaker {
     #objectIds: string[] = []
     #pathPoints: PathPoint[] = []
     #rectilinearDirn: string = ''
+    #startObject: CellDLObject
     #style: string
 
     constructor(editorFrame: EditorFrame, startNode: PathNode, style: string = 'rectilinear') {
@@ -144,6 +145,7 @@ export class PathMaker {
         this.#lastNode = startNode
         // biome-ignore lint/style/noNonNullAssertion: node has an SVG element
         this.#lastNodeElement = startNode.celldlSvgElement!
+        this.#startObject = startNode.object
         this.#style = style
     }
 
@@ -191,8 +193,7 @@ export class PathMaker {
             return null
         } else if (this.#currentSvgPath === null) {
             return null
-        // biome-ignore lint/style/noNonNullAssertion: nodes array is not empty
-        } else if (celldlObject.id === this.#nodes[0]!.id) {
+        } else if (celldlObject.id === this.#startObject.id) {
             if (this.#nodes.length < 2) {
                 alert.tooltip('Path cannot directly loop to start component')
                 return null
@@ -202,6 +203,11 @@ export class PathMaker {
             return null
         }
         // Check with plugins that (source --> object) would be valid.
+        const connectionStatus = componentLibraryPlugin.checkConnectionValid(this.#startObject, celldlObject)
+        if (connectionStatus?.alert) {
+            alert.tooltip(connectionStatus.alert)
+            return null
+        }
         if (!PathMaker.#checkMaxConnections(<CellDLConnectedObject>celldlObject)) {
             return null
         }

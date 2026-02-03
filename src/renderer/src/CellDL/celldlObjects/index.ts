@@ -348,7 +348,18 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     static celldlTypeName = 'Connector'
 
     #connections: Map<string, CellDLConnection> = new Map()
-    #maxConnections: number|undefined
+    #maxConnections: number
+
+    constructor(
+        uri: NamedNode,
+        objectTemplate: ObjectTemplate,
+        options: PropertiesType = {},
+        celldlDiagram: CellDLDiagram
+    ) {
+        super(uri, objectTemplate, options, celldlDiagram)
+        this.#maxConnections = componentLibraryPlugin.getMaxConnections(this)
+    }
+
 
     toString(): string {
         return `${super.toString()}  Connections: ${[...this.#connections.keys()].join(', ')}`
@@ -363,9 +374,6 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
     }
 
     get maxConnections(): number {
-        if (this.#maxConnections === undefined) {
-            this.#maxConnections = componentLibraryPlugin.getMaxConnections(this)
-        }
         return this.#maxConnections
     }
 

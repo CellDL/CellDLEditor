@@ -51,7 +51,7 @@ import {
 import * as $rdf from '@renderer/metadata/index'
 import { BGF, RDF, SPARQL_PREFIXES, type Term } from '@renderer/metadata/index'
 import { getCurie, type MetadataProperty, MetadataPropertiesMap, RdfStore } from '@renderer/metadata/index'
-import type { PluginInterface } from '@renderer/plugins/index'
+import type { ConnectionStatus, PluginInterface } from '@renderer/plugins/index'
 
 import {
     BONDGRAPH_COMPONENT_DEFINITIONS,
@@ -501,6 +501,20 @@ export class BondgraphPlugin implements PluginInterface {
                 ${uri} bgf:hasTarget ${connection.target!.uri.toString()} .
             }
         `)
+    }
+
+    checkConnectionValid(startObject: CellDLObject, endObject: CellDLObject): ConnectionStatus|undefined {
+        const startTemplate = (<PluginData>startObject.pluginData(this.id)).elementTemplate
+        const endTemplate = (<PluginData>endObject.pluginData(this.id)).elementTemplate
+        if (startTemplate?.domain && endTemplate?.domain
+         && startTemplate.domain !== endTemplate.domain) {
+            return {
+                alert: `Cannot connect ${$rdf.fragment(startTemplate.domain)} and ${$rdf.fragment(endTemplate.domain)} physical domains`
+            }
+        }
+        return {
+            domain: startTemplate?.domain || endTemplate?.domain
+        }
     }
 
     deleteConnection(connection: CellDLConnection, rdfStore: RdfStore) {

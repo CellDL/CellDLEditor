@@ -49,6 +49,13 @@ import { CELLDL_URI, fragment, SPARQL_PREFIXES } from '@renderer/metadata/index'
 
 //==============================================================================
 
+export interface ConnectionStatus {
+    alert?: string
+    domain?: string
+}
+
+//==============================================================================
+
 export interface PluginInterface {
     id: string
 
@@ -58,6 +65,7 @@ export interface PluginInterface {
     getPluginData: (celldlObject: CellDLObject, rdfStore: RdfStore) => object
 
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
+    checkConnectionValid: (startObject: CellDLObject, endObject: CellDLObject) => ConnectionStatus|undefined
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     getMaxConnections: (celldlObject: CellDLObject) => number
     getObjectTemplateById: (id: string) => ObjectTemplate|undefined
@@ -141,9 +149,21 @@ class ComponentLibraryPlugin {
         }
     }
 
+    //==========================================================================
+
     addNewConnection(connection: CellDLConnection, rdfStore: RdfStore) {
         for (const plugin of this.#registeredPlugins.values()) {
             plugin.addNewConnection(connection, rdfStore)
+        }
+    }
+
+    checkConnectionValid(startObject: CellDLObject, endObject: CellDLObject): ConnectionStatus|undefined
+    {
+        for (const plugin of this.#registeredPlugins.values()) {
+            const status = plugin.checkConnectionValid(startObject, endObject)
+            if (status) {
+                return status
+            }
         }
     }
 
