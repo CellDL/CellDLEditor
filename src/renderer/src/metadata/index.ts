@@ -68,6 +68,15 @@ export type MetadataProperty = [NamedNode, MetadataPropertyValue]
 
 //==============================================================================
 
+export function fragment(uri: NamedNode|string): string {
+    // @ts-expect-error: uri is a NamedNode
+    const uriString = isNamedNode(uri) ? uri.value : uri
+    const parts = uriString.split('#')
+    return parts.at(-1)
+}
+
+//==============================================================================
+
 /**
  * An associative map with ``object`` values for a subject's ``predicate`` properties.
  *
