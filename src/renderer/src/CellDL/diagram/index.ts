@@ -42,7 +42,7 @@ import type { ContainedObject } from '@editor/geometry/spatialindex'
 import { lengthToPixels } from '@editor/geometry/units'
 import { type FoundPoint, PointFinder } from '@editor/geometry/pathutils'
 
-import { CELLDL_CLASS, CellDLObject } from '@editor/celldlObjects/index'
+import { CELLDL_STYLE_CLASS, CellDLObject } from '@editor/celldlObjects/index'
 import {
     CellDLAnnotation,
     CellDLComponent,
@@ -387,11 +387,11 @@ export class CellDLDiagram {
     }
 
     #setLayer(layerId: string) {
-        let newLayer = <SVGGElement>this.#svgDiagram.querySelector(`svg > g.${CELLDL_CLASS.Layer}[id="${layerId}"]`)
+        let newLayer = <SVGGElement>this.#svgDiagram.querySelector(`svg > g.${CELLDL_STYLE_CLASS.Layer}[id="${layerId}"]`)
         if (newLayer === null) {
             newLayer = document.createElementNS(SVG_URI, 'g')
             newLayer.id = layerId
-            newLayer.setAttribute('class', CELLDL_CLASS.Layer)
+            newLayer.setAttribute('class', CELLDL_STYLE_CLASS.Layer)
             this.#svgDiagram.appendChild(newLayer)
             this.#layers.set(layerId, newLayer)
             this.#orderedLayerIds.push(layerId)
@@ -400,7 +400,7 @@ export class CellDLDiagram {
     }
 
     #findLayers() {
-        for (const layer of this.#svgDiagram.querySelectorAll(`g.${CELLDL_CLASS.Layer}[id]`)) {
+        for (const layer of this.#svgDiagram.querySelectorAll(`g.${CELLDL_STYLE_CLASS.Layer}[id]`)) {
             this.#layers.set(layer.id, <SVGGElement>layer)
             this.#orderedLayerIds.push(layer.id)
         }
@@ -660,7 +660,7 @@ export class CellDLDiagram {
         }
         if (svgElements.length > 1) {
             svgElement = document.createElementNS(SVG_URI, 'g')
-            svgElement.classList.add(CELLDL_CLASS.Connection)
+            svgElement.classList.add(CELLDL_STYLE_CLASS.Connection)
             svgElements.forEach((element) => { element.classList.add('parent-id') })
             svgElements.forEach((element) => { element.classList.remove('selected') })
             svgElements.forEach((element) => { svgElement.appendChild(element) })

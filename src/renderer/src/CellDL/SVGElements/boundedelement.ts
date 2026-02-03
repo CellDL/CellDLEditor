@@ -18,7 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { CELLDL_CLASS, type CellDLConnectedObject, type CellDLObject } from '@editor/celldlObjects/index'
+import { CELLDL_STYLE_CLASS, type CellDLConnectedObject, type CellDLObject } from '@editor/celldlObjects/index'
 import { editGuides } from '@editor/editor/editguides'
 import { undoRedo, type EditorUndoAction, type UndoMovePosition } from '@editor/editor/undoredo'
 import { Point, type PointLike } from '@renderer/common/points'
@@ -65,7 +65,7 @@ export class BoundedElement extends CellDLSVGElement {
     }
 
     isMoveable(_svgElement: SVGGraphicsElement): boolean {
-        return !this.svgElement.classList.contains(CELLDL_CLASS.Interface)
+        return !this.svgElement.classList.contains(CELLDL_STYLE_CLASS.Interface)
     }
 
     startMove(svgPoint: PointLike) {

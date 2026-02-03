@@ -26,7 +26,7 @@ import { Point, type PointLike, PointMath } from '@renderer/common/points'
 import { base64Svg, svgCircle } from '@renderer/common/svgUtils'
 import type { UndoMovePosition } from '@editor/editor/undoredo'
 
-import { CELLDL_CLASS, type CellDLObject } from '@editor/celldlObjects/index'
+import { CELLDL_STYLE_CLASS, type CellDLObject } from '@editor/celldlObjects/index'
 import { Bounds, type RestrictedValue } from '@editor/geometry/index'
 import { FixedControlRect } from '@editor/geometry/controls'
 import { Transform } from '@editor/geometry/transforms'
@@ -232,11 +232,11 @@ export class CellDLSVGElement {
         // Add a dummy rectangle to a group so that it can be activated and selected
         if (
             this.#svgElement.tagName === 'g' &&
-            !this.#svgElement.classList.contains(CELLDL_CLASS.Connection) &&
+            !this.#svgElement.classList.contains(CELLDL_STYLE_CLASS.Connection) &&
             this.#svgElement.firstElementChild !== null
         ) {
             const bounds = (
-                this.#svgElement.classList.contains(CELLDL_CLASS.Compartment)
+                this.#svgElement.classList.contains(CELLDL_STYLE_CLASS.Compartment)
                     ? Bounds.fromSvg(this.#svgElement.firstChild as SVGGraphicsElement)
                     : Bounds.fromSvg(this.#svgElement)
             ).expand(SELECTION_STROKE_WIDTH / 2)
@@ -269,7 +269,7 @@ export class CellDLSVGElement {
 
     #selectionElementMembers(): SVGGraphicsElement[] {
         return this.#selectionElement.tagName === 'g' &&
-            this.#selectionElement.classList.contains(CELLDL_CLASS.Connection)
+            this.#selectionElement.classList.contains(CELLDL_STYLE_CLASS.Connection)
             ? <SVGGraphicsElement[]>[...this.#selectionElement.children]
             : [this.#selectionElement]
     }

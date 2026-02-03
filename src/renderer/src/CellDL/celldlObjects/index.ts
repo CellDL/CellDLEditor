@@ -39,7 +39,7 @@ import { componentLibraryPlugin } from '@renderer/plugins/index'
 
 //==============================================================================
 
-export enum CELLDL_CLASS {
+export enum CELLDL_STYLE_CLASS {  // these are SVG styling class names, not types
     Annotation = 'celldl-Annotation',
     Component = 'celldl-Component',
     Connector = 'celldl-Connector',
@@ -74,13 +74,13 @@ class BranchPoint implements PointLike {
 //==============================================================================
 
 export class CellDLObject {
-    static celldlClassName: CELLDL_CLASS = CELLDL_CLASS.Unknown
-    static celldlType: string = 'Object'
+    static celldlStyleClass: CELLDL_STYLE_CLASS = CELLDL_STYLE_CLASS.Unknown
+    static celldlTypeName: string = 'Object'
 
-    #celldlClassName: CELLDL_CLASS
+    #celldlStyleClass: CELLDL_STYLE_CLASS
     #celldlDiagram: CellDLDiagram
     #celldlSvgElement: CellDLSVGElement|undefined
-    #celldlType: NamedNode
+    #celldlTypeName: string
 
     #label: string | null = null
     #name: string = ''
@@ -102,11 +102,11 @@ export class CellDLObject {
         celldlDiagram: CellDLDiagram
     ) {
         this.#celldlDiagram = celldlDiagram
-        // @ts-expect-error: celldlClassName is a member of the object's constructor
-        this.#celldlClassName = this.constructor.celldlClassName
+        // @ts-expect-error: celldlStyleClass is a member of the object's constructor
+        this.#celldlStyleClass = this.constructor.celldlStyleClass
         // @ts-expect-error: celldlType is a member of the object's constructor
-        this.#celldlType = CELLDL.uri(this.constructor.celldlType)
         this.#setMetadataProperties(metadata)
+        this.#celldlTypeName = this.constructor.celldlTypeName
 
         for (const pluginId of componentLibraryPlugin.registeredPlugins) {
             this.#pluginData.set(pluginId, {})
@@ -120,11 +120,11 @@ export class CellDLObject {
     }
 
     toString(): string {
-        return `${this.#celldlClassName} ${this.id}`
+        return `${this.#celldlStyleClass} ${this.id}`
     }
 
-    get celldlClassName() {
-        return this.#celldlClassName
+    get celldlStyleClass() {
+        return this.#celldlStyleClass
     }
 
     get celldlDiagram() {
@@ -147,7 +147,7 @@ export class CellDLObject {
     }
 
     isA(rdfType: NamedNode) {
-        return this.#celldlType.equals(rdfType) || this.#metadataProperties.isA(rdfType)
+        return CELLDL.uri(this.#celldlTypeName).equals(rdfType) || this.#metadataProperties.isA(rdfType)
     }
 
     get isAlignable() {
@@ -155,16 +155,16 @@ export class CellDLObject {
     }
 
     get isAnnotation() {
-        return this.celldlClassName === CELLDL_CLASS.Annotation
+        return this.#celldlTypeName === 'Annotation'
     }
 
     get isComponent() {
         // Conduits are a component sub-class
-        return this.celldlClassName === CELLDL_CLASS.Component || this.celldlClassName === CELLDL_CLASS.Conduit
+        return this.#celldlTypeName === 'Component' || this.#celldlTypeName === 'Conduit'
     }
 
     get isConduit() {
-        return this.celldlClassName === CELLDL_CLASS.Conduit
+        return this.#celldlTypeName === 'Conduit'
     }
 
     get isConnectable() {
@@ -172,15 +172,15 @@ export class CellDLObject {
     }
 
     get isConnection() {
-        return this.celldlClassName === CELLDL_CLASS.Connection
+        return this.#celldlTypeName === 'Connection'
     }
 
     get isCompartment() {
-        return this.celldlClassName === CELLDL_CLASS.Compartment
+        return this.#celldlTypeName === 'Compartment'
     }
 
     get isInterface() {
-        return this.celldlClassName === CELLDL_CLASS.Interface
+        return this.#celldlTypeName === 'Interface'
     }
 
     get label() {
@@ -301,7 +301,7 @@ export class CellDLObject {
     #setMetadataProperties(properties: MetadataPropertiesMap) {
         // Create a new MetadataPropertiesMap rather than storing a reference
         const metadataProperties = properties.copy()
-        metadataProperties.setProperty(RDF.uri('type'), this.#celldlType, true)
+        metadataProperties.setProperty(RDF.uri('type'), CELLDL.uri(this.#celldlTypeName), true)
         this.#metadataProperties = metadataProperties
         const label = properties.get(RDFS.uri('label').value)
         if (label && $rdf.isLiteral(label)) {
@@ -342,8 +342,8 @@ export class CellDLMoveableObject extends CellDLObject {
 //==============================================================================
 
 export class CellDLAnnotation extends CellDLMoveableObject {
-    static celldlClassName = CELLDL_CLASS.Annotation
-    static celldlType = 'Annotation'
+    static celldlStyleClass = CELLDL_STYLE_CLASS.Annotation
+    static celldlTypeName = 'Annotation'
 
     get hasEditGuides() {
         return true
@@ -353,7 +353,7 @@ export class CellDLAnnotation extends CellDLMoveableObject {
 //==============================================================================
 
 export class CellDLConnectedObject extends CellDLMoveableObject {
-    static celldlType = 'Connector'
+    static celldlTypeName = 'Connector'
 
     #connections: Map<string, CellDLConnection> = new Map()
     #maxConnections: number|undefined
@@ -428,8 +428,8 @@ export class CellDLConnectedObject extends CellDLMoveableObject {
 //==============================================================================
 
 export class CellDLComponent extends CellDLConnectedObject {
-    static celldlClassName = CELLDL_CLASS.Component
-    static celldlType = 'Component'
+    static celldlStyleClass = CELLDL_STYLE_CLASS.Component
+    static celldlTypeName = 'Component'
 
     get hasEditGuides() {
         return true
@@ -439,15 +439,15 @@ export class CellDLComponent extends CellDLConnectedObject {
 //==============================================================================
 
 export class CellDLConduit extends CellDLComponent {
-    static readonly celldlClassName = CELLDL_CLASS.Conduit
-    static celldlType = 'Conduit'
+    static readonly celldlStyleClass = CELLDL_STYLE_CLASS.Conduit
+    static celldlTypeName = 'Conduit'
 }
 
 //==============================================================================
 
 export class CellDLCompartment extends CellDLConnectedObject {
-    static readonly celldlClassName = CELLDL_CLASS.Compartment
-    static celldlType = 'Compartment'
+    static readonly celldlStyleClass = CELLDL_STYLE_CLASS.Compartment
+    static celldlTypeName = 'Compartment'
 
     #interfacePorts: CellDLInterface[] = []
 
@@ -499,8 +499,8 @@ export class CellDLCompartment extends CellDLConnectedObject {
 //==============================================================================
 
 export class CellDLConnection extends CellDLObject {
-    static readonly celldlClassName = CELLDL_CLASS.Connection
-    static celldlType = 'Connection'
+    static readonly celldlStyleClass = CELLDL_STYLE_CLASS.Connection
+    static celldlTypeName = 'Connection'
 
     #connectedObjects: CellDLConnectedObject[] = []
     #svgConnection: SvgConnection|null = null
@@ -575,8 +575,8 @@ export class CellDLConnection extends CellDLObject {
 //==============================================================================
 
 export class CellDLInterface extends CellDLConnectedObject {
-    static readonly celldlClassName = CELLDL_CLASS.Interface
-    static celldlType = 'Interface'
+    static readonly celldlStyleClass = CELLDL_STYLE_CLASS.Interface
+    static celldlTypeName = 'Interface'
 
     #externalConnections: CellDLConnection[] = []
 
@@ -626,8 +626,8 @@ export class CellDLInterface extends CellDLConnectedObject {
 //==============================================================================
 
 export class CellDLUnconnectedPort extends CellDLConnectedObject {
-    static readonly celldlClassName = CELLDL_CLASS.UnconnectedPort
-    static celldlType = 'UnconnectedPort'
+    static readonly celldlStyleClass = CELLDL_STYLE_CLASS.UnconnectedPort
+    static celldlTypeName = 'UnconnectedPort'
 }
 
 //==============================================================================
