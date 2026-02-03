@@ -19,7 +19,12 @@ limitations under the License.
 ******************************************************************************/
 
 import type { PointLike } from '@renderer/common/points'
-import { CELLDL_BACKGROUND_CLASS, CellDLStylesheet } from '@renderer/common/styling'
+import {
+    CELLDL_BACKGROUND_CLASS,
+    CellDLStylesheet,
+    CONNECTION_COLOUR,
+    OLD_CONNECTION_COLOUR
+} from '@renderer/common/styling'
 import { svgCircleElement, SVG_URI, svgRectElement } from '@renderer/common/svgUtils'
 import type { Constructor, StringProperties } from '@renderer/common/types'
 
@@ -376,6 +381,13 @@ export class CellDLDiagram {
                     svgDiagram.setAttribute('viewBox', `0 0 ${width} ${height}`)
                 }
             }
+        }
+        // Tweak the colour of <path> elements in existing CellDL files so they show
+        // better in dark mode.
+        const strokedPaths = svgDiagram.querySelectorAll(`path[stroke="${OLD_CONNECTION_COLOUR}"]`)
+        for (let index = 0; index < strokedPaths.length; ++index) {
+            const path = strokedPaths[index]
+            path.setAttribute('stroke', CONNECTION_COLOUR)
         }
         this.#svgDiagram = svgDiagram
     }
