@@ -39,7 +39,10 @@ const CONDUIT_SELECTION_RADIUS = 9
 
 export function setInternalIds(svgElement: SVGGraphicsElement, previousId: string = '') {
     const id = svgElement.id
-    for (const element of svgElement.querySelectorAll(`[id]`)) {
+    const idElements = svgElement.querySelectorAll('[id]')
+    for (let index = 0; index < idElements.length; ++index) {
+        // biome-ignore lint/style/noNonNullAssertion: index is in range
+        const element = idElements[index]!
         if (element.id) {
             if (previousId !== '' && element.id.startsWith(`${previousId}-`)) {
                 element.id = `${id}${element.id.substring(previousId.length)}`
@@ -48,7 +51,10 @@ export function setInternalIds(svgElement: SVGGraphicsElement, previousId: strin
             }
         }
     }
-    for (const element of svgElement.querySelectorAll('use')) {
+    const useElements = svgElement.querySelectorAll('use')
+    for (let index = 0; index < useElements.length; ++index) {
+        // biome-ignore lint/style/noNonNullAssertion: index is in range
+        const element = useElements[index]!
         const link = element.getAttribute('xlink:href')
         if (link?.startsWith('#')) {
             if (previousId !== '' && link.startsWith(`#${previousId}-`)) {
@@ -268,10 +274,18 @@ export class CellDLSVGElement {
     }
 
     #selectionElementMembers(): SVGGraphicsElement[] {
-        return this.#selectionElement.tagName === 'g' &&
-            this.#selectionElement.classList.contains(CELLDL_STYLE_CLASS.Connection)
-            ? <SVGGraphicsElement[]>[...this.#selectionElement.children]
-            : [this.#selectionElement]
+        const members: SVGGraphicsElement[] = []
+        if (this.#selectionElement.tagName === 'g'
+         && this.#selectionElement.classList.contains(CELLDL_STYLE_CLASS.Connection)) {
+            const children = this.#selectionElement.children
+            for (let index = 0; index < children.length; ++index) {
+                // biome-ignore lint/style/noNonNullAssertion: index is in range
+                members.push(children[index]! as SVGGraphicsElement)
+            }
+        } else {
+            members.push(this.#selectionElement)
+        }
+        return members
     }
 
     #setSelectionClass(cls: string, enable: boolean) {
@@ -621,4 +635,5 @@ export class CellDLSVGElement {
     }
 }
 
+//==============================================================================
 //==============================================================================
