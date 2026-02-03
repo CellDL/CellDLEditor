@@ -472,13 +472,13 @@ const viewState = vue.ref<ViewState>({ ...INITIAL_VIEW_STATE })
 
 function onViewAction(action: string, value: number|boolean) {
     if (action === 'show-grid') {
-        viewState.value = { ...viewState.value, showGrid: value }
+        viewState.value = { ...viewState.value, showGrid: !!value }
         editorCommand.value = {
             command: 'view',
             options: viewState.value
         }
     } else if (action === 'snap-to-grid') {
-        viewState.value = { ...viewState.value, snapToGrid: value }
+        viewState.value = { ...viewState.value, snapToGrid: Number(value) }
         editorCommand.value = {
             command: 'view',
             options: viewState.value
