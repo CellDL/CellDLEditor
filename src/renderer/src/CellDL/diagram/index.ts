@@ -274,7 +274,6 @@ export class CellDLDiagram {
             if (element.id.startsWith(ID_PREFIX)) {
                 const parts = element.id.substring(ID_PREFIX.length).split('-')
                 if (parts.length) {
-                    // @ts-expect-error: `parts` is at least one long
                     const lastIdentifier = +parts[0]
                     if (lastIdentifier > this.#lastIdentifier) {
                         this.#lastIdentifier = lastIdentifier
@@ -333,7 +332,10 @@ export class CellDLDiagram {
         // Put all existing content into group with class of CELLDL_BACKGROUND_CLASS
         let backgroundGroup: SVGGraphicsElement | null | undefined
         const backgroundElements: SVGGraphicsElement[] = []
-        for (const child of this.#svgDiagram.children) {
+        const children = this.#svgDiagram.children
+        for (let index = 0; index < children.length; ++index) {
+            // biome-ignore lint/style/noNonNullAssertion: index is in range
+            const child = children[index]!
             if (child.tagName !== 'defs') {
                 backgroundElements.push(child as SVGGraphicsElement)
                 if (child.tagName === 'g' && backgroundGroup === undefined) {
@@ -418,7 +420,10 @@ export class CellDLDiagram {
             metadataElement &&
             (!('contentType' in metadataElement.dataset) || metadataElement.dataset.contentType === $rdf.TurtleContentType)
         ) {
-            for (const childNode of metadataElement.childNodes) {
+            const childNodes = metadataElement.childNodes
+            for (let index = 0; index < childNodes.length; ++index) {
+                // biome-ignore lint/style/noNonNullAssertion: index is in range
+                const childNode = childNodes[index]!
                 if (childNode.nodeName === '#cdata-section') {
                     this.#kb.load(this.#documentNode.uri, (<CDATASection>childNode).data, $rdf.TurtleContentType)
                     break

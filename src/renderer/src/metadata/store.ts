@@ -87,7 +87,7 @@ export abstract class BaseStore {
 
     abstract update(sparql: string): void
 
-    addMetadataPropertiesForSubject(subject: SubjectType, properties: MetadataPropertiesMap) {
+    addMetadataPropertiesForSubject(subject: SubjectType, properties: MetadataPropertiesMap): Statement[] {
         const statements: Statement[] = []
         for (const [predicate, value] of properties.predicateValues()) {
             statements.push(...this.#addMetadataProperties(subject, predicate, value))

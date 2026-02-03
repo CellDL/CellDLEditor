@@ -496,7 +496,7 @@ export class PathMaker {
         // Create a new connection between start and end objects
         const metadataProperties = MetadataPropertiesMap.fromProperties([
             [RDF.uri('type'), CELLDL.uri('Connection')], // shouldn't CellDLClass imply this??
-            [CELLDL.uri('hasSource'), this.#nodes[0]!.uri],
+            [CELLDL.uri('hasSource'), this.#startObject.uri],
             [CELLDL.uri('hasTarget'), endNode.uri],
             [CELLDL.uri('hasIntermediate'), this.#nodes.slice(1, -1).map((c) => c.uri)]
         ])
