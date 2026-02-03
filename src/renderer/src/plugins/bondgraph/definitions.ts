@@ -163,7 +163,7 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#Reaction',
         name: 'Reaction',
         numPorts: 2,
-        symbol: 'Re',
+        symbol: 'Rx',
         style: REACTION_STYLE
     },
     {
