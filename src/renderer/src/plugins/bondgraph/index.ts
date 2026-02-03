@@ -198,7 +198,7 @@ type ElementTemplate = ElementTypeName & {
     domain: string
     value?: Variable
     parameters: IdVariableMap
-    states: IdVariableMap
+    variables: IdVariableMap
     symbol: string
     defaultStyle: BGElementStyle
     baseComponentType: string
@@ -227,7 +227,7 @@ enum BG_INPUT {
 enum BG_GROUP {
     ElementGroup = 'bg-element-group',
     ParameterGroup = 'bg-parameter-group',
-    StateGroup = 'bg-state-group'
+    VariableGroup = 'bg-variable-group'
 }
 
 function PROPERTY_GROUPS(): PropertyGroup[] {
@@ -272,8 +272,8 @@ function PROPERTY_GROUPS(): PropertyGroup[] {
             items: []
         },
         {
-            groupId: BG_GROUP.StateGroup,
-            title: 'States',
+            groupId: BG_GROUP.VariableGroup,
+            title: 'Variables',
             items: []
         }
     ]
@@ -281,7 +281,7 @@ function PROPERTY_GROUPS(): PropertyGroup[] {
 
 const ELEMENT_GROUP_INDEX = 0
 const PARAMS_GROUP_INDEX = 1
-const STATES_GROUP_INDEX = 2
+const VARS_GROUP_INDEX = 2
 
 // Within ELEMENT_GROUP
 const ELEMENT_VALUE_INDEX = 3
@@ -554,8 +554,8 @@ export class BondgraphPlugin implements PluginInterface {
                     if (group.groupId === BG_GROUP.ParameterGroup) {
                         this.#setVariableTemplates(pluginData.elementTemplate.parameters, group)
                         this.#loadVariableProperties(celldlObject, group, rdfStore)
-                    } else if (group.groupId === BG_GROUP.StateGroup) {
-                        this.#setVariableTemplates(pluginData.elementTemplate.states, group)
+                    } else if (group.groupId === BG_GROUP.VariableGroup) {
+                        this.#setVariableTemplates(pluginData.elementTemplate.variables, group)
                         this.#loadVariableProperties(celldlObject, group, rdfStore)
                     }
                 } else if (group.groupId === STYLING_GROUP_ID) {
@@ -710,8 +710,8 @@ export class BondgraphPlugin implements PluginInterface {
                 }
                 this.#setVariableTemplates(elementTemplate.parameters,
                                            componentProperties[PARAMS_GROUP_INDEX]!, true)
-                this.#setVariableTemplates(elementTemplate.states,
-                                           componentProperties[STATES_GROUP_INDEX]!, true)
+                this.#setVariableTemplates(elementTemplate.variables,
+                                           componentProperties[VARS_GROUP_INDEX]!, true)
             }
             this.#updateVariableProperties(value, itemId, celldlObject, elementTemplate, rdfStore)
         }
@@ -806,7 +806,7 @@ export class BondgraphPlugin implements PluginInterface {
             return
         }
         itemId = itemVariable[0]!
-        if (itemId !== BG_GROUP.ParameterGroup && itemId === BG_GROUP.StateGroup) {
+        if (itemId !== BG_GROUP.ParameterGroup && itemId === BG_GROUP.VariableGroup) {
             return
         }
         const varName = itemVariable[1]!
@@ -821,7 +821,7 @@ export class BondgraphPlugin implements PluginInterface {
             }`)
         const variable = (itemId === BG_GROUP.ParameterGroup)
                        ? elementTemplate.parameters.get(varName)
-                       : elementTemplate.states.get(varName)
+                       : elementTemplate.variables.get(varName)
         if (!variable) {
             return
         }
@@ -1083,7 +1083,7 @@ export class BondgraphPlugin implements PluginInterface {
                     domain: domainId,
                     name: label ? label.value : getCurie(element.value),
                     parameters: new Map(),
-                    states: new Map(),
+                    variables: new Map(),
                     defaultStyle: component.style,
                     symbol: symbol ? symbol.value : component.symbol,
                     baseComponentType: component.type,
@@ -1123,7 +1123,7 @@ export class BondgraphPlugin implements PluginInterface {
         }
         if (r.has('variableName')) {
             const name = r.get('variableName')!.value
-            template.states.set(name, {
+            template.variables.set(name, {
                 name: name,
                 units: r.get('variableUnits')!.value
             })
