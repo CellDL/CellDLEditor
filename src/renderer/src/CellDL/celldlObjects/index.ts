@@ -176,12 +176,20 @@ export class CellDLObject {
         return this.#celldlTypeName === 'Connection'
     }
 
+    get isConnector() {
+        return this.#celldlTypeName === 'Connector'
+    }
+
     get isCompartment() {
         return this.#celldlTypeName === 'Compartment'
     }
 
     get isInterface() {
         return this.#celldlTypeName === 'Interface'
+    }
+
+    get isUnconnectedPort() {
+        return this.#celldlTypeName === 'UnconnectedPort'
     }
 
     get label() {
