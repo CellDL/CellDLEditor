@@ -19,7 +19,7 @@ limitations under the License.
 ******************************************************************************/
 
 import { Point, type PointLike } from '@renderer/common/points'
-import type { PropertiesType } from '@renderer/common/types'
+import type { Constructor, PropertiesType } from '@renderer/common/types'
 
 import { alert } from '@editor/editor/alerts'
 import { editGuides } from '@editor/editor/editguides'
@@ -87,7 +87,6 @@ export class CellDLObject {
     #moveable: boolean = false
 
     #metadataProperties!: MetadataPropertiesMap
-
     #objectTemplate: ObjectTemplate|undefined
 
     #children: Map<string, CellDLObject> = new Map()
@@ -97,26 +96,28 @@ export class CellDLObject {
 
     constructor(
         public readonly uri: NamedNode,
-        metadata: MetadataPropertiesMap,
+        objectTemplate: ObjectTemplate,
         readonly options: PropertiesType = {},
-        celldlDiagram: CellDLDiagram
+        celldlDiagram: CellDLDiagram,
+        updateStore: boolean=true
     ) {
         this.#celldlDiagram = celldlDiagram
         // @ts-expect-error: celldlStyleClass is a member of the object's constructor
         this.#celldlStyleClass = this.constructor.celldlStyleClass
         // @ts-expect-error: celldlType is a member of the object's constructor
-        this.#setMetadataProperties(metadata)
         this.#celldlTypeName = this.constructor.celldlTypeName
+        this.#objectTemplate = objectTemplate
+        this.#name = objectTemplate?.name || ''
 
-        for (const pluginId of componentLibraryPlugin.registeredPlugins) {
-            this.#pluginData.set(pluginId, {})
+        this.#setMetadataProperties(objectTemplate.metadataProperties)
+
+        if (updateStore) {
+            celldlDiagram.rdfStore.addMetadataPropertiesForSubject(uri, this.#metadataProperties)
         }
-    }
 
-    static objectFromTemplate(uri: NamedNode, objectTemplate: ObjectTemplate, celldlDiagram: CellDLDiagram): CellDLObject {
-        const object = new objectTemplate.CellDLClass(uri, objectTemplate.metadataProperties, {}, celldlDiagram)
-        object.setObjectTemplate(objectTemplate)
-        return object
+        // Get data that plugins need to associate with the object
+
+        this.#pluginData = componentLibraryPlugin.getPluginData(this, celldlDiagram.rdfStore)
     }
 
     toString(): string {
@@ -220,10 +221,6 @@ export class CellDLObject {
         return this.#pluginData.get(pluginId) || {}
     }
 
-    setPluginData(pluginId: string, data: object) {
-        this.#pluginData.set(pluginId, data)
-    }
-
     activate(active = true) {
         this.#celldlSvgElement?.activate(active)
     }
@@ -288,11 +285,6 @@ export class CellDLObject {
 
     setName(name: string) {
         this.#name = name
-    }
-
-    setObjectTemplate(objectTemplate: ObjectTemplate) {
-        this.#objectTemplate = objectTemplate
-        this.#name = objectTemplate?.name || ''
     }
 
     assignSvgElement(_svgElement: SVGGraphicsElement, _align: boolean) {
@@ -453,12 +445,12 @@ export class CellDLCompartment extends CellDLConnectedObject {
 
     constructor(
         uri: NamedNode,
-        metadata: MetadataPropertiesMap,
+        objectTemplate: ObjectTemplate,
         options: PropertiesType = {},
         celldlDiagram: CellDLDiagram
     ) {
-        super(uri, metadata, options, celldlDiagram)
-        this.#interfacePorts = metadata
+        super(uri, objectTemplate, options, celldlDiagram)
+        this.#interfacePorts = objectTemplate.metadataProperties
             .getPropertyAsArray(CELLDL.uri('hasInterface'))
             .map((node) => <CellDLInterface>celldlDiagram.getConnector(node))
             .filter((node) => node != null)
@@ -507,11 +499,12 @@ export class CellDLConnection extends CellDLObject {
 
     constructor(
         uri: NamedNode,
-        metadata: MetadataPropertiesMap,
+        objectTemplate: ObjectTemplate,
         options: PropertiesType = {},
         celldlDiagram: CellDLDiagram
     ) {
-        super(uri, metadata, options, celldlDiagram)
+        super(uri, objectTemplate, options, celldlDiagram)
+        const metadata = objectTemplate.metadataProperties
         const source = celldlDiagram.getConnector(metadata.getProperty(CELLDL.uri('hasSource')))
         const target = celldlDiagram.getConnector(metadata.getProperty(CELLDL.uri('hasTarget')))
         const intermediates: CellDLConnectedObject[] = metadata
@@ -629,6 +622,20 @@ export class CellDLUnconnectedPort extends CellDLConnectedObject {
     static readonly celldlStyleClass = CELLDL_STYLE_CLASS.UnconnectedPort
     static celldlTypeName = 'UnconnectedPort'
 }
+
+//==============================================================================
+//==============================================================================
+
+export const CELLDL_CLASS_MAP: Map<string, Constructor<CellDLObject>> = new Map([
+    ['Annotation', CellDLAnnotation],
+    ['Compartment', CellDLCompartment],
+    ['Component', CellDLComponent],
+    ['Conduit', CellDLConduit],
+    ['Connector', CellDLConnectedObject],
+    ['Connection', CellDLConnection],
+    ['Interface', CellDLInterface],
+    ['UnconnectedPort', CellDLUnconnectedPort],
+])
 
 //==============================================================================
 //==============================================================================

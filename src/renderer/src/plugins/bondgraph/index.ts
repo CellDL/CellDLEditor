@@ -336,41 +336,53 @@ export class BondgraphPlugin implements PluginInterface {
         return ''
     }
 
-    getObjectTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectTemplate|undefined {
-        let baseComponent: BGBaseComponent|undefined
-        let elementTemplate: ElementTemplate|undefined
-
+    getPluginData(celldlObject: CellDLObject, rdfStore: RdfStore): object {
+        if (celldlObject.isConnection) {
+            return {
+                baseComponent: {}
+            }
+        }
         const rows = rdfStore.query(`${SPARQL_PREFIXES}
             PREFIX : <${this.#currentDocumentUri}#>
 
-            SELECT ?type WHERE {
+            SELECT ?type ?symbol WHERE {
                 ${celldlObject.uri.toString()} a ?type
+                OPTIONAL { ${celldlObject.uri.toString()} bgf:hasSymbol ?symbol }
             }`
         )
+        let pluginData: PluginData|undefined
         for (const r of rows) {
             const rdfType = r.get('type')!.value
-            if (!elementTemplate) {
-                elementTemplate = this.#elementTemplates.get(rdfType)
+            const symbol = r.get('symbol')
+            const baseComponent = this.#baseComponents.get(rdfType)
+            if (baseComponent) {
+                pluginData = { baseComponentType: rdfType } as PluginData
+            } else if (this.#elementTemplates.has(rdfType)) {
+                const elementTemplate = this.#elementTemplates.get(rdfType)!
+                if (pluginData) {
+                    pluginData.elementTemplate = elementTemplate
+                } else {
+                    pluginData = {
+                        baseComponentType: elementTemplate.baseComponentType,
+                        elementTemplate: elementTemplate
+                    }
+                }
             }
-            if (!elementTemplate && !baseComponent) {
-                baseComponent = this.#baseComponents.get(rdfType)
+            if (symbol && pluginData) {
+                pluginData.symbol = symbol.value
             }
         }
+        return pluginData || {}
+    }
+
+    getTemplateName(rdfType: string): string|undefined {
+        const elementTemplate = this.#elementTemplates.get(rdfType)
         if (elementTemplate) {
-            return {
-                type: elementTemplate.type,
-                CellDLClass: CellDLComponent,
-                name: elementTemplate.name,
-                metadataProperties: celldlObject.metadataProperties
-            }
+            return elementTemplate.name
         }
+        const baseComponent = this.#baseComponents.get(rdfType)
         if (baseComponent) {
-            return {
-                type: baseComponent.type,
-                CellDLClass: CellDLComponent,
-                name: baseComponent.name,
-                metadataProperties: celldlObject.metadataProperties
-            }
+            return baseComponent.name
         }
     }
 
@@ -388,7 +400,6 @@ export class BondgraphPlugin implements PluginInterface {
                 )
             }
             return {
-                type: componentTemplate.type,
                 CellDLClass: CellDLComponent,
                 image: componentTemplate.image,
                 metadataProperties: MetadataPropertiesMap.fromProperties(metadataProperties),
@@ -515,17 +526,13 @@ export class BondgraphPlugin implements PluginInterface {
     updateComponentProperties(celldlObject: CellDLObject, componentProperties: PropertyGroup[], rdfStore: RdfStore) {
         alert.clear()
         if (celldlObject.isConnection) {
-            celldlObject.setPluginData(this.id, { baseComponent: {} })
             componentProperties.forEach(group => {
                 if (group.groupId === STYLING_GROUP_ID) {
                     this.#loadElementStyling(celldlObject, group, true)
                 }
             })
         } else {
-            const pluginData = this.#setPluginData(celldlObject, rdfStore)
-            if (!pluginData) {
-                return
-            }
+            const pluginData = (<PluginData>celldlObject.pluginData(this.id))
             componentProperties.forEach(group => {
                 if (group.groupId === BG_GROUP.ElementGroup) {
                     this.#getElementProperties(celldlObject, group, rdfStore)
@@ -544,49 +551,11 @@ export class BondgraphPlugin implements PluginInterface {
         }
     }
 
-    #setPluginData(celldlObject: CellDLObject, rdfStore: RdfStore): PluginData|undefined {
-        const rows = rdfStore.query(`${SPARQL_PREFIXES}
-            PREFIX : <${this.#currentDocumentUri}#>
-
-            SELECT ?type ?symbol WHERE {
-                ${celldlObject.uri.toString()} a ?type
-                OPTIONAL { ${celldlObject.uri.toString()} bgf:hasSymbol ?symbol }
-            }`
-        )
-        let pluginData: PluginData|undefined
-        for (const r of rows) {
-            const rdfType = r.get('type')!.value
-            const symbol = r.get('symbol')
-            const baseComponent = this.#baseComponents.get(rdfType)
-            if (baseComponent) {
-                pluginData = { baseComponentType: rdfType }
-            } else if (this.#elementTemplates.has(rdfType)) {
-                const elementTemplate = this.#elementTemplates.get(rdfType)!
-                if (pluginData) {
-                    pluginData.elementTemplate = elementTemplate
-                } else {
-                    pluginData = {
-                        baseComponentType: elementTemplate.baseComponentType,
-                        elementTemplate: elementTemplate
-                    }
-                }
-            }
-            if (symbol && pluginData) {
-                pluginData.symbol = symbol.value
-            }
-        }
-        if (pluginData) {
-            celldlObject.setPluginData(this.id, pluginData)
-            return pluginData
-        }
-        console.error(`Cannot find base component for ${celldlObject.uri}`)
-    }
-
     #getElementProperties(celldlObject: CellDLObject,
-                          group: PropertyGroup,  rdfStore: RdfStore) {
+                          group: PropertyGroup, rdfStore: RdfStore) {
         const propertyTemplates = this.#propertyGroups[ELEMENT_GROUP_INDEX]!
-        const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const elementTemplate = (<PluginData>celldlObject.pluginData(this.id)).elementTemplate
+        const pluginData = <PluginData>celldlObject.pluginData(this.id)
+        const elementTemplate = pluginData.elementTemplate
         propertyTemplates.items.forEach((itemTemplate: ItemDetails) => {
             const items: ItemDetails[] = []
             if (itemTemplate.itemId === BG_INPUT.ElementType) {

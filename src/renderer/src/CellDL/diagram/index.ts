@@ -42,7 +42,6 @@ import type { ContainedObject } from '@editor/geometry/spatialindex'
 import { lengthToPixels } from '@editor/geometry/units'
 import { type FoundPoint, PointFinder } from '@editor/geometry/pathutils'
 
-import { CELLDL_STYLE_CLASS, CellDLObject } from '@editor/celldlObjects/index'
 import {
     CellDLAnnotation,
     CellDLComponent,
@@ -51,6 +50,8 @@ import {
     CellDLConnection,
     CellDLCompartment,
     CellDLInterface,
+    type CellDLObject,
+    CELLDL_STYLE_CLASS,
     CellDLUnconnectedPort
 } from '@editor/celldlObjects/index.ts'
 
@@ -841,30 +842,25 @@ export class CellDLDiagram {
         }
     }
 
-    updateObjectKnowledge(celldlObject: CellDLObject): $rdf.Statement[] {
-        return this.#kb.addMetadataPropertiesForSubject(celldlObject.uri, celldlObject.metadataProperties)
-    }
-
-    #addNewObject(svgElement: SVGGraphicsElement, template: ObjectTemplate, assignId = true) {
-        // @ts-expect-error:
-        const celldlClassName = template.CellDLClass.celldlClassName
+    #addNewObject(svgElement: SVGGraphicsElement, objectTemplate: ObjectTemplate, assignId = true) {
+        const CellDLClass = objectTemplate.CellDLClass
         if (assignId) {
             this.#setUniqueId(svgElement)
         }
-        svgElement.classList.add(celldlClassName)
+        // @ts-expect-error:
+        svgElement.classList.add(CellDLClass.celldlStyleClass)
         if (this.#currentLayer) {
             this.#currentLayer.appendChild(svgElement)
         }
-        // This is where we create an instanced object of its template's class
-        const celldlObject = CellDLObject.objectFromTemplate(this.makeUri(svgElement.id), template, this)
-        const knowledge = this.updateObjectKnowledge(celldlObject)
+        // This is where we create an instanced object of its objectTemplate's class
+        const celldlObject = new CellDLClass(this.makeUri(svgElement.id), objectTemplate, {}, this)
         if (celldlObject.isConnection) {
             this.#addConnection(<CellDLConnection>celldlObject)
         }
         celldlObject.assignSvgElement(svgElement, true)
         const undoAction = undoRedo.undoInsertAction()
         undoAction.addObjectDetails(celldlObject)
-        undoAction.addKnowledge(knowledge)
+        // WIP... undoAction.addKnowledge(celldlObject.knowledge)
         return celldlObject
     }
 
@@ -883,12 +879,8 @@ export class CellDLDiagram {
 
     #celldlObjectFromRdf<T extends CellDLObject>(CellDLClass: Constructor<T>, subject: $rdf.SubjectType, options = {}): T {
         const metadata = this.#kb.metadataPropertiesForSubject(subject)
-        const celldlObject = new CellDLClass(subject, metadata, options, this)
-        const objectTemplate = componentLibraryPlugin.getObjectTemplate(celldlObject, this.rdfStore)
-        if (objectTemplate) {
-            celldlObject.setObjectTemplate(objectTemplate)
-        }
-        return celldlObject
+        const objectTemplate = componentLibraryPlugin.getObjectTemplate(subject, metadata, this.#kb)
+        return new CellDLClass(subject, objectTemplate, options, this, false)
     }
 
     #subjectsOfType(parentType: NamedNode): [$rdf.SubjectType, NamedNode][] {

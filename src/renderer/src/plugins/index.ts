@@ -27,6 +27,8 @@ import type {
     CellDLConnection,
     CellDLObject
 } from '@editor/celldlObjects/index'
+import { CELLDL_CLASS_MAP } from '@editor/celldlObjects/index'
+import type { Constructor } from '@renderer/common/types'
 import type {
     ComponentLibrary,
     LibraryComponentTemplate,
@@ -38,7 +40,12 @@ import type {
     ValueChange
 } from '@editor/components/properties'
 import { STYLING_GROUP } from '@editor/components/properties'
-import type { RdfStore } from '@renderer/metadata/index'
+import type {
+    MetadataPropertiesMap,
+    RdfStore,
+    SubjectType
+} from '@renderer/metadata/index'
+import { CELLDL_URI, fragment, SPARQL_PREFIXES } from '@renderer/metadata/index'
 
 //==============================================================================
 
@@ -48,12 +55,14 @@ export interface PluginInterface {
     componentLibrary: ComponentLibrary
     newDocument: (uri: string, rdfStore: RdfStore) => void
     addDocumentMetadataToStore: (rdfStore: RdfStore) => void
+    getPluginData: (celldlObject: CellDLObject, rdfStore: RdfStore) => object
+
     addNewConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     deleteConnection: (connection: CellDLConnection, rdfStore: RdfStore) => void
     getMaxConnections: (celldlObject: CellDLObject) => number
-    getObjectTemplate: (celldlObject: CellDLObject, rdfStore: RdfStore) => ObjectTemplate|undefined
     getObjectTemplateById: (id: string) => ObjectTemplate|undefined
     getPropertyGroups: () => PropertyGroup[]
+    getTemplateName: (rdfType: string) => string|undefined
     updateComponentProperties: (celldlObject: CellDLObject,
                              componentProperties: PropertyGroup[], rdfStore: RdfStore) => void
     updateObjectProperties: (celldlObject: CellDLObject, itemId: string, value: ValueChange,
@@ -73,6 +82,7 @@ class ComponentLibraryPlugin {
 
     #componentLibraries: ComponentLibrary[] = []
     #componentLibrariesRef = vue.ref<ComponentLibrary[]>(this.#componentLibraries)
+    #currentDocumentUri: string = ''
 
     private constructor() {
         if (ComponentLibraryPlugin.#instance) {
@@ -86,10 +96,6 @@ class ComponentLibraryPlugin {
             ComponentLibraryPlugin.#instance = new ComponentLibraryPlugin()
         }
         return ComponentLibraryPlugin.#instance
-    }
-
-    get registeredPlugins(): string[] {
-        return [...this.#registeredPlugins.keys()]
     }
 
     install(app: vue.App, _options: object)  {
@@ -123,6 +129,7 @@ class ComponentLibraryPlugin {
     //==========================================================================
 
     newDocument(uri: string, rdfStore: RdfStore) {
+        this.#currentDocumentUri = uri
         for (const plugin of this.#registeredPlugins.values()) {
             plugin.newDocument(uri, rdfStore)
         }
@@ -158,6 +165,52 @@ class ComponentLibraryPlugin {
 
     //==========================================================================
 
+    getPluginData(celldlObject: CellDLObject, rdfStore: RdfStore): Map<string, object> {
+        const pluginDataMap: Map<string, object> = new Map()
+        for (const plugin of this.#registeredPlugins.values()) {
+            pluginDataMap.set(plugin.id, plugin.getPluginData(celldlObject, rdfStore))
+        }
+        return pluginDataMap
+    }
+
+    getObjectTemplate(uri: SubjectType, metadata: MetadataPropertiesMap, rdfStore: RdfStore): ObjectTemplate|undefined {
+        let CellDLClass: Constructor<CellDLObject>|undefined
+        const rdfTypes: string[] = []
+        const rows = rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${this.#currentDocumentUri}#>
+
+            SELECT ?type WHERE {
+                ${uri.toString()} a ?type
+            }`
+        )
+        for (const r of rows) {
+            const rdfType = r.get('type')!.value
+            if (rdfType.startsWith(CELLDL_URI) && CELLDL_CLASS_MAP.has(fragment(rdfType))) {
+                if (CellDLClass === undefined) {
+                    CellDLClass = CELLDL_CLASS_MAP.get(fragment(rdfType))
+                }
+            } else {
+                rdfTypes.push(rdfType)
+            }
+        }
+        if (CellDLClass) {
+            const objectTemplate: ObjectTemplate = {
+                CellDLClass: CellDLClass,
+                metadataProperties: metadata
+            }
+            for (const plugin of this.#registeredPlugins.values()) {
+                for (const rdfType of rdfTypes) {
+                    const name = plugin.getTemplateName(rdfType)
+                    if (name) {
+                        objectTemplate.name = name
+                        return objectTemplate
+                    }
+                }
+            }
+            return objectTemplate
+        }
+    }
+
     getObjectTemplateById(fullId: string): ObjectTemplate|undefined {
         const pluginTemplateId = fullId.split('/')
         if (pluginTemplateId.length > 1) {
@@ -169,22 +222,6 @@ class ComponentLibraryPlugin {
     }
 
     //==========================================================================
-
-    getObjectTemplate(celldlObject: CellDLObject, rdfStore: RdfStore): ObjectTemplate|undefined {
-        let objectTemplate: ObjectTemplate|undefined
-        for (const pluginId of celldlObject.pluginIds) {
-            const plugin = this.#registeredPlugins.get(pluginId)
-            if (plugin) {
-                const template = plugin.getObjectTemplate(celldlObject, rdfStore)
-                if (objectTemplate === undefined) {
-                    objectTemplate = template
-                } else if (template !== undefined) {
-                    objectTemplate = { ...objectTemplate, ...template }
-                }
-            }
-        }
-        return objectTemplate
-    }
 
     updateComponentProperties(celldlObject: CellDLObject,
                            componentProperties: PropertyGroup[], rdfStore: RdfStore): void {
