@@ -196,6 +196,7 @@ interface PhysicalDomain {
 
 type ElementTemplate = ElementTypeName & {
     domain: string
+    units?: string
     value?: Variable
     parameters: IdVariableMap
     variables: IdVariableMap
@@ -1092,14 +1093,20 @@ export class BondgraphPlugin implements PluginInterface {
                 if (domain) {
                     if (component.type === BGF.uri('PotentialSource').value) {
                         elementTemplate.value = domain.potential
+                        elementTemplate.units = domain.potential.units
                     } else if (component.type === BGF.uri('FlowSource').value) {
                         elementTemplate.value = domain.flow
+                        elementTemplate.units = domain.flow.units
+                    } else if (component.type === BGF.uri('Reaction').value
+                            || component.type === BGF.uri('Resistance').value) {
+                        elementTemplate.units = domain.flow.units
                     } else {
                         const relation = r.get('relation')
                         if (relation) {
                             const differentiatedVariable = this.#getDiffVariable(domain, relation.value)
                             if (differentiatedVariable) {
                                 elementTemplate.value = differentiatedVariable
+                                elementTemplate.units = differentiatedVariable.units
                             }
                         }
                     }
