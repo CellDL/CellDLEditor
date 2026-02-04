@@ -10,10 +10,6 @@ import * as vite from 'vite'
 const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 export default vite.defineConfig({
-    assetsInclude: [
-        'oxigraph/*',
-        '**/*.ttl'
-    ],
     base: 'https://celldl.github.io/CellDLEditor/',
     build: {
         chunkSizeWarningLimit: 2048,
@@ -32,7 +28,8 @@ export default vite.defineConfig({
             target: 'esnext'
         },
         exclude: [
-            '*.wasm'
+            '*.wasm',
+            '*.whl'
         ]
     },
     plugins: [
@@ -48,7 +45,6 @@ export default vite.defineConfig({
         alias: {
             'node-fetch': 'isomorphic-fetch',
             '@editor': path.resolve(_dirname, 'src/CellDL'),
-            '@pyodide': path.resolve(_dirname, 'public/pyodide'),
             '@oxigraph': path.resolve(_dirname, 'src/assets/oxigraph'),
             '@renderer': path.resolve(_dirname, 'src')
         }

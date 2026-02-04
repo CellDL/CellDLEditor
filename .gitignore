@@ -36,12 +36,12 @@ src/renderer/components.d.ts
 # oxigraph
 src/renderer/src/assets/oxigraph
 
+# Pyodide
+src/renderer/src/assets/pyodide
+
+# Python packages
+src/renderer/src/assets/wheels
+
 # BG-RDF
 src/renderer/public/bg-rdf
 src/renderer/src/assets/bg-rdf
-
-# Pyodide
-src/renderer/public/pyodide
-
-# Python
-src/renderer/public/python

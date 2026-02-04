@@ -5,7 +5,6 @@
         "noEmit": false,
         "paths": {
             "@editor/*": ["./src/renderer/src/CellDL/*"],
-            "@pyodide/*": ["./src/renderer/public/pyodide/*"],
             "@oxigraph/*": ["./src/renderer/src/assets/oxigraph/*"],
             "@renderer/*": ["./src/renderer/src/*"]
         }
