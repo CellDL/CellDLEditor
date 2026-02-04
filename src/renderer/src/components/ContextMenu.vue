@@ -10,6 +10,9 @@ import * as vue from 'vue'
 
 import ContextMenu from 'primevue/contextmenu'
 
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+useThemeCssVariables('contextmenu')
+
 import { CONTEXT_MENU } from '@editor/editor'
 
 const menu = vue.ref();

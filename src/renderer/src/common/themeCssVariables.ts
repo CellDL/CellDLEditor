@@ -1,18 +1,21 @@
 /**
  * Composable utility for injecting PrimeVue theme CSS variables into the DOM.
+ *
+ * Ex https://github.com/CellDL/CellDLEditor/pull/4/changes from https://github.com/akhuoa
  */
+
 import { onBeforeMount, getCurrentInstance } from 'vue';
 
 /**
  * @param componentName The key name in the preset (e.g., 'card', 'button', 'select')
  */
-export function useThemeFix(componentName: string) {
+export function useThemeCssVariables(componentName: string) {
     onBeforeMount(() => {
         const instance = getCurrentInstance();
         const primevue = instance?.appContext.config.globalProperties.$primevue;
         const preset = primevue?.config?.theme?.preset;
 
-        if (preset && preset.components && preset.components[componentName]) {
+        if (preset?.components[componentName]) {
             const styles = generateComponentStyles(preset.components[componentName], componentName);
             injectStyles(`lib-fix-${componentName}`, styles);
         }
@@ -27,7 +30,7 @@ function injectStyles(id: string, css: string) {
     document.head.appendChild(style);
 }
 
-function resolveReference(value: any) {
+function resolveReference<T>(value: T|string): T|string {
     if (typeof value !== 'string') return value;
     return value.replace(/\{([^}]+)\}/g, (_, path) => {
         return `var(--p-${path.replace(/\./g, '-')})`;
@@ -38,13 +41,13 @@ function toKebabCase(str: string) {
     return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 }
 
-function generateComponentStyles(tokenObj: any, prefix: string) {
+function generateComponentStyles(tokenObj: object, prefix: string) {
     let css = `:root {`;
 
-    const traverse = (obj: any, parentKey: string) => {
+    const traverse = (obj: object, parentKey: string) => {
         Object.entries(obj).forEach(([key, value]) => {
             const kebabKey = toKebabCase(key);
-            let newKey;
+            let newKey: string;
 
             if (key === 'root') {
                 newKey = parentKey;

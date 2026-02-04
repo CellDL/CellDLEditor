@@ -24,8 +24,9 @@ import * as vue from 'vue'
 
 import Select from 'primevue/select'
 import { type SelectChangeEvent } from 'primevue/select'
-import { useThemeFix } from '@renderer/common/themeVariablesFix'
-useThemeFix('select')
+
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+useThemeCssVariables('select')
 
 import ToolPopover from '../toolbar/ToolPopover.vue'
 

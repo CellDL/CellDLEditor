@@ -14,8 +14,9 @@
 import * as vue from 'vue'
 
 import Card from 'primevue/card'
-import { useThemeFix } from '@renderer/common/themeVariablesFix';
-useThemeFix('card')
+
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+useThemeCssVariables('card')
 
 const slots = vue.useSlots()
 

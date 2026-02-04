@@ -33,6 +33,9 @@ import * as vue from 'vue'
 import Slider from 'primevue/slider'
 import { TinyColor } from '@ctrl/tinycolor'
 
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+useThemeCssVariables('slider')
+
 import { type IPathStyle } from '@renderer/common/svgUtils'
 
 const props = defineProps<{
