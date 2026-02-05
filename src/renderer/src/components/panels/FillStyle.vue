@@ -57,6 +57,11 @@
 <script setup lang="ts">
 import * as vue from 'vue'
 import { TinyColor } from '@ctrl/tinycolor'
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+
+useThemeCssVariables('button')
+useThemeCssVariables('checbox')
+useThemeCssVariables('radiobutton')
 
 import { type INodeStyle } from '@renderer/common/svgUtils'
 

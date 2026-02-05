@@ -51,6 +51,12 @@
 
 <script setup lang="ts">
 import * as vue from 'vue'
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+
+useThemeCssVariables('accordion')
+useThemeCssVariables('accordioncontent')
+useThemeCssVariables('accordioncontent')
+useThemeCssVariables('accordionpanel')
 
 import type { PropertyGroup, StylingGroup } from '@editor/components/properties'
 

@@ -43,6 +43,11 @@
 
 <script setup lang="ts">
 import * as vue from 'vue'
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+
+useThemeCssVariables('floatlabel')
+useThemeCssVariables('inputtext')
+useThemeCssVariables('select')
 
 import KeyFilter from 'primevue/keyfilter';
 //  v-keyfilter="{ pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))([eE][+-]?\d+)?$/, validateOnly: true }"
