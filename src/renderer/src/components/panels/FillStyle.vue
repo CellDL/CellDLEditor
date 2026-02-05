@@ -60,7 +60,8 @@ import { TinyColor } from '@ctrl/tinycolor'
 import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
 
 useThemeCssVariables('button')
-useThemeCssVariables('checbox')
+useThemeCssVariables('checkbox')
+useThemeCssVariables('divider')
 useThemeCssVariables('radiobutton')
 
 import { type INodeStyle } from '@renderer/common/svgUtils'
