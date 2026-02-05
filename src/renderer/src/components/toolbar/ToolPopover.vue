@@ -12,10 +12,8 @@
 
 <script setup lang="ts">
 import * as vue from 'vue'
-
-import Card from 'primevue/card'
-
 import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+
 useThemeCssVariables('card')
 
 const slots = vue.useSlots()
