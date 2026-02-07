@@ -966,7 +966,7 @@ export class BondgraphPlugin implements PluginInterface {
         if (newSymbol === undefined) {
             newSymbol = baseComponent.symbol
         }
-        if (oldSymbol !== newSymbol) {
+        if (newSymbol) {
             pluginData.symbol = newSymbol
             rdfStore.update(`${SPARQL_PREFIXES}
                 PREFIX : <${this.#currentDocumentUri}#>
