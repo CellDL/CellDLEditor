@@ -16,6 +16,7 @@
         .h-dvh.flex.flex-col
             .flex
                 MainMenu(
+                :id="mainMenuId"
                     :haveFile="haveFile"
                     :fileModified="fileModified"
                     :editorState="editorState"
@@ -174,6 +175,7 @@ const toast = useToast()
 
 const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)
 const toastId = vue.ref('editorToast')
+const mainMenuId = vue.ref('editorMainMenu')
 const activeInstanceUid = vueCommon.activeInstanceUid()
 
 //==============================================================================
@@ -209,6 +211,7 @@ vue.onMounted(() => {
     // Customise our IDs.
 
     toastId.value = `editorToast${String(crtInstance?.uid)}`
+    mainMenuId.value = `opencorMainMenu${String(crtInstance?.uid)}`
 
     // Make ourselves the active instance.
 
