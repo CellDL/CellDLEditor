@@ -48,6 +48,11 @@
         "start": "cd app && bun run build:dev && vite preview",
         "version:new": "bun scripts/version.js"
     },
+    "bun": {
+        "overrides": {
+            "vue": "3.4.21"
+        }
+    },
     "peerDependencies": {
         "@primeuix/themes": "^2.0.2",
         "primevue": "4.2.5",

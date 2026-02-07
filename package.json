@@ -40,6 +40,11 @@
         "start:web": "bun build:web && cd ./src/renderer && vite preview",
         "version:new": "bun src/renderer/scripts/version.js"
     },
+    "bun": {
+        "overrides": {
+            "vue": "3.4.21"
+        }
+    },
     "peerDependencies": {
         "@primeuix/themes": "^2.0.2",
         "primevue": "4.2.5",
