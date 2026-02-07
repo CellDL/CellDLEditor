@@ -1,11 +1,17 @@
 <template lang="pug">
-    BlockUI.overflow-hidden
+    BlockUI.overflow-hidden(ref="blockUi")
         BackgroundComponent(
             v-show="loadingMessage !== ''"
         )
         BlockingMessageComponent(
             :message="loadingMessage"
             v-show="loadingMessage !== ''"
+        )
+        Toast(
+            :id="toastId"
+            :class="compIsActive ? 'visible' : 'invisible'"
+            :group="toastId"
+            :pt:root:style="{ position: 'absolute' }"
         )
         .h-dvh.flex.flex-col
             .flex
@@ -73,7 +79,9 @@ import 'primeicons/primeicons.css'
 import primeVueAuraTheme from '@primeuix/themes/aura'
 import primeVueConfig from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice';
+import primeVueToastService from 'primevue/toastservice';
 import { useConfirm } from "primevue/useconfirm"
+import { useToast } from 'primevue/usetoast';
 
 //==============================================================================
 
@@ -87,6 +95,8 @@ import type { CellDLEditorCommand, EditorData, Theme } from '../../../index'
 import type { EditorState, ViewState } from '../../../index'
 
 import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
+
+import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants.ts'
 import * as vueCommon from '@renderer/common/vueCommon'
 
 //==============================================================================
@@ -150,11 +160,21 @@ if (crtInstance) {
     if (!app.config.globalProperties.$confirm) {
         app.use(ConfirmationService as unknown as vue.Plugin);
     }
+
+    if (!app.config.globalProperties.$toast) {
+        app.use(primeVueToastService as unknown as vue.Plugin)
+    }
 }
 
 vueCommon.useTheme().setTheme(props.theme)
 
 const confirm = useConfirm()
+
+const toast = useToast()
+
+const blockUi = vue.ref<vue.ComponentPublicInstance | null>(null)
+const toastId = vue.ref('editorToast')
+const activeInstanceUid = vueCommon.activeInstanceUid()
 
 //==============================================================================
 
@@ -170,6 +190,42 @@ function onDarkMode() {
     }
     vueCommon.useTheme().setTheme(editorTheme.value)
 }
+
+//==============================================================================
+
+// Keep track of which instance of the CellDL Editor is currently active.
+
+function activateInstance(): void {
+    activeInstanceUid.value = String(crtInstance?.uid)
+}
+
+const compIsActive = vue.computed(() => {
+    return activeInstanceUid.value === String(crtInstance?.uid)
+})
+
+vue.onMounted(() => {
+    const blockUiElement = blockUi.value?.$el as HTMLElement
+
+    // Customise our IDs.
+
+    toastId.value = `editorToast${String(crtInstance?.uid)}`
+
+    // Make ourselves the active instance.
+
+    setTimeout(() => {
+        activateInstance()
+    }, SHORT_DELAY)
+
+    // Ensure that our toasts are shown within our block UI.
+
+    setTimeout(() => {
+        const toastElement = document.getElementById(toastId.value)
+
+        if (toastElement) {
+            blockUiElement.appendChild(toastElement)
+        }
+    }, SHORT_DELAY)
+})
 
 //==============================================================================
 //==============================================================================
@@ -439,9 +495,18 @@ async function saveCellML(celldl: string) {
             const writableStream = await fileHandle.createWritable()
             await writableStream.write(cellmlObject.cellml)
             await writableStream.close()
+            toast.add({
+                severity: 'info',
+                group: toastId.value,
+                summary: 'CellML created',
+                detail: `Saved as ${fileHandle.name}`,
+                life: TOAST_LIFE
+            })
         } else if (cellmlObject.issues) {
             issues.value = cellmlObject.issues
             issuesVisible.value = true
+        } else {
+            Window.alert('Unexpected exception generating CellML...')
         }
     }
 }
