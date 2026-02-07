@@ -58,6 +58,13 @@ export type EditorFileCommand = {
     }
 }
 
+export type EditorSetStateCommand = {
+    command: 'set-state'
+    options: {
+        action: string
+    }
+}
+
 export type EditorViewCommand = {
     command: 'view'
     options: ViewState
@@ -67,6 +74,7 @@ export type CellDLEditorCommand = EditorEditCommand
                                 | EditorEmptyCommand
                                 | EditorExportCommand
                                 | EditorFileCommand
+                                | EditorSetStateCommand
                                 | EditorViewCommand
 
 import type { ViewState } from '@renderer/common/EditorTypes'

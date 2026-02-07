@@ -26,6 +26,7 @@
                     @edit-action="onEditAction"
                     @export-action="onExportAction"
                     @file-action="onFileAction"
+                    @menu-active="onMenuActive"
                     @view-action="onViewAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
@@ -515,6 +516,17 @@ async function saveCellML(celldl: string) {
 }
 
 //==============================================================================
+//==============================================================================
+
+function onMenuActive() {
+    editorCommand.value = {
+        command: 'set-state',
+        options: {
+            action: 'reset-tools'
+        }
+    }
+}
+
 //==============================================================================
 
 const editorState = vue.computed<EditorState>(() => {

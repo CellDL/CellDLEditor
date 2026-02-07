@@ -41,6 +41,7 @@ const emit = defineEmits([
     'edit-action',
     'export-action',
     'file-action',
+    'menu-active',
     'settings',
     'view-action'
 ])
@@ -306,7 +307,7 @@ vue.onMounted(() => {
         // Close the menu when clicking clicking on the menubar but outside of the main menu items.
 
         function onClick(event: MouseEvent) {
-            const target = event.target as Node
+            const target = event.target as HTMLElement
 
             if (
                 menuBarElement.contains(target) &&
@@ -314,6 +315,9 @@ vue.onMounted(() => {
                 !Array.from(document.querySelectorAll('.p-menubar-submenu')).some((submenu) => submenu.contains(target))
             ) {
                 menuBar.value?.hide()
+            } else if (target.classList.contains('p-menubar-item-label')
+                    || target.classList.contains('p-menubar-root-list')) {
+                emit('menu-active')
             }
         }
 

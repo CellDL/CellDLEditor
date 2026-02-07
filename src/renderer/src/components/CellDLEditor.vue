@@ -70,6 +70,7 @@ import type {
     EditorData,
     EditorEditCommand,
     EditorFileCommand,
+    EditorSetStateCommand,
     EditorViewCommand
 } from '../../index'
 
@@ -323,6 +324,12 @@ vue.watch(
             const options = command.options
             if (options.action === 'clean') {
                 undoRedo.clean()
+            }
+        } else if (props.editorCommand.command === 'set-state') {
+            const command = props.editorCommand as EditorSetStateCommand
+            const options = command.options
+            if (options.action === 'reset-tools') {
+                resetToolBars()
             }
         } else if (props.editorCommand.command === 'view') {
             const command = props.editorCommand as EditorViewCommand
