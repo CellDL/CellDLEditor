@@ -509,7 +509,7 @@ async function saveCellML(celldl: string) {
             issues.value = cellmlObject.issues
             issuesVisible.value = true
         } else {
-            Window.alert('Unexpected exception generating CellML...')
+            window.alert('Unexpected exception generating CellML...')
         }
     }
 }
