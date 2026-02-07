@@ -49,6 +49,7 @@
             )
             Dialog.issues(
                 v-model:visible="issuesVisible"
+                modal=""
             )
                 template(#header)
                     .flex.w-full
