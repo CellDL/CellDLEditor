@@ -696,6 +696,23 @@ export class BondgraphPlugin implements PluginInterface {
     }
 
     //==========================================================================
+    //==========================================================================
+
+    #printObjectProperties(celldlObject: CellDLObject, rdfStore: RdfStore) {
+        const objectUri = celldlObject.uri.toString()
+
+        rdfStore.query(`${SPARQL_PREFIXES}
+            PREFIX : <${this.#currentDocumentUri}#>
+
+            SELECT ?p ?o WHERE {
+                ${objectUri} ?p ?o
+            }`).forEach((r) => {
+            console.log(celldlObject.id, r.get('p')!.value, r.get('o')!.value)
+        })
+    }
+
+    //==========================================================================
+    //==========================================================================
 
     async updateObjectProperties(celldlObject: CellDLObject, itemId: string, value: ValueChange,
                                     componentProperties: PropertyGroup[], rdfStore: RdfStore) {
