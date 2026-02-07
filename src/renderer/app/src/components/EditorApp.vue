@@ -92,7 +92,6 @@ import AboutDialog from './dialogs/AboutDialog.vue'
 
 import CellDLEditor from '../../../index'
 import type { CellDLEditorCommand, EditorData, Theme } from '../../../index'
-
 import type { EditorState, ViewState } from '../../../index'
 
 import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
@@ -113,7 +112,7 @@ const props = defineProps<IEditorAppProps>()
 
 import { celldl2cellml, initialisePython } from '../../../index'
 
-import { alert } from '../../../src/CellDL/editor/alerts'
+import { alert } from '@editor/editor/alerts'
 
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
@@ -159,7 +158,7 @@ if (crtInstance) {
     }
 
     if (!app.config.globalProperties.$confirm) {
-        app.use(ConfirmationService as unknown as vue.Plugin);
+        app.use(ConfirmationService as unknown as vue.Plugin)
     }
 
     if (!app.config.globalProperties.$toast) {
