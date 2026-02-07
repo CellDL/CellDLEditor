@@ -503,8 +503,7 @@ async function saveCellML(celldl: string) {
                 severity: 'info',
                 group: toastId.value,
                 summary: 'CellML created',
-                detail: `Saved as ${fileHandle.name}`,
-                life: TOAST_LIFE
+                detail: `Saved as ${fileHandle.name}`
             })
         } else if (cellmlObject.issues) {
             issues.value = cellmlObject.issues
