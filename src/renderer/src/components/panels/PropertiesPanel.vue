@@ -147,7 +147,7 @@ const objectType = vue.computed<string>(() => {
 const emit = defineEmits(['panel-event', 'style-event'])
 
 function updateProperties(itemId: string, oldValue: number | string, newValue: number | string) {
-    void vue.nextTick().then(() => {
+    vue.nextTick().then(() => {
         emit('panel-event', props.toolId, itemId, oldValue, newValue)
     })
 }
