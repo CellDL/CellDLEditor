@@ -119,8 +119,10 @@ import { alert } from '@editor/editor/alerts'
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
 if (!props.noPython) {
-    initialisePython((msg: string) => {
-        loadingMessage.value = msg
+    vue.nextTick().then(() => {
+        initialisePython((msg: string) => {
+            loadingMessage.value = msg
+        })
     })
 }
 loadingMessage.value = ''
