@@ -140,7 +140,9 @@ import { alert } from '@editor/editor/alerts'
 
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
-if (!props.noPython) {
+const pythonOk =!props.noPython && isCompatibleBrowser()
+
+if (pythonOk) {
     vue.nextTick().then(() => {
         initialisePython((msg: string) => {
             loadingMessage.value = msg
@@ -334,7 +336,7 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
 
 async function onEditorData(data: EditorData) {
     if (data.kind === 'export') {
-        if (!props.noPython) {
+        if (pythonOk) {
             await saveCellML(data.data)
         }
     } else if (data.kind === 'save-as' || !currentFileHandle) {
