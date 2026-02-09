@@ -7,6 +7,7 @@
                 optionLabel="name"
                 @change="selectChange"
                 class="w-full"
+                scrollHeight="400px"
                 size="small"
             )
                 template(#value="slotProps")
