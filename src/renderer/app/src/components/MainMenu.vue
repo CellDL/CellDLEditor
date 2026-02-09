@@ -139,7 +139,7 @@ const menuItems = [
         label: 'File',
         items: [
             {
-                label: 'New File',
+                label: 'New',
                 shortcut: isWindowsOrLinux ? 'Ctrl+N' : isMacOs ? '⌘N' : undefined,
                 command: () => {
                     emit('file-action', 'new')

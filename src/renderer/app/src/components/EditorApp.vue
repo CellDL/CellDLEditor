@@ -285,7 +285,7 @@ const editorCommand = vue.ref<CellDLEditorCommand>({
 
 //==============================================================================
 
-const windowTitle = vue.ref<string>('New file')
+const windowTitle = vue.ref<string>('New diagram')
 
 const fileStatus = vue.ref<{
     haveData: boolean
@@ -371,7 +371,7 @@ async function onNewFile() {
         closeFile()
     } else {
         confirm.require({
-            message: 'Close modified file?',
+            message: 'Close modified diagram?',
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             rejectProps: {
@@ -399,7 +399,7 @@ function closeFile() {
     currentFileHandle = undefined
     fileStatus.value.haveData = false
     diagramModified(false)
-    windowTitle.value = 'New file'
+    windowTitle.value = 'New diagram'
 }
 
 //==============================================================================
@@ -409,7 +409,7 @@ async function onOpenFile() {
         await openFile()
     } else {
         confirm.require({
-            message: 'Overwrite modified file?',
+            message: 'Overwrite modified diagram?',
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             rejectProps: {
