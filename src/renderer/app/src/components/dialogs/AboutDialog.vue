@@ -6,11 +6,11 @@
     )
         div(class="text-2xl font-bold") CellDL Editor
         div.text-xs Copyright (c) 2022 - 2025 David Brooks
-        div.text Version {{ version }}
+        div.text Version {{ currentVersion }}
 </template>
 
 <script setup lang="ts">
-defineEmits<(event: 'close') => void>()
+import { currentVersion } from '../../common/version.ts'
 
-import { version } from '../../../../package.json'
+defineEmits<(event: 'close') => void>()
 </script>

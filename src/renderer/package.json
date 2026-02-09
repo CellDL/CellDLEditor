@@ -37,8 +37,8 @@
         "./style.css": "./dist/CellDLEditor.css"
     },
     "scripts": {
-        "build": "vite --config vite.config.ts build app",
-        "build:dev": "vite --config vite.config.ts build app --base /",
+        "build": "vite --config vite.config.ts build app && bun scripts/generate.version.js",
+        "build:dev": "vite --config vite.config.ts build app --base / && bun scripts/generate.version.js",
         "build:lib": "vite build --config vite.lib.config.ts && cp index.d.ts dist/index.d.ts",
         "clean": "bun scripts/clean.js",
         "dev": "vite --config vite.config.ts app",

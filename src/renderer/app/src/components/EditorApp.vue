@@ -30,6 +30,13 @@
                     @view-action="onViewAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
+                button.update-link.flex.mr-1.text-xs.cursor-pointer.rounded-sm.border.border-transparent.bg-transparent(
+                    v-if="updateAvailable"
+                    class="px-1.5 py-0.5"
+                    type="button"
+                    title="Click to reload and update"
+                    @click="onUpdateClick"
+                ) New version available!
                 ToggleButton.editor-dark-selector(
                     v-model="darkMode"
                     offIcon="pi pi-sun"
@@ -38,6 +45,9 @@
                     @change="onDarkMode"
                 )
             ConfirmDialog
+                template(#message="slotProps")
+                    i(:class="slotProps.message.icon" style="font-size: 2rem;")
+                    span {{ slotProps.message.message }}
             CellDLEditor.grow(
                 :editorCommand="editorCommand"
                 :theme="editorTheme"
@@ -71,6 +81,15 @@
     .editor-dark-selector .p-togglebutton-label {
         display: none;
     }
+
+.update-link {
+    color: var(--p-primary-color);
+}
+
+.update-link:hover {
+    background-color: var(--p-content-hover-background);
+    border-color: var(--p-content-border-color);
+}
 </style>
 
 <script setup lang="ts">
@@ -100,6 +119,7 @@ import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
 
 import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants.ts'
 import * as vueCommon from '@renderer/common/vueCommon'
+import * as version from '../common/version.ts'
 
 //==============================================================================
 
@@ -127,6 +147,12 @@ if (!props.noPython) {
 }
 loadingMessage.value = ''
 alert.info('Editor ready...')
+
+// We are now fully loaded, so start checking for a newer version of the editor
+
+version.startCheck();
+
+//==============================================================================
 
 /*
 import { rdfTest, testBg2cellml } from '../../../src/bg2cellml/index'
@@ -576,6 +602,35 @@ const aboutVisible = vue.ref<boolean>(false)
 
 function onAboutMenu(): void {
   aboutVisible.value = true
+}
+
+
+//==============================================================================
+//==============================================================================
+
+// Handle the click on the update link button by showing a Yes/No dialog.
+
+const updateConfirmVisible = vue.ref(false)
+const updateAvailable = version.updateAvailable
+const latestVersion = version.latestVersion
+
+const onUpdateClick = () => {
+    confirm.require({
+        header: 'Update Available...',
+        message: `Version '${latestVersion.value}' is available. Do you want to reload and update now?`,
+        icon: 'pi pi-info-circle',
+        rejectProps: {
+            label: 'No',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Yes'
+        },
+        accept: () => {
+            version.reloadApp()
+        }
+    })
 }
 
 //==============================================================================

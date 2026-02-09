@@ -20,6 +20,8 @@ limitations under the License.
 
 import CellDLEditor from '@renderer/components/WrappedEditor.vue'
 
+export { version } from './package.json'
+
 //==============================================================================
 
 export type EditorData = {
