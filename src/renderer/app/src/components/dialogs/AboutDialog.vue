@@ -5,7 +5,7 @@
         :pt:mask:style="{ position: 'absolute' }"
     )
         div(class="text-2xl font-bold") CellDL Editor
-        div.text-xs Copyright (c) 2022 - 2025 David Brooks
+        div.text-xs Copyright (c) 2022 - 2026 David Brooks
         div.text Version {{ currentVersion }}
 </template>
 
