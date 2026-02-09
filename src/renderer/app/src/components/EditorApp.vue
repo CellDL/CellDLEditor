@@ -14,7 +14,7 @@
             :pt:root:style="{ position: 'absolute' }"
         )
         .h-dvh.flex.flex-col
-            .flex
+            .flex.items-baseline
                 MainMenu(
                 :id="mainMenuId"
                     :haveFile="haveFile"
@@ -30,6 +30,9 @@
                     @view-action="onViewAction"
                 )
                 div.flex-grow.text-center.font-bold {{ windowTitle }}
+                div.text-xs.pr-2(
+                    v-if="!updateAvailable"
+                ) v{{ version.currentVersion }}
                 button.update-link.flex.mr-1.text-xs.cursor-pointer.rounded-sm.border.border-transparent.bg-transparent(
                     v-if="updateAvailable"
                     class="px-1.5 py-0.5"
