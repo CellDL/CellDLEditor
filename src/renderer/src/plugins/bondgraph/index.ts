@@ -532,8 +532,8 @@ export class BondgraphPlugin implements PluginInterface {
 
     getMaxConnections(celldlObject: CellDLObject): number {
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
-        return baseComponent.numPorts
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)
+        return baseComponent ? baseComponent.numPorts : Infinity
     }
 
     //==========================================================================
@@ -575,7 +575,9 @@ export class BondgraphPlugin implements PluginInterface {
             const items: ItemDetails[] = []
             if (itemTemplate.itemId === BG_INPUT.ElementType) {
                 const discreteItem = this.#getElementTypeItem(itemTemplate, pluginData)
-                items.push(discreteItem)
+                if (discreteItem) {
+                    items.push(discreteItem)
+                }
             } else if (itemTemplate.itemId === BG_INPUT.ElementSpecies ||
                        itemTemplate.itemId === BG_INPUT.ElementLocation ||
                        itemTemplate.itemId === BG_INPUT.ElementValue) {
@@ -863,7 +865,10 @@ export class BondgraphPlugin implements PluginInterface {
         // Update and redraw the component's SVG element
 
         const pluginData = (<PluginData>celldlObject.pluginData(this.id))
-        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)
+        if (!baseComponent) {
+            return ''
+        }
         const symbol = pluginData?.symbol
                      ?? pluginData.elementTemplate?.symbol
                      ?? baseComponent.symbol
@@ -895,11 +900,14 @@ export class BondgraphPlugin implements PluginInterface {
 
     //==========================================================================
 
-    #getElementTypeItem(itemTemplate: ItemDetails, pluginData: PluginData): ItemDetails {
+    #getElementTypeItem(itemTemplate: ItemDetails, pluginData: PluginData): ItemDetails|undefined {
         const discreteItem = <IUiJsonDiscreteInput>{...itemTemplate}
 
         discreteItem.possibleValues = []
-        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)!
+        const baseComponent = this.#baseComponents.get(pluginData.baseComponentType)
+        if (!baseComponent) {
+            return
+        }
         const elementTemplates = this.#baseComponentToElementTemplates.get(baseComponent.type) || []
 
         // `baseComponent` and `templates` are possible values
