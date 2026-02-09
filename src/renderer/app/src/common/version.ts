@@ -7,6 +7,8 @@ import packageJson from '../../../package.json' with { type: 'json' };
 
 import { electronApi } from './electronApi.ts';
 
+const VERSION_CHECK_INTERVAL = 5    // minutes
+
 const { version: currentVersion } = packageJson;
 
 // State to track whether an update is available and the latest version.
@@ -107,7 +109,7 @@ const startCheck = (): void => {
       () => {
         checkForUpdates();
       },
-      10 * 1000 // <<<<<<<<<<<5 * 60 * 1000 // Every 5 minutes.
+      60 * 1000 * VERSION_CHECK_INTERVAL
     );
   }
 };
