@@ -19,6 +19,7 @@ limitations under the License.
 ******************************************************************************/
 
 import CellDLEditor from '@renderer/components/WrappedEditor.vue'
+export { DEFAULT_VIEW_STATE } from '@editor/editor/editguides'
 
 export { version } from './package.json'
 

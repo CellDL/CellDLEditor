@@ -112,10 +112,10 @@ import '../assets/app.css'
 import AboutDialog from './dialogs/AboutDialog.vue'
 
 import CellDLEditor from '../../../index'
+import { DEFAULT_VIEW_STATE } from '../../../index'
 import type { CellDLEditorCommand, EditorData, Theme } from '../../../index'
 import type { EditorState, ViewState } from '../../../index'
 
-import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
 
 import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants.ts'
 import * as vueCommon from '@renderer/common/vueCommon'
@@ -592,7 +592,7 @@ function onEditAction(action: string) {
 
 //==============================================================================
 
-const viewState = vue.ref<ViewState>({ ...INITIAL_VIEW_STATE })
+const viewState = vue.ref<ViewState>({ ...DEFAULT_VIEW_STATE })
 
 function onViewAction(action: string, value: number|boolean) {
     if (action === 'show-grid') {

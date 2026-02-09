@@ -77,7 +77,7 @@ const defaultGridOptions: GridOptions = {
     fullSnap: true,
 }
 
-export const INITIAL_VIEW_STATE: ViewState = {
+export const DEFAULT_VIEW_STATE: ViewState = {
     showGrid: true,
     gridSpacing: GRID_SPACING,
     snapToGrid: defaultGridOptions.snapGrid ? (defaultGridOptions.fullSnap ? 1 : 0.5) : 0
