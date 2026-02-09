@@ -78,10 +78,12 @@
 </template>
 
 <style>
-    .editor-dark-selector .p-togglebutton-label {
-        display: none;
-    }
+.editor-dark-selector .p-togglebutton-label {
+    display: none;
+}
+</style>
 
+<style scoped>
 .update-link {
     color: var(--p-primary-color);
 }
@@ -116,11 +118,10 @@ import { DEFAULT_VIEW_STATE } from '../../../index'
 import type { CellDLEditorCommand, EditorData, Theme } from '../../../index'
 import type { EditorState, ViewState } from '../../../index'
 
-
-import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants.ts'
-import * as vueCommon from '@renderer/common/vueCommon'
-import * as version from '../common/version.ts'
+import { SHORT_DELAY, TOAST_LIFE } from '../common/constants'
 import { isCompatibleBrowser } from '../common/common'
+import * as version from '../common/version'
+import * as vueCommon from '../common/vueCommon'
 
 //==============================================================================
 

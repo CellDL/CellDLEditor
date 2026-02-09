@@ -2,7 +2,7 @@
 
 CellDL Editor
 
-Copyright (c) 2022 - 2025 David Brooks
+Copyright (c) 2022 - 2026 David Brooks
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,12 @@ limitations under the License.
 ******************************************************************************/
 
 import CellDLEditor from '@renderer/components/WrappedEditor.vue'
+import type { ViewState } from '@renderer/common/EditorTypes'
+
 export { DEFAULT_VIEW_STATE } from '@editor/editor/editguides'
+export type { EditorState, ViewState } from '@renderer/common/EditorTypes'
+
+export { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'
 
 export { version } from './package.json'
 
@@ -80,9 +85,6 @@ export type CellDLEditorCommand = EditorEditCommand
                                 | EditorSetStateCommand
                                 | EditorViewCommand
 
-import type { ViewState } from '@renderer/common/EditorTypes'
-export type { EditorState, ViewState } from '@renderer/common/EditorTypes'
-
 //==============================================================================
 
 export type Theme = 'light' | 'dark' | 'system';
@@ -96,9 +98,6 @@ export interface CellDLEditorProps {
     editorCommand: CellDLEditorCommand,
     theme?: Theme
 }
-
-import { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'
-export { celldl2cellml, initialisePython }
 
 //==============================================================================
 //==============================================================================
