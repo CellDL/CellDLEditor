@@ -49,6 +49,8 @@ const emit = defineEmits([
 const isWindowsOrLinux = common.isWindows() || common.isLinux()
 const isMacOs = common.isMacOs()
 
+const fileOperationsAvailable = common.isCompatibleBrowser()
+
 //==============================================================================
 
 function getCheckedIcon(checked: boolean): string {
@@ -148,32 +150,41 @@ const menuItems = [
                 shortcut: isWindowsOrLinux ? 'Ctrl+O' : isMacOs ? '⌘O' : undefined,
                 command: () => {
                     emit('file-action', 'open')
-                }
+                },
+                visible: fileOperationsAvailable
             },
-            { separator: true },
+            {
+                separator: true,
+                visible: fileOperationsAvailable
+            },
             {
                 label: 'Save...',
                 shortcut: isWindowsOrLinux ? 'Ctrl+S' : isMacOs ? '⌘S' : undefined,
                 command: () => {
                     emit('file-action', 'save')
                 },
-                disabled: () => !(props.haveFile && props.fileModified)
+                disabled: () => !(props.haveFile && props.fileModified),
+                visible: fileOperationsAvailable
             },
             {
                 label: 'Save As...',
                 command: () => {
                     emit('file-action', 'save-as')
                 },
-                disabled: () => !props.haveFile
+                disabled: () => !props.haveFile,
+                visible: fileOperationsAvailable
             },
-            { separator: true },
+            {
+                separator: true,
+                visible: fileOperationsAvailable && !props.noPython
+            },
             {
                 label: 'Generate CellML...',
                 command: () => {
                     emit('export-action', 'cellml')
                 },
                 disabled: () => !(props.haveFile && !props.fileModified),
-                visible: () => !props.noPython
+                visible: () => fileOperationsAvailable && !props.noPython
             }
         ]
     },

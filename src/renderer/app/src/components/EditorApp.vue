@@ -120,6 +120,7 @@ import { INITIAL_VIEW_STATE } from '@editor/editor/editguides'
 import { SHORT_DELAY, TOAST_LIFE } from '@renderer/common/constants.ts'
 import * as vueCommon from '@renderer/common/vueCommon'
 import * as version from '../common/version.ts'
+import { isCompatibleBrowser } from '../common/common'
 
 //==============================================================================
 
@@ -236,6 +237,22 @@ const compIsActive = vue.computed(() => {
 
 vue.onMounted(() => {
     const blockUiElement = blockUi.value?.$el as HTMLElement
+
+    // Let the user know their browser is not supported
+
+    vue.nextTick().then(() => {
+        if (!isCompatibleBrowser()) {
+             confirm.require({
+                header: 'Incompatible browser...',
+                message: `Either Google Chrome or Microsoft Edge is needed to open and save CellDL diagrams.`,
+                icon: 'pi pi-exclamation-triangle',
+                rejectClass: 'invisible',
+                acceptProps: {
+                    label: 'OK'
+                }
+            })
+        }
+    })
 
     // Customise our IDs.
 

@@ -20,6 +20,12 @@ export function isDesktop(): boolean {
     return uaParser.getOS().name === 'Windows' || uaParser.getOS().name === 'Linux' || uaParser.getOS().name === 'macOS'
 }
 
+// A method to determine whether the browser engine supports the editor.
+
+export function isCompatibleBrowser(): boolean {
+    return uaParser.getEngine().name === 'Blink'
+}
+
 // A method to determine whether the Ctrl or Cmd key is pressed, depending on the operating system.
 
 export function isCtrlOrCmd(event: KeyboardEvent): boolean {
