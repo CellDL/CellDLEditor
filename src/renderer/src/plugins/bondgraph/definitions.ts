@@ -103,30 +103,6 @@ const ZERO_STORAGE_STYLE: BGElementStyle = {
 
 export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
     {
-        id: 'ZeroStorageNode_q',
-        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
-        name: 'Zero storage node',
-        numPorts: Infinity,
-        symbol: 'q',
-        style: ZERO_STORAGE_STYLE
-    },
-    {
-        id: 'ZeroStorageNode_u',
-        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
-        name: 'Zero storage node',
-        numPorts: Infinity,
-        symbol: 'u',
-        style: ZERO_STORAGE_STYLE
-    },
-    {
-        id: 'OneResistanceNode',
-        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
-        name: 'One resistance node',
-        numPorts: Infinity,
-        symbol: 'v',
-        style: ONE_RESISTANCE_STYLE
-    },
-    {
         id: 'QuantityStore',
         type: 'https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore',
         name: 'Static energy store',
@@ -149,6 +125,30 @@ export const BONDGRAPH_COMPONENT_DEFINITIONS: BGComponentDefinition[] = [
         numPorts: Infinity,
         symbol: 'v',
         style: FLOW_STYLE
+    },
+    {
+        id: 'ZeroStorageNode_q',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
+        name: 'Zero storage node',
+        numPorts: Infinity,
+        symbol: 'q',
+        style: ZERO_STORAGE_STYLE
+    },
+    {
+        id: 'ZeroStorageNode_u',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode',
+        name: 'Zero storage node',
+        numPorts: Infinity,
+        symbol: 'u',
+        style: ZERO_STORAGE_STYLE
+    },
+    {
+        id: 'OneResistanceNode',
+        type: 'https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode',
+        name: 'One resistance node',
+        numPorts: Infinity,
+        symbol: 'v',
+        style: ONE_RESISTANCE_STYLE
     },
     {
         id: 'Resistance',
