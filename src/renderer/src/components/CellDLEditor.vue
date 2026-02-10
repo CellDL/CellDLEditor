@@ -295,7 +295,7 @@ const emit = defineEmits<{
 vue.watch(
     () => props.editorCommand,
     async () => {
-        if (props.editorCommand.command === 'file') {
+        if (props.editorCommand?.command === 'file') {
             const command = props.editorCommand as EditorFileCommand
             const options = command.options
             if  (options.action === 'close') {
@@ -319,19 +319,19 @@ vue.watch(
                     kind: options.kind
                 } as EditorData)
             }
-        } else if (props.editorCommand.command === 'edit') {
+        } else if (props.editorCommand?.command === 'edit') {
             const command = props.editorCommand as EditorEditCommand
             const options = command.options
             if (options.action === 'clean') {
                 undoRedo.clean()
             }
-        } else if (props.editorCommand.command === 'set-state') {
+        } else if (props.editorCommand?.command === 'set-state') {
             const command = props.editorCommand as EditorSetStateCommand
             const options = command.options
             if (options.action === 'reset-tools') {
                 resetToolBars()
             }
-        } else if (props.editorCommand.command === 'view') {
+        } else if (props.editorCommand?.command === 'view') {
             const command = props.editorCommand as EditorViewCommand
             editGuides.setState(command.options)
         }

@@ -44,11 +44,6 @@ export type EditorEditCommand = {
     }
 }
 
-export type EditorEmptyCommand = {
-    command: ''
-    options?: object
-}
-
 export type EditorExportCommand = {
     command: 'export'
     options: {
@@ -79,7 +74,6 @@ export type EditorViewCommand = {
 }
 
 export type CellDLEditorCommand = EditorEditCommand
-                                | EditorEmptyCommand
                                 | EditorExportCommand
                                 | EditorFileCommand
                                 | EditorSetStateCommand
@@ -95,7 +89,7 @@ export { CellDLEditor }
 export default CellDLEditor
 
 export interface CellDLEditorProps {
-    editorCommand: CellDLEditorCommand,
+    editorCommand?: CellDLEditorCommand,
     theme?: Theme
 }
 
