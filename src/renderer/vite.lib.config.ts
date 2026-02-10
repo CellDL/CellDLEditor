@@ -24,8 +24,8 @@ export default vite.defineConfig({
                 globals: {
                     vue: 'Vue'
                 },
-                assetFileNames: (assetInfo: { names: string }) => {
-                    if (assetInfo.names.includes('celldl-editor.css')) {
+                assetFileNames: (assetInfo: { names: string[] }) => {
+                    if (assetInfo.names.includes('editor.css')) {
                         return 'CellDLEditor.css'
                     }
 
