@@ -479,6 +479,7 @@ async function onSaveFile(saveAs: boolean=false) {
 }
 
 async function saveFile(celldl: string) {
+    const fileName = currentFileHandle?.name || undefined
     const options = {
         types: [
             {
@@ -487,7 +488,8 @@ async function saveFile(celldl: string) {
                     'image/svg+xml': ['.svg', '.celldl'],
                 }
             }
-        ]
+        ],
+        suggestedName: fileName
     }
     const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
     if (fileHandle) {
@@ -533,6 +535,19 @@ function copyIssuesToClipboard() {
 }
 
 async function saveCellML(celldl: string) {
+    let fileName = 'Untitled.cellml'
+    if (currentFileHandle) {
+        if (currentFileHandle.name.endsWith('.')) {
+            fileName = currentFileHandle.name + 'cellml'
+        } else {
+            const parts = currentFileHandle.name.split('.')
+            if (parts.length === 1) {
+                fileName = currentFileHandle.name + '.cellml'
+            } else {
+                fileName = parts.slice(0, -1).join('.') + '.cellml'
+            }
+        }
+    }
     const options = {
         types: [
             {
@@ -541,7 +556,8 @@ async function saveCellML(celldl: string) {
                     'application/cellml+xml': ['.cellml'],
                 }
             }
-        ]
+        ],
+        suggestedName: fileName
     }
     const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
     if (fileHandle) {
