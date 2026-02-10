@@ -23,6 +23,9 @@
 
 <script setup lang="ts">
 import * as vue from 'vue'
+import { useThemeCssVariables } from '@renderer/common/themeCssVariables'
+
+useThemeCssVariables('toolbar')
 
 //==============================================================================
 
