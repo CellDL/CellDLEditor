@@ -50,13 +50,13 @@ The Vue component gives access to all of the CellDL Editor's features
 </template>
 
 <script setup lang="ts">
-import type { CellDLEditorCommand, EditorData } from '@abi-software/celldl-editor';
-import '@abi-software/celldl-editor/style.css';
+import type { CellDLEditorCommand, EditorData } from '@celldl/editor';
+import '@celldl/editor/style.css';
 import * as vueusecore from '@vueuse/core';
 
 import * as vue from 'vue';
 
-import CellDLEditor from '@abi-software/celldl-editor'
+import CellDLEditor from '@celldl/editor'
 
 const celldlEditorCommand = vue.ref<CellDLEditorCommand>({
   command: ''
