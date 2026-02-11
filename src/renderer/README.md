@@ -44,7 +44,8 @@ The Vue component gives access to all of the CellDL Editor's features
 ```vue
 <template>
   <CellDLEditor
-    :editorCommand="celldlEditorCommand"
+    :editorCommand="editorCommand"
+    :theme="editorTheme"
     @editorData="onEditorData"
     @error="onError" />
 </template>
@@ -58,9 +59,8 @@ import * as vue from 'vue';
 
 import CellDLEditor from '@celldl/editor'
 
-const celldlEditorCommand = vue.ref<CellDLEditorCommand>({
-  command: ''
-});
+const editorCommand = vue.ref<CellDLEditorCommand>();
+const theme = vue.ref<Theme>('light');
 
 vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
   // The current diagram has has been modified, so update any local state (e.g., add a modified indicator to the
