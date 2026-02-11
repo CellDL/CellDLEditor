@@ -120,4 +120,5 @@ with `kind` set as appropriate. This will result in an `editorData` event, to be
     }
   }
 */
-</script>```
+</script>
+```
