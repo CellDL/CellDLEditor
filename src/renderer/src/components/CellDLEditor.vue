@@ -41,6 +41,7 @@ import 'tippy.js/dist/tippy.css'
 //==============================================================================
 
 import '@renderer/assets/style.css'
+import '@renderer/assets/icons.css'
 
 import * as vueCommon from '@renderer/common/vueCommon'
 
