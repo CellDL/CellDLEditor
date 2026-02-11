@@ -137,19 +137,17 @@ const props = defineProps<IEditorAppProps>()
 
 //==============================================================================
 
-import { celldl2cellml, initialisePython } from '../../../index'
-
 import { alert } from '@editor/editor/alerts'
 
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 
-const pythonOk =!props.noPython && isCompatibleBrowser()
+const pythonOk = !props.noPython && isCompatibleBrowser()
 
 if (pythonOk) {
-    vue.nextTick().then(() => {
-        initialisePython((msg: string) => {
-            loadingMessage.value = msg
-        })
+    vue.nextTick().then(async () => {
+        //initialisePython((msg: string) => {
+        //    loadingMessage.value = msg
+        //})
     })
 }
 loadingMessage.value = ''
@@ -558,6 +556,7 @@ async function saveCellML(celldl: string) {
         suggestedName: fileName
     }
     const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
+/*
     if (fileHandle) {
         const cellmlObject = celldl2cellml(`https://celldl.org/cellml/${fileHandle.name}`, celldl)
         if (cellmlObject.cellml) {
@@ -577,6 +576,7 @@ async function saveCellML(celldl: string) {
             window.alert('Unexpected exception generating CellML...')
         }
     }
+*/
 }
 
 //==============================================================================

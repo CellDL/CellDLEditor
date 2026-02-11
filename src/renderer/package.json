@@ -73,7 +73,6 @@
         "oxigraph": "^0.5.2",
         "primeicons": "^7.0.0",
         "primevue": "4.2.5",
-        "pyodide": "^0.29.3",
         "rbush": "^4.0.1",
         "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers",
         "svg-path-commander": "^2.1.11",

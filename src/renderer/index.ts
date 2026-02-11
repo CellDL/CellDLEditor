@@ -24,8 +24,6 @@ import type { ViewState } from '@renderer/common/EditorTypes'
 export { DEFAULT_VIEW_STATE } from '@editor/editor/editguides'
 export type { EditorState, ViewState } from '@renderer/common/EditorTypes'
 
-export { celldl2cellml, initialisePython } from '@renderer/bg2cellml/index'
-
 export { version } from './package.json'
 
 //==============================================================================
