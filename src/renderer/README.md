@@ -12,10 +12,23 @@ This package is a [Vue 3](https://vuejs.org/) component for the CellDL Editor, b
 The component comes with the following props:
 
 **TODO**
+export interface CellDLEditorProps {
+    editorCommand?: CellDLEditorCommand,
+    theme?: Theme
+}
+
+
+export type EditorViewCommand = {
+    command: 'view'
+    options: ViewState
+}
 
 and emits the following actions:
 
-**TODO**
+const emit = defineEmits<{
+    'editor-data': [data: EditorData],
+    'error': [msg: string]
+}>()
 
 - **index.html:**
 
