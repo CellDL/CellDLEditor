@@ -27,7 +27,7 @@ export {
     isNamedNode,
     TurtleContentType,
     RdfStore
-} from './rdfstore.ts'
+} from './oxigraphStore'
 
 export type {
     BlankNode,
@@ -39,7 +39,7 @@ export type {
     ObjectType,
     ContentType,
     Term
-} from './rdfstore.ts'
+} from './oxigraphStore'
 
 export type { PredicateValue } from './store.ts'
 
@@ -47,9 +47,9 @@ export * from './namespaces.ts'
 
 //==============================================================================
 
-import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from './rdfstore'
+import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from './oxigraphStore'
 
-import type { PredicateType } from './rdfstore'
+import type { PredicateType } from './oxigraphStore'
 
 import { RDF } from './namespaces'
 
