@@ -30,6 +30,19 @@ const emit = defineEmits<{
     'error': [msg: string]
 }>()
 
+
+- **vite.config.ts:**
+
+Bundled wuth the the CellDL Editor is [Oxigraph for Javascript](https://github.com/oxigraph/oxigraph/tree/main/js). This is a large Web Asembly module (3.7MB) which is loaded asynchronously during startup. When building an application that uses the editor component, it can be put into its chunk by setting `build.rollupOptions.output.manualChunks` in the application's `vite.config.ts` to:
+
+```
+(id: string) => {
+    if (id.includes('oxigraph')) {
+        return id.split('/').slice(-1)[0];
+    }
+}
+```
+
 - **index.html:**
 
 The `Content-Security-Policy` **must** allow `data:` connections and Wasm to be evaluated, for instance:
