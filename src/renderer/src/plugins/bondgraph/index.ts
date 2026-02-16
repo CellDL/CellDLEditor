@@ -38,7 +38,7 @@ import type {
     ComponentLibrary,
     ElementTypeName,
     ObjectTemplate
-} from '@editor/components/index'
+} from '@editor/components'
 import {
     getItemProperty,
     type ItemDetails,
@@ -48,10 +48,10 @@ import {
     updateItemProperty,
     type ValueChange
 } from '@editor/components/properties'
-import type { ConnectionStatus, PluginInterface } from '@renderer/plugins/index'
 import * as $rdf from '@renderer/metadata'
 import { BGF, RDF, SPARQL_PREFIXES } from '@renderer/metadata'
 import { type MetadataProperty, MetadataPropertiesMap } from '@renderer/metadata'
+import type { ConnectionStatus, PluginInterface } from '@renderer/plugins'
 
 import {
     BONDGRAPH_COMPONENT_DEFINITIONS,
@@ -146,10 +146,6 @@ export class BGBaseComponent {
         this.#numPorts = template.numPorts
     }
 
-    get symbol() {
-        return this.#symbol
-    }
-
     get isBondElement() {
         return this.#nodeType === BGF.uri('BondElement').value
     }
@@ -168,6 +164,10 @@ export class BGBaseComponent {
 
     get style() {
         return this.#style
+    }
+
+    get symbol() {
+        return this.#symbol
     }
 
     get type() {
