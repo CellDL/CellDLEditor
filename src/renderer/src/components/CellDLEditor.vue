@@ -1,18 +1,15 @@
 <template lang="pug">
     .flex.flex-col.h-full
-        main.relative.flex.grow(
-            class="min-h-calc(100% - 1.6em)"
-        )
+        main.editor-pane.relative.flex.grow
             EditorToolbar.editor-bar(
                 :buttons="toolButtons"
                 type="popover"
                 @button-event="buttonEvent"
                 @popover-event="popoverEvent"
             )
-            div.flex.grow.m-0.overflow-hidden.bordered(ref="svgContent")
+            div#svg-content(ref="svgContent")
                 <!-- context-menu(id="context-menu")  -->
-            div.absolute.w-250px.bordered.border-l.top-0.right-38px(
-                class="bottom-1.6em"
+            #panel-content(
                 :class="{ hidden: !panelVisible }"
             )
                 component(
@@ -360,12 +357,27 @@ vue.onMounted(async () => {
 </script>
 
 <style scoped>
+.editor-pane {
+    min-height: calc(100% - 1.6em);
+}
 .editor-bar {
     width: 40px;
     overflow: auto;
 }
-.bordered {
+#svg-content {
+    margin:  0;
     border: 2px solid var(--editor-border-color);
+    flex: 1;
+    overflow: hidden;
+}
+#panel-content {
+    width: 250px;
+    border: 2px solid var(--editor-border-color);
+    border-left-width: 1px;
+    right: 38px; /* This depends on panel bar width... */
+    top: 0px;
+    bottom: 1.6em;
+    position: absolute;
 }
 .hidden {
     display: none;
