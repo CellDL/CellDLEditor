@@ -65,7 +65,6 @@ import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStyl
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 import { componentLibraryPlugin } from '@renderer/plugins/index'
-import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
 
 //==============================================================================
 
@@ -83,7 +82,7 @@ const props = defineProps<CellDLEditorProps>()
 //==============================================================================
 //==============================================================================
 
-// Setup PrimeVue's theme, vue-tippy, and our plugins
+// Setup PrimeVue's theme and vue-tippy
 
 const crtInstance = vue.getCurrentInstance();
 
@@ -102,11 +101,6 @@ if (crtInstance) {
     }
 
     app.use(vueTippy)
-
-    // Install our component library plugin manager and the Bondgraph plugin
-
-    componentLibraryPlugin.install(app, {})
-    componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
 }
 
 vueCommon.useTheme().setTheme(props.theme)
