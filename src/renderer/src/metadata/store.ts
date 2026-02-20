@@ -19,94 +19,51 @@ limitations under the License.
 ******************************************************************************/
 
 import {
-    blankNode,
-    isBlankNode,
-    isLiteral,
-    isNamedNode,
     MetadataPropertiesMap,
     type MetadataPropertyValue,
-    type ContentType,
-    type NamedNode,
-    type Statement
 } from './index'
 
-import type { SubjectType, PredicateType, ObjectType } from './index'
+import * as $rdf from '@celldl/editor-rdf'
 
 //==============================================================================
 
-import { RDF } from './namespaces'
+import { RDF, WEB_DECLARATIONS } from './namespaces'
 
 //==============================================================================
 
 export interface PredicateValue {
-    predicate: PredicateType
-    object: ObjectType
+    predicate: $rdf.PredicateType
+    object: $rdf.ObjectType
 }
 
 //==============================================================================
 
-export abstract class BaseStore {
+export class RdfStore extends $rdf.RdfStore {
+    // A dummy constructor is needed otherwise instance creation is optimised to
+    // the uninitialised $rdf module.
+    constructor(_: string='') {
+        super()
+    }
 
-    abstract add(s: SubjectType, p: PredicateType, o: ObjectType, g: NamedNode | null): Statement
-
-    abstract contains(
-        s: SubjectType | null,
-        p: PredicateType | null,
-        o: ObjectType | null,
-        g: NamedNode | null
-    ): boolean
-
-    abstract load(baseIri: string|null, rdf: string, contentType: ContentType, graph: NamedNode|null): void
-
-    abstract removeStatements(
-        s: SubjectType | null,
-        p: PredicateType | null,
-        o: ObjectType | null,
-        g: NamedNode | null
-    ): void
-
-    abstract serialise(
-        baseIri: string,
-        contentType: ContentType,
-        namespaces: Record<string, string>,
-        graph: NamedNode | null
-    ): Promise<string>
-
-    abstract query(sparql: string, all_graphs: boolean): Map<string, unknown>[]
-
-    abstract statements(graph: NamedNode | null): Statement[]
-
-    abstract statementsMatching(
-        s: SubjectType | null,
-        p: PredicateType | null,
-        o: ObjectType | null,
-        g: NamedNode | null
-    ): Statement[]
-
-    abstract subjectsOfType(parentType: NamedNode): [SubjectType, NamedNode][]
-
-    abstract update(sparql: string): void
-
-    addMetadataPropertiesForSubject(subject: SubjectType, properties: MetadataPropertiesMap): Statement[] {
-        const statements: Statement[] = []
+    addMetadataPropertiesForSubject(subject: $rdf.SubjectType, properties: MetadataPropertiesMap): $rdf.Statement[] {
+        const statements: $rdf.Statement[] = []
         for (const [predicate, value] of properties.predicateValues()) {
             statements.push(...this.#addMetadataProperties(subject, predicate, value))
         }
         return statements
     }
 
-    #addMetadataProperties(subject: SubjectType, predicate: PredicateType, value: MetadataPropertyValue): Statement[] {
-        const statements: Statement[] = []
-        if (isLiteral(value) || isNamedNode(value)) {
-            // @ts-expect-error: value is a Literal or NamedNode
-            statements.push(this.add(subject, predicate, value))
+    #addMetadataProperties(subject: $rdf.SubjectType, predicate: $rdf.PredicateType, value: MetadataPropertyValue): $rdf.Statement[] {
+        const statements: $rdf.Statement[] = []
+        if ($rdf.isLiteral(value) || $rdf.isNamedNode(value)) {
+            statements.push(super.add(subject, predicate, value))
         } else if (value instanceof MetadataPropertiesMap) {
-            const node = blankNode()
-            statements.push(this.add(subject, predicate, node, null))
+            const node = $rdf.blankNode()
+            statements.push(super.add(subject, predicate, node, null))
             statements.push(...this.addMetadataPropertiesForSubject(node, value))
         } else if (Array.isArray(value) && value.length > 0) {
-            const node = blankNode()
-            statements.push(this.add(subject, predicate, node, null))
+            const node = $rdf.blankNode()
+            statements.push(super.add(subject, predicate, node, null))
             this.#addListAsCollection(node, value) // ??
         } else if (value instanceof Set) {
             for (const v of value.values()) {
@@ -116,9 +73,9 @@ export abstract class BaseStore {
         return statements
     }
 
-    addStatementList(statements: Statement[]) {
+    addStatementList(statements: $rdf.Statement[]) {
         statements.forEach((s) => {
-            this.add(s.subject, s.predicate, s.object, null)
+            super.add(s.subject, s.predicate, s.object, null)
         })
     }
 
@@ -133,48 +90,55 @@ export abstract class BaseStore {
         return metadata
     }
 
-    metadataPropertiesForSubject(subject: SubjectType): MetadataPropertiesMap {
-        const predicateValues = this.statementsMatching(subject, null, null, null) as PredicateValue[]
+    metadataPropertiesForSubject(subject: $rdf.SubjectType): MetadataPropertiesMap {
+        const predicateValues = super.statementsMatching(subject, null, null, null) as PredicateValue[]
         return this.metadataFromPredicates(predicateValues)
     }
 
-    removeStatementList(statements: Statement[]) {
+    removeStatementList(statements: $rdf.Statement[]) {
         statements.forEach((s) => {
-            this.removeStatements(s.subject, s.predicate, s.object, null)
+            super.removeStatements(s.subject, s.predicate, s.object, null)
         })
     }
 
-    #metadataValue(value: ObjectType): MetadataPropertyValue | null {
-        if (isLiteral(value) || isNamedNode(value)) {
-            // @ts-expect-error: `value` is a Literal or NamedNode
+    async serialise(
+        baseIri: string,
+        contentType: $rdf.ContentType = $rdf.TurtleContentType,
+        namespaces: Record<string, string> = {},
+        graph: $rdf.NamedNode | null = null
+    ): Promise<string> {
+        const serialised: string = await super.serialise(
+            baseIri, contentType, Object.assign({}, WEB_DECLARATIONS, namespaces), graph)
+        return serialised
+    }
+
+    #metadataValue(value: $rdf.ObjectType): MetadataPropertyValue | null {
+        if ($rdf.isLiteral(value) || $rdf.isNamedNode(value)) {
             return value
-        } else if (isBlankNode(value)) {
-            // @ts-expect-error: value is a BlankNode
-            if (this.contains(value, RDF.uri('rest'), null)) {
-                // @ts-expect-error: `value` is a BlankNode
+        } else if ($rdf.isBlankNode(value)) {
+            if (super.contains(value, RDF.uri('rest'), null)) {
                 return this.#listFromCollection(value)
             } else {
-                // @ts-expect-error: `value` is a BlankNode
                 return this.metadataPropertiesForSubject(value)
             }
         }
         return null
     }
 
-    #listFromCollection(subject: SubjectType): MetadataPropertyValue[] {
+    #listFromCollection(subject: $rdf.SubjectType): MetadataPropertyValue[] {
         // Based on https://github.com/ontola/rdfdev-js/blob/master/packages/collections/src/list.ts
         const result: MetadataPropertyValue[] = []
         const nodes = [subject.value]
         let next = subject
         while (next && !next.equals(RDF.uri('nil'))) {
-            const headItem = this.statementsMatching(next, RDF.uri('first'), null, null)
+            const headItem = super.statementsMatching(next, RDF.uri('first'), null, null)
             if (headItem.length !== 1 || headItem[0] === undefined) break
             const value = this.#metadataValue(headItem[0].object)
             if (!value) break
             result.push(value)
-            const nextItem = this.statementsMatching(next, RDF.uri('rest'), null, null)
+            const nextItem = super.statementsMatching(next, RDF.uri('rest'), null, null)
             if (nextItem.length !== 1 || nextItem[0] === undefined) break
-            next = nextItem[0].object as NamedNode
+            next = nextItem[0].object as $rdf.NamedNode
             if (nodes.includes(next.value)) {
                 break
             }
@@ -183,18 +147,18 @@ export abstract class BaseStore {
         return result
     }
 
-    #addListAsCollection(subject: SubjectType, values: MetadataPropertyValue[]): Statement[] {
-        const statements: Statement[] = []
+    #addListAsCollection(subject: $rdf.SubjectType, values: MetadataPropertyValue[]): $rdf.Statement[] {
+        const statements: $rdf.Statement[] = []
         let current = subject
         values.forEach((value, index) => {
             statements.push(...this.#addMetadataProperties(current, RDF.uri('first'), value))
             if (index < values.length - 1) {
-                const next = blankNode()
-                statements.push(this.add(current, RDF.uri('rest'), next, null))
+                const next = $rdf.blankNode()
+                statements.push(super.add(current, RDF.uri('rest'), next, null))
                 current = next
             }
         })
-        statements.push(this.add(current, RDF.uri('rest'), RDF.uri('nil'), null))
+        statements.push(super.add(current, RDF.uri('rest'), RDF.uri('nil'), null))
         return statements
     }
 }

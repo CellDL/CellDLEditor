@@ -18,9 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-import { isNamedNode, namedNode, type NamedNode } from '.'
-
-import { SVG_URI } from '@renderer/common/svgUtils'
+import * as $rdf from '@celldl/editor-rdf'
 
 //==============================================================================
 
@@ -36,6 +34,7 @@ export const DCT_URI = 'http://purl.org/dc/terms/'
 export const OWL_URI = 'http://www.w3.org/2002/07/owl#'
 export const RDF_URI = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 export const RDFS_URI = 'http://www.w3.org/2000/01/rdf-schema#'
+export const SVG_URI = 'http://www.w3.org/2000/svg'
 export const XSD_URI = 'http://www.w3.org/2001/XMLSchema#'
 
 //==============================================================================
@@ -66,7 +65,7 @@ export const SPARQL_PREFIXES = Object.entries(declaredNamespaces).map(
 
 //==============================================================================
 
-export type NamespaceType = (_: string) => NamedNode
+export type NamespaceType = (_: string) => $rdf.NamedNode
 
 export class Namespace {
     #nsuri: string
@@ -75,8 +74,8 @@ export class Namespace {
         this.#nsuri = nsuri
     }
 
-    uri(ln: string): NamedNode {
-        return namedNode(this.#nsuri + (ln || ''))
+    uri(ln: string): $rdf.NamedNode {
+        return $rdf.namedNode(this.#nsuri + (ln || ''))
     }
 }
 
@@ -97,8 +96,8 @@ export const XSD = new Namespace(XSD_URI)
 
 //==============================================================================
 
-export function curieSuffix(NS: Namespace, term: string | NamedNode): string {
-    const curie: string = isNamedNode(term) ? (<NamedNode>term).uri : <string>term
+export function curieSuffix(NS: $rdf.Namespace, term: string | $rdf.NamedNode): string {
+    const curie: string = $rdf.isNamedNode(term) ? (<$rdf.NamedNode>term).uri : <string>term
     const fullUri = expandCurie(curie)
     const nsUri = NS.uri('').uri
     if (fullUri.startsWith(nsUri)) {
@@ -109,8 +108,8 @@ export function curieSuffix(NS: Namespace, term: string | NamedNode): string {
 
 //==============================================================================
 
-export function getCurie(term: string | NamedNode): string {
-    const fullUri: string = isNamedNode(term) ? (<NamedNode>term).uri : <string>term
+export function getCurie(term: string | $rdf.NamedNode): string {
+    const fullUri: string = $rdf.isNamedNode(term) ? (<$rdf.NamedNode>term).uri : <string>term
     for (const [prefix, nsUri] of Object.entries(declaredNamespaces)) {
         if (fullUri.startsWith(nsUri)) {
             return `${prefix}:${fullUri.slice(nsUri.length)}`

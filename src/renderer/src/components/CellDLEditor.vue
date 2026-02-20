@@ -62,6 +62,15 @@ import ConnectionStylePopover from '@renderer/components/popovers/ConnectionStyl
 import PropertiesPanel from '@renderer/components/panels/PropertiesPanel.vue'
 
 import { componentLibraryPlugin } from '@renderer/plugins/index'
+import { BondgraphPlugin } from '@renderer/plugins/bondgraph/index'
+
+//==============================================================================
+
+import * as $rdf from '@celldl/editor-rdf'
+
+if (!$rdf.initialised()) {
+    window.alert('The RDF module must be initialised before using the CellDL Editor component')
+}
 
 //==============================================================================
 
@@ -79,7 +88,7 @@ const props = defineProps<CellDLEditorProps>()
 //==============================================================================
 //==============================================================================
 
-// Setup PrimeVue's theme and vue-tippy
+// Setup PrimeVue's theme, vue-tippy and our component library
 
 const crtInstance = vue.getCurrentInstance();
 
@@ -98,6 +107,11 @@ if (crtInstance) {
     }
 
     app.use(vueTippy)
+
+    // Install our component library manager with the Bondgraph plugin
+
+    componentLibraryPlugin.install(app)
+    componentLibraryPlugin.registerPlugin(new BondgraphPlugin())
 }
 
 vueCommon.useTheme().setTheme(props.theme)

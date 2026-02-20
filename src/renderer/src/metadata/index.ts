@@ -20,36 +20,34 @@ limitations under the License.
 
 export {
     blankNode,
+    initialise,
+    initialised,
     isBlankNode,
-    literal,
     isLiteral,
-    namedNode,
     isNamedNode,
-    TurtleContentType,
-    RdfStore
-} from './oxigraphStore'
+    literal,
+    namedNode,
+    TurtleContentType
+} from '@celldl/editor-rdf'
 
 export type {
     BlankNode,
+    ContentType,
     Literal,
     NamedNode,
     Statement,
     SubjectType,
     PredicateType,
     ObjectType,
-    ContentType,
     Term
-} from './oxigraphStore'
+} from '@celldl/editor-rdf'
 
-export type { PredicateValue } from './store.ts'
-
-export * from './namespaces.ts'
+export * from './namespaces'
+export { RdfStore } from './store'
 
 //==============================================================================
 
-import { type Literal, isLiteral, type NamedNode, namedNode, isNamedNode } from './oxigraphStore'
-
-import type { PredicateType } from './oxigraphStore'
+import * as $rdf from '@celldl/editor-rdf'
 
 import { RDF } from './namespaces'
 
@@ -58,17 +56,17 @@ import { RDF } from './namespaces'
 /**
  * The type of the ``object`` of a ``predicate``
  */
-export type MetadataPropertyValue = Literal | NamedNode | MetadataCollection
+export type MetadataPropertyValue = $rdf.Literal | $rdf.NamedNode | MetadataCollection
 export type MetadataCollection = MetadataPropertyValue[] | Set<MetadataPropertyValue> | MetadataPropertiesMap
 
 /**
  * A ``<predicate, object>`` pair
  */
-export type MetadataProperty = [NamedNode, MetadataPropertyValue]
+export type MetadataProperty = [$rdf.NamedNode, MetadataPropertyValue]
 
 //==============================================================================
 
-export function fragment(uri: NamedNode|string): string {
+export function fragment(uri: $rdf.NamedNode|string): string {
     // @ts-expect-error: uri is a NamedNode
     const uriString = isNamedNode(uri) ? uri.value : uri
     const parts = uriString.split('#')
@@ -106,7 +104,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
     }
 
     #copyValue(value: MetadataPropertyValue): MetadataPropertyValue {
-        if (isLiteral(value) || isNamedNode(value)) {
+        if ($rdf.isLiteral(value) || $rdf.isNamedNode(value)) {
             return value
         } else if (value instanceof MetadataPropertiesMap) {
             return value.copy()
@@ -118,14 +116,14 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
         }
     }
 
-    getProperty(predicate: PredicateType): MetadataPropertyValue | null {
+    getProperty(predicate: $rdf.PredicateType): MetadataPropertyValue | null {
         return this.get(predicate.value) || null
     }
 
-    getPropertyAsArray(predicate: PredicateType): MetadataPropertyValue[] {
+    getPropertyAsArray(predicate: $rdf.PredicateType): MetadataPropertyValue[] {
         const value = this.getProperty(predicate)
         if (!value) return []
-        if (isLiteral(value) || isNamedNode(value) || value instanceof MetadataPropertiesMap) {
+        if ($rdf.isLiteral(value) || $rdf.isNamedNode(value) || value instanceof MetadataPropertiesMap) {
             return [value]
         } else if (Array.isArray(value)) {
             return value
@@ -135,18 +133,18 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
         }
     }
 
-    isA(type: NamedNode): boolean {
+    isA(type: $rdf.NamedNode): boolean {
         return this.#rdfTypes.has(type.uri)
     }
 
-    *predicateValues(): IterableIterator<[NamedNode, MetadataPropertyValue]> {
+    *predicateValues(): IterableIterator<[$rdf.NamedNode, MetadataPropertyValue]> {
         for (const [p, value] of super.entries()) {
-            yield [namedNode(p), value]
+            yield [$rdf.namedNode(p), value]
         }
     }
 
     setProperty(predicate: PredicateType, value: MetadataPropertyValue, multiValued = false) {
-        if (predicate.equals(RDF.uri('type')) && isNamedNode(value)) {
+        if (predicate.equals(RDF.uri('type')) && $rdf.isNamedNode(value)) {
             // @ts-expect-error: `value` is a NamedNode
             this.#rdfTypes.add(value.uri)
         }
@@ -156,7 +154,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
             const values = this.get(property)
             if (values instanceof Set) {
                 let inSet = false
-                if (isLiteral(value) || isNamedNode(value)) {
+                if ($rdf.isLiteral(value) || $rdf.isNamedNode(value)) {
                     for (const v of values) {
                         // @ts-expect-error: `value` is a Literal or NamedNode
                         if (value.equals(v)) {
@@ -169,8 +167,7 @@ export class MetadataPropertiesMap extends Map<string, MetadataPropertyValue> {
                     values.add(value)
                 }
             } else if (values) {
-                // @ts-expect-error: `values` is a Literal or NamedNode
-                if (!(isLiteral(values) || isNamedNode(values)) || !values.equals(value)) {
+                if (!($rdf.isLiteral(values) || $rdf.isNamedNode(values)) || !values.equals(value)) {
                     this.set(property, new Set<MetadataPropertyValue>([values, value]))
                 }
             } else {

@@ -30,12 +30,6 @@ export default vite.defineConfig({
                         return 'CellDLEditor.css'
                     }
                     return assetInfo.names[0] ?? 'default-name'
-                },
-                manualChunks: (id: string) => {
-                    // Put `oxigraph` into its own bundle
-                    if (id.includes('assets/oxigraph')) {
-                        return 'oxigraph';
-                    }
                 }
             }
         },
@@ -55,7 +49,6 @@ export default vite.defineConfig({
         alias: {
             'node-fetch': 'isomorphic-fetch',
             '@editor': path.resolve(_dirname, 'src/CellDL'),
-            '@oxigraph': path.resolve(_dirname, 'src/assets/oxigraph'),
             '@renderer': path.resolve(_dirname, 'src')
         }
     },
