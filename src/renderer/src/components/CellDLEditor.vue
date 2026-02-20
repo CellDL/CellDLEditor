@@ -88,7 +88,7 @@ const props = defineProps<CellDLEditorProps>()
 //==============================================================================
 //==============================================================================
 
-// Setup PrimeVue's theme, vue-tippy and our component library
+// Setup PrimeVue's theme, vue-tippy, and our plugins
 
 const crtInstance = vue.getCurrentInstance();
 
