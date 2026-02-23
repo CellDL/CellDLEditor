@@ -7,8 +7,7 @@ for (const path of [
     'src/main/build',
     'src/renderer/components.d.ts',
     'src/renderer/dist',
-    'src/renderer/node_modules',
-    'src/renderer/src/assets/bg-rdf'
+    'src/renderer/node_modules'
 ]) {
     if (fs.existsSync(path)) {
         fs.rmSync(path, { recursive: true, force: true })
