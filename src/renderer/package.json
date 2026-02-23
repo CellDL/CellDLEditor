@@ -1,6 +1,6 @@
 {
-    "name": "@celldl/editor",
     "version": "0.20260217.1",
+    "name": "@celldl/editor-app",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
@@ -8,7 +8,7 @@
     "bugs": {
         "url": "https://github.com/CellDL/CellDLEditor/issues"
     },
-    "description": "A Web-based editor for CellDL files.",
+    "description": "A Web-based editor for CellDL.",
     "files": [
         "dist",
         "README.md",
@@ -39,7 +39,6 @@
     "scripts": {
         "build": "vite --config vite.config.ts build app && bun scripts/generate.version.js",
         "build:dev": "vite --config vite.config.ts build app --base / && bun scripts/generate.version.js",
-        "build:lib": "vite build --config vite.lib.config.ts",
         "clean": "bun scripts/clean.js",
         "dev": "vite --config vite.config.ts app",
         "format": "bunx --bun biome format --fix --max-diagnostics=none",
@@ -52,11 +51,6 @@
         "overrides": {
             "vue": "3.4.21"
         }
-    },
-    "peerDependencies": {
-        "@primeuix/themes": "^2.0.2",
-        "primevue": "4.2.5",
-        "vue": "3.4.21"
     },
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
@@ -96,7 +90,6 @@
         "tailwindcss": "^4.1.18",
         "tailwindcss-primeui": "^0.6.1",
         "unplugin-vue-components": "^31.0.0",
-        "vite": "^7.2.7",
-        "vite-plugin-dts": "^4.5.4"
+        "vite": "^7.2.7"
     }
 }

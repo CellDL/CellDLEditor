@@ -3,7 +3,6 @@
         "baseUrl": ".",
         "target": "esnext",
         "paths": {
-            "@editor/*": ["./src/renderer/src/CellDL/*"],
             "@renderer/*": ["./src/renderer/src/*"]
         }
     },
