@@ -5,8 +5,9 @@
       "name": "@abi-software/celldl-editor",
       "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
-        "@celldl/editor-python-tools": "../PythonTools/celldl-editor-python-tools-0.20260224.0.tgz",
-        "@celldl/editor-rdf": "../RDFTools/celldl-editor-rdf-0.20260224.0.tgz",
+        "@celldl/editor": "^0.20260305.3",
+        "@celldl/editor-python-tools": "^0.20260224.1",
+        "@celldl/editor-rdf": "^0.20260305.1",
         "@ctrl/tinycolor": "^4.2.0",
         "@mathjax/src": "^4.0.0",
         "@primeuix/themes": "^2.0.2",
@@ -121,9 +122,11 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.3.11", "", { "os": "win32", "cpu": "x64" }, "sha512-43VrG813EW+b5+YbDbz31uUsheX+qFKCpXeY9kfdAx+ww3naKxeVkTD9zLIWxUPfJquANMHrmW3wbe/037G0Qg=="],
 
-    "@celldl/editor-python-tools": ["@celldl/editor-python-tools@../PythonTools/celldl-editor-python-tools-0.20260224.0.tgz", { "dependencies": { "ws": "^8.19.0" } }],
+    "@celldl/editor": ["@celldl/editor@0.20260305.3", "", { "dependencies": { "@atomic-ehr/ucum": "^0.2.5", "@celldl/editor-rdf": "^0.20260305.1", "@ctrl/tinycolor": "^4.2.0", "@mathjax/src": "^4.0.0", "@primeuix/themes": "^2.0.2", "@primevue/auto-import-resolver": "4.2.5", "@vueuse/core": "14.1.0", "buffer": "^6.0.3", "flatbush": "^4.5.0", "graphology": "^0.26.0", "isomorphic-fetch": "^3.0.0", "jsonschema": "^1.5.0", "primeicons": "^7.0.0", "primevue": "4.2.5", "rbush": "^4.0.1", "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers", "svg-path-commander": "^2.1.11", "systeminformation": "^5.27.11", "transformation-matrix": "^3.1.0", "ua-parser-js": "^2.0.8", "vue": "3.4.21", "vue-tippy": "^6.7.1" } }, "sha512-iNhsHij+pwcUiHriTol/RzpnvIUPjfzjSuQtPp/38Jnx7NKVI1SRoU/dkEI19YfPt4YjF5T4Qb1PGDJYMxJgYg=="],
 
-    "@celldl/editor-rdf": ["@celldl/editor-rdf@../RDFTools/celldl-editor-rdf-0.20260224.0.tgz", { "dependencies": { "@jeswr/pretty-turtle": "^1.8.2", "oxigraph": "^0.5.2" } }],
+    "@celldl/editor-python-tools": ["@celldl/editor-python-tools@0.20260224.1", "", { "dependencies": { "ws": "^8.19.0" } }, "sha512-z0JMu0To3EF5g5I8z/avrtYqm2zMi2KBuA/kRYyI9y02wZif5sUp3iQTATotV2JDhAmUVspqNSUEwaOQvYA6ng=="],
+
+    "@celldl/editor-rdf": ["@celldl/editor-rdf@0.20260305.1", "", { "dependencies": { "@jeswr/pretty-turtle": "^1.8.2", "oxigraph": "^0.5.5" } }, "sha512-P+qZ5SCDr5XHvQlUc+4bPKzxwXIDo4r7FBQmDlpeZXGNhVQRzOjugFxtfiI/ei90EOa1c9gnQUVjkoxW3xAktg=="],
 
     "@ctrl/tinycolor": ["@ctrl/tinycolor@4.2.0", "", {}, "sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A=="],
 
@@ -695,6 +698,10 @@
 
     "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
 
+    "graphology": ["graphology@0.26.0", "", { "dependencies": { "events": "^3.3.0" }, "peerDependencies": { "graphology-types": ">=0.24.0" } }, "sha512-8SSImzgUUYC89Z042s+0r/vMibY7GX/Emz4LDO5e7jYXhuoWfHISPFJYjpRLUSJGq6UQ6xlenvX1p/hJdfXuXg=="],
+
+    "graphology-types": ["graphology-types@0.24.8", "", {}, "sha512-hDRKYXa8TsoZHjgEaysSRyPdT6uB78Ci8WnjgbStlQysz7xR52PInxNsmnB7IBOM1BhikxkNyCVEFgmPKnpx3Q=="],
+
     "has-flag": ["has-flag@4.0.0", "", {}, "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ=="],
 
     "has-property-descriptors": ["has-property-descriptors@1.0.2", "", { "dependencies": { "es-define-property": "^1.0.0" } }, "sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg=="],
@@ -1212,6 +1219,8 @@
     "@babel/helper-compilation-targets/lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
     "@babel/helper-compilation-targets/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
+
+    "@celldl/editor/svg-intersections": ["svg-intersections@github:dbrnz/svg-intersections#816f1a3", { "dependencies": { "kld-affine": "2.0.0", "kld-polynomial": "0.3.0" } }, "dbrnz-svg-intersections-816f1a3"],
 
     "@develar/schema-utils/ajv": ["ajv@6.12.6", "", { "dependencies": { "fast-deep-equal": "^3.1.1", "fast-json-stable-stringify": "^2.0.0", "json-schema-traverse": "^0.4.1", "uri-js": "^4.2.2" } }, "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="],
 
