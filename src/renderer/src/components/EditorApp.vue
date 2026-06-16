@@ -641,6 +641,12 @@ function onViewAction(action: string, value: number|boolean) {
             command: 'view',
             options: viewState.value
         }
+    } else if (action === 'show-guides') {
+        viewState.value = { ...viewState.value, alignmentGuides: !!value }
+        editorCommand.value = {
+            command: 'view',
+            options: viewState.value
+        }
     } else if (action === 'snap-to-grid') {
         viewState.value = { ...viewState.value, snapToGrid: Number(value) }
         editorCommand.value = {
