@@ -6,7 +6,7 @@
       "name": "@abi-software/celldl-editor",
       "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
-        "@celldl/editor": "^0.20260623.0",
+        "@celldl/editor": "^0.20260623.1",
         "@celldl/editor-python-tools": "^0.20260412.0",
         "@celldl/editor-rdf": "^0.20260412.0",
         "@ctrl/tinycolor": "^4.2.0",
@@ -123,7 +123,7 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.3.11", "", { "os": "win32", "cpu": "x64" }, "sha512-43VrG813EW+b5+YbDbz31uUsheX+qFKCpXeY9kfdAx+ww3naKxeVkTD9zLIWxUPfJquANMHrmW3wbe/037G0Qg=="],
 
-    "@celldl/editor": ["@celldl/editor@0.20260623.0", "", { "dependencies": { "@atomic-ehr/ucum": "^0.2.5", "@celldl/editor-rdf": "^0.20260512.0", "@ctrl/tinycolor": "^4.2.0", "@mathjax/src": "^4.1.2", "@primeuix/themes": "^2.0.2", "@primevue/auto-import-resolver": "4.2.5", "@vueuse/core": "14.1.0", "buffer": "^6.0.3", "flatbush": "^4.5.0", "graphology": "^0.26.0", "isomorphic-fetch": "^3.0.0", "jsonschema": "^1.5.0", "mini-svg-data-uri": "^1.4.4", "primeicons": "^7.0.0", "primevue": "4.2.5", "rbush": "^4.0.1", "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers", "svg-path-commander": "^2.1.11", "systeminformation": "^5.27.11", "transformation-matrix": "^3.1.0", "ua-parser-js": "^2.0.8", "vue": "3.4.21", "vue-tippy": "^6.7.1" } }, "sha512-FdkeGkqnvSvtHx2NHBcsDaly7SLMMxoW+SvHo8Kfaumo79gLMrvuehaF3F+NjPEiD9YIyZjSG9i1+vQ8ErVl8Q=="],
+    "@celldl/editor": ["@celldl/editor@0.20260623.1", "", { "dependencies": { "@atomic-ehr/ucum": "^0.2.5", "@celldl/editor-rdf": "^0.20260512.0", "@ctrl/tinycolor": "^4.2.0", "@mathjax/src": "^4.1.2", "@primeuix/themes": "^2.0.2", "@primevue/auto-import-resolver": "4.2.5", "@vueuse/core": "14.1.0", "buffer": "^6.0.3", "flatbush": "^4.5.0", "graphology": "^0.26.0", "isomorphic-fetch": "^3.0.0", "jsonschema": "^1.5.0", "mini-svg-data-uri": "^1.4.4", "primeicons": "^7.0.0", "primevue": "4.2.5", "rbush": "^4.0.1", "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers", "svg-path-commander": "^2.1.11", "systeminformation": "^5.27.11", "transformation-matrix": "^3.1.0", "ua-parser-js": "^2.0.8", "vue": "3.4.21", "vue-tippy": "^6.7.1" } }, "sha512-vuqUiD31DyaeHP0Khijz3ojRYQzHvPNkvBoOs7IrC5dz5ce2hWs+GOk/+tUHgkMsrcXWXSL+k5EOUDjHni+UiA=="],
 
     "@celldl/editor-python-tools": ["@celldl/editor-python-tools@0.20260412.0", "", { "dependencies": { "ws": "^8.19.0" } }, "sha512-IbylfzWkWGD9BuLe9JH04t31fsHKp90QpdEwg1c/A8ZH/xEPaqVAy9kMGWMDweOdHnB7ai/Z4a+e584p+SfHpw=="],
 
