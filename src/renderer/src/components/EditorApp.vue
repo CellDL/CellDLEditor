@@ -238,7 +238,7 @@ const activeInstanceUid = vueCommon.activeInstanceUid()
 
 const editorTheme = vue.ref<Theme|undefined>(props.theme)
 
-const darkMode = vue.ref<boolean>(props.theme === 'dark')
+const darkMode = vue.ref<boolean>(vueCommon.useTheme().useDarkMode())
 
 function onDarkMode() {
     if (darkMode.value) {

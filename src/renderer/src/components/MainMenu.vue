@@ -169,7 +169,7 @@ const menuItems = [
                 visible: fileOperationsAvailable
             },
             {
-                label: 'Save...',
+                label: 'Save',
                 shortcut: isWindowsOrLinux ? 'Ctrl+S' : isMacOs ? '⌘S' : undefined,
                 command: () => {
                     emit('file-action', 'save')
@@ -279,7 +279,7 @@ WIP ***/
             },
             { separator: true },
             {
-                label: 'About the Editor',
+                label: 'About CellDL Editor',
                 command: () => {
                     emit('about')
                 }
