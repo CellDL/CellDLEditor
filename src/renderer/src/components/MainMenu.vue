@@ -169,7 +169,7 @@ const menuItems = [
                 visible: fileOperationsAvailable
             },
             {
-                label: 'Save...',
+                label: 'Save',
                 shortcut: isWindowsOrLinux ? 'Ctrl+S' : isMacOs ? '⌘S' : undefined,
                 command: () => {
                     emit('file-action', 'save')
