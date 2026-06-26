@@ -1,16 +1,28 @@
 <template lang="pug">
-    Dialog(
+    Dialog.w-139(header=" "
+        v-model:visible="visibleModel"
         :modal="true"
         appendTo="self"
+        :dismissableMask="true"
         :pt:mask:style="{ position: 'absolute' }"
     )
-        div(class="text-2xl font-bold") CellDL Editor
-        div.text-xs Copyright (c) 2022 - 2026 David Brooks
-        div.text Version {{ currentVersion }}
+      .space-y-7
+        .text-center
+          .text-3xl.font-bold CellDL Editor {{ currentVersion }}
+        .space-y-2
+          div
+            | #[a(href="https://github.com/CellDL/CellDLEditor", target="_blank", rel="noopener") CellDL Editor] is an editor that can be used to create #[a(href="https://en.wikipedia.org/wiki/SVG", target="_blank", rel="noopener") SVG]-based #[a(href="https://en.wikipedia.org/wiki/Bond_graph", target="_blank", rel="noopener") bond graph] diagrams and generate #[a(href="https://cellml.org/", target="_blank", rel="noopener") CellML] files from them.
+          .space-y-0
+      template(v-slot:footer)
+        Button(label="OK", autofocus, @click="$emit('close')")
 </template>
 
 <script setup lang="ts">
 import { currentVersion } from '../../common/version.ts'
 
-defineEmits<(event: 'close') => void>()
+const visibleModel = defineModel('visible', { type: Boolean })
+
+function close() {
+    visibleModel.value = false
+}
 </script>
