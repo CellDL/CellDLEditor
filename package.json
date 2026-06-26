@@ -1,6 +1,6 @@
 {
     "name": "@celldl/editor-app",
-    "version": "0.20260623.2",
+    "version": "0.20260626.0",
     "author": {
         "name": "David Brooks",
         "email": "d.brooks@auckland.ac.nz"
@@ -51,7 +51,7 @@
     },
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
-        "@celldl/editor": "^0.20260623.2",
+        "@celldl/editor": "^0.20260626.0",
         "@celldl/editor-python-tools": "^0.20260412.0",
         "@celldl/editor-rdf": "^0.20260412.0",
         "@ctrl/tinycolor": "^4.2.0",
