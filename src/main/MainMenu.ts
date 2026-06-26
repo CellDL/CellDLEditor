@@ -43,7 +43,7 @@ export function enableDisableMainMenu(enable: boolean): electron.Menu | null {
         }
 
         const aboutEditorMenuItem: electron.MenuItemConstructorOptions = {
-            label: 'About the Editor',
+            label: 'About CellDL Editor',
             click: () => {
                 application.currentWindow?.send('about')
             }

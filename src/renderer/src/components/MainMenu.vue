@@ -279,7 +279,7 @@ WIP ***/
             },
             { separator: true },
             {
-                label: 'About the Editor',
+                label: 'About CellDL Editor',
                 command: () => {
                     emit('about')
                 }
