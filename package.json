@@ -42,6 +42,7 @@
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
         "@celldl/editor": "^0.20260915.0",
+        "@celldl/editor-python-tools": "^0.20260825.0",
         "@celldl/rdf": "^1.20260822.0",
         "@ctrl/tinycolor": "^4.2.0",
         "@mathjax/src": "^4.0.0",

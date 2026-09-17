@@ -7,6 +7,7 @@
       "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
         "@celldl/editor": "^0.20260915.0",
+        "@celldl/editor-python-tools": "^0.20260825.0",
         "@celldl/rdf": "^1.20260822.0",
         "@ctrl/tinycolor": "^4.2.0",
         "@mathjax/src": "^4.0.0",
@@ -122,6 +123,8 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.3.11", "", { "os": "win32", "cpu": "x64" }, "sha512-43VrG813EW+b5+YbDbz31uUsheX+qFKCpXeY9kfdAx+ww3naKxeVkTD9zLIWxUPfJquANMHrmW3wbe/037G0Qg=="],
 
     "@celldl/editor": ["@celldl/editor@0.20260915.0", "", { "dependencies": { "@atomic-ehr/ucum": "^0.2.5", "@celldl/metadata": "^1.20260822.0", "@celldl/rdf": "^1.20260822.0", "@ctrl/tinycolor": "^4.2.0", "@lucide/vue": "^1.39.0", "@mathjax/src": "^4.1.3", "@vueuse/core": "14.3.0", "buffer": "^6.0.3", "flatbush": "^4.5.0", "graphology": "^0.26.0", "isomorphic-fetch": "^3.0.0", "jsonschema": "^1.5.0", "mini-svg-data-uri": "^1.4.4", "primeicons": "^7.0.0", "primevue": "4.2.5", "rbush": "^4.0.1", "svg-intersections": "github:dbrnz/svg-intersections#fix-numbers", "svg-path-commander": "^2.1.11", "systeminformation": "^5.27.11", "transformation-matrix": "^3.1.0", "ua-parser-js": "^2.0.8", "vue": "3.5.40", "vue-tippy": "^6.7.1" } }, "sha512-np+edGvBmOR/p+WwOejAIea9hmc+iBwItVZ4rivFWoAchhz/7IAyqcXmh8Li7EpZMzajsMr334tkoUY4j6X+Aw=="],
+
+    "@celldl/editor-python-tools": ["@celldl/editor-python-tools@0.20260825.0", "", { "dependencies": { "ws": "^8.19.0" } }, "sha512-zpRSO1ygA7gT9Jw5oT9AKVXS2HZg8c+/Gvpf2RShr58tXQhE1GGrCcs1GDPek7cQ3mF+EQy/Yq9mqhlkLWkjlg=="],
 
     "@celldl/metadata": ["@celldl/metadata@1.20260822.0", "", { "dependencies": { "@celldl/rdf": "^1.20260822.0" } }, "sha512-xqew4gPCrE4JbkmHWhjS3+Khj70jx7i/L/qvFVf3CrdhVAUrH4Wi1Bodcbz4DQHsnEQUHDcBV8oXvJhXjSg1cg=="],
 
@@ -1245,6 +1248,8 @@
 
     "wrappy": ["wrappy@1.0.2", "", {}, "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ=="],
 
+    "ws": ["ws@8.21.3", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw=="],
+
     "xmlbuilder": ["xmlbuilder@15.1.1", "", {}, "sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg=="],
 
     "y18n": ["y18n@5.0.8", "", {}, "sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA=="],
@@ -1268,8 +1273,6 @@
     "@celldl/editor/@mathjax/src": ["@mathjax/src@4.1.3", "", { "dependencies": { "@mathjax/mathjax-newcm-font": "4.1.3", "mhchemparser": "^4.2.1", "mj-context-menu": "^1.0.0", "speech-rule-engine": "5.0.0-rc.4" } }, "sha512-rIrWquuBSoJuoMBdC/1qD+AUHTorlccPicoVy6P2xbUgnuDBpCcpbHtOAsB8L3hdCHtNBg92lF8e3Fz+pkcQbw=="],
 
     "@celldl/editor/@vueuse/core": ["@vueuse/core@14.3.0", "", { "dependencies": { "@types/web-bluetooth": "^0.0.21", "@vueuse/metadata": "14.3.0", "@vueuse/shared": "14.3.0" }, "peerDependencies": { "vue": "^3.5.0" } }, "sha512-aHfz47g0ZhMtTVHmIzMVpJy8ePhhOy68GY5bv110+5DVtZ+W7BsOx+m61UNQqfrWyPztIHIanWa3E2tib3NFIw=="],
-
-    "@celldl/editor/svg-intersections": ["svg-intersections@github:dbrnz/svg-intersections#816f1a3", { "dependencies": { "kld-affine": "2.0.0", "kld-polynomial": "0.3.0" } }, "dbrnz-svg-intersections-816f1a3", "sha512-YYu25/eG3nlSGADr9+NRk3t3juxdmXIZ8nadTm92FZNE9v5Fkm3AXVqlGjCkzGRbGB1rHKkqtlnoKbvdHJHUIQ=="],
 
     "@celldl/editor/vue": ["vue@3.5.40", "", { "dependencies": { "@vue/compiler-dom": "3.5.40", "@vue/compiler-sfc": "3.5.40", "@vue/runtime-dom": "3.5.40", "@vue/server-renderer": "3.5.40", "@vue/shared": "3.5.40" }, "peerDependencies": { "typescript": "*" }, "optionalPeers": ["typescript"] }, "sha512-+8PJ4SJXdn/cHGImF4CKdxlWHIN5Dkt7DoufRREM6h6uVCx2m7QxgcEQmmzyOK8A9mcafg7sFbJFYsdFVubTig=="],
 
