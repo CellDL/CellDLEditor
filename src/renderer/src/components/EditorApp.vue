@@ -18,8 +18,7 @@
                 MainMenu(
                 :id="mainMenuId"
                     :haveFile="haveFile"
-                    :fileModified="fileModified"
-                    :editorState="editorState"
+                    :editorStatus="editorStatus"
                     :noPython="noPython"
                     :viewState="viewState"
                     @about="onAboutMenu"
@@ -117,12 +116,13 @@ import '@celldl/editor/style.css'
 import type {
     CellDLEditorCommand,
     EditorData,
-    EditorState,
+
     Theme,
     ViewState
 } from '@celldl/editor'
 
-import { DEFAULT_VIEW_STATE } from '@celldl/editor'  // But @celldl/editor is a dynamic import??
+import { DEFAULT_VIEW_STATE, EditorStatus, type FileStatus } from '@celldl/editor'
+
 import { bgRdfStatements } from '@celldl/editor'
 
 import * as $rdf from '@celldl/rdf'
@@ -313,10 +313,7 @@ const editorCommand = vue.ref<CellDLEditorCommand>()
 
 const windowTitle = vue.ref<string>('New diagram')
 
-const fileStatus = vue.ref<{
-    haveData: boolean
-    modified: boolean
-}>({
+const fileStatus = vue.ref<FileStatus>({
     haveData: false,
     modified: false
 })
@@ -621,13 +618,7 @@ function onMenuActive() {
 
 //==============================================================================
 
-const editorState = vue.computed<EditorState>(() => {
-    return {
-        fileModified: false,
-        itemSelected: true,
-        pasteContents: true
-    }
-})
+const editorStatus = vue.computed<EditorStatus>(() => new EditorStatus())
 
 function onEditAction(action: string) {
     editorCommand.value = {
