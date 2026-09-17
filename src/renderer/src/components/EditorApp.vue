@@ -62,12 +62,12 @@
                 @close="aboutVisible = false"
             )
             Dialog.issues(
-                v-model:visible="issuesVisible"
+                v-model:visible="cellmlIssuesVisible"
                 modal=""
             )
                 template(#header)
                     .flex.w-full
-                        p.text-2xl.font-bold Issues generating CellML:
+                        p.text-2xl.font-bold Issues {{ cellmlIssuesKind }} CellML:
                         .grow
                         Button(
                             icon="pi pi-copy"
@@ -76,7 +76,7 @@
                         )
                 div
                     p.mb-1(
-                        v-for="issue in issues"
+                        v-for="issue in cellmlIssues"
                     ) {{ issue }}
 </template>
 
@@ -127,6 +127,7 @@ import { DEFAULT_VIEW_STATE } from '@celldl/editor'  // But @celldl/editor is a 
 import * as $rdf from '@celldl/editor-rdf'
 
 import {
+    type CellMLOutput,
     celldl2cellml,
     initialisePython,
     type PyodideAPI,
@@ -356,9 +357,11 @@ vueusecore.useEventListener(document, 'file-edited', (_: Event) => {
 //==============================================================================
 
 async function onEditorData(data: EditorData) {
-    if (data.kind === 'export') {
+    if (data.kind?.startsWith('export')) {
         if (pythonInitialised) {
-            await saveCellML(data.data)
+            const parsed = data.kind.split('-')
+            const exportKind = (parsed.length > 1) ? parsed[1] : 'cellml'
+            await exportAsCellML(data.data, exportKind as string)
         }
     } else if (data.kind === 'save-as' || !currentFileHandle) {
         await saveFile(data.data)
@@ -534,35 +537,36 @@ async function writeFileData(fileHandle: FileSystemFileHandle, data: string) {
 //==============================================================================
 
 async function onExportAction(action: string) {
-    if (action === 'cellml') {
+    if (action === 'cellml' || action === 'omex') {
         editorCommand.value = {
             command: 'file',
             options: {
                 action: 'data',
-                kind: 'export'
+                kind: `export-${action}`
             }
         }
     }
 }
 
-const issues = vue.ref<string[]>([])
-const issuesVisible = vue.ref(false)
+const cellmlIssues = vue.ref<string[]>([])
+const cellmlIssuesKind = vue.ref('generating')
+const cellmlIssuesVisible = vue.ref(false)
 
 function copyIssuesToClipboard() {
-    navigator.clipboard.writeText(issues.value.join('\n'))
+    navigator.clipboard.writeText(cellmlIssues.value.join('\n'))
 }
 
-async function saveCellML(celldl: string) {
-    let fileName = 'Untitled.cellml'
+async function exportAsCellML(celldl: string, exportKind: string) {
+    let fileName = `Untitled.${exportKind}`
     if (currentFileHandle) {
         if (currentFileHandle.name.endsWith('.')) {
-            fileName = currentFileHandle.name + 'cellml'
+            fileName = `${currentFileHandle.name}${exportKind}`
         } else {
             const parts = currentFileHandle.name.split('.')
             if (parts.length === 1) {
-                fileName = currentFileHandle.name + '.cellml'
+                fileName = `${currentFileHandle.name}.${exportKind}`
             } else {
-                fileName = parts.slice(0, -1).join('.') + '.cellml'
+                fileName = `${parts.slice(0, -1).join('.')}.${exportKind}`
             }
         }
     }
@@ -571,7 +575,8 @@ async function saveCellML(celldl: string) {
             {
                 description: 'CellML files',
                 accept: {
-                    'application/cellml+xml': ['.cellml'],
+                    'application/cellml+xml': ['.cellml'],  // .omex  omex mediatype + zip
+                    'application/zip': ['.omex'],  // .omex  omex mediatype + zip
                 }
             }
         ],
@@ -579,10 +584,15 @@ async function saveCellML(celldl: string) {
     }
     const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
     if (fileHandle) {
-        const cellmlObject = celldl2cellml(`https://celldl.org/cellml/${fileHandle.name}`, celldl)
-        if (cellmlObject.cellml) {
+        const exportedObject = await celldl2cellml(`https://celldl.org/cellml/${fileHandle.name}`, celldl, {
+            metadata: (exportKind === 'omex')
+        })
+        if (exportedObject.issues) {
+            cellmlIssues.value = exportedObject.issues
+            cellmlIssuesVisible.value = true
+        } else if (exportedObject.cellml) {
             const writableStream = await fileHandle.createWritable()
-            await writableStream.write(cellmlObject.cellml)
+            await writableStream.write(exportedObject.cellml)
             await writableStream.close()
             toast.add({
                 severity: 'info',
@@ -590,11 +600,8 @@ async function saveCellML(celldl: string) {
                 summary: 'CellML created',
                 detail: `Saved as ${fileHandle.name}`
             })
-        } else if (cellmlObject.issues) {
-            issues.value = cellmlObject.issues
-            issuesVisible.value = true
         } else {
-            window.alert(`Unexpected exception generating CellML: ${cellmlObject.exception}`)
+            window.alert(`Unexpected exception generating CellML: ${exportedObject.exception}`)
         }
     }
 }

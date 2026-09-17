@@ -196,6 +196,14 @@ const menuItems = [
                 },
                 disabled: () => !(props.haveFile && !props.fileModified),
                 visible: () => fileOperationsAvailable && !props.noPython
+            },
+            {
+                label: 'Create OMEX archive with CellML...',
+                command: () => {
+                    emit('export-action', 'omex')
+                },
+                disabled: () => !(props.haveFile && !props.fileModified),
+                visible: () => fileOperationsAvailable && !props.noPython
             }
         ]
     },
