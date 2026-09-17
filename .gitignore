@@ -30,5 +30,4 @@ out
 *.tsbuildinfo
 
 # unplugin-vue-components
-src/renderer/app/components.d.ts
 src/renderer/components.d.ts

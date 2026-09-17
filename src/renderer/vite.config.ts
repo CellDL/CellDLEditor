@@ -25,11 +25,6 @@ export default vite.defineConfig({
         sourcemap: true,
         target: 'esnext'
     },
-    optimizeDeps: {
-        esbuildOptions: {
-            target: 'esnext'
-        }
-    },
     plugins: [
         pyodidePlugin(),
 

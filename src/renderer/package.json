@@ -46,11 +46,6 @@
         "start": "bun run build && vite preview --open",
         "version:new": "bun scripts/version.js"
     },
-    "bun": {
-        "overrides": {
-            "vue": "3.4.21"
-        }
-    },
     "dependencies": {
         "@atomic-ehr/ucum": "^0.2.5",
         "@celldl/editor": "^0.20260915.0",
@@ -72,25 +67,29 @@
         "svg-path-commander": "^2.1.11",
         "systeminformation": "^5.27.11",
         "transformation-matrix": "^3.1.0",
-        "ua-parser-js": "^2.0.8",
-        "vue": "3.4.21",
+        "ua-parser-js": "^2.0.10",
+        "vue": "3.5.40",
         "vue-tippy": "^6.7.1"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.11",
         "@tailwindcss/postcss": "^4.1.18",
         "@tailwindcss/vite": "^4.1.18",
-        "@types/node": "^25.0.9",
+        "@types/node": "^26.2.0",
         "@types/rbush": "^4.0.0",
         "@types/svg-intersections": "^0.4.4",
-        "@vitejs/plugin-vue": "^6.0.3",
+        "@typescript/typescript6": "^6.0.2",
+        "@vitejs/plugin-vue": "^6.0.8",
         "@vue/tsconfig": "^0.8.1",
         "autoprefixer": "^10.4.23",
         "pug": "^3.0.3",
         "pug-plain-loader": "^1.1.0",
         "tailwindcss": "^4.1.18",
         "tailwindcss-primeui": "^0.6.1",
+        "typescript": "^7.0.2",
+        "typescript-6": "npm:typescript@^6.0.3",
         "unplugin-vue-components": "^31.0.0",
-        "vite": "^7.2.7"
+        "vite": "^8.2.0",
+        "vue-tsc": "^3.3.8"
     }
 }
