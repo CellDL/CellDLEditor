@@ -123,8 +123,9 @@ import type {
 } from '@celldl/editor'
 
 import { DEFAULT_VIEW_STATE } from '@celldl/editor'  // But @celldl/editor is a dynamic import??
+import { bgRdfStatements } from '@celldl/editor'
 
-import * as $rdf from '@celldl/editor-rdf'
+import * as $rdf from '@celldl/rdf'
 
 import {
     type CellMLOutput,
@@ -168,7 +169,7 @@ const CellDLEditor = vue.defineAsyncComponent(async () => {
     if (!props.noPython) {
         vue.nextTick(async () => {      // To see loading messages ??
             const rdfI: RdfInterface = {
-                getRdfStatements: $rdf.bgRdfStatements,
+                getRdfStatements: bgRdfStatements,
                 oximockRdfModule: $rdf.oxiRdfModule
             }
             await loadInBrowser().then(async (pyApi: PyodideAPI) => {
