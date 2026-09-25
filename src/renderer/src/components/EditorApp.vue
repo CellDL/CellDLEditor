@@ -163,7 +163,7 @@ const props = defineProps<IEditorAppProps>()
 const loadingMessage = vue.ref<string>('Loading CellDL editor')
 let pythonInitialised = false
 
-// We need to load the RDF module before using the Cell;DL Editor component
+// We need to load the RDF module before using the CellDL Editor component
 
 const CellDLEditor = vue.defineAsyncComponent(async () => {
     await $rdf.initialise()
