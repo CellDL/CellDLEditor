@@ -109,6 +109,8 @@ import primeVueToastService from 'primevue/toastservice';
 import { useConfirm } from "primevue/useconfirm"
 import { useToast } from 'primevue/usetoast';
 
+import JSZip from 'jszip'
+
 //==============================================================================
 
 import '@celldl/editor/style.css'
@@ -534,6 +536,32 @@ async function writeFileData(fileHandle: FileSystemFileHandle, data: string) {
 //==============================================================================
 //==============================================================================
 
+const MODEL_URI_PREFIX = 'https://celldl.org/cellml/'
+
+function OMEX_SPEC_URL(term: string): string {
+    return `http://identifiers.org/combine.specifications/${term}`
+}
+
+function withSuffix(filename: string, suffix: string): string {
+    const parts = filename.split('.')
+    if (parts.length === 1) {
+        parts.push(suffix)
+    } else {
+        parts[parts.length-1] = suffix
+    }
+    return parts.join('.')
+}
+
+const cellmlIssues = vue.ref<string[]>([])
+const cellmlIssuesKind = vue.ref('generating')
+const cellmlIssuesVisible = vue.ref(false)
+
+function copyIssuesToClipboard() {
+    navigator.clipboard.writeText(cellmlIssues.value.join('\n'))
+}
+
+//==============================================================================
+
 async function onExportAction(action: string) {
     if (action === 'cellml' || action === 'omex') {
         editorCommand.value = {
@@ -546,27 +574,10 @@ async function onExportAction(action: string) {
     }
 }
 
-const cellmlIssues = vue.ref<string[]>([])
-const cellmlIssuesKind = vue.ref('generating')
-const cellmlIssuesVisible = vue.ref(false)
-
-function copyIssuesToClipboard() {
-    navigator.clipboard.writeText(cellmlIssues.value.join('\n'))
-}
-
 async function exportAsCellML(celldl: string, exportKind: string) {
     let fileName = `Untitled.${exportKind}`
     if (currentFileHandle) {
-        if (currentFileHandle.name.endsWith('.')) {
-            fileName = `${currentFileHandle.name}${exportKind}`
-        } else {
-            const parts = currentFileHandle.name.split('.')
-            if (parts.length === 1) {
-                fileName = `${currentFileHandle.name}.${exportKind}`
-            } else {
-                fileName = `${parts.slice(0, -1).join('.')}.${exportKind}`
-            }
-        }
+        fileName = withSuffix(currentFileHandle.name, exportKind)
     }
     const options = {
         types: [
@@ -582,16 +593,70 @@ async function exportAsCellML(celldl: string, exportKind: string) {
     }
     const fileHandle = await window.showSaveFilePicker(options).catch(() => {})
     if (fileHandle) {
-        const exportedObject = await celldl2cellml(`https://celldl.org/cellml/${fileHandle.name}`, celldl, {
+        const celldl_file_name = currentFileHandle ? currentFileHandle.name
+                                                   : withSuffix(fileHandle.name, 'svg')
+        const cellml_file_name = withSuffix(exportKind === 'omex'
+                                          ? celldl_file_name
+                                          : fileHandle.name, 'cellml')
+        const exportedObject = await celldl2cellml(celldl, {
+            sourceUri: `${MODEL_URI_PREFIX}${celldl_file_name}`,
+            cellmlUri: `${MODEL_URI_PREFIX}${cellml_file_name}`,
             metadata: (exportKind === 'omex')
         })
+
         if (exportedObject.issues) {
             cellmlIssues.value = exportedObject.issues
             cellmlIssuesVisible.value = true
         } else if (exportedObject.cellml) {
-            const writableStream = await fileHandle.createWritable()
-            await writableStream.write(exportedObject.cellml)
-            await writableStream.close()
+            if (exportKind === 'omex') {
+                const omex = new JSZip()
+                const content: Record<string, string>[] = []
+                content.push({
+                    location: '.',
+                    format: OMEX_SPEC_URL('omex')
+                })
+                omex.file(celldl_file_name, celldl)
+                content.push({
+                    location: celldl_file_name,
+                    format: 'image/svg+xml'
+                })
+
+                const cellml = exportedObject.cellml.replaceAll(MODEL_URI_PREFIX, '')
+                omex.file(cellml_file_name, cellml)
+                content.push({
+                    location: cellml_file_name,
+                    format: OMEX_SPEC_URL('cellml'),
+                    master: 'true'
+                })
+                let annotation = exportedObject.metadata
+                if (annotation) {
+                    annotation = annotation.replaceAll(MODEL_URI_PREFIX, '')
+                    const annotation_file = withSuffix(celldl_file_name, 'ttl')
+                    omex.file(annotation_file, annotation)
+                    content.push({
+                        location: annotation_file,
+                        format: OMEX_SPEC_URL('omex-metadata'),
+                    })
+                }
+                const manifest = `<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<omexManifest xmlns="http://identifiers.org/combine.specifications/omex-manifest">
+  ${content.map(c => {
+    const attributes = Object.entries(c).map(kv => `${kv[0]}="${kv[1]}"`)
+    return `<content ${attributes.join(' ')}/>`
+  }).join('\n  ')}
+</omexManifest>`
+                omex.file('manifest.xml', manifest)
+                omex.generateAsync({type:"blob"})
+                .then(async (blob) => {
+                    const stream = await fileHandle.createWritable()
+                    await stream.write(blob)
+                    await stream.close()
+                })
+            } else {
+                const writableStream = await fileHandle.createWritable()
+                await writableStream.write(exportedObject.cellml)
+                await writableStream.close()
+            }
             toast.add({
                 severity: 'info',
                 group: toastId.value,
