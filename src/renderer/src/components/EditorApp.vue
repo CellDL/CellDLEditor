@@ -661,7 +661,8 @@ async function exportAsCellML(celldl: string, exportKind: string) {
                 severity: 'info',
                 group: toastId.value,
                 summary: 'CellML created',
-                detail: `Saved as ${fileHandle.name}`
+                detail: `Saved as ${fileHandle.name}`,
+                life: 3000
             })
         } else {
             window.alert(`Unexpected exception generating CellML: ${exportedObject.exception}`)
